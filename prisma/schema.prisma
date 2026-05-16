@@ -1,0 +1,336 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── Usuários e Autenticação ──────────────────────────────────────────────────
+
+model Usuario {
+  id           String   @id @default(cuid())
+  nome         String
+  email        String   @unique
+  senhaHash    String
+  perfil       Perfil   @default(PROFESSORA)
+  ativo        Boolean  @default(true)
+  foto         String?
+  whatsapp     String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  professora Professora?
+
+  @@map("usuarios")
+}
+
+enum Perfil {
+  SUPERADMIN
+  PROFESSORA
+  AUXILIAR
+}
+
+// ─── Professoras ──────────────────────────────────────────────────────────────
+
+model Professora {
+  id        String   @id @default(cuid())
+  usuarioId String   @unique
+  telefone  String?
+  criadoEm DateTime @default(now())
+
+  usuario       Usuario             @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  materias      ProfessoraMateria[]
+  alunos        Aluno[]
+  notificacoes  NotificacaoProva[]
+  aulas         AgendaAula[]
+
+  @@map("professoras")
+}
+
+// ─── Disciplinas ──────────────────────────────────────────────────────────────
+
+model Materia {
+  id   String @id @default(cuid())
+  nome String @unique
+  cor  String @default("#6366f1")
+
+  professoras   ProfessoraMateria[]
+  alunoMaterias AlunoMateria[]
+  avaliacoes    Avaliacao[]
+  notas         Nota[]
+  conteudos     Conteudo[]
+  aulas         AgendaAula[]
+
+  @@map("materias")
+}
+
+model ProfessoraMateria {
+  professoraId String
+  materiaId    String
+
+  professora Professora @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  materia    Materia    @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@id([professoraId, materiaId])
+  @@map("professora_materias")
+}
+
+// ─── Escolas e Unidades ───────────────────────────────────────────────────────
+
+model Escola {
+  id               String    @id @default(cuid())
+  nome             String
+  rede             String?
+  periodoAvaliacao String?
+  criadoEm         DateTime  @default(now())
+
+  unidades Unidade[]
+
+  @@map("escolas")
+}
+
+model Unidade {
+  id       String   @id @default(cuid())
+  escolaId String
+  nome     String
+  endereco String?
+  bairro   String?
+  cidade   String?
+  estado   String?
+  cep      String?
+  telefone String?
+  diretor  String?
+  turno    String?
+  criadoEm DateTime @default(now())
+
+  escola      Escola              @relation(fields: [escolaId], references: [id], onDelete: Cascade)
+  alunos      Aluno[]
+  calendarios CalendarioEscolar[]
+  avaliacoes  Avaliacao[]
+
+  @@map("unidades")
+}
+
+// ─── Calendário Escolar ───────────────────────────────────────────────────────
+
+model CalendarioEscolar {
+  id         String     @id @default(cuid())
+  unidadeId  String
+  ano        Int
+  titulo     String
+  dataInicio DateTime
+  dataFim    DateTime
+  tipo       TipoEvento @default(AULA)
+  descricao  String?
+
+  unidade Unidade @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
+
+  @@map("calendario_escolar")
+}
+
+enum TipoEvento {
+  AULA
+  RECESSO
+  FERIADO
+  EVENTO
+  REUNIAO
+}
+
+// ─── Avaliações / Calendário de Provas ───────────────────────────────────────
+
+model Avaliacao {
+  id        String   @id @default(cuid())
+  unidadeId String
+  materiaId String?
+  serie     String
+  nome      String
+  data      DateTime
+  peso      Float    @default(1.0)
+  notaMax   Float    @default(10.0)
+  periodo   String?
+  criadoEm DateTime @default(now())
+
+  unidade       Unidade            @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
+  materia       Materia?           @relation(fields: [materiaId], references: [id])
+  notas         Nota[]
+  notificacoes  NotificacaoProva[]
+
+  @@map("avaliacoes")
+}
+
+// ─── Notificações WhatsApp + E-mail ──────────────────────────────────────────
+
+model NotificacaoProva {
+  id           String   @id @default(cuid())
+  professoraId String
+  avaliacaoId  String
+  diasAntes    Int      // quantos dias faltam para a prova quando enviou
+  // WhatsApp
+  enviada      Boolean  @default(false)
+  whatsapp     String?  // número usado no envio (opcional agora)
+  // E-mail
+  emailEnviado Boolean  @default(false)
+  email        String?  // endereço usado no envio
+  criadoEm    DateTime @default(now())
+
+  professora Professora @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  avaliacao  Avaliacao  @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
+
+  @@unique([professoraId, avaliacaoId, diasAntes])
+  @@map("notificacoes_prova")
+}
+
+// ─── Alunos ───────────────────────────────────────────────────────────────────
+
+model Aluno {
+  id                  String      @id @default(cuid())
+  professoraId        String
+  unidadeId           String
+  nome                String
+  dataNascimento      DateTime?
+  fotoUrl             String?
+  serie               String
+  turma               String?
+  responsavel         String?
+  telefoneResponsavel String?
+  emailResponsavel    String?
+  rua                 String?
+  numero              String?
+  complemento         String?
+  bairro              String?
+  cidade              String?
+  estado              String?
+  cep                 String?
+  observacoes         String?
+  status              StatusAluno @default(ATIVO)
+  // ── Configuração de cobrança ──────────────────────────────────────
+  tipoCobranca        String?     // MENSAL | QUINZENAL | SEMANAL | POR_AULA
+  valorCobranca       Float?      // valor por parcela / por aula
+  diaPagamento        Int?        // dia do mês (MENSAL = venc.; QUINZENAL = 1ª parcela)
+  diaPagamento2       Int?        // 2ª parcela (apenas QUINZENAL)
+  diaSemana           Int?        // 0=Dom … 6=Sáb
+  horaAula            String?     // "14:00" — horário fixo de início da aula
+  criadoEm           DateTime    @default(now())
+  atualizadoEm        DateTime    @updatedAt
+
+  professora  Professora     @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  unidade     Unidade        @relation(fields: [unidadeId], references: [id])
+  materias    AlunoMateria[]
+  notas       Nota[]
+  conteudos   Conteudo[]
+  pagamentos  Pagamento[]
+  aulas       AgendaAula[]
+
+  @@map("alunos")
+}
+
+enum StatusAluno {
+  ATIVO
+  PAUSADO
+  ENCERRADO
+}
+
+model AlunoMateria {
+  alunoId   String
+  materiaId String
+
+  aluno   Aluno   @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia Materia @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@id([alunoId, materiaId])
+  @@map("aluno_materias")
+}
+
+// ─── Notas ────────────────────────────────────────────────────────────────────
+
+model Nota {
+  id          String   @id @default(cuid())
+  alunoId     String
+  avaliacaoId String
+  materiaId   String
+  valor       Float
+  observacao  String?
+  criadoEm   DateTime @default(now())
+
+  aluno     Aluno     @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  avaliacao Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
+  materia   Materia   @relation(fields: [materiaId], references: [id])
+
+  @@unique([alunoId, avaliacaoId, materiaId])
+  @@map("notas")
+}
+
+// ─── Pagamentos ───────────────────────────────────────────────────────────────
+
+model Pagamento {
+  id              String    @id @default(cuid())
+  alunoId         String
+  mes             Int       // 1-12
+  ano             Int
+  parcela         Int       @default(1) // 1 para MENSAL/POR_AULA; 1-2 QUINZENAL; 1-5 SEMANAL
+  dataVencimento  DateTime  // data exata do vencimento
+  valorCobrado    Float
+  quantidadeAulas Int?      // apenas POR_AULA
+  pago            Boolean   @default(false)
+  dataPagamento   DateTime?
+  observacao      String?
+  emailTipo       String?   // "lembrete" | "atraso" | "recibo" — último e-mail enviado
+  emailEnviadoEm  DateTime? // data/hora do último envio
+  criadoEm        DateTime  @default(now())
+  atualizadoEm    DateTime  @updatedAt
+
+  aluno Aluno @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+
+  @@unique([alunoId, mes, ano, parcela])
+  @@map("pagamentos")
+}
+
+// ─── Conteúdos Didáticos ──────────────────────────────────────────────────────
+
+model Conteudo {
+  id        String   @id @default(cuid())
+  alunoId   String
+  materiaId String
+  data      DateTime
+  topico     String
+  descricao  String?
+  arquivoUrl String?
+  planejado  Boolean  @default(false)
+  criadoEm  DateTime @default(now())
+
+  aluno   Aluno   @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia Materia @relation(fields: [materiaId], references: [id])
+
+  @@map("conteudos")
+}
+
+// ─── Agenda de Aulas ──────────────────────────────────────────────────────────
+
+model AgendaAula {
+  id           String     @id @default(cuid())
+  professoraId String
+  alunoId      String
+  materiaId    String?
+  data         DateTime
+  horaInicio   String?    // "14:00"
+  horaFim      String?    // "15:00"
+  status       StatusAula @default(AGENDADA)
+  observacao   String?
+  criadoEm     DateTime   @default(now())
+
+  professora Professora @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  aluno      Aluno      @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia    Materia?   @relation(fields: [materiaId], references: [id])
+
+  @@map("agenda_aulas")
+}
+
+enum StatusAula {
+  AGENDADA
+  REALIZADA
+  CANCELADA
+  FALTA_ALUNO
+  FALTA_PROFESSOR
+}

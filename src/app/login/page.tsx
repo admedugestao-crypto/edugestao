@@ -1,0 +1,111 @@
+"use client";
+
+import { Suspense, useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const cadastroOk = searchParams.get("cadastro") === "ok";
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErro("");
+    setCarregando(true);
+
+    const res = await signIn("credentials", {
+      email,
+      password: senha,
+      redirect: false,
+    });
+
+    setCarregando(false);
+
+    if (res?.error) {
+      setErro("E-mail ou senha incorretos.");
+    } else {
+      router.push("/dashboard");
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-600 text-white text-2xl font-bold mb-3">
+          E
+        </div>
+        <h1 className="text-2xl font-bold text-slate-800">EduGestão</h1>
+        <p className="text-slate-500 text-sm mt-1">Gestão de alunos</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="seu@email.com"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Senha</label>
+          <input
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="••••••••"
+          />
+        </div>
+
+        {cadastroOk && (
+          <p className="text-emerald-700 text-sm bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+            Conta criada com sucesso! Faça login para continuar.
+          </p>
+        )}
+
+        {erro && (
+          <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            {erro}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={carregando}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
+        >
+          {carregando ? "Entrando..." : "Entrar"}
+        </button>
+      </form>
+
+      <p className="text-center text-sm text-slate-500 mt-6">
+        Não tem uma conta?{" "}
+        <Link href="/cadastro" className="text-indigo-600 hover:underline font-medium">
+          Criar conta
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+      <Suspense>
+        <LoginForm />
+      </Suspense>
+    </div>
+  );
+}
