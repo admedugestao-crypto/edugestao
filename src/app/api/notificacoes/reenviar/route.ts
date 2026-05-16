@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { montarMensagem, formatarWhatsapp } from "@/lib/notificacoes";
 import { enviarEmailProva, emailConfigurado } from "@/lib/email";
 
+export const dynamic = "force-dynamic";
+
 async function enviarZAPI(numero: string, mensagem: string): Promise<boolean> {
   const instanceId   = process.env.ZAPI_INSTANCE_ID;
   const token        = process.env.ZAPI_TOKEN;

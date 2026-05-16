@@ -8,6 +8,8 @@ import {
   emailConfigurado,
 } from "@/lib/email";
 
+export const dynamic = "force-dynamic";
+
 // POST /api/email/pagamento
 // Body: { pagamentoId, tipo: "atraso" | "lembrete" | "recibo" }
 export async function POST(req: NextRequest) {

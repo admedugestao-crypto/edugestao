@@ -4,6 +4,8 @@ import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { randomUUID } from "crypto";
 
+export const dynamic = "force-dynamic";
+
 const TIPOS_PERMITIDOS = [
   "application/pdf",
   "image/jpeg",
