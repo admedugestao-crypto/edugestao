@@ -3,12 +3,20 @@ import { processarNotificacoes, processarNotificacoesEmail } from "@/lib/notific
 
 export const dynamic = "force-dynamic";
 
-// Endpoint chamado pelo cron interno (instrumentation.ts) ou manualmente
-// WhatsApp e E-mail executam sequencialmente para evitar race condition no SQLite
+// Chamado pelo Vercel Cron Job (vercel.json) ou manualmente.
+// A Vercel injeta automaticamente o header Authorization: Bearer <CRON_SECRET>.
 export async function POST(req: NextRequest) {
-  const cronKey = req.headers.get("x-cron-key");
-  if (process.env.CRON_SECRET && cronKey !== process.env.CRON_SECRET) {
-    return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  // Vercel Cron Job envia Authorization: Bearer <CRON_SECRET>
+  const authHeader = req.headers.get("authorization");
+  const cronKey    = req.headers.get("x-cron-key");
+  const secret     = process.env.CRON_SECRET;
+
+  if (secret) {
+    const bearerOk = authHeader === `Bearer ${secret}`;
+    const keyOk    = cronKey === secret;
+    if (!bearerOk && !keyOk) {
+      return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+    }
   }
 
   const whatsapp = await processarNotificacoes();
@@ -17,7 +25,20 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ whatsapp, email });
 }
 
-export async function GET() {
+// GET: permite disparar manualmente pelo browser (apenas com CRON_SECRET ou sem segredo)
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  const cronKey    = req.headers.get("x-cron-key");
+  const secret     = process.env.CRON_SECRET;
+
+  if (secret) {
+    const bearerOk = authHeader === `Bearer ${secret}`;
+    const keyOk    = cronKey === secret;
+    if (!bearerOk && !keyOk) {
+      return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+    }
+  }
+
   const whatsapp = await processarNotificacoes();
   const email    = await processarNotificacoesEmail();
 
