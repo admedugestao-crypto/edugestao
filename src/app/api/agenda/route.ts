@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 // ── Helper ─────────────────────────────────────────────────────────────────────
 // Converte "YYYY-MM-DD" em UTC midnight.
 // new Date("YYYY-MM-DD") já faz isso nativamente (ISO date-only = UTC midnight).

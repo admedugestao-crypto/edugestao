@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { UserCog } from "lucide-react";
 import UsuariosClient from "@/components/UsuariosClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function UsuariosPage() {
   const session = await auth();
   const sessionUserId = (session?.user as any)?.id as string;

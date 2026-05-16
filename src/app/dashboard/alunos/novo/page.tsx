@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import AlunoForm from "@/components/AlunoForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function NovoAlunoPage() {
   const session = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;

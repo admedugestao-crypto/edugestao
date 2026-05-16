@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { Calendar } from "lucide-react";
 import CalendarioClient from "@/components/CalendarioClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function CalendarioPage() {
   const session = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;

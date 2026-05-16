@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { CalendarDays } from "lucide-react";
 import AgendaClient from "@/components/AgendaClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AgendaPage() {
   const session      = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;

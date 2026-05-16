@@ -5,6 +5,8 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+export const dynamic = "force-dynamic";
+
 function parseDataLocal(iso: Date | string) {
   const str = iso instanceof Date ? iso.toISOString() : iso;
   const [y, m, d] = str.split("T")[0].split("-").map(Number);

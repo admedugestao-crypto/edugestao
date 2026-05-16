@@ -4,6 +4,8 @@ import { Mail } from "lucide-react";
 import HistoricoEmailsClient from "@/components/HistoricoEmailsClient";
 import { emailConfigurado } from "@/lib/email";
 
+export const dynamic = "force-dynamic";
+
 export default async function NotificacoesEmailPage() {
   const session = await auth();
   const perfil = (session?.user as any)?.perfil as string;

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import AlunoForm from "@/components/AlunoForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditarAlunoPage({
   params,
 }: {

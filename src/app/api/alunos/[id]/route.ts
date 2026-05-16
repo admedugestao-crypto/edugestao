@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });

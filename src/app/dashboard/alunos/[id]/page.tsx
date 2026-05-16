@@ -8,6 +8,8 @@ import {
   CalendarDays, ArrowLeft, ClipboardList,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function VisualizarAlunoPage({
   params,
 }: {

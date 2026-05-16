@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { GraduationCap } from "lucide-react";
 import ConteudosClient from "@/components/ConteudosClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function ConteudosPage() {
   const session     = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;

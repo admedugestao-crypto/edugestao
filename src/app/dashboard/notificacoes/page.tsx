@@ -4,6 +4,8 @@ import { Bell } from "lucide-react";
 import NotificacoesUnificadas from "@/components/NotificacoesUnificadas";
 import { emailConfigurado } from "@/lib/email";
 
+export const dynamic = "force-dynamic";
+
 export default async function NotificacoesPage() {
   const session = await auth();
   const perfil = (session?.user as any)?.perfil as string;

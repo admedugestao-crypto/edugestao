@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/pagamentos?mes=5&ano=2026
 // Retorna registros reais de pagamento serializados (sem objetos Prisma brutos)
 export async function GET(req: NextRequest) {

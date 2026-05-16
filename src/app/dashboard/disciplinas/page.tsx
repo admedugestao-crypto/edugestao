@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { BookOpen } from "lucide-react";
 import DisciplinasClient from "@/components/DisciplinasClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function DisciplinasPage() {
   const session = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;

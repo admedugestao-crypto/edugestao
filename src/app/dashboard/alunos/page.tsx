@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Users, Plus, Search } from "lucide-react";
 import AlunosTabela from "@/components/AlunosTabela";
 
+export const dynamic = "force-dynamic";
+
 const CAMPOS = [
   { value: "nome",        label: "Nome" },
   { value: "serie",       label: "Série" },

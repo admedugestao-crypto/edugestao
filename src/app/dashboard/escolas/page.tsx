@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { School, Plus, MapPin } from "lucide-react";
 import EscolasClient from "@/components/EscolasClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function EscolasPage() {
   const escolas = await prisma.escola.findMany({
     include: { unidades: { orderBy: { nome: "asc" } } },

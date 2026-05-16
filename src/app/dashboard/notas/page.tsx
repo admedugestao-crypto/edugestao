@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { ClipboardList } from "lucide-react";
 import NotasClient from "@/components/NotasClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function NotasPage() {
   const session = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;

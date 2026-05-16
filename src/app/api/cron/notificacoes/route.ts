@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processarNotificacoes, processarNotificacoesEmail } from "@/lib/notificacoes";
 
+export const dynamic = "force-dynamic";
+
 // Endpoint chamado pelo cron interno (instrumentation.ts) ou manualmente
 // WhatsApp e E-mail executam sequencialmente para evitar race condition no SQLite
 export async function POST(req: NextRequest) {

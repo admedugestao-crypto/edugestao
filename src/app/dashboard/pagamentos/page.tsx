@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { DollarSign } from "lucide-react";
 import PagamentosClient from "@/components/PagamentosClient";
 
+export const dynamic = "force-dynamic";
+
 /** Busca registros reais de pagamento do mês */
 async function buscarPagamentos(
   mes: number, ano: number,
