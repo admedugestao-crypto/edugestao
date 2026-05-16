@@ -1,5 +1,9 @@
 export const runtime = "nodejs";
+
 export async function register() {
+  // Não executa durante o build — DATABASE_URL não está disponível nessa fase
+  if (process.env.NEXT_PHASE === "phase-production-build") return;
+
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const cron = await import("node-cron");
     const { processarNotificacoes, processarNotificacoesEmail } = await import("./lib/notificacoes");
