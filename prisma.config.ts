@@ -7,6 +7,5 @@ export default defineConfig({
   },
   datasource: {
     url: "postgresql://postgres:EduGestao2026@db.kwabqdrmcomnlrjvipiy.supabase.co:5432/postgres",
-    directUrl: "postgresql://postgres:EduGestao2026@db.kwabqdrmcomnlrjvipiy.supabase.co:5432/postgres",
   },
 });
