@@ -1,9 +1,15 @@
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
 function createPrismaClient(): PrismaClient {
-  return new PrismaClient();
+  const connectionString =
+    process.env.DATABASE_URL ??
+    "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
+  const adapter = new PrismaPg({ connectionString });
+  // @ts-ignore — PrismaClient aceita adapter no Prisma 7
+  return new PrismaClient({ adapter });
 }
 
 // Proxy lazy — new PrismaClient() só é chamado no primeiro acesso real
