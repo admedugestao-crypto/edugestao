@@ -1,20 +1,25 @@
 import { PrismaClient } from "@/generated/prisma/client";
 
-// Durante o build na Vercel, DATABASE_URL não existe no process.env real.
-// Prisma 7.x lança PrismaClientInitializationError no CONSTRUTOR se a URL
-// estiver ausente — isso impede o carregamento de qualquer módulo que importe
-// este arquivo, mesmo com export const dynamic = "force-dynamic".
-// Solução: garantir um URL sintaticamente válido antes de instanciar o cliente.
-// Em produção a variável real da Vercel já estará definida, então este bloco
-// não é executado e o comportamento não muda.
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL =
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
+
+function createPrismaClient(): PrismaClient {
+  const url =
+    process.env.DATABASE_URL ??
     "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
+  // @ts-ignore — Prisma 7 "prisma-client" provider aceita datasourceUrl
+  return new PrismaClient({ datasourceUrl: url });
 }
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-
-// @ts-ignore
-export const prisma = globalForPrisma.prisma || new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// Proxy lazy — new PrismaClient() só é chamado no primeiro acesso real
+// (durante uma requisição), NUNCA durante a avaliação do módulo (build time).
+// Isso evita o PrismaClientInitializationError na fase "Collecting page data".
+export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_, prop: string | symbol) {
+    if (!globalForPrisma.prisma) {
+      globalForPrisma.prisma = createPrismaClient();
+    }
+    const client = globalForPrisma.prisma!;
+    const value = (client as any)[prop];
+    return typeof value === "function" ? (value as Function).bind(client) : value;
+  },
+});
