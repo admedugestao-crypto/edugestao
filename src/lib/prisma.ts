@@ -3,15 +3,12 @@ import { PrismaClient } from "@/generated/prisma/client";
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
 function createPrismaClient(): PrismaClient {
-  const url =
-    process.env.DATABASE_URL ??
-    "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
-  // @ts-ignore — Prisma 7 "prisma-client" provider aceita datasourceUrl
-  return new PrismaClient({ datasourceUrl: url });
+  // @ts-ignore — Prisma 7 "prisma-client" provider lê DATABASE_URL do ambiente
+  return new PrismaClient();
 }
 
-// Proxy lazy — new PrismaClient() só é chamado no primeiro acesso real
-// (durante uma requisição), NUNCA durante a avaliação do módulo (build time).
+// Proxy lazy — new PrismaClient() é chamado APENAS no primeiro acesso real
+// (durante uma requisição HTTP), NUNCA durante a avaliação do módulo no build.
 // Isso evita o PrismaClientInitializationError na fase "Collecting page data".
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
   get(_, prop: string | symbol) {
