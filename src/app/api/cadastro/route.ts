@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       nome,
       email,
       senhaHash,
-      perfil: "PROFESSORA",
+      perfil: "SUPERADMIN",
       professora: { create: {} },
     },
   });
