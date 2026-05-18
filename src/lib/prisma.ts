@@ -1,15 +1,13 @@
-import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaClient } from "@/generated/prisma";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
 function createPrismaClient(): PrismaClient {
-  // @ts-ignore — Prisma 7 "prisma-client" provider lê DATABASE_URL do ambiente
   return new PrismaClient();
 }
 
-// Proxy lazy — new PrismaClient() é chamado APENAS no primeiro acesso real
-// (durante uma requisição HTTP), NUNCA durante a avaliação do módulo no build.
-// Isso evita o PrismaClientInitializationError na fase "Collecting page data".
+// Proxy lazy — new PrismaClient() só é chamado no primeiro acesso real
+// (durante requisição HTTP), NUNCA durante a avaliação do módulo no build.
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
   get(_, prop: string | symbol) {
     if (!globalForPrisma.prisma) {
