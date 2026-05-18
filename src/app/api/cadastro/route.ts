@@ -4,6 +4,11 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+export async function GET() {
+  const total = await prisma.usuario.count();
+  return NextResponse.json({ configurado: total > 0 });
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { nome, email, senha } = body;
@@ -14,6 +19,15 @@ export async function POST(req: NextRequest) {
 
   if (senha.length < 6) {
     return NextResponse.json({ erro: "A senha deve ter pelo menos 6 caracteres." }, { status: 400 });
+  }
+
+  // Guarda de primeiro acesso: só permite criar o primeiro usuário (SUPERADMIN)
+  const totalUsuarios = await prisma.usuario.count();
+  if (totalUsuarios > 0) {
+    return NextResponse.json(
+      { erro: "O sistema já foi configurado. Entre em contato com o administrador." },
+      { status: 403 }
+    );
   }
 
   const existente = await prisma.usuario.findUnique({ where: { email } });
@@ -29,7 +43,6 @@ export async function POST(req: NextRequest) {
       email,
       senhaHash,
       perfil: "SUPERADMIN",
-      professora: { create: {} },
     },
   });
 

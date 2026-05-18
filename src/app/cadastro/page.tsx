@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -9,6 +9,18 @@ export default function CadastroPage() {
   const [form, setForm] = useState({ nome: "", email: "", senha: "", confirmar: "" });
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [verificando, setVerificando] = useState(true);
+  const [jaConfigurado, setJaConfigurado] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/cadastro")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configurado) setJaConfigurado(true);
+      })
+      .catch(() => {})
+      .finally(() => setVerificando(false));
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,6 +49,36 @@ export default function CadastroPage() {
     router.push("/login?cadastro=ok");
   }
 
+  if (verificando) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <p className="text-slate-500 text-sm">Verificando...</p>
+      </div>
+    );
+  }
+
+  if (jaConfigurado) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-600 text-white text-2xl font-bold mb-4">
+            E
+          </div>
+          <h1 className="text-xl font-bold text-slate-800 mb-2">Sistema já configurado</h1>
+          <p className="text-slate-500 text-sm mb-6">
+            O administrador do sistema já foi criado. Entre com sua conta ou fale com o administrador para obter acesso.
+          </p>
+          <Link
+            href="/login"
+            className="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
+          >
+            Ir para o login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
@@ -44,8 +86,8 @@ export default function CadastroPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-600 text-white text-2xl font-bold mb-3">
             E
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">Criar conta</h1>
-          <p className="text-slate-500 text-sm mt-1">EduGestão · Gestão de alunos</p>
+          <h1 className="text-2xl font-bold text-slate-800">Configuração inicial</h1>
+          <p className="text-slate-500 text-sm mt-1">Crie a conta de administrador do sistema</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
