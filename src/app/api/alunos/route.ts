@@ -31,13 +31,16 @@ export async function POST(req: NextRequest) {
   const perfil = (session.user as any).perfil as string;
   const sessionProfessoraId = (session.user as any).professoraId as string | null;
 
-  // Admin pode escolher qualquer professora via form; professora usa a própria
   const form = await req.formData();
-  const professoraId = perfil === "SUPERADMIN"
-    ? (form.get("professoraId") as string | null) ?? sessionProfessoraId
+
+  // Admin pode escolher qualquer professora via form (ou deixar sem professor)
+  // Professora usa sempre a própria
+  const professoraId: string | null = perfil === "SUPERADMIN"
+    ? (form.get("professoraId") as string | null) || null
     : sessionProfessoraId;
 
-  if (!professoraId) return NextResponse.json({ erro: "Sem perfil de professora vinculado." }, { status: 403 });
+  if (perfil !== "SUPERADMIN" && !professoraId)
+    return NextResponse.json({ erro: "Sem perfil de professora vinculado." }, { status: 403 });
 
   let fotoUrl: string | null = null;
   const foto = form.get("foto") as File | null;
@@ -56,7 +59,7 @@ export async function POST(req: NextRequest) {
   try {
     const aluno = await prisma.aluno.create({
       data: {
-        professoraId,
+        ...(professoraId ? { professoraId } : {}),
         unidadeId: form.get("unidadeId") as string,
         nome: form.get("nome") as string,
         dataNascimento: dataNasc ? new Date(dataNasc) : null,

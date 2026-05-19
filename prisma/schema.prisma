@@ -186,7 +186,7 @@ model NotificacaoProva {
 
 model Aluno {
   id                  String      @id @default(cuid())
-  professoraId        String
+  professoraId        String?
   unidadeId           String
   nome                String
   dataNascimento      DateTime?
@@ -218,7 +218,7 @@ model Aluno {
   criadoEm           DateTime    @default(now())
   atualizadoEm        DateTime    @updatedAt
 
-  professora  Professora     @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  professora  Professora?    @relation(fields: [professoraId], references: [id], onDelete: SetNull)
   unidade     Unidade        @relation(fields: [unidadeId], references: [id])
   materias    AlunoMateria[]
   notas       Nota[]
