@@ -6,14 +6,21 @@ export const dynamic = "force-dynamic";
 
 export default async function NovoAlunoPage() {
   const session = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
+  const perfil = (session?.user as any)?.perfil as string;
+  const isAdmin = perfil === "SUPERADMIN";
 
-  const [escolas, materias] = await Promise.all([
+  const [escolas, materias, professoras] = await Promise.all([
     prisma.escola.findMany({
       include: { unidades: { orderBy: { nome: "asc" } } },
       orderBy: { nome: "asc" },
     }),
     prisma.materia.findMany({ orderBy: { nome: "asc" } }),
+    isAdmin
+      ? prisma.professora.findMany({
+          include: { usuario: { select: { nome: true } } },
+          orderBy: { usuario: { nome: "asc" } },
+        })
+      : Promise.resolve([]),
   ]);
 
   return (
@@ -22,7 +29,12 @@ export default async function NovoAlunoPage() {
         <h1 className="text-xl font-bold text-slate-800">Novo Aluno</h1>
         <p className="text-slate-500 text-sm mt-1">Preencha os dados do aluno</p>
       </div>
-      <AlunoForm escolas={escolas} materias={materias} />
+      <AlunoForm
+        escolas={escolas}
+        materias={materias}
+        professoras={professoras}
+        perfil={perfil}
+      />
     </div>
   );
 }

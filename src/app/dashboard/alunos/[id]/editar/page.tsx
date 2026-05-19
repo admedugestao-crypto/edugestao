@@ -11,10 +11,11 @@ export default async function EditarAlunoPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
+  const perfil = (session?.user as any)?.perfil as string;
+  const isAdmin = perfil === "SUPERADMIN";
   const { id } = await params;
 
-  const [aluno, escolas, materias] = await Promise.all([
+  const [aluno, escolas, materias, professoras] = await Promise.all([
     prisma.aluno.findUnique({
       where: { id },
       include: {
@@ -27,6 +28,12 @@ export default async function EditarAlunoPage({
       orderBy: { nome: "asc" },
     }),
     prisma.materia.findMany({ orderBy: { nome: "asc" } }),
+    isAdmin
+      ? prisma.professora.findMany({
+          include: { usuario: { select: { nome: true } } },
+          orderBy: { usuario: { nome: "asc" } },
+        })
+      : Promise.resolve([]),
   ]);
 
   if (!aluno) notFound();
@@ -47,6 +54,8 @@ export default async function EditarAlunoPage({
         escolas={escolas}
         materias={materias}
         alunoInicial={alunoInicial}
+        professoras={professoras}
+        perfil={perfil}
       />
     </div>
   );

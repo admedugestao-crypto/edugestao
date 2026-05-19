@@ -36,6 +36,7 @@ export async function PUT(
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
+  const perfil = (session.user as any).perfil as string;
   const { id } = await params;
   const form = await req.formData();
 
@@ -59,9 +60,15 @@ export async function PUT(
     await prisma.alunoMateria.deleteMany({ where: { alunoId: id } });
 
 
+    // Admin pode reatribuir professor; outros não alteram
+    const professoraIdNovo = perfil === "SUPERADMIN" && form.get("professoraId")
+      ? (form.get("professoraId") as string)
+      : undefined;
+
     const aluno = await prisma.aluno.update({
       where: { id },
       data: {
+        ...(professoraIdNovo && { professoraId: professoraIdNovo }),
         unidadeId: form.get("unidadeId") as string,
         nome: form.get("nome") as string,
         dataNascimento: dataNasc ? new Date(dataNasc) : null,

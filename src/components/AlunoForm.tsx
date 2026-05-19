@@ -12,15 +12,20 @@ type Escola = {
   unidades: { id: string; nome: string }[];
 };
 type Materia = { id: string; nome: string; cor: string };
+type Professora = { id: string; usuario: { nome: string } };
 
 export default function AlunoForm({
   escolas,
   materias,
   alunoInicial,
+  professoras = [],
+  perfil,
 }: {
   escolas: Escola[];
   materias: Materia[];
   alunoInicial?: any;
+  professoras?: Professora[];
+  perfil?: string;
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -394,6 +399,26 @@ export default function AlunoForm({
               <option value="ENCERRADO">Encerrado</option>
             </select>
           </div>
+          {perfil === "SUPERADMIN" && professoras.length > 0 && (
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Professor(a) *
+              </label>
+              <select
+                name="professoraId"
+                required
+                defaultValue={alunoInicial?.professoraId ?? ""}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">Selecione o(a) professor(a)…</option>
+                {professoras.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.usuario.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 

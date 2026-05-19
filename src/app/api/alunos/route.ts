@@ -28,10 +28,16 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
-  const professoraId = (session.user as any).professoraId;
-  if (!professoraId) return NextResponse.json({ erro: "Sem perfil de professora" }, { status: 403 });
+  const perfil = (session.user as any).perfil as string;
+  const sessionProfessoraId = (session.user as any).professoraId as string | null;
 
+  // Admin pode escolher qualquer professora via form; professora usa a própria
   const form = await req.formData();
+  const professoraId = perfil === "SUPERADMIN"
+    ? (form.get("professoraId") as string | null) ?? sessionProfessoraId
+    : sessionProfessoraId;
+
+  if (!professoraId) return NextResponse.json({ erro: "Sem perfil de professora vinculado." }, { status: 403 });
 
   let fotoUrl: string | null = null;
   const foto = form.get("foto") as File | null;
