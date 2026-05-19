@@ -72,8 +72,7 @@ export default function AlunoForm({
       setExcluindo(false);
       return;
     }
-    router.push("/dashboard/alunos");
-    router.refresh();
+    window.location.href = "/dashboard/alunos";
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -111,8 +110,8 @@ export default function AlunoForm({
         return;
       }
 
-      router.push("/dashboard/alunos");
-      router.refresh();
+      // Navegação completa para garantir dados frescos (sem cache do router)
+      window.location.href = "/dashboard/alunos";
     } catch (err) {
       setErro("Falha de comunicação com o servidor.");
       setSalvando(false);
