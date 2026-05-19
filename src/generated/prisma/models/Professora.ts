@@ -389,10 +389,12 @@ export type ProfessoraCreateNestedOneWithoutAlunosInput = {
   connect?: Prisma.ProfessoraWhereUniqueInput
 }
 
-export type ProfessoraUpdateOneRequiredWithoutAlunosNestedInput = {
+export type ProfessoraUpdateOneWithoutAlunosNestedInput = {
   create?: Prisma.XOR<Prisma.ProfessoraCreateWithoutAlunosInput, Prisma.ProfessoraUncheckedCreateWithoutAlunosInput>
   connectOrCreate?: Prisma.ProfessoraCreateOrConnectWithoutAlunosInput
   upsert?: Prisma.ProfessoraUpsertWithoutAlunosInput
+  disconnect?: Prisma.ProfessoraWhereInput | boolean
+  delete?: Prisma.ProfessoraWhereInput | boolean
   connect?: Prisma.ProfessoraWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfessoraUpdateToOneWithWhereWithoutAlunosInput, Prisma.ProfessoraUpdateWithoutAlunosInput>, Prisma.ProfessoraUncheckedUpdateWithoutAlunosInput>
 }

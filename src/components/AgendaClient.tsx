@@ -30,7 +30,7 @@ type SemAgendaDet = {
 type AlunoOpt = {
   id: string; nome: string; serie: string; turma: string | null;
   diaSemana: number | null;
-  professoraId: string;
+  professoraId: string | null;
   materias: Materia[];
 };
 

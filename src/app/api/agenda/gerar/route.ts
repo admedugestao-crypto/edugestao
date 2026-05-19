@@ -84,7 +84,9 @@ export async function POST(req: NextRequest) {
   const conflitosLista: ConflitoDet[] = [];
 
   for (const aluno of alunos) {
-    const profId         = professoraId ?? aluno.professoraId;
+    const profId = professoraId ?? aluno.professoraId;
+    if (!profId) continue; // aluno sem professor não gera agenda
+
     const diaSemanaAluno = aluno.diaSemana!;
     const materiaId      = aluno.materias[0]?.materiaId ?? null;
 
@@ -111,7 +113,7 @@ export async function POST(req: NextRequest) {
 
       const aulasNoDia = await prisma.agendaAula.findMany({
         where: {
-          professoraId: profId,
+          professoraId: profId!,
           data: { gte: rangeGte, lt: rangeLt },
         },
         select: {
@@ -148,7 +150,7 @@ export async function POST(req: NextRequest) {
         } else {
           await prisma.agendaAula.create({
             data: {
-              professoraId: profId,
+              professoraId: profId!,
               alunoId:      aluno.id,
               materiaId,
               data:         dataUTC,
@@ -162,7 +164,7 @@ export async function POST(req: NextRequest) {
       } else {
         await prisma.agendaAula.create({
           data: {
-            professoraId: profId,
+            professoraId: profId!,
             alunoId:      aluno.id,
             materiaId,
             data:         dataUTC,

@@ -1711,6 +1711,8 @@ export const AlunoScalarFieldEnum = {
   diaPagamento2: 'diaPagamento2',
   diaSemana: 'diaSemana',
   horaAula: 'horaAula',
+  dataInicioContrato: 'dataInicioContrato',
+  dataFimContrato: 'dataFimContrato',
   criadoEm: 'criadoEm',
   atualizadoEm: 'atualizadoEm'
 } as const
