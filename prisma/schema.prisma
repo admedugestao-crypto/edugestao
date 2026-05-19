@@ -212,6 +212,9 @@ model Aluno {
   diaPagamento2       Int?        // 2ª parcela (apenas QUINZENAL)
   diaSemana           Int?        // 0=Dom … 6=Sáb
   horaAula            String?     // "14:00" — horário fixo de início da aula
+  // ── Período contratual ───────────────────────────────────────────────
+  dataInicioContrato  DateTime?
+  dataFimContrato     DateTime?
   criadoEm           DateTime    @default(now())
   atualizadoEm        DateTime    @updatedAt
 

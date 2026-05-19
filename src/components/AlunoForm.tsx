@@ -594,6 +594,43 @@ export default function AlunoForm({
         </div>
       </div>
 
+      {/* Período contratual */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <CalendarDays size={17} className="text-indigo-600" />
+          <h2 className="font-semibold text-slate-800">Período contratual</h2>
+          <span className="text-xs text-slate-400 ml-1">(opcional)</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Data de início</label>
+            <input
+              type="date"
+              name="dataInicioContrato"
+              defaultValue={
+                alunoInicial?.dataInicioContrato
+                  ? new Date(alunoInicial.dataInicioContrato).toISOString().split("T")[0]
+                  : ""
+              }
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Data de término</label>
+            <input
+              type="date"
+              name="dataFimContrato"
+              defaultValue={
+                alunoInicial?.dataFimContrato
+                  ? new Date(alunoInicial.dataFimContrato).toISOString().split("T")[0]
+                  : ""
+              }
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Observações */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <label className="block text-xs font-medium text-slate-600 mb-2">

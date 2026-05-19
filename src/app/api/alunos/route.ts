@@ -81,6 +81,8 @@ export async function POST(req: NextRequest) {
         diaPagamento2: form.get("diaPagamento2") ? parseInt(form.get("diaPagamento2") as string) : null,
         diaSemana:     form.get("diaSemana") !== null && form.get("diaSemana") !== "" ? parseInt(form.get("diaSemana") as string) : null,
         horaAula:     (form.get("horaAula") as string) || null,
+        dataInicioContrato: form.get("dataInicioContrato") ? new Date(form.get("dataInicioContrato") as string) : null,
+        dataFimContrato:    form.get("dataFimContrato")    ? new Date(form.get("dataFimContrato")    as string) : null,
         materias: { create: materias.map((mid) => ({ materiaId: mid })) },
       },
     });
