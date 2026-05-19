@@ -51,20 +51,26 @@ export default async function AlunosPage({
   const mesAtual = hoje.getMonth() + 1;
   const anoAtual = hoje.getFullYear();
 
-  const alunos = await prisma.aluno.findMany({
-    where: {
-      ...(professoraId ? { professoraId } : {}),
-      status: status as any,
-      ...filtroWhere(campo, q),
-    },
-    include: {
-      unidade: { include: { escola: true } },
-      materias: { include: { materia: true } },
-      pagamentos: { where: { mes: mesAtual, ano: anoAtual } },
-      ...(isAdmin ? { professora: { include: { usuario: { select: { nome: true } } } } } : {}),
-    },
-    orderBy: { nome: "asc" },
-  });
+  let alunos: any[] = [];
+  try {
+    alunos = await prisma.aluno.findMany({
+      where: {
+        ...(professoraId ? { professoraId } : {}),
+        status: status as any,
+        ...filtroWhere(campo, q),
+      },
+      include: {
+        unidade: { include: { escola: true } },
+        materias: { include: { materia: true } },
+        pagamentos: { where: { mes: mesAtual, ano: anoAtual } },
+        ...(isAdmin ? { professora: { include: { usuario: { select: { nome: true } } } } } : {}),
+      },
+      orderBy: { nome: "asc" },
+    });
+    console.log("[alunos] encontrados:", alunos.length, "| status filter:", status);
+  } catch (err: any) {
+    console.error("[alunos] ERRO na query:", err?.message ?? err);
+  }
 
   return (
     <div className="space-y-5">
