@@ -51,9 +51,6 @@ export default async function AlunosPage({
   const mesAtual = hoje.getMonth() + 1;
   const anoAtual = hoje.getFullYear();
 
-  const totalAlunos = await prisma.aluno.count();
-  console.log("[AlunosPage] total no banco:", totalAlunos, "| perfil:", perfil, "| professoraId:", professoraId);
-
   const alunos = await prisma.aluno.findMany({
     where: {
       ...(professoraId ? { professoraId } : {}),
