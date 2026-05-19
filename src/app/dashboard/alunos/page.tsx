@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
@@ -35,6 +36,8 @@ export default async function AlunosPage({
 }: {
   searchParams: Promise<{ q?: string; status?: string; campo?: string }>;
 }) {
+  noStore(); // desabilita completamente qualquer cache Next.js
+
   const session = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;
   const perfil = (session?.user as any)?.perfil as string | undefined;
