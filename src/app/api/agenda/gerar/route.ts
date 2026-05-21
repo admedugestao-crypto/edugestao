@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
     where: { ...whereBase, diaSemana: { not: null }, horaAula: { not: null } },
     select: {
       id: true, nome: true, professoraId: true, diaSemana: true, horaAula: true,
+      dataInicioContrato: true, dataFimContrato: true,
       materias: { select: { materiaId: true } },
     },
   });
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
       ...whereBase,
       OR: [{ diaSemana: null }, { horaAula: null }],
     },
-    select: { nome: true, diaSemana: true, horaAula: true },
+    select: { nome: true, diaSemana: true, horaAula: true, dataFimContrato: true },
   });
 
   const semAgendaLista: SemAgendaDet[] = alunosSemAgenda.map((a) => {
@@ -97,12 +98,33 @@ export async function POST(req: NextRequest) {
       horaFim = `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
     }
 
-    let dataAula = new Date(inicio);
+    // Respeita o período contratual do aluno
+    // Início: o mais tardio entre (inicio da semana selecionada) e (dataInicioContrato)
+    let inicioAluno = new Date(inicio);
+    if (aluno.dataInicioContrato) {
+      const contratoInicio = new Date(aluno.dataInicioContrato);
+      contratoInicio.setHours(0, 0, 0, 0);
+      if (contratoInicio > inicioAluno) inicioAluno = contratoInicio;
+    }
+
+    // Fim: o mais cedo entre (fim do ano) e (dataFimContrato)
+    let fimAluno = fimAnoInt;
+    if (aluno.dataFimContrato) {
+      const contratoFim = new Date(aluno.dataFimContrato);
+      contratoFim.setHours(0, 0, 0, 0);
+      const contratoFimInt = toInt(contratoFim);
+      if (contratoFimInt < fimAluno) fimAluno = contratoFimInt;
+    }
+
+    // Se o período contratual já encerrou antes do início, pula o aluno
+    if (toInt(inicioAluno) > fimAluno) continue;
+
+    let dataAula = new Date(inicioAluno);
     while (dataAula.getDay() !== diaSemanaAluno) {
       dataAula.setDate(dataAula.getDate() + 1);
     }
 
-    while (toInt(dataAula) <= fimAnoInt) {
+    while (toInt(dataAula) <= fimAluno) {
       const dY = dataAula.getFullYear();
       const dM = dataAula.getMonth();
       const dD = dataAula.getDate();
