@@ -9,11 +9,12 @@ export default async function AgendaPage() {
   const session      = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;
   const perfil       = (session?.user as any)?.perfil as string;
-  const isProfessor  = !!professoraId;
+  const isAdmin      = perfil === "SUPERADMIN";
+  const isProfessor  = !isAdmin && !!professoraId;
 
-  // Busca alunos ativos (filtrado por professor se for professora)
+  // Busca alunos ativos (filtrado por professor se for professora, admin vê todos)
   const alunos = await prisma.aluno.findMany({
-    where: { status: "ATIVO", ...(isProfessor ? { professoraId } : {}) },
+    where: { status: "ATIVO", ...(!isAdmin && professoraId ? { professoraId } : {}) },
     select: {
       id: true, nome: true, serie: true, turma: true, diaSemana: true,
       professoraId: true,
