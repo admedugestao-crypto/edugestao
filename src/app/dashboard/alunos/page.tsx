@@ -55,7 +55,7 @@ export default async function AlunosPage({
   try {
     alunos = await prisma.aluno.findMany({
       where: {
-        ...(professoraId ? { professoraId } : {}),
+        ...(!isAdmin && professoraId ? { professoraId } : {}),
         status: status as any,
         ...filtroWhere(campo, q),
       },
