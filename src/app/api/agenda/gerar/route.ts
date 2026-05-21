@@ -91,7 +91,10 @@ export async function POST(req: NextRequest) {
   const conflitosLista: ConflitoDet[] = [];
 
   for (const aluno of alunos) {
-    const profId = professoraId ?? aluno.professoraId;
+    // Admin sempre usa o professor do aluno; professora usa o próprio ID da sessão
+    const profId = perfil === "SUPERADMIN"
+      ? aluno.professoraId
+      : (professoraId ?? aluno.professoraId);
     if (!profId) continue; // aluno sem professor não gera agenda
 
     const diaSemanaAluno = aluno.diaSemana!;
