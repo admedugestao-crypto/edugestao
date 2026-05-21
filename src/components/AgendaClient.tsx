@@ -127,6 +127,9 @@ export default function AgendaClient({
   const [msgGerar, setMsgGerar]           = useState<string | null>(null);
   const [conflitosModal,  setConflitosModal]  = useState<ConflitoDet[]>([]);
   const [semAgendaModal,  setSemAgendaModal]  = useState<SemAgendaDet[]>([]);
+  // Modal seleção de professor para admin gerar agenda
+  const [modalGerarAberto, setModalGerarAberto] = useState(false);
+  const [gerarProfId, setGerarProfId]           = useState("");
 
   // Excluir em lote
   const [modalLimpar, setModalLimpar]   = useState(false);
@@ -181,16 +184,28 @@ export default function AgendaClient({
   }
 
   // ── Gerar semana ───────────────────────────────────────────────────────────
-  async function gerarSemana() {
+  function abrirModalGerar() {
+    if (!isProfessor) {
+      setGerarProfId("");
+      setModalGerarAberto(true);
+    } else {
+      gerarSemana(null);
+    }
+  }
+
+  async function gerarSemana(profId: string | null) {
+    setModalGerarAberto(false);
     setGerando(true); setMsgGerar(null);
     try {
       // Usa data local (não UTC) para evitar shift de fuso horário
       const fmtLocal = (d: Date) =>
         `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      const body: Record<string, string> = { semanaInicio: fmtLocal(semanaRef) };
+      if (profId) body.professoraId = profId;
       const res  = await fetch("/api/agenda/gerar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ semanaInicio: fmtLocal(semanaRef) }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -406,7 +421,7 @@ export default function AgendaClient({
 
         {/* Ações */}
         {vista === "semana" && (
-          <button onClick={gerarSemana} disabled={gerando}
+          <button onClick={abrirModalGerar} disabled={gerando}
             title="Gera todas as aulas recorrentes a partir de hoje até 31/12"
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-50">
             {gerando ? <RefreshCw size={13} className="animate-spin"/> : <Zap size={13}/>}
@@ -642,6 +657,45 @@ export default function AgendaClient({
                 className="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg transition-colors">
                 {salvando && <RefreshCw size={13} className="animate-spin"/>}
                 Salvar
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* ── Modal Gerar Agenda (seleção de professor para admin) ─────────── */}
+      {modalGerarAberto && (
+        <Modal titulo="Gerar agenda" onClose={() => setModalGerarAberto(false)}>
+          <div className="space-y-4">
+            <p className="text-xs text-slate-500">
+              Selecione o(a) professor(a) para gerar as aulas recorrentes até 31/12.
+              Deixe em branco para gerar para <strong>todos os professores</strong>.
+            </p>
+            <div>
+              <label className="text-xs font-medium text-slate-600">Professor(a)</label>
+              <select
+                value={gerarProfId}
+                onChange={(e) => setGerarProfId(e.target.value)}
+                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">Todos os professores</option>
+                {professoras.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                onClick={() => setModalGerarAberto(false)}
+                className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => gerarSemana(gerarProfId || null)}
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+              >
+                <Zap size={13}/> Gerar
               </button>
             </div>
           </div>

@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
   const professoraId = (session.user as any)?.professoraId as string | null;
   const perfil       = (session.user as any)?.perfil as string;
 
-  const { semanaInicio } = await req.json() as { semanaInicio: string };
+  const body = await req.json() as { semanaInicio: string; professoraId?: string };
+  const { semanaInicio } = body;
+  const professoraIdBody = body.professoraId ?? null; // Admin pode passar professoraId específica
   if (!semanaInicio) return NextResponse.json({ erro: "semanaInicio é obrigatório" }, { status: 400 });
 
   const [ay, am, ad] = semanaInicio.split("-").map(Number);
@@ -46,8 +48,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ criadas: 0, ignoradas: 0, conflitos: [], semAgenda: [] });
 
   const whereBase: any = { status: "ATIVO" };
-  if (professoraId) whereBase.professoraId = professoraId;
-  else if (perfil !== "SUPERADMIN") {
+  if (perfil === "SUPERADMIN") {
+    // Admin pode filtrar por professora específica ou gerar para todas
+    if (professoraIdBody) whereBase.professoraId = professoraIdBody;
+  } else if (professoraId) {
+    whereBase.professoraId = professoraId;
+  } else {
     return NextResponse.json({ erro: "Sem permissão para gerar agenda." }, { status: 403 });
   }
 
