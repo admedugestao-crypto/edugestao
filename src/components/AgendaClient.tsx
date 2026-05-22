@@ -338,6 +338,15 @@ export default function AgendaClient({
 
   // ── Atualizar status ───────────────────────────────────────────────────────
   async function atualizarStatus(id: string, status: StatusAula) {
+    // Bloqueia alteração de status em aulas futuras
+    if (aulaDetalhe) {
+      const dataAula = parseLocal(aulaDetalhe.data);
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+      if (dataAula > hoje) {
+        setErroStatus("Não é possível alterar o status de uma aula futura.");
+        return;
+      }
+    }
     // Bloqueia "Realizada" sem conteúdo preenchido
     if (status === "REALIZADA" && !obsEdit.trim()) {
       setErroStatus("Informe o conteúdo da aula antes de marcá-la como Realizada.");
@@ -854,25 +863,39 @@ export default function AgendaClient({
             {/* Status rápido */}
             <div>
               <p className="text-xs font-medium text-slate-500 mb-2">Status</p>
-              <div className="flex flex-wrap gap-1.5">
-                {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => (
-                  <button key={s} disabled={atualizando}
-                    onClick={() => atualizarStatus(aulaDetalhe.id, s)}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
-                      aulaDetalhe.status === s
-                        ? `${STATUS_CONFIG[s].bg} ${STATUS_CONFIG[s].cor} border-current`
-                        : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
-                    }`}>
-                    {STATUS_CONFIG[s].icon}
-                    {STATUS_CONFIG[s].label}
-                  </button>
-                ))}
-              </div>
-              {erroStatus && (
-                <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                  ⚠️ {erroStatus}
-                </p>
-              )}
+              {(() => {
+                const dataAula = parseLocal(aulaDetalhe.data);
+                const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+                const isFutura = dataAula > hoje;
+                return (
+                  <>
+                    {isFutura && (
+                      <p className="mb-2 text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2">
+                        🔒 Alteração de status disponível somente a partir da data da aula.
+                      </p>
+                    )}
+                    <div className={`flex flex-wrap gap-1.5 ${isFutura ? "opacity-40 pointer-events-none select-none" : ""}`}>
+                      {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => (
+                        <button key={s} disabled={atualizando || isFutura}
+                          onClick={() => atualizarStatus(aulaDetalhe.id, s)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                            aulaDetalhe.status === s
+                              ? `${STATUS_CONFIG[s].bg} ${STATUS_CONFIG[s].cor} border-current`
+                              : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                          }`}>
+                          {STATUS_CONFIG[s].icon}
+                          {STATUS_CONFIG[s].label}
+                        </button>
+                      ))}
+                    </div>
+                    {erroStatus && (
+                      <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                        ⚠️ {erroStatus}
+                      </p>
+                    )}
+                  </>
+                );
+              })()}
             </div>
 
             {/* Observação */}
