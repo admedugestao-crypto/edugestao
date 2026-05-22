@@ -64,15 +64,22 @@ export async function PUT(
       prisma.agendaAula.count({
         where: { alunoId: id, status: "AGENDADA", data: { gte: hoje } },
       }),
-      prisma.pagamento.count({
+      prisma.pagamento.findMany({
         where: { alunoId: id, pago: false },
+        select: { mes: true, ano: true },
+        orderBy: [{ ano: "asc" }, { mes: "asc" }],
       }),
     ]);
 
-    if (aulasAbertas > 0 || pagamentosAbertos > 0) {
+    if (aulasAbertas > 0 || pagamentosAbertos.length > 0) {
+      const MESES = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
       const motivos: string[] = [];
-      if (aulasAbertas    > 0) motivos.push(`${aulasAbertas} aula(s) agendada(s)`);
-      if (pagamentosAbertos > 0) motivos.push(`${pagamentosAbertos} pagamento(s) em aberto`);
+      if (aulasAbertas > 0)
+        motivos.push(`${aulasAbertas} aula(s) agendada(s)`);
+      if (pagamentosAbertos.length > 0) {
+        const periodos = pagamentosAbertos.map((p) => `${MESES[p.mes - 1]}/${p.ano}`).join(", ");
+        motivos.push(`${pagamentosAbertos.length} pagamento(s) em aberto (${periodos})`);
+      }
       return NextResponse.json(
         { erro: `Não é possível alterar o status: o aluno possui ${motivos.join(" e ")}.` },
         { status: 422 },

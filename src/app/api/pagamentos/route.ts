@@ -18,10 +18,13 @@ export async function GET(req: NextRequest) {
   if (!mes || !ano) return NextResponse.json({ erro: "mes e ano obrigatórios" }, { status: 400 });
 
   const professoraId = (session.user as any).professoraId as string | null;
+  const perfil       = (session.user as any).perfil       as string;
+  const isAdmin      = perfil === "SUPERADMIN";
 
   const where: any = { mes, ano };
-  if (alunoFiltro)  where.alunoId = alunoFiltro;
-  if (professoraId) where.aluno   = { ...(where.aluno ?? {}), professoraId };
+  if (alunoFiltro) where.alunoId = alunoFiltro;
+  // Admin vê pagamentos de todos os professores; professora vê só os próprios alunos
+  if (!isAdmin && professoraId) where.aluno = { ...(where.aluno ?? {}), professoraId };
 
   const pagamentos = await prisma.pagamento.findMany({
     where,
