@@ -43,14 +43,31 @@ export async function POST(req: NextRequest) {
       aluno: {
         select: {
           id: true, valorCobranca: true, diaPagamento: true,
+          dataInicioContrato: true, dataFimContrato: true,
         },
       },
     },
   });
 
-  // ── Agrupa por aluno ────────────────────────────────────────────────────────
+  // Limites do mês para verificação do período contratual
+  const primeiroDiaMes = new Date(Date.UTC(ano, mes - 1, 1));
+  const ultimoDiaMes   = new Date(Date.UTC(ano, mes, 0));   // último dia do mês
+
+  // ── Agrupa por aluno (respeita período contratual) ──────────────────────────
   const porAluno = new Map<string, { valorCobranca: number; diaPagamento: number | null; qtd: number }>();
   for (const aula of aulas) {
+    const { dataInicioContrato, dataFimContrato } = aula.aluno;
+
+    // Verifica se o contrato cobre algum dia do mês solicitado
+    if (dataFimContrato) {
+      const fimContrato = new Date(dataFimContrato); fimContrato.setUTCHours(0,0,0,0);
+      if (fimContrato < primeiroDiaMes) continue; // contrato encerrou antes do mês
+    }
+    if (dataInicioContrato) {
+      const inicioContrato = new Date(dataInicioContrato); inicioContrato.setUTCHours(0,0,0,0);
+      if (inicioContrato > ultimoDiaMes) continue; // contrato começa depois do mês
+    }
+
     const prev = porAluno.get(aula.alunoId);
     if (prev) {
       prev.qtd++;
