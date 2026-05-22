@@ -57,6 +57,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Sem permissão para gerar agenda." }, { status: 403 });
   }
 
+  console.log("[gerar] perfil:", perfil, "| whereBase:", JSON.stringify(whereBase), "| professoraIdBody:", professoraIdBody);
+
   // Alunos COM parâmetros de agenda → gerar aulas
   const alunos = await prisma.aluno.findMany({
     where: { ...whereBase, diaSemana: { not: null }, horaAula: { not: null } },
@@ -85,6 +87,9 @@ export async function POST(req: NextRequest) {
       :                          "Sem horário de aula";
     return { alunoNome: a.nome, motivo };
   });
+
+  console.log("[gerar] alunos com agenda:", alunos.length, "| semAgenda:", alunosSemAgenda.length);
+  alunos.forEach(a => console.log(`  → aluno: ${a.nome} | dia: ${a.diaSemana} | hora: ${a.horaAula} | prof: ${a.professoraId}`));
 
   let criadas   = 0;
   let ignoradas = 0;
