@@ -42,6 +42,50 @@ export default function AlunoForm({
   const [tipoCobranca, setTipoCobranca] = useState<string>(alunoInicial?.tipoCobranca ?? "");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
+
+  // ── Status controlado ──────────────────────────────────────────────────────
+  const [status, setStatus] = useState<string>(alunoInicial?.status ?? "PAUSADO");
+  const [erroStatusCad, setErroStatusCad] = useState("");
+
+  // ── Rastrear preenchimento dos campos obrigatórios (exceto foto) ──────────
+  const [campos, setCampos] = useState({
+    nome:                !!alunoInicial?.nome,
+    dataNascimento:      !!alunoInicial?.dataNascimento,
+    responsavel:         !!alunoInicial?.responsavel,
+    telefoneResponsavel: !!alunoInicial?.telefoneResponsavel,
+    emailResponsavel:    !!alunoInicial?.emailResponsavel,
+    cep:                 !!alunoInicial?.cep,
+    rua:                 !!alunoInicial?.rua,
+    numero:              !!alunoInicial?.numero,
+    bairro:              !!alunoInicial?.bairro,
+    cidade:              !!alunoInicial?.cidade,
+    estado:              !!alunoInicial?.estado,
+    unidadeId:           !!alunoInicial?.unidadeId,
+    serie:               !!alunoInicial?.serie,
+    turma:               !!alunoInicial?.turma,
+  });
+
+  function setCampo(key: keyof typeof campos) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setCampos((prev) => ({ ...prev, [key]: !!e.target.value.trim() }));
+  }
+
+  // Cadastro completo quando todos os campos rastreados estão preenchidos
+  // + escola selecionada + ao menos 1 matéria + tipo de cobrança definido
+  const cadastroCompleto =
+    Object.values(campos).every(Boolean) &&
+    !!escolaId &&
+    materiasSelected.length > 0 &&
+    !!tipoCobranca;
+
+  function handleStatusChange(val: string) {
+    if (val !== "PAUSADO" && !cadastroCompleto) {
+      setErroStatusCad("Preencha todos os campos obrigatórios para alterar o status.");
+      return;
+    }
+    setErroStatusCad("");
+    setStatus(val);
+  }
   const [dataInicio, setDataInicio] = useState<string>(
     alunoInicial?.dataInicioContrato
       ? new Date(alunoInicial.dataInicioContrato).toISOString().split("T")[0]
@@ -198,6 +242,7 @@ export default function AlunoForm({
               name="nome"
               required
               defaultValue={alunoInicial?.nome}
+              onChange={setCampo("nome")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -216,6 +261,7 @@ export default function AlunoForm({
                       .split("T")[0]
                   : ""
               }
+              onChange={setCampo("dataNascimento")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -227,6 +273,7 @@ export default function AlunoForm({
               name="responsavel"
               required
               defaultValue={alunoInicial?.responsavel}
+              onChange={setCampo("responsavel")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -238,6 +285,7 @@ export default function AlunoForm({
               name="telefoneResponsavel"
               required
               defaultValue={alunoInicial?.telefoneResponsavel}
+              onChange={setCampo("telefoneResponsavel")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -250,6 +298,7 @@ export default function AlunoForm({
               type="email"
               required
               defaultValue={alunoInicial?.emailResponsavel}
+              onChange={setCampo("emailResponsavel")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -270,6 +319,7 @@ export default function AlunoForm({
               required
               defaultValue={alunoInicial?.cep}
               placeholder="00000-000"
+              onChange={setCampo("cep")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -279,6 +329,7 @@ export default function AlunoForm({
               name="rua"
               required
               defaultValue={alunoInicial?.rua}
+              onChange={setCampo("rua")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -288,6 +339,7 @@ export default function AlunoForm({
               name="numero"
               required
               defaultValue={alunoInicial?.numero}
+              onChange={setCampo("numero")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -305,6 +357,7 @@ export default function AlunoForm({
               name="bairro"
               required
               defaultValue={alunoInicial?.bairro}
+              onChange={setCampo("bairro")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -314,6 +367,7 @@ export default function AlunoForm({
               name="cidade"
               required
               defaultValue={alunoInicial?.cidade}
+              onChange={setCampo("cidade")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -325,6 +379,7 @@ export default function AlunoForm({
               defaultValue={alunoInicial?.estado}
               maxLength={2}
               placeholder="SP"
+              onChange={setCampo("estado")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -365,6 +420,7 @@ export default function AlunoForm({
               name="unidadeId"
               required
               defaultValue={alunoInicial?.unidadeId}
+              onChange={setCampo("unidadeId")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Selecione...</option>
@@ -383,6 +439,7 @@ export default function AlunoForm({
               name="serie"
               required
               defaultValue={alunoInicial?.serie ?? ""}
+              onChange={setCampo("serie")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
               <option value="" disabled>Selecione a série</option>
@@ -402,6 +459,7 @@ export default function AlunoForm({
               required
               defaultValue={alunoInicial?.turma}
               placeholder="Ex: A"
+              onChange={setCampo("turma")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -409,13 +467,22 @@ export default function AlunoForm({
             <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
             <select
               name="status"
-              defaultValue={alunoInicial?.status ?? "ATIVO"}
+              value={status}
+              onChange={(e) => handleStatusChange(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="ATIVO">Ativo</option>
               <option value="PAUSADO">Pausado</option>
-              <option value="ENCERRADO">Encerrado</option>
+              <option value="ATIVO" disabled={!cadastroCompleto}>Ativo</option>
+              <option value="ENCERRADO" disabled={!cadastroCompleto}>Encerrado</option>
             </select>
+            {status === "PAUSADO" && !cadastroCompleto && (
+              <p className="text-xs text-amber-600 mt-1">
+                🔒 Preencha todos os campos obrigatórios para ativar o cadastro.
+              </p>
+            )}
+            {erroStatusCad && (
+              <p className="text-xs text-red-600 mt-1">⚠️ {erroStatusCad}</p>
+            )}
           </div>
           {perfil === "SUPERADMIN" && (
             <div>
