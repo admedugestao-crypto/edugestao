@@ -41,7 +41,12 @@ export async function GET(req: NextRequest) {
   const aulas = await prisma.agendaAula.findMany({
     where,
     include: {
-      aluno:      { select: { id: true, nome: true, serie: true, turma: true } },
+      aluno: {
+        select: {
+          id: true, nome: true, serie: true, turma: true,
+          materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
+        },
+      },
       materia:    { select: { id: true, nome: true, cor: true } },
       professora: { select: { usuario: { select: { nome: true } } } },
     },

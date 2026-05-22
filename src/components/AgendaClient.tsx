@@ -45,7 +45,7 @@ type Aula = {
   horaFim: string | null;
   status: StatusAula;
   observacao: string | null;
-  aluno:      { id: string; nome: string; serie: string; turma: string | null };
+  aluno:      { id: string; nome: string; serie: string; turma: string | null; materias: { materia: Materia }[] };
   materia:    Materia | null;
   professora: { usuario: { nome: string } };
 };
@@ -798,7 +798,19 @@ export default function AgendaClient({
             <div className="bg-slate-50 rounded-lg p-3 text-sm space-y-1">
               <p><span className="text-slate-400 text-xs">Data:</span> <span className="font-medium">{format(parseLocal(aulaDetalhe.data), "EEEE, dd/MM/yyyy", { locale: ptBR })}</span></p>
               <p><span className="text-slate-400 text-xs">Horário:</span> <span className="font-medium">{aulaDetalhe.horaInicio ?? "–"}{aulaDetalhe.horaFim ? ` → ${aulaDetalhe.horaFim}` : ""}</span></p>
-              <p><span className="text-slate-400 text-xs">Matéria:</span> <span className="font-medium">{aulaDetalhe.materia?.nome ?? "–"}</span></p>
+              <div className="flex items-start gap-1 flex-wrap">
+                <span className="text-slate-400 text-xs shrink-0">Matérias:</span>
+                {(aulaDetalhe.aluno.materias?.length ?? 0) > 0
+                  ? aulaDetalhe.aluno.materias.map((m) => (
+                      <span key={m.materia.id}
+                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-white"
+                        style={{ backgroundColor: m.materia.cor }}>
+                        {m.materia.nome}
+                      </span>
+                    ))
+                  : <span className="font-medium text-sm">–</span>
+                }
+              </div>
               <p><span className="text-slate-400 text-xs">Série:</span> <span className="font-medium">{aulaDetalhe.aluno.serie}{aulaDetalhe.aluno.turma ? ` · ${aulaDetalhe.aluno.turma}` : ""}</span></p>
               {!isProfessor && (
                 <p><span className="text-slate-400 text-xs">Professor(a):</span> <span className="font-medium">{aulaDetalhe.professora.usuario.nome}</span></p>
@@ -861,6 +873,7 @@ function CardAula({ aula, onClick, mostrarProfessora = false }: {
 }) {
   const cfg = STATUS_CONFIG[aula.status];
   const cor = aula.materia?.cor ?? corAluno(aula.alunoId);
+  const todasMaterias = aula.aluno.materias?.map((m) => m.materia) ?? [];
   return (
     <button onClick={onClick}
       className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm"
@@ -877,10 +890,17 @@ function CardAula({ aula, onClick, mostrarProfessora = false }: {
           {aula.horaInicio}{aula.horaFim ? ` – ${aula.horaFim}` : ""}
         </p>
       )}
-      {aula.materia && (
-        <p className="text-[10px] font-semibold mt-0.5 truncate" style={{ color: cor }}>
-          {aula.materia.nome}
-        </p>
+      {/* Todas as matérias do aluno */}
+      {todasMaterias.length > 0 && (
+        <div className="flex flex-wrap gap-0.5 mt-1">
+          {todasMaterias.map((m) => (
+            <span key={m.id}
+              className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full text-white leading-none"
+              style={{ backgroundColor: m.cor }}>
+              {m.nome}
+            </span>
+          ))}
+        </div>
       )}
       {mostrarProfessora && (
         <p className="text-[10px] text-slate-500 mt-0.5 truncate">
