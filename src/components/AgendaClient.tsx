@@ -263,8 +263,9 @@ export default function AgendaClient({
     setExcluindo(true);
     try {
       const body: Record<string, string> = { alunoId: limparAlunoId };
-      if (limparInicio) body.inicio = limparInicio;
-      if (limparFim)    body.fim    = limparFim;
+      if (limparInicio)  body.inicio      = limparInicio;
+      if (limparFim)     body.fim         = limparFim;
+      if (!isProfessor && limparProfId) body.professoraId = limparProfId;
       const res  = await fetch("/api/agenda", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

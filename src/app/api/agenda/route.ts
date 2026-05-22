@@ -72,8 +72,8 @@ export async function DELETE(req: NextRequest) {
   const perfil     = (session.user as any)?.perfil as string;
   const isAdmin    = perfil === "SUPERADMIN";
 
-  const { alunoId, inicio, fim } = await req.json() as {
-    alunoId?: string; inicio?: string; fim?: string;
+  const { alunoId, inicio, fim, professoraId: bodyProfId } = await req.json() as {
+    alunoId?: string; inicio?: string; fim?: string; professoraId?: string;
   };
 
   if (!alunoId)
@@ -84,8 +84,13 @@ export async function DELETE(req: NextRequest) {
 
   const where: any = { alunoId };
 
-  // Admin exclui aulas de todas as professoras; professora só as próprias
-  if (!isAdmin && sessProfId) where.professoraId = sessProfId;
+  if (isAdmin) {
+    // Admin pode filtrar por professora específica ou excluir de todas
+    if (bodyProfId) where.professoraId = bodyProfId;
+  } else {
+    // Professora só exclui as próprias aulas
+    where.professoraId = sessProfId;
+  }
 
   if (inicio || fim) {
     where.data = {};
