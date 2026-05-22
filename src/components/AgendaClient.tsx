@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, Plus, RefreshCw, X,
@@ -121,6 +121,8 @@ export default function AgendaClient({
   const [aulaDetalhe, setAulaDetalhe] = useState<Aula | null>(null);
   const [obsEdit, setObsEdit]         = useState("");
   const [atualizando, setAtualizando] = useState(false);
+  const [erroStatus, setErroStatus]   = useState<string | null>(null);
+  const obsRef = useRef<HTMLTextAreaElement>(null);
 
   // Filtro de professora (admin)
   const [filtroProfId, setFiltroProfId] = useState("");
@@ -336,6 +338,13 @@ export default function AgendaClient({
 
   // ── Atualizar status ───────────────────────────────────────────────────────
   async function atualizarStatus(id: string, status: StatusAula) {
+    // Bloqueia "Realizada" sem conteúdo preenchido
+    if (status === "REALIZADA" && !obsEdit.trim()) {
+      setErroStatus("Informe o conteúdo da aula antes de marcá-la como Realizada.");
+      setTimeout(() => obsRef.current?.focus(), 50);
+      return;
+    }
+    setErroStatus(null);
     setAtualizando(true);
     try {
       await fetch(`/api/agenda/${id}`, {
@@ -509,7 +518,10 @@ export default function AgendaClient({
               return (
                 <div key={i}
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
-                  {lista.map((aula) => <CardAula key={aula.id} aula={aula} mostrarProfessora={!isProfessor} onClick={() => { setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); }}/>)}
+                  {lista.map((aula) => <CardAula key={aula.id} aula={aula} mostrarProfessora={!isProfessor} onClick={() => {
+                    setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setErroStatus(null);
+                    if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
+                  }}/>)}
                   <button onClick={() => {
                     const d = dia;
                     const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -582,7 +594,10 @@ export default function AgendaClient({
                     {/* Status + editar */}
                     <div className="flex items-center gap-2 shrink-0 pr-5 py-4">
                       <BadgeStatus status={aula.status}/>
-                      <button onClick={() => { setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); }}
+                      <button onClick={() => {
+                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setErroStatus(null);
+                        if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
+                      }}
                         className="text-xs text-slate-400 hover:text-indigo-600 transition-colors underline">
                         editar
                       </button>
@@ -853,14 +868,31 @@ export default function AgendaClient({
                   </button>
                 ))}
               </div>
+              {erroStatus && (
+                <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  ⚠️ {erroStatus}
+                </p>
+              )}
             </div>
 
             {/* Observação */}
             <div>
-              <label className="text-xs font-medium text-slate-500 block mb-1">Observação / conteúdo da aula</label>
-              <textarea value={obsEdit} onChange={(e) => setObsEdit(e.target.value)} rows={3}
+              <label className="text-xs font-medium text-slate-500 block mb-1">
+                Observação / conteúdo da aula
+                {erroStatus && <span className="ml-1 text-amber-600">*</span>}
+              </label>
+              <textarea
+                ref={obsRef}
+                value={obsEdit}
+                onChange={(e) => { setObsEdit(e.target.value); if (e.target.value.trim()) setErroStatus(null); }}
+                rows={3}
                 placeholder="O que foi trabalhado na aula..."
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"/>
+                className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none transition-colors ${
+                  erroStatus
+                    ? "border-amber-400 focus:ring-amber-400 bg-amber-50"
+                    : "border-slate-200 focus:ring-indigo-500"
+                }`}
+              />
               <button onClick={salvarObservacao} disabled={atualizando || obsEdit === (aulaDetalhe.observacao ?? "")}
                 className="mt-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:opacity-40 transition-colors">
                 Salvar observação
