@@ -138,7 +138,7 @@ export default async function AlunosPage({
           </div>
         </div>
 
-        <AlunosTabela alunos={alunos as any} isAdmin={isAdmin} mes={mesAtual} ano={anoAtual} />
+        <AlunosTabela key={`${status}-${q}-${campo}`} alunos={alunos as any} isAdmin={isAdmin} mes={mesAtual} ano={anoAtual} />
       </div>
     </div>
   );
