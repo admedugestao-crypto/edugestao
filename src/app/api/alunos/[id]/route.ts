@@ -140,6 +140,41 @@ export async function DELETE(
 
   const { id } = await params;
 
+  // ── Bloqueia exclusão de aluno ativo ou com pendências ───────────────────
+  const aluno = await prisma.aluno.findUnique({
+    where: { id },
+    select: { status: true },
+  });
+
+  if (!aluno) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
+
+  if (aluno.status === "ATIVO") {
+    return NextResponse.json(
+      { erro: "Não é possível excluir um aluno com status Ativo. Pause ou encerre-o antes de excluir." },
+      { status: 422 },
+    );
+  }
+
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const [aulasAbertas, pagamentosAbertos] = await Promise.all([
+    prisma.agendaAula.count({
+      where: { alunoId: id, status: "AGENDADA", data: { gte: hoje } },
+    }),
+    prisma.pagamento.count({
+      where: { alunoId: id, pago: false },
+    }),
+  ]);
+
+  if (aulasAbertas > 0 || pagamentosAbertos > 0) {
+    const motivos: string[] = [];
+    if (aulasAbertas     > 0) motivos.push(`${aulasAbertas} aula(s) agendada(s)`);
+    if (pagamentosAbertos > 0) motivos.push(`${pagamentosAbertos} pagamento(s) em aberto`);
+    return NextResponse.json(
+      { erro: `Não é possível excluir: o aluno possui ${motivos.join(" e ")}.` },
+      { status: 422 },
+    );
+  }
+
   try {
     await prisma.aluno.delete({ where: { id } });
     return NextResponse.json({ ok: true });
