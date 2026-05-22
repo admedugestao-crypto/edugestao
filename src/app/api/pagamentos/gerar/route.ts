@@ -27,14 +27,18 @@ export async function POST(req: NextRequest) {
   const inicioMes = new Date(Date.UTC(ano, mes - 1, 1));
   const fimMes    = new Date(Date.UTC(ano, mes, 0, 23, 59, 59, 999));
 
+  const isAdmin = perfil === "SUPERADMIN";
+
+  if (!isAdmin && !professoraId)
+    return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
+
   // ── Busca aulas AGENDADAS do mês ────────────────────────────────────────────
   const whereAula: any = {
     status: "AGENDADA",
     data:   { gte: inicioMes, lte: fimMes },
   };
-  if (professoraId) whereAula.professoraId = professoraId;
-  else if (perfil !== "SUPERADMIN")
-    return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
+  // Admin vê aulas de todas as professoras; professora vê só as próprias
+  if (!isAdmin && professoraId) whereAula.professoraId = professoraId;
 
   const aulas = await prisma.agendaAula.findMany({
     where: whereAula,
