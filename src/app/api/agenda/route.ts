@@ -70,6 +70,7 @@ export async function DELETE(req: NextRequest) {
 
   const sessProfId = (session.user as any)?.professoraId as string | null;
   const perfil     = (session.user as any)?.perfil as string;
+  const isAdmin    = perfil === "SUPERADMIN";
 
   const { alunoId, inicio, fim } = await req.json() as {
     alunoId?: string; inicio?: string; fim?: string;
@@ -78,13 +79,13 @@ export async function DELETE(req: NextRequest) {
   if (!alunoId)
     return NextResponse.json({ erro: "alunoId é obrigatório" }, { status: 400 });
 
+  if (!isAdmin && !sessProfId)
+    return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
+
   const where: any = { alunoId };
 
-  if (sessProfId) {
-    where.professoraId = sessProfId;
-  } else if (perfil !== "SUPERADMIN") {
-    return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
-  }
+  // Admin exclui aulas de todas as professoras; professora só as próprias
+  if (!isAdmin && sessProfId) where.professoraId = sessProfId;
 
   if (inicio || fim) {
     where.data = {};
