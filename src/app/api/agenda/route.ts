@@ -24,8 +24,9 @@ export async function GET(req: NextRequest) {
   const perfil       = (session.user as any)?.perfil as string;
 
   const { searchParams } = new URL(req.url);
-  const inicio = searchParams.get("inicio");
-  const fim    = searchParams.get("fim");
+  const inicio          = searchParams.get("inicio");
+  const fim             = searchParams.get("fim");
+  const filtroProfId    = searchParams.get("professoraId"); // filtro opcional para admin
 
   if (!inicio || !fim)
     return NextResponse.json({ erro: "Parâmetros inicio e fim são obrigatórios" }, { status: 400 });
@@ -36,7 +37,12 @@ export async function GET(req: NextRequest) {
   const dataFim    = utcDiaNum(fy, fm - 1, fd + 1); // exclusive: < próximo dia
 
   const where: any = { data: { gte: dataInicio, lt: dataFim } };
-  if (perfil !== "SUPERADMIN" && professoraId) where.professoraId = professoraId;
+  if (perfil === "SUPERADMIN") {
+    // Admin pode filtrar por professora específica via query param
+    if (filtroProfId) where.professoraId = filtroProfId;
+  } else if (professoraId) {
+    where.professoraId = professoraId;
+  }
 
   const aulas = await prisma.agendaAula.findMany({
     where,

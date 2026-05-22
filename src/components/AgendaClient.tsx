@@ -122,6 +122,9 @@ export default function AgendaClient({
   const [obsEdit, setObsEdit]         = useState("");
   const [atualizando, setAtualizando] = useState(false);
 
+  // Filtro de professora (admin)
+  const [filtroProfId, setFiltroProfId] = useState("");
+
   // Gerar semana
   const [gerando, setGerando]             = useState(false);
   const [msgGerar, setMsgGerar]           = useState<string | null>(null);
@@ -158,13 +161,15 @@ export default function AgendaClient({
         fim    = diaRef;
       }
       const fmt = (d: Date) => d.toISOString().split("T")[0];
-      const res  = await fetch(`/api/agenda?inicio=${fmt(inicio)}&fim=${fmt(fim)}`);
+      let url = `/api/agenda?inicio=${fmt(inicio)}&fim=${fmt(fim)}`;
+      if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
+      const res  = await fetch(url);
       const data = await res.json();
       setAulas(Array.isArray(data) ? data : []);
     } finally {
       setCarregando(false);
     }
-  }, [vista, semanaRef, diaRef]);
+  }, [vista, semanaRef, diaRef, isProfessor, filtroProfId]);
 
   useEffect(() => { carregar(); }, [carregar]);
 
@@ -418,6 +423,20 @@ export default function AgendaClient({
         </div>
 
         <div className="flex-1" />
+
+        {/* Filtro por professora (apenas admin) */}
+        {!isProfessor && professoras.length > 0 && (
+          <select
+            value={filtroProfId}
+            onChange={(e) => setFiltroProfId(e.target.value)}
+            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
+          >
+            <option value="">Todos os professores</option>
+            {professoras.map((p) => (
+              <option key={p.id} value={p.id}>{p.nome}</option>
+            ))}
+          </select>
+        )}
 
         {/* Ações */}
         {vista === "semana" && (
