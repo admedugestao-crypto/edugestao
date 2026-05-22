@@ -54,6 +54,31 @@ export async function PUT(
 
   const materias: string[] = JSON.parse((form.get("materias") as string) || "[]");
   const dataNasc = form.get("dataNascimento") as string;
+  const novoStatus = (form.get("status") as string) || "ATIVO";
+
+  // ── Bloqueia PAUSADO/ENCERRADO se houver agenda futura ou pagamento em aberto ──
+  if (novoStatus === "PAUSADO" || novoStatus === "ENCERRADO") {
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+
+    const [aulasAbertas, pagamentosAbertos] = await Promise.all([
+      prisma.agendaAula.count({
+        where: { alunoId: id, status: "AGENDADA", data: { gte: hoje } },
+      }),
+      prisma.pagamento.count({
+        where: { alunoId: id, pago: false },
+      }),
+    ]);
+
+    if (aulasAbertas > 0 || pagamentosAbertos > 0) {
+      const motivos: string[] = [];
+      if (aulasAbertas    > 0) motivos.push(`${aulasAbertas} aula(s) agendada(s)`);
+      if (pagamentosAbertos > 0) motivos.push(`${pagamentosAbertos} pagamento(s) em aberto`);
+      return NextResponse.json(
+        { erro: `Não é possível alterar o status: o aluno possui ${motivos.join(" e ")}.` },
+        { status: 422 },
+      );
+    }
+  }
 
   try {
     // Remove materias antigas e recria
