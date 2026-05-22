@@ -216,5 +216,14 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ criadas, ignoradas, conflitos: conflitosLista, semAgenda: semAgendaLista });
+  return NextResponse.json({
+    criadas, ignoradas, conflitos: conflitosLista, semAgenda: semAgendaLista,
+    _debug: {
+      perfil,
+      whereBase,
+      alunosEncontrados: alunos.length,
+      alunosSemAgendaCount: alunosSemAgenda.length,
+      alunos: alunos.map(a => ({ nome: a.nome, diaSemana: a.diaSemana, horaAula: a.horaAula, professoraId: a.professoraId })),
+    },
+  });
 }
