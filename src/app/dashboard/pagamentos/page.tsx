@@ -10,10 +10,11 @@ async function buscarPagamentos(
   mes: number, ano: number,
   professoraId: string | null,
   alunoFiltro: string | null,
+  isAdmin: boolean,
 ) {
   const where: any = { mes, ano };
-  if (alunoFiltro)  where.alunoId = alunoFiltro;
-  if (professoraId) where.aluno   = { ...(where.aluno ?? {}), professoraId };
+  if (alunoFiltro)              where.alunoId = alunoFiltro;
+  if (!isAdmin && professoraId) where.aluno   = { ...(where.aluno ?? {}), professoraId };
 
   return prisma.pagamento.findMany({
     where,
@@ -85,7 +86,8 @@ export default async function PagamentosPage({
   const mes  = hoje.getMonth() + 1;
   const ano  = hoje.getFullYear();
 
-  const pagamentos = await buscarPagamentos(mes, ano, professoraId, alunoFiltro);
+  const isAdmin    = perfil === "SUPERADMIN";
+  const pagamentos = await buscarPagamentos(mes, ano, professoraId, alunoFiltro, isAdmin);
 
   return (
     <div className="space-y-5">
