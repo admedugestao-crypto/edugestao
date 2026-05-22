@@ -58,6 +58,9 @@ export async function POST(req: NextRequest) {
   for (const aula of aulas) {
     const { dataInicioContrato, dataFimContrato } = aula.aluno;
 
+    // Aluno sem contrato definido não gera pagamento
+    if (!dataInicioContrato && !dataFimContrato) continue;
+
     // Verifica se o contrato cobre algum dia do mês solicitado
     if (dataFimContrato) {
       const fimContrato = new Date(dataFimContrato); fimContrato.setUTCHours(0,0,0,0);
