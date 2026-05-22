@@ -42,6 +42,19 @@ export default function AlunoForm({
   const [tipoCobranca, setTipoCobranca] = useState<string>(alunoInicial?.tipoCobranca ?? "");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
+  const [dataInicio, setDataInicio] = useState<string>(
+    alunoInicial?.dataInicioContrato
+      ? new Date(alunoInicial.dataInicioContrato).toISOString().split("T")[0]
+      : ""
+  );
+  const [dataFim, setDataFim] = useState<string>(
+    alunoInicial?.dataFimContrato
+      ? new Date(alunoInicial.dataFimContrato).toISOString().split("T")[0]
+      : ""
+  );
+  const erroPeriodo = dataInicio && dataFim && dataFim < dataInicio
+    ? "A data de término não pode ser anterior à data de início."
+    : null;
   const [confirmExcluir, setConfirmExcluir] = useState(false);
   const [erroExcluir, setErroExcluir] = useState("");
   const [excluindo, setExcluindo] = useState(false);
@@ -88,6 +101,12 @@ export default function AlunoForm({
 
     if (!tipoCobranca) {
       setErro("Selecione o tipo de cobrança.");
+      setSalvando(false);
+      return;
+    }
+
+    if (erroPeriodo) {
+      setErro(erroPeriodo);
       setSalvando(false);
       return;
     }
@@ -599,7 +618,7 @@ export default function AlunoForm({
       </div>
 
       {/* Período contratual */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div className={`bg-white rounded-xl border p-5 ${erroPeriodo ? "border-red-300" : "border-slate-200"}`}>
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Período contratual</h2>
@@ -611,12 +630,11 @@ export default function AlunoForm({
             <input
               type="date"
               name="dataInicioContrato"
-              defaultValue={
-                alunoInicial?.dataInicioContrato
-                  ? new Date(alunoInicial.dataInicioContrato).toISOString().split("T")[0]
-                  : ""
-              }
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                erroPeriodo ? "border-red-400 bg-red-50" : "border-slate-200"
+              }`}
             />
           </div>
           <div>
@@ -624,15 +642,20 @@ export default function AlunoForm({
             <input
               type="date"
               name="dataFimContrato"
-              defaultValue={
-                alunoInicial?.dataFimContrato
-                  ? new Date(alunoInicial.dataFimContrato).toISOString().split("T")[0]
-                  : ""
-              }
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              value={dataFim}
+              min={dataInicio || undefined}
+              onChange={(e) => setDataFim(e.target.value)}
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                erroPeriodo ? "border-red-400 bg-red-50" : "border-slate-200"
+              }`}
             />
           </div>
         </div>
+        {erroPeriodo && (
+          <p className="text-xs text-red-600 mt-2 flex items-center gap-1">
+            ⚠️ {erroPeriodo}
+          </p>
+        )}
       </div>
 
       {/* Observações */}
