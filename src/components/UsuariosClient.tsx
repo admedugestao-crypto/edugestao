@@ -404,7 +404,7 @@ export default function UsuariosClient({
                     type={mostrarSenha ? "text" : "password"}
                     value={form.senha}
                     onChange={(e) => setForm({ ...form, senha: e.target.value })}
-                    placeholder={editId ? "••••••••" : "Mínimo 6 caracteres"}
+                    placeholder={editId ? "Deixe em branco para não alterar" : "Mínimo 6 caracteres"}
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   <button
