@@ -111,6 +111,7 @@ export default function PagamentosClient({
   const [pagamentos, setPagamentos] = useState<PagamentoItem[]>(pagamentosIniciais);
   const [carregando, setCarregando] = useState(false);
   const [gerando,    setGerando]    = useState(false);
+  const [resultadoGerar, setResultadoGerar] = useState<{ criadas: number; existentes: number } | null>(null);
   const [marcando,      setMarcando]      = useState<string | null>(null);
   const [enviandoEmail, setEnviandoEmail] = useState<string | null>(null);
   const [emailMsg,      setEmailMsg]      = useState<{ id: string; ok: boolean; msg: string } | null>(null);
@@ -140,11 +141,12 @@ export default function PagamentosClient({
 
   // ── Gerar cobranças do mês no servidor ──────────────────────────────────
   const gerarCobranças = useCallback(async (m: number, a: number) => {
-    await fetch("/api/pagamentos/gerar", {
+    const res = await fetch("/api/pagamentos/gerar", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ mes: m, ano: a }),
     });
+    return res.json() as Promise<{ criadas: number; existentes: number }>;
   }, []);
 
   // ── Navegação de mês ────────────────────────────────────────────────────
@@ -162,9 +164,10 @@ export default function PagamentosClient({
   // ── Gerar cobranças manualmente ─────────────────────────────────────────
   const handleGerar = useCallback(async () => {
     setGerando(true);
-    await gerarCobranças(mes, ano);
+    const resultado = await gerarCobranças(mes, ano);
     const data = await buscarPagamentos(mes, ano);
     setPagamentos(data);
+    setResultadoGerar(resultado);
     setGerando(false);
   }, [mes, ano, gerarCobranças, buscarPagamentos]);
 
@@ -925,6 +928,64 @@ export default function PagamentosClient({
                 {erroExcluir ? "Fechar" : "Cancelar"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal Resultado Geração ──────────────────────────────────────────── */}
+      {resultadoGerar && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                resultadoGerar.criadas > 0 ? "bg-emerald-100" : "bg-amber-100"
+              }`}>
+                {resultadoGerar.criadas > 0
+                  ? <CheckCircle2 size={20} className="text-emerald-600" />
+                  : <AlertCircle  size={20} className="text-amber-600"   />
+                }
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-800">Resultado da geração</h2>
+                <p className="text-xs text-slate-500">{MESES[mes - 1]} / {ano}</p>
+              </div>
+            </div>
+
+            {resultadoGerar.criadas === 0 && resultadoGerar.existentes === 0 ? (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4">
+                <p className="text-sm font-medium text-amber-800 mb-1">Nenhuma cobrança gerada</p>
+                <p className="text-xs text-amber-700 leading-relaxed">
+                  Não foram encontradas aulas com status <strong>Realizada</strong> ou <strong>Falta do aluno</strong>
+                  {" "}neste mês. Lance as aulas na agenda antes de gerar cobranças.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2 mb-4">
+                {resultadoGerar.criadas > 0 && (
+                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+                    <p className="text-sm text-emerald-800">
+                      <strong>{resultadoGerar.criadas}</strong> cobrança(s) criada(s) com sucesso
+                    </p>
+                  </div>
+                )}
+                {resultadoGerar.existentes > 0 && (
+                  <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                    <Clock size={14} className="text-slate-500 shrink-0" />
+                    <p className="text-sm text-slate-600">
+                      <strong>{resultadoGerar.existentes}</strong> cobrança(s) já existiam e foram mantidas
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={() => setResultadoGerar(null)}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
+            >
+              Fechar
+            </button>
           </div>
         </div>
       )}
