@@ -10,7 +10,7 @@ function diasNoMes(mes: number, ano: number) {
 
 // POST /api/pagamentos/gerar
 // Body: { mes, ano }
-// Para cada aluno com aulas AGENDADAS no mês, cria/atualiza 1 registro de pagamento.
+// Para cada aluno com aulas REALIZADAS (ou FALTA_ALUNO) no mês, cria/atualiza 1 registro de pagamento.
 // Não sobrescreve registros já pagos.
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -32,9 +32,11 @@ export async function POST(req: NextRequest) {
   if (!isAdmin && !professoraId)
     return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
 
-  // ── Busca aulas AGENDADAS do mês ────────────────────────────────────────────
+  // ── Busca aulas REALIZADAS ou FALTA_ALUNO do mês ────────────────────────────
+  // Só gera pagamento para aulas que realmente aconteceram (ou falta do aluno,
+  // pois nesse caso a professora ficou disponível e a aula é cobrada).
   const whereAula: any = {
-    status: "AGENDADA",
+    status: { in: ["REALIZADA", "FALTA_ALUNO"] },
     data:   { gte: inicioMes, lte: fimMes },
   };
   // Admin vê aulas de todas as professoras; professora vê só as próprias
