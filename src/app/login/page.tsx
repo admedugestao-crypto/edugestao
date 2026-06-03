@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -13,6 +14,7 @@ function LoginForm() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,14 +61,24 @@ function LoginForm() {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Senha</label>
-          <input
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            required
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="••••••••"
-          />
+          <div className="relative">
+            <input
+              type={mostrarSenha ? "text" : "password"}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              onClick={() => setMostrarSenha((v) => !v)}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              tabIndex={-1}
+            >
+              {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
 
         {cadastroOk && (
