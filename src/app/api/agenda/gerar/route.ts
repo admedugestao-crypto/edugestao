@@ -34,8 +34,10 @@ export async function POST(req: NextRequest) {
   const [ay, am, ad] = semanaInicio.split("-").map(Number);
   const baseSemana = new Date(ay, am - 1, ad, 0, 0, 0, 0);
 
-  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const inicio = baseSemana >= hoje ? baseSemana : hoje;
+  const hoje   = new Date(); hoje.setHours(0, 0, 0, 0);
+  // Gera a partir de amanhã para não criar aulas de hoje com horário já passado
+  const amanha = new Date(hoje); amanha.setDate(amanha.getDate() + 1);
+  const inicio = baseSemana >= amanha ? baseSemana : amanha;
 
   const anoCorrente = hoje.getFullYear();
   const fimAnoInt   = anoCorrente * 10000 + 1231;
