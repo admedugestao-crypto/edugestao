@@ -470,14 +470,18 @@ export default function PagamentosClient({
               <RefreshCw size={13} className={gerando ? "animate-spin" : ""} />
               {gerando ? "Gerando…" : "Gerar cobranças"}
             </button>
-            <div className="w-px h-4 bg-slate-300" />
-            <button
-              onClick={abrirCriar}
-              className="flex items-center gap-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition-colors"
-            >
-              <Plus size={13} />
-              Novo
-            </button>
+            {isAdmin && (
+              <>
+                <div className="w-px h-4 bg-slate-300" />
+                <button
+                  onClick={abrirCriar}
+                  className="flex items-center gap-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  <Plus size={13} />
+                  Novo
+                </button>
+              </>
+            )}
           </div>
         </div>
 
