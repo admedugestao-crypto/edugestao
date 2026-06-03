@@ -11,8 +11,10 @@ export async function GET() {
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const professoraId = (session.user as any).professoraId as string | null;
+  const perfil       = (session.user as any).perfil       as string;
+  const isAdmin      = perfil === "SUPERADMIN";
   const alunos = await prisma.aluno.findMany({
-    where: professoraId ? { professoraId } : {},
+    where: (!isAdmin && professoraId) ? { professoraId } : {},
     include: {
       unidade:   { include: { escola: true } },
       materias:  { include: { materia: true } },
