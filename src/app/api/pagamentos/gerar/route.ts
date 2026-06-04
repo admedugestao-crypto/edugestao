@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
   const aulas = await prisma.agendaAula.findMany({
     where: whereAula,
     select: {
+      id:      true,
       alunoId: true,
       aluno: {
         select: {
@@ -68,6 +69,7 @@ export async function POST(req: NextRequest) {
     diaPagamento:  number | null;
     diaPagamento2: number | null;
     qtd:           number;
+    aulaIds:       string[];  // IDs das AgendaAula vinculadas
   };
   const porAluno = new Map<string, InfoAluno>();
   for (const aula of aulas) {
@@ -89,6 +91,7 @@ export async function POST(req: NextRequest) {
     const prev = porAluno.get(aula.alunoId);
     if (prev) {
       prev.qtd++;
+      prev.aulaIds.push(aula.id);
     } else {
       porAluno.set(aula.alunoId, {
         tipoCobranca:  aula.aluno.tipoCobranca  ?? "MENSAL",
@@ -96,6 +99,7 @@ export async function POST(req: NextRequest) {
         diaPagamento:  aula.aluno.diaPagamento,
         diaPagamento2: aula.aluno.diaPagamento2,
         qtd:           1,
+        aulaIds:       [aula.id],
       });
     }
   }
@@ -121,10 +125,7 @@ export async function POST(req: NextRequest) {
 
       const result1 = await prisma.pagamento.upsert({
         where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela: 1 } },
-        update: {
-          quantidadeAulas: info.qtd,
-          valorCobrado,
-        },
+        update: { quantidadeAulas: info.qtd, valorCobrado },
         create: {
           alunoId, mes, ano, parcela: 1,
           dataVencimento:  dataVenc1,
@@ -133,6 +134,12 @@ export async function POST(req: NextRequest) {
           pago:            false,
           origemManual:    false,
         },
+      });
+      // Recria vínculos com as aulas (apaga os antigos e insere os novos)
+      await prisma.pagamentoAula.deleteMany({ where: { pagamentoId: result1.id } });
+      await prisma.pagamentoAula.createMany({
+        data: info.aulaIds.map((agendaAulaId) => ({ pagamentoId: result1.id, agendaAulaId })),
+        skipDuplicates: true,
       });
       const diff1 = Math.abs(result1.criadoEm.getTime() - result1.atualizadoEm.getTime());
       if (diff1 < 1000) criadas++; else existentes++;
@@ -151,6 +158,11 @@ export async function POST(req: NextRequest) {
             pago:            false,
             origemManual:    false,
           },
+        });
+        await prisma.pagamentoAula.deleteMany({ where: { pagamentoId: result2.id } });
+        await prisma.pagamentoAula.createMany({
+          data: info.aulaIds.map((agendaAulaId) => ({ pagamentoId: result2.id, agendaAulaId })),
+          skipDuplicates: true,
         });
         const diff2 = Math.abs(result2.criadoEm.getTime() - result2.atualizadoEm.getTime());
         if (diff2 < 1000) criadas++; else existentes++;

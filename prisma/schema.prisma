@@ -285,10 +285,22 @@ model Pagamento {
   criadoEm        DateTime  @default(now())
   atualizadoEm    DateTime  @updatedAt
 
-  aluno Aluno @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  aluno Aluno          @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  aulas PagamentoAula[]
 
   @@unique([alunoId, mes, ano, parcela])
   @@map("pagamentos")
+}
+
+model PagamentoAula {
+  pagamentoId  String
+  agendaAulaId String
+
+  pagamento  Pagamento  @relation(fields: [pagamentoId],  references: [id], onDelete: Cascade)
+  agendaAula AgendaAula @relation(fields: [agendaAulaId], references: [id], onDelete: Cascade)
+
+  @@id([pagamentoId, agendaAulaId])
+  @@map("pagamento_aulas")
 }
 
 // ─── Conteúdos Didáticos ──────────────────────────────────────────────────────
@@ -324,9 +336,10 @@ model AgendaAula {
   observacao   String?
   criadoEm     DateTime   @default(now())
 
-  professora Professora @relation(fields: [professoraId], references: [id], onDelete: Cascade)
-  aluno      Aluno      @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  materia    Materia?   @relation(fields: [materiaId], references: [id])
+  professora    Professora      @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  aluno         Aluno           @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia       Materia?        @relation(fields: [materiaId], references: [id])
+  pagamentos    PagamentoAula[]
 
   @@map("agenda_aulas")
 }
