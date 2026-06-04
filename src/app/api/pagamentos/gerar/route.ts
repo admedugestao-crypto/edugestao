@@ -99,12 +99,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ── Calcula valorCobrado por tipo de cobrança ──────────────────────────────
-  function calcularValor(tipo: string, valorUnit: number, qtd: number): number {
-    // POR_AULA: valor = qtd × valorPorAula
-    if (tipo === "POR_AULA") return qtd * valorUnit;
-    // MENSAL / QUINZENAL / SEMANAL: valor fixo por parcela
-    return valorUnit;
+  // ── Calcula valorCobrado: sempre valorPorAula × qtdAulas ──────────────────
+  // O tipoCobranca define a frequência de cobrança (quando cobrar),
+  // mas o valor sempre é: valorCadastrado × quantidade de aulas realizadas/falta aluno.
+  function calcularValor(valorUnit: number, qtd: number): number {
+    return valorUnit * qtd;
   }
 
   // ── Upsert: cria se não existe, atualiza qtd/valor se não pago ────────────
@@ -113,7 +112,7 @@ export async function POST(req: NextRequest) {
 
   await Promise.all(
     Array.from(porAluno.entries()).map(async ([alunoId, info]) => {
-      const valorCobrado = calcularValor(info.tipoCobranca, info.valorCobranca, info.qtd);
+      const valorCobrado = calcularValor(info.valorCobranca, info.qtd);
 
       // Parcela 1 — vencimento no diaPagamento (ou último dia do mês)
       const diaVenc1 = info.diaPagamento ?? diasNoMes(mes, ano);
