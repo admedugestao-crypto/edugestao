@@ -60,19 +60,22 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     select: { status: true },
   });
 
-  // Bloqueia se houver qualquer aula ativa (não cancelada / não falta do professor)
-  const aulaAtiva = aulasDoMes.find(
-    (a) => a.status !== "CANCELADA" && a.status !== "FALTA_PROFESSOR",
-  );
-
-  if (aulaAtiva) {
-    return NextResponse.json(
-      {
-        erro: "Exclusão não permitida: existem aulas deste mês que não estão com status Cancelada ou Falta do Professor.",
-        bloqueio: true,
-      },
-      { status: 422 },
+  // Se não há aulas na agenda, é um pagamento manual (caso excepcional) → permite excluir
+  if (aulasDoMes.length > 0) {
+    // Bloqueia se houver qualquer aula ativa (não cancelada / não falta do professor)
+    const aulaAtiva = aulasDoMes.find(
+      (a) => a.status !== "CANCELADA" && a.status !== "FALTA_PROFESSOR",
     );
+
+    if (aulaAtiva) {
+      return NextResponse.json(
+        {
+          erro: "Exclusão não permitida: existem aulas deste mês que não estão com status Cancelada ou Falta do Professor.",
+          bloqueio: true,
+        },
+        { status: 422 },
+      );
+    }
   }
 
   await prisma.pagamento.delete({ where: { id } });
