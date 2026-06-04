@@ -48,7 +48,8 @@ export async function POST(req: NextRequest) {
       alunoId: true,
       aluno: {
         select: {
-          id: true, valorCobranca: true, diaPagamento: true,
+          id: true, tipoCobranca: true, valorCobranca: true,
+          diaPagamento: true, diaPagamento2: true,
           dataInicioContrato: true, dataFimContrato: true,
         },
       },
@@ -60,7 +61,14 @@ export async function POST(req: NextRequest) {
   const ultimoDiaMes   = new Date(Date.UTC(ano, mes, 0));   // último dia do mês
 
   // ── Agrupa por aluno (respeita período contratual) ──────────────────────────
-  const porAluno = new Map<string, { valorCobranca: number; diaPagamento: number | null; qtd: number }>();
+  type InfoAluno = {
+    tipoCobranca:  string;
+    valorCobranca: number;
+    diaPagamento:  number | null;
+    diaPagamento2: number | null;
+    qtd:           number;
+  };
+  const porAluno = new Map<string, InfoAluno>();
   for (const aula of aulas) {
     const { dataInicioContrato, dataFimContrato } = aula.aluno;
 
@@ -70,11 +78,11 @@ export async function POST(req: NextRequest) {
     // Verifica se o contrato cobre algum dia do mês solicitado
     if (dataFimContrato) {
       const fimContrato = new Date(dataFimContrato); fimContrato.setUTCHours(0,0,0,0);
-      if (fimContrato < primeiroDiaMes) continue; // contrato encerrou antes do mês
+      if (fimContrato < primeiroDiaMes) continue;
     }
     if (dataInicioContrato) {
       const inicioContrato = new Date(dataInicioContrato); inicioContrato.setUTCHours(0,0,0,0);
-      if (inicioContrato > ultimoDiaMes) continue; // contrato começa depois do mês
+      if (inicioContrato > ultimoDiaMes) continue;
     }
 
     const prev = porAluno.get(aula.alunoId);
@@ -82,44 +90,71 @@ export async function POST(req: NextRequest) {
       prev.qtd++;
     } else {
       porAluno.set(aula.alunoId, {
+        tipoCobranca:  aula.aluno.tipoCobranca  ?? "MENSAL",
         valorCobranca: aula.aluno.valorCobranca ?? 0,
         diaPagamento:  aula.aluno.diaPagamento,
+        diaPagamento2: aula.aluno.diaPagamento2,
         qtd:           1,
       });
     }
   }
 
-  // ── Upsert: cria se não existe, mantém dados se já existe ──────────────────
-  let criadas   = 0;
+  // ── Calcula valorCobrado por tipo de cobrança ──────────────────────────────
+  function calcularValor(tipo: string, valorUnit: number, qtd: number): number {
+    // POR_AULA: valor = qtd × valorPorAula
+    if (tipo === "POR_AULA") return qtd * valorUnit;
+    // MENSAL / QUINZENAL / SEMANAL: valor fixo por parcela
+    return valorUnit;
+  }
+
+  // ── Upsert: cria se não existe, atualiza qtd/valor se não pago ────────────
+  let criadas    = 0;
   let existentes = 0;
 
   await Promise.all(
     Array.from(porAluno.entries()).map(async ([alunoId, info]) => {
-      const diaVenc = info.diaPagamento ?? diasNoMes(mes, ano);
-      const dataVencimento = new Date(ano, mes - 1, diaVenc);
+      const valorCobrado = calcularValor(info.tipoCobranca, info.valorCobranca, info.qtd);
 
-      const result = await prisma.pagamento.upsert({
+      // Parcela 1 — vencimento no diaPagamento (ou último dia do mês)
+      const diaVenc1 = info.diaPagamento ?? diasNoMes(mes, ano);
+      const dataVenc1 = new Date(ano, mes - 1, diaVenc1);
+
+      const result1 = await prisma.pagamento.upsert({
         where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela: 1 } },
         update: {
-          // Só atualiza quantidade de aulas se ainda não foi pago
           quantidadeAulas: info.qtd,
+          valorCobrado,
         },
         create: {
-          alunoId,
-          mes,
-          ano,
-          parcela:         1,
-          dataVencimento,
-          valorCobrado:    info.valorCobranca,
+          alunoId, mes, ano, parcela: 1,
+          dataVencimento:  dataVenc1,
+          valorCobrado,
           quantidadeAulas: info.qtd,
           pago:            false,
+          origemManual:    false,
         },
       });
+      const diff1 = Math.abs(result1.criadoEm.getTime() - result1.atualizadoEm.getTime());
+      if (diff1 < 1000) criadas++; else existentes++;
 
-      // criadoEm ≈ atualizadoEm → novo registro
-      const diff = Math.abs(result.criadoEm.getTime() - result.atualizadoEm.getTime());
-      if (diff < 1000) criadas++;
-      else existentes++;
+      // Parcela 2 — apenas QUINZENAL (diaPagamento2)
+      if (info.tipoCobranca === "QUINZENAL" && info.diaPagamento2) {
+        const dataVenc2 = new Date(ano, mes - 1, info.diaPagamento2);
+        const result2 = await prisma.pagamento.upsert({
+          where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela: 2 } },
+          update: { quantidadeAulas: info.qtd, valorCobrado },
+          create: {
+            alunoId, mes, ano, parcela: 2,
+            dataVencimento:  dataVenc2,
+            valorCobrado,
+            quantidadeAulas: info.qtd,
+            pago:            false,
+            origemManual:    false,
+          },
+        });
+        const diff2 = Math.abs(result2.criadoEm.getTime() - result2.atualizadoEm.getTime());
+        if (diff2 < 1000) criadas++; else existentes++;
+      }
     }),
   );
 
