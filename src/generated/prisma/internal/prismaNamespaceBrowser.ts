@@ -272,6 +272,7 @@ export const PagamentoScalarFieldEnum = {
   observacao: 'observacao',
   emailTipo: 'emailTipo',
   emailEnviadoEm: 'emailEnviadoEm',
+  origemManual: 'origemManual',
   criadoEm: 'criadoEm',
   atualizadoEm: 'atualizadoEm'
 } as const

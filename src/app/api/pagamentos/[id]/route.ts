@@ -38,7 +38,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 // DELETE /api/pagamentos/[id]
-// Regra: só é permitido se TODAS as aulas do aluno naquele mês forem CANCELADA ou FALTA_PROFESSOR.
+// Pagamentos manuais (origemManual=true) podem sempre ser excluídos.
+// Pagamentos gerados automaticamente só podem ser excluídos se todas as
+// aulas do mês estiverem com status CANCELADA ou FALTA_PROFESSOR.
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
@@ -48,21 +50,21 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const pagamento = await prisma.pagamento.findUnique({ where: { id } });
   if (!pagamento) return NextResponse.json({ erro: "Pagamento não encontrado." }, { status: 404 });
 
-  // Intervalo UTC do mês de competência
-  const inicioMes = new Date(Date.UTC(pagamento.ano, pagamento.mes - 1, 1));
-  const fimMes    = new Date(Date.UTC(pagamento.ano, pagamento.mes,     1));
+  // Pagamentos criados manualmente pelo admin podem sempre ser excluídos
+  if (!pagamento.origemManual) {
+    // Intervalo UTC do mês de competência
+    const inicioMes = new Date(Date.UTC(pagamento.ano, pagamento.mes - 1, 1));
+    const fimMes    = new Date(Date.UTC(pagamento.ano, pagamento.mes,     1));
 
-  const aulasDoMes = await prisma.agendaAula.findMany({
-    where: {
-      alunoId: pagamento.alunoId,
-      data: { gte: inicioMes, lt: fimMes },
-    },
-    select: { status: true },
-  });
+    const aulasDoMes = await prisma.agendaAula.findMany({
+      where: {
+        alunoId: pagamento.alunoId,
+        data: { gte: inicioMes, lt: fimMes },
+      },
+      select: { status: true },
+    });
 
-  // Se não há aulas na agenda, é um pagamento manual (caso excepcional) → permite excluir
-  if (aulasDoMes.length > 0) {
-    // Bloqueia se houver qualquer aula ativa (não cancelada / não falta do professor)
+    // Bloqueia se houver aula ativa (não cancelada / não falta do professor)
     const aulaAtiva = aulasDoMes.find(
       (a) => a.status !== "CANCELADA" && a.status !== "FALTA_PROFESSOR",
     );

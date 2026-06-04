@@ -107,6 +107,7 @@ export async function POST(req: NextRequest) {
       pago,
       dataPagamento:   pago ? new Date() : null,
       observacao:      observacao ?? null,
+      origemManual:    true,
     },
   });
 

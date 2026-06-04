@@ -281,6 +281,7 @@ model Pagamento {
   observacao      String?
   emailTipo       String?   // "lembrete" | "atraso" | "recibo" — último e-mail enviado
   emailEnviadoEm  DateTime? // data/hora do último envio
+  origemManual    Boolean   @default(false) // true = criado manualmente pelo admin
   criadoEm        DateTime  @default(now())
   atualizadoEm    DateTime  @updatedAt
 
