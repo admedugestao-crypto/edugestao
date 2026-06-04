@@ -12,6 +12,36 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   const body   = await req.json();
 
+  // ── Bloqueia baixa de pagamento manual se houver aulas ainda não realizadas ──
+  if (body.pago === true) {
+    const pag = await prisma.pagamento.findUnique({
+      where: { id },
+      select: { origemManual: true, alunoId: true, mes: true, ano: true },
+    });
+
+    if (pag?.origemManual) {
+      const inicioMes = new Date(Date.UTC(pag.ano, pag.mes - 1, 1));
+      const fimMes    = new Date(Date.UTC(pag.ano, pag.mes, 1));
+
+      const aulasNaoRealizadas = await prisma.agendaAula.count({
+        where: {
+          alunoId: pag.alunoId,
+          data:    { gte: inicioMes, lt: fimMes },
+          status:  { notIn: ["REALIZADA", "FALTA_ALUNO", "CANCELADA", "FALTA_PROFESSOR"] },
+        },
+      });
+
+      if (aulasNaoRealizadas > 0) {
+        return NextResponse.json(
+          {
+            erro: `Não é possível baixar: ainda há ${aulasNaoRealizadas} aula(s) com status Agendada neste mês. Lance todas as aulas antes de confirmar o pagamento.`,
+          },
+          { status: 422 },
+        );
+      }
+    }
+  }
+
   // Calcula dataPagamento: campo explícito tem prioridade sobre o flag pago
   let dataPagamentoUpdate: Date | null | undefined;
   if (body.dataPagamento !== undefined) {

@@ -113,6 +113,7 @@ export default function PagamentosClient({
   const [gerando,    setGerando]    = useState(false);
   const [resultadoGerar, setResultadoGerar] = useState<{ criadas: number; existentes: number } | null>(null);
   const [marcando,      setMarcando]      = useState<string | null>(null);
+  const [erroBaixa,     setErroBaixa]     = useState<string | null>(null);
   const [enviandoEmail, setEnviandoEmail] = useState<string | null>(null);
   const [emailMsg,      setEmailMsg]      = useState<{ id: string; ok: boolean; msg: string } | null>(null);
   const [emailModal,    setEmailModal]    = useState<PagamentoItem | null>(null);
@@ -174,6 +175,7 @@ export default function PagamentosClient({
   // ── Marcar/desmarcar pago ────────────────────────────────────────────────
   async function togglePago(item: PagamentoItem) {
     setMarcando(item.id);
+    setErroBaixa(null);
     const novoPago = !item.pago;
     const res = await fetch(`/api/pagamentos/${item.id}`, {
       method:  "PATCH",
@@ -187,6 +189,9 @@ export default function PagamentosClient({
           ? { ...p, pago: pg.pago, dataPagamento: pg.dataPagamento ?? null }
           : p,
       ));
+    } else {
+      const data = await res.json();
+      if (data.erro) setErroBaixa(data.erro);
     }
     setMarcando(null);
   }
@@ -932,6 +937,27 @@ export default function PagamentosClient({
                 {erroExcluir ? "Fechar" : "Cancelar"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal Erro Baixa ─────────────────────────────────────────────────── */}
+      {erroBaixa && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                <AlertCircle size={20} className="text-amber-600" />
+              </div>
+              <h2 className="text-base font-bold text-slate-800">Baixa não permitida</h2>
+            </div>
+            <p className="text-sm text-slate-600 mb-4">{erroBaixa}</p>
+            <button
+              onClick={() => setErroBaixa(null)}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
+            >
+              Entendido
+            </button>
           </div>
         </div>
       )}
