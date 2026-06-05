@@ -52,8 +52,11 @@ export async function DELETE(
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
   // Bloqueia se esta aula estiver vinculada a um registro de pagamento
-  const vinculo = await prisma.pagamentoAula.findFirst({ where: { agendaAulaId: id } });
-  if (vinculo) {
+  // Usa SQL raw para não depender do modelo PagamentoAula no client gerado
+  const vinculos = await prisma.$queryRaw<{ count: bigint }[]>`
+    SELECT COUNT(*)::bigint as count FROM pagamento_aulas WHERE "agendaAulaId" = ${id}
+  `;
+  if (vinculos[0].count > 0n) {
     return NextResponse.json(
       { erro: "Não é possível excluir: esta aula está vinculada a um registro de pagamento gerado. Exclua o pagamento primeiro." },
       { status: 422 },
