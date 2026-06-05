@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -296,10 +297,32 @@ export default function ConteudosClient({
   conteudosIniciais: Conteudo[];
   isProfessor: boolean;
 }) {
+  const searchParams  = useSearchParams();
+  const router        = useRouter();
+
   const [conteudos, setConteudos] = useState(conteudosIniciais);
   const [modal, setModal] = useState(false);
   const [novo, setNovo] = useState<FormC>(formVazio());
   const [salvando, setSalvando] = useState(false);
+  // aulaId vindo da agenda (para marcar como Realizada após salvar)
+  const [aulaIdPendente, setAulaIdPendente] = useState<string | null>(null);
+
+  // Abre form pré-preenchido quando vindo da agenda
+  useEffect(() => {
+    const aulaId   = searchParams.get("aulaId");
+    const alunoId  = searchParams.get("alunoId")  ?? "";
+    const materiaId = searchParams.get("materiaId") ?? "";
+    const data     = searchParams.get("data")     ?? new Date().toISOString().split("T")[0];
+    const descricao = searchParams.get("descricao") ?? "";
+    if (aulaId) {
+      setAulaIdPendente(aulaId);
+      setNovo({ ...formVazio(), alunoId, materiaId, data, descricao, planejado: false });
+      setModal(true);
+      // Limpa params da URL sem recarregar
+      router.replace("/dashboard/conteudos");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [editConteudo, setEditConteudo] = useState<(FormC & { id: string }) | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; topico: string } | null>(null);
@@ -322,6 +345,17 @@ export default function ConteudosClient({
         return;
       }
       setConteudos((prev) => [data, ...prev]);
+
+      // Se veio da agenda, marca a aula como Realizada
+      if (aulaIdPendente) {
+        await fetch(`/api/agenda/${aulaIdPendente}`, {
+          method:  "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({ status: "REALIZADA", observacao: novo.descricao }),
+        });
+        setAulaIdPendente(null);
+      }
+
       setModal(false);
       setNovo(formVazio());
     } catch {

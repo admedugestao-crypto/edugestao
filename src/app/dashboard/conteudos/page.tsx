@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { GraduationCap } from "lucide-react";
@@ -38,6 +39,7 @@ export default async function ConteudosPage() {
         <GraduationCap size={20} className="text-indigo-600" />
         <h1 className="text-xl font-bold text-slate-800">Conteúdos Didáticos</h1>
       </div>
+      <Suspense>
       <ConteudosClient
         alunos={alunos}
         isProfessor={!!professoraId}
@@ -51,6 +53,7 @@ export default async function ConteudosPage() {
           },
         }))}
       />
+      </Suspense>
     </div>
   );
 }

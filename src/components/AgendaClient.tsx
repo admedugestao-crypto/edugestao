@@ -348,10 +348,16 @@ export default function AgendaClient({
         return;
       }
     }
-    // Bloqueia "Realizada" sem conteúdo preenchido
-    if (status === "REALIZADA" && !obsEdit.trim()) {
-      setErroStatus("Informe o conteúdo da aula antes de marcá-la como Realizada.");
-      setTimeout(() => obsRef.current?.focus(), 50);
+    // "Realizada" → abre tela de Conteúdos pré-preenchida com dados da aula
+    if (status === "REALIZADA" && aulaDetalhe) {
+      const params = new URLSearchParams({
+        aulaId:    aulaDetalhe.id,
+        alunoId:   aulaDetalhe.aluno.id,
+        materiaId: aulaDetalhe.materia?.id ?? "",
+        data:      aulaDetalhe.data.split("T")[0],
+        descricao: obsEdit.trim(),
+      });
+      router.push(`/dashboard/conteudos?${params.toString()}`);
       return;
     }
     setErroStatus(null);
