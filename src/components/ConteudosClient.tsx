@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -297,8 +297,7 @@ export default function ConteudosClient({
   conteudosIniciais: Conteudo[];
   isProfessor: boolean;
 }) {
-  const searchParams  = useSearchParams();
-  const router        = useRouter();
+  const searchParams = useSearchParams();
 
   const [conteudos, setConteudos] = useState(conteudosIniciais);
   const [modal, setModal] = useState(false);
@@ -309,17 +308,17 @@ export default function ConteudosClient({
 
   // Abre form pré-preenchido quando vindo da agenda
   useEffect(() => {
-    const aulaId   = searchParams.get("aulaId");
-    const alunoId  = searchParams.get("alunoId")  ?? "";
+    const aulaId    = searchParams.get("aulaId");
+    const alunoId   = searchParams.get("alunoId")   ?? "";
     const materiaId = searchParams.get("materiaId") ?? "";
-    const data     = searchParams.get("data")     ?? new Date().toISOString().split("T")[0];
+    const data      = searchParams.get("data")      ?? new Date().toISOString().split("T")[0];
     const descricao = searchParams.get("descricao") ?? "";
     if (aulaId) {
       setAulaIdPendente(aulaId);
       setNovo({ ...formVazio(), alunoId, materiaId, data, descricao, planejado: false });
       setModal(true);
-      // Limpa params da URL sem recarregar
-      router.replace("/dashboard/conteudos");
+      // Limpa params da URL sem causar re-render do servidor
+      window.history.replaceState(null, "", "/dashboard/conteudos");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
