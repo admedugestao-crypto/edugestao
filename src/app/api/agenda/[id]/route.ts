@@ -24,7 +24,7 @@ export async function PATCH(
     const vinculos = await prisma.$queryRaw<{ count: bigint }[]>`
       SELECT COUNT(*)::bigint as count FROM pagamento_aulas WHERE "agendaAulaId" = ${id}
     `;
-    if (vinculos[0].count > 0n) {
+    if (Number(vinculos[0].count) > 0) {
       return NextResponse.json(
         { erro: `Não é possível marcar como "${status === "CANCELADA" ? "Cancelada" : "Falta do Professor"}": esta aula está vinculada a um registro de pagamento gerado. O pagamento foi calculado incluindo esta aula.` },
         { status: 422 },
@@ -69,7 +69,7 @@ export async function DELETE(
   const vinculos = await prisma.$queryRaw<{ count: bigint }[]>`
     SELECT COUNT(*)::bigint as count FROM pagamento_aulas WHERE "agendaAulaId" = ${id}
   `;
-  if (vinculos[0].count > 0n) {
+  if (Number(vinculos[0].count) > 0) {
     return NextResponse.json(
       { erro: "Não é possível excluir: esta aula está vinculada a um registro de pagamento gerado. Exclua o pagamento primeiro." },
       { status: 422 },
