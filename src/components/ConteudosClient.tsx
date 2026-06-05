@@ -11,8 +11,11 @@ type Materia = { id: string; nome: string; cor: string };
 type Aluno = {
   id: string;
   nome: string;
+  professoraId: string | null;
   materias: { materiaId: string; materia: Materia }[];
 };
+
+type Professora = { id: string; nome: string };
 
 type Conteudo = {
   id: string;
@@ -141,18 +144,46 @@ function CamposForm({
   form,
   setForm,
   alunos,
+  professoras,
+  isProfessor,
+  filtroProfId,
+  setFiltroProfId,
   onCampoChave,
 }: {
   form: FormC;
   setForm: (f: FormC) => void;
   alunos: Aluno[];
-  onCampoChave?: () => void;  // chamado ao alterar aluno, data ou planejado
+  professoras: Professora[];
+  isProfessor: boolean;
+  filtroProfId: string;
+  setFiltroProfId: (id: string) => void;
+  onCampoChave?: () => void;
 }) {
+  const alunosFiltrados = filtroProfId
+    ? alunos.filter((a) => a.professoraId === filtroProfId)
+    : alunos;
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
 
   return (
     <div className="space-y-3">
+      {/* Professor — apenas admin */}
+      {!isProfessor && professoras.length > 0 && (
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Professor(a) *</label>
+          <select
+            value={filtroProfId}
+            onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaId: "" }); onCampoChave?.(); }}
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+          >
+            <option value="">Todos os professores</option>
+            {professoras.map((p) => (
+              <option key={p.id} value={p.id}>{p.nome}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* Aluno */}
       <div>
         <label className="block text-xs font-medium text-slate-600 mb-1">Aluno *</label>
@@ -162,7 +193,7 @@ function CamposForm({
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
         >
           <option value="">Selecione...</option>
-          {alunos.map((a) => (
+          {alunosFiltrados.map((a) => (
             <option key={a.id} value={a.id}>{a.nome}</option>
           ))}
         </select>
@@ -290,10 +321,12 @@ function CamposForm({
 
 export default function ConteudosClient({
   alunos,
+  professoras = [],
   conteudosIniciais,
   isProfessor,
 }: {
   alunos: Aluno[];
+  professoras?: Professora[];
   conteudosIniciais: Conteudo[];
   isProfessor: boolean;
 }) {
@@ -303,8 +336,15 @@ export default function ConteudosClient({
   const [modal, setModal] = useState(false);
   const [novo, setNovo] = useState<FormC>(formVazio());
   const [salvando, setSalvando] = useState(false);
+  // Filtro de professora (admin)
+  const [filtroProfId, setFiltroProfId] = useState<string>("");
   // aulaId vindo da agenda (para marcar como Realizada após salvar)
   const [aulaIdPendente, setAulaIdPendente] = useState<string | null>(null);
+
+  // Alunos filtrados pelo professor selecionado (admin)
+  const alunosFiltrados = filtroProfId
+    ? alunos.filter((a) => a.professoraId === filtroProfId)
+    : alunos;
 
   // Abre form pré-preenchido quando vindo da agenda
   useEffect(() => {
@@ -314,10 +354,12 @@ export default function ConteudosClient({
     const data      = searchParams.get("data")      ?? new Date().toISOString().split("T")[0];
     const descricao = searchParams.get("descricao") ?? "";
     if (aulaId) {
+      // Pré-seleciona o professor do aluno (admin)
+      const aluno = alunos.find((a) => a.id === alunoId);
+      if (aluno?.professoraId) setFiltroProfId(aluno.professoraId);
       setAulaIdPendente(aulaId);
       setNovo({ ...formVazio(), alunoId, materiaId, data, descricao, planejado: false });
       setModal(true);
-      // Limpa params da URL sem causar re-render do servidor
       window.history.replaceState(null, "", "/dashboard/conteudos");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -531,6 +573,10 @@ export default function ConteudosClient({
                 form={novo}
                 setForm={setNovo}
                 alunos={alunos}
+                professoras={professoras}
+                isProfessor={isProfessor}
+                filtroProfId={filtroProfId}
+                setFiltroProfId={setFiltroProfId}
                 onCampoChave={() => setErroNovo("")}
               />
             </div>
@@ -578,6 +624,10 @@ export default function ConteudosClient({
                 form={editConteudo}
                 setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
                 alunos={alunos}
+                professoras={professoras}
+                isProfessor={isProfessor}
+                filtroProfId={filtroProfId}
+                setFiltroProfId={setFiltroProfId}
                 onCampoChave={() => setErroEdit("")}
               />
             </div>

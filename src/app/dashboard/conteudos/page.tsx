@@ -11,10 +11,10 @@ export default async function ConteudosPage() {
   const professoraId = (session?.user as any)?.professoraId as string | null;
   const filtroProf  = professoraId ? { professoraId } : {};
 
-  const [alunos, conteudos] = await Promise.all([
+  const [alunos, conteudos, professoras] = await Promise.all([
     prisma.aluno.findMany({
       where: { ...filtroProf, status: "ATIVO" },
-      include: { materias: { include: { materia: true } } },
+      include: { materias: { include: { materia: true } }, professora: { select: { id: true } } },
       orderBy: { nome: "asc" },
     }),
     prisma.conteudo.findMany({
@@ -31,6 +31,10 @@ export default async function ConteudosPage() {
       orderBy: { data: "desc" },
       take: 50,
     }),
+    prisma.professora.findMany({
+      include: { usuario: { select: { nome: true } } },
+      orderBy: { usuario: { nome: "asc" } },
+    }),
   ]);
 
   return (
@@ -41,7 +45,8 @@ export default async function ConteudosPage() {
       </div>
       <Suspense>
       <ConteudosClient
-        alunos={alunos}
+        alunos={alunos.map((a) => ({ ...a, professoraId: a.professora?.id ?? null }))}
+        professoras={professoras.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
         isProfessor={!!professoraId}
         conteudosIniciais={conteudos.map((c) => ({
           ...c,
