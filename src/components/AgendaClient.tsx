@@ -357,11 +357,16 @@ export default function AgendaClient({
     setErroStatus(null);
     setAtualizando(true);
     try {
-      await fetch(`/api/agenda/${id}`, {
+      const res = await fetch(`/api/agenda/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
+      if (!res.ok) {
+        const data = await res.json();
+        setErroStatus(data.erro ?? "Não foi possível alterar o status.");
+        return;
+      }
       setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
       if (aulaDetalhe?.id === id) setAulaDetalhe((p) => p ? { ...p, status } : p);
     } finally {
