@@ -101,6 +101,25 @@ export async function DELETE(req: NextRequest) {
     }
   }
 
+  // Verifica se alguma aula do lote tem pagamento vinculado
+  const aulasComPagamento = await prisma.agendaAula.findMany({
+    where,
+    select: { id: true, data: true },
+  });
+
+  const idsComVinculo: string[] = [];
+  for (const aula of aulasComPagamento) {
+    const vinculo = await prisma.pagamentoAula.findFirst({ where: { agendaAulaId: aula.id } });
+    if (vinculo) idsComVinculo.push(aula.id);
+  }
+
+  if (idsComVinculo.length > 0) {
+    return NextResponse.json(
+      { erro: `Não é possível excluir: ${idsComVinculo.length} aula(s) do período estão vinculadas a registros de pagamento gerados. Exclua os pagamentos primeiro.` },
+      { status: 422 },
+    );
+  }
+
   const { count } = await prisma.agendaAula.deleteMany({ where });
   return NextResponse.json({ excluidas: count });
 }

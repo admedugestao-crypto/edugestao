@@ -387,7 +387,12 @@ export default function AgendaClient({
 
   async function excluirAula(id: string) {
     if (!confirm("Excluir esta aula?")) return;
-    await fetch(`/api/agenda/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/agenda/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json();
+      setErroStatus(data.erro ?? "Erro ao excluir a aula.");
+      return;
+    }
     setAulas((prev) => prev.filter((a) => a.id !== id));
     setAulaDetalhe(null);
   }

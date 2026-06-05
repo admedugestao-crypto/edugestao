@@ -51,6 +51,15 @@ export async function DELETE(
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
+  // Bloqueia se esta aula estiver vinculada a um registro de pagamento
+  const vinculo = await prisma.pagamentoAula.findFirst({ where: { agendaAulaId: id } });
+  if (vinculo) {
+    return NextResponse.json(
+      { erro: "Não é possível excluir: esta aula está vinculada a um registro de pagamento gerado. Exclua o pagamento primeiro." },
+      { status: 422 },
+    );
+  }
+
   await prisma.agendaAula.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
