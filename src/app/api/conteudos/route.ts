@@ -66,7 +66,12 @@ export async function POST(req: NextRequest) {
       planejado,
     },
     include: {
-      aluno:   { select: { nome: true } },
+      aluno: {
+        select: {
+          nome: true,
+          professora: { select: { usuario: { select: { nome: true } } } },
+        },
+      },
       materia: true,
     },
   });

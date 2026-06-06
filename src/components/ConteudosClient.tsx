@@ -168,7 +168,7 @@ function CamposForm({
   return (
     <div className="space-y-3">
       {/* Professor — apenas admin */}
-      {!isProfessor && professoras.length > 0 && (
+      {!isProfessor && (
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Professor(a) *</label>
           <select
@@ -385,7 +385,14 @@ export default function ConteudosClient({
         setErroNovo(data.erro ?? "Erro ao registrar conteúdo.");
         return;
       }
-      setConteudos((prev) => [data, ...prev]);
+      const conteudoNovo = {
+        ...data,
+        aluno: {
+          nome: data.aluno.nome,
+          professora: data.aluno.professora?.usuario?.nome ?? null,
+        },
+      };
+      setConteudos((prev) => [conteudoNovo, ...prev]);
 
       // Se veio da agenda, marca a aula como Realizada
       if (aulaIdPendente) {
