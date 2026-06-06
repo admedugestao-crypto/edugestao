@@ -11,7 +11,7 @@ export default async function ConteudosPage() {
   const professoraId = (session?.user as any)?.professoraId as string | null;
   const perfil       = (session?.user as any)?.perfil as string | null;
   const isAdmin      = perfil !== "PROFESSORA";
-  const filtroProf  = professoraId ? { professoraId } : {};
+  const filtroProf  = (!isAdmin && professoraId) ? { professoraId } : {};
 
   const [alunos, conteudos, professoras] = await Promise.all([
     prisma.aluno.findMany({
