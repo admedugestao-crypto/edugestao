@@ -187,7 +187,9 @@ function CamposForm({
 
       {/* Aluno */}
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Aluno *</label>
+        <label className="block text-xs font-medium text-slate-600 mb-1">
+          Aluno * <span className="text-slate-400 font-normal">({alunosFiltrados.length} disponíveis, {alunos.length} total)</span>
+        </label>
         <select
           value={form.alunoId}
           onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaId: "" }); onCampoChave?.(); }}
