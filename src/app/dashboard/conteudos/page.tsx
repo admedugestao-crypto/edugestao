@@ -9,6 +9,8 @@ export const dynamic = "force-dynamic";
 export default async function ConteudosPage() {
   const session     = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;
+  const perfil       = (session?.user as any)?.perfil as string | null;
+  const isAdmin      = perfil === "ADMIN";
   const filtroProf  = professoraId ? { professoraId } : {};
 
   const [alunos, conteudos, professoras] = await Promise.all([
@@ -47,7 +49,7 @@ export default async function ConteudosPage() {
       <ConteudosClient
         alunos={alunos.map((a) => ({ ...a, professoraId: a.professora?.id ?? null }))}
         professoras={professoras.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
-        isProfessor={!!professoraId}
+        isProfessor={!isAdmin}
         conteudosIniciais={conteudos.map((c) => ({
           ...c,
           data:      c.data.toISOString(),
