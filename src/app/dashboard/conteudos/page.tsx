@@ -47,7 +47,15 @@ export default async function ConteudosPage() {
       </div>
       <Suspense>
       <ConteudosClient
-        alunos={alunos.map((a) => ({ ...a, professoraId: a.professoraId ?? null }))}
+        alunos={alunos.map((a) => ({
+          id: a.id,
+          nome: a.nome,
+          professoraId: a.professoraId ?? null,
+          materias: a.materias.map((am) => ({
+            materiaId: am.materiaId,
+            materia: am.materia,
+          })),
+        }))}
         professoras={professoras.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
         isProfessor={!isAdmin}
         conteudosIniciais={conteudos.map((c) => ({
