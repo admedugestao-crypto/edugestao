@@ -10,7 +10,7 @@ export default async function ConteudosPage() {
   const session     = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;
   const perfil       = (session?.user as any)?.perfil as string | null;
-  const isAdmin      = perfil === "ADMIN";
+  const isAdmin      = perfil !== "PROFESSORA";
   const filtroProf  = professoraId ? { professoraId } : {};
 
   const [alunos, conteudos, professoras] = await Promise.all([
