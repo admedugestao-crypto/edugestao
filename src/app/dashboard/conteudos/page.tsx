@@ -15,7 +15,7 @@ export default async function ConteudosPage() {
 
   const [alunos, conteudos, professoras] = await Promise.all([
     prisma.aluno.findMany({
-      where: { ...filtroProf, status: "ATIVO" },
+      where: { ...filtroProf },
       include: { materias: { include: { materia: true } }, professora: { select: { id: true } } },
       orderBy: { nome: "asc" },
     }),
