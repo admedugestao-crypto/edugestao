@@ -159,9 +159,10 @@ function CamposForm({
   setFiltroProfId: (id: string) => void;
   onCampoChave?: () => void;
 }) {
-  const alunosFiltrados = filtroProfId
+  const filtrados = filtroProfId
     ? alunos.filter((a) => a.professoraId === filtroProfId)
     : alunos;
+  const alunosFiltrados = filtrados.length > 0 ? filtrados : alunos;
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
 
