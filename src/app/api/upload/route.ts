@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { put } from "@vercel/blob";
 import { randomUUID } from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -31,13 +30,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Arquivo muito grande. Máximo 10 MB." }, { status: 400 });
 
   const ext = file.name.split(".").pop() ?? "bin";
-  const nomeArquivo = `${randomUUID()}.${ext}`;
-  const dir = join(process.cwd(), "public", "uploads", "conteudos");
+  const nomeArquivo = `conteudos/${randomUUID()}.${ext}`;
 
-  await mkdir(dir, { recursive: true });
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(join(dir, nomeArquivo), buffer);
+  const blob = await put(nomeArquivo, file, { access: "public" });
 
-  const url = `/uploads/conteudos/${nomeArquivo}`;
-  return NextResponse.json({ url, nome: file.name });
+  return NextResponse.json({ url: blob.url, nome: file.name });
 }
