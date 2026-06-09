@@ -71,6 +71,17 @@ export default function AlunoForm({
       setCampos((prev) => ({ ...prev, [key]: !!e.target.value.trim() }));
   }
 
+  const [dataInicio, setDataInicio] = useState<string>(
+    alunoInicial?.dataInicioContrato
+      ? new Date(alunoInicial.dataInicioContrato).toISOString().split("T")[0]
+      : ""
+  );
+  const [dataFim, setDataFim] = useState<string>(
+    alunoInicial?.dataFimContrato
+      ? new Date(alunoInicial.dataFimContrato).toISOString().split("T")[0]
+      : ""
+  );
+
   // Cadastro completo quando todos os campos rastreados estão preenchidos
   // + escola selecionada + ao menos 1 matéria + tipo de cobrança + status + datas contratuais
   const cadastroCompleto =
@@ -86,16 +97,6 @@ export default function AlunoForm({
     setErroStatusCad("");
     setStatus(val);
   }
-  const [dataInicio, setDataInicio] = useState<string>(
-    alunoInicial?.dataInicioContrato
-      ? new Date(alunoInicial.dataInicioContrato).toISOString().split("T")[0]
-      : ""
-  );
-  const [dataFim, setDataFim] = useState<string>(
-    alunoInicial?.dataFimContrato
-      ? new Date(alunoInicial.dataFimContrato).toISOString().split("T")[0]
-      : ""
-  );
   const erroPeriodo = dataInicio && dataFim && dataFim < dataInicio
     ? "A data de término não pode ser anterior à data de início."
     : null;
@@ -155,12 +156,6 @@ export default function AlunoForm({
       return;
     }
 
-    if (perfil === "SUPERADMIN" && !form.get("professoraId")) {
-      setErro("Selecione o(a) professor(a) responsável.");
-      setSalvando(false);
-      return;
-    }
-
     if (!dataInicio || !dataFim) {
       setErro("Preencha as datas de início e término do contrato.");
       setSalvando(false);
@@ -174,6 +169,12 @@ export default function AlunoForm({
     }
 
     const form = new FormData(e.currentTarget);
+
+    if (perfil === "SUPERADMIN" && !form.get("professoraId")) {
+      setErro("Selecione o(a) professor(a) responsável.");
+      setSalvando(false);
+      return;
+    }
     form.set("materias", JSON.stringify(materiasSelected));
 
     const url = alunoInicial
