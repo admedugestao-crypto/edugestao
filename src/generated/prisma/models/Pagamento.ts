@@ -321,6 +321,7 @@ export type PagamentoWhereInput = {
   criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
+  aulas?: Prisma.PagamentoAulaListRelationFilter
 }
 
 export type PagamentoOrderByWithRelationInput = {
@@ -341,6 +342,7 @@ export type PagamentoOrderByWithRelationInput = {
   criadoEm?: Prisma.SortOrder
   atualizadoEm?: Prisma.SortOrder
   aluno?: Prisma.AlunoOrderByWithRelationInput
+  aulas?: Prisma.PagamentoAulaOrderByRelationAggregateInput
 }
 
 export type PagamentoWhereUniqueInput = Prisma.AtLeast<{
@@ -365,6 +367,7 @@ export type PagamentoWhereUniqueInput = Prisma.AtLeast<{
   criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
+  aulas?: Prisma.PagamentoAulaListRelationFilter
 }, "id" | "alunoId_mes_ano_parcela">
 
 export type PagamentoOrderByWithAggregationInput = {
@@ -430,6 +433,7 @@ export type PagamentoCreateInput = {
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   aluno: Prisma.AlunoCreateNestedOneWithoutPagamentosInput
+  aulas?: Prisma.PagamentoAulaCreateNestedManyWithoutPagamentoInput
 }
 
 export type PagamentoUncheckedCreateInput = {
@@ -449,6 +453,7 @@ export type PagamentoUncheckedCreateInput = {
   origemManual?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
+  aulas?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutPagamentoInput
 }
 
 export type PagamentoUpdateInput = {
@@ -468,6 +473,7 @@ export type PagamentoUpdateInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutPagamentosNestedInput
+  aulas?: Prisma.PagamentoAulaUpdateManyWithoutPagamentoNestedInput
 }
 
 export type PagamentoUncheckedUpdateInput = {
@@ -487,6 +493,7 @@ export type PagamentoUncheckedUpdateInput = {
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aulas?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutPagamentoNestedInput
 }
 
 export type PagamentoCreateManyInput = {
@@ -635,6 +642,11 @@ export type PagamentoSumOrderByAggregateInput = {
   quantidadeAulas?: Prisma.SortOrder
 }
 
+export type PagamentoScalarRelationFilter = {
+  is?: Prisma.PagamentoWhereInput
+  isNot?: Prisma.PagamentoWhereInput
+}
+
 export type PagamentoCreateNestedManyWithoutAlunoInput = {
   create?: Prisma.XOR<Prisma.PagamentoCreateWithoutAlunoInput, Prisma.PagamentoUncheckedCreateWithoutAlunoInput> | Prisma.PagamentoCreateWithoutAlunoInput[] | Prisma.PagamentoUncheckedCreateWithoutAlunoInput[]
   connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutAlunoInput | Prisma.PagamentoCreateOrConnectWithoutAlunoInput[]
@@ -677,6 +689,20 @@ export type PagamentoUncheckedUpdateManyWithoutAlunoNestedInput = {
   deleteMany?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
 }
 
+export type PagamentoCreateNestedOneWithoutAulasInput = {
+  create?: Prisma.XOR<Prisma.PagamentoCreateWithoutAulasInput, Prisma.PagamentoUncheckedCreateWithoutAulasInput>
+  connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutAulasInput
+  connect?: Prisma.PagamentoWhereUniqueInput
+}
+
+export type PagamentoUpdateOneRequiredWithoutAulasNestedInput = {
+  create?: Prisma.XOR<Prisma.PagamentoCreateWithoutAulasInput, Prisma.PagamentoUncheckedCreateWithoutAulasInput>
+  connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutAulasInput
+  upsert?: Prisma.PagamentoUpsertWithoutAulasInput
+  connect?: Prisma.PagamentoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PagamentoUpdateToOneWithWhereWithoutAulasInput, Prisma.PagamentoUpdateWithoutAulasInput>, Prisma.PagamentoUncheckedUpdateWithoutAulasInput>
+}
+
 export type PagamentoCreateWithoutAlunoInput = {
   id?: string
   mes: number
@@ -693,6 +719,7 @@ export type PagamentoCreateWithoutAlunoInput = {
   origemManual?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
+  aulas?: Prisma.PagamentoAulaCreateNestedManyWithoutPagamentoInput
 }
 
 export type PagamentoUncheckedCreateWithoutAlunoInput = {
@@ -711,6 +738,7 @@ export type PagamentoUncheckedCreateWithoutAlunoInput = {
   origemManual?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
+  aulas?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutPagamentoInput
 }
 
 export type PagamentoCreateOrConnectWithoutAlunoInput = {
@@ -761,6 +789,98 @@ export type PagamentoScalarWhereInput = {
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
 }
 
+export type PagamentoCreateWithoutAulasInput = {
+  id?: string
+  mes: number
+  ano: number
+  parcela?: number
+  dataVencimento: Date | string
+  valorCobrado: number
+  quantidadeAulas?: number | null
+  pago?: boolean
+  dataPagamento?: Date | string | null
+  observacao?: string | null
+  emailTipo?: string | null
+  emailEnviadoEm?: Date | string | null
+  origemManual?: boolean
+  criadoEm?: Date | string
+  atualizadoEm?: Date | string
+  aluno: Prisma.AlunoCreateNestedOneWithoutPagamentosInput
+}
+
+export type PagamentoUncheckedCreateWithoutAulasInput = {
+  id?: string
+  alunoId: string
+  mes: number
+  ano: number
+  parcela?: number
+  dataVencimento: Date | string
+  valorCobrado: number
+  quantidadeAulas?: number | null
+  pago?: boolean
+  dataPagamento?: Date | string | null
+  observacao?: string | null
+  emailTipo?: string | null
+  emailEnviadoEm?: Date | string | null
+  origemManual?: boolean
+  criadoEm?: Date | string
+  atualizadoEm?: Date | string
+}
+
+export type PagamentoCreateOrConnectWithoutAulasInput = {
+  where: Prisma.PagamentoWhereUniqueInput
+  create: Prisma.XOR<Prisma.PagamentoCreateWithoutAulasInput, Prisma.PagamentoUncheckedCreateWithoutAulasInput>
+}
+
+export type PagamentoUpsertWithoutAulasInput = {
+  update: Prisma.XOR<Prisma.PagamentoUpdateWithoutAulasInput, Prisma.PagamentoUncheckedUpdateWithoutAulasInput>
+  create: Prisma.XOR<Prisma.PagamentoCreateWithoutAulasInput, Prisma.PagamentoUncheckedCreateWithoutAulasInput>
+  where?: Prisma.PagamentoWhereInput
+}
+
+export type PagamentoUpdateToOneWithWhereWithoutAulasInput = {
+  where?: Prisma.PagamentoWhereInput
+  data: Prisma.XOR<Prisma.PagamentoUpdateWithoutAulasInput, Prisma.PagamentoUncheckedUpdateWithoutAulasInput>
+}
+
+export type PagamentoUpdateWithoutAulasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mes?: Prisma.IntFieldUpdateOperationsInput | number
+  ano?: Prisma.IntFieldUpdateOperationsInput | number
+  parcela?: Prisma.IntFieldUpdateOperationsInput | number
+  dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aluno?: Prisma.AlunoUpdateOneRequiredWithoutPagamentosNestedInput
+}
+
+export type PagamentoUncheckedUpdateWithoutAulasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  alunoId?: Prisma.StringFieldUpdateOperationsInput | string
+  mes?: Prisma.IntFieldUpdateOperationsInput | number
+  ano?: Prisma.IntFieldUpdateOperationsInput | number
+  parcela?: Prisma.IntFieldUpdateOperationsInput | number
+  dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type PagamentoCreateManyAlunoInput = {
   id?: string
   mes: number
@@ -795,6 +915,7 @@ export type PagamentoUpdateWithoutAlunoInput = {
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aulas?: Prisma.PagamentoAulaUpdateManyWithoutPagamentoNestedInput
 }
 
 export type PagamentoUncheckedUpdateWithoutAlunoInput = {
@@ -813,6 +934,7 @@ export type PagamentoUncheckedUpdateWithoutAlunoInput = {
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aulas?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutPagamentoNestedInput
 }
 
 export type PagamentoUncheckedUpdateManyWithoutAlunoInput = {
@@ -834,6 +956,35 @@ export type PagamentoUncheckedUpdateManyWithoutAlunoInput = {
 }
 
 
+/**
+ * Count Type PagamentoCountOutputType
+ */
+
+export type PagamentoCountOutputType = {
+  aulas: number
+}
+
+export type PagamentoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  aulas?: boolean | PagamentoCountOutputTypeCountAulasArgs
+}
+
+/**
+ * PagamentoCountOutputType without action
+ */
+export type PagamentoCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PagamentoCountOutputType
+   */
+  select?: Prisma.PagamentoCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PagamentoCountOutputType without action
+ */
+export type PagamentoCountOutputTypeCountAulasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PagamentoAulaWhereInput
+}
+
 
 export type PagamentoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -853,6 +1004,8 @@ export type PagamentoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   criadoEm?: boolean
   atualizadoEm?: boolean
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
+  aulas?: boolean | Prisma.Pagamento$aulasArgs<ExtArgs>
+  _count?: boolean | Prisma.PagamentoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pagamento"]>
 
 export type PagamentoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -917,6 +1070,8 @@ export type PagamentoSelectScalar = {
 export type PagamentoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "alunoId" | "mes" | "ano" | "parcela" | "dataVencimento" | "valorCobrado" | "quantidadeAulas" | "pago" | "dataPagamento" | "observacao" | "emailTipo" | "emailEnviadoEm" | "origemManual" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["pagamento"]>
 export type PagamentoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
+  aulas?: boolean | Prisma.Pagamento$aulasArgs<ExtArgs>
+  _count?: boolean | Prisma.PagamentoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PagamentoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
@@ -929,6 +1084,7 @@ export type $PagamentoPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "Pagamento"
   objects: {
     aluno: Prisma.$AlunoPayload<ExtArgs>
+    aulas: Prisma.$PagamentoAulaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1342,6 +1498,7 @@ readonly fields: PagamentoFieldRefs;
 export interface Prisma__PagamentoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   aluno<T extends Prisma.AlunoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlunoDefaultArgs<ExtArgs>>): Prisma.Prisma__AlunoClient<runtime.Types.Result.GetResult<Prisma.$AlunoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  aulas<T extends Prisma.Pagamento$aulasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pagamento$aulasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PagamentoAulaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1785,6 +1942,30 @@ export type PagamentoDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Pagamentos to delete.
    */
   limit?: number
+}
+
+/**
+ * Pagamento.aulas
+ */
+export type Pagamento$aulasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PagamentoAula
+   */
+  select?: Prisma.PagamentoAulaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PagamentoAula
+   */
+  omit?: Prisma.PagamentoAulaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PagamentoAulaInclude<ExtArgs> | null
+  where?: Prisma.PagamentoAulaWhereInput
+  orderBy?: Prisma.PagamentoAulaOrderByWithRelationInput | Prisma.PagamentoAulaOrderByWithRelationInput[]
+  cursor?: Prisma.PagamentoAulaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PagamentoAulaScalarFieldEnum | Prisma.PagamentoAulaScalarFieldEnum[]
 }
 
 /**

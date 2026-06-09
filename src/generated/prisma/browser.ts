@@ -83,6 +83,11 @@ export type Nota = Prisma.NotaModel
  */
 export type Pagamento = Prisma.PagamentoModel
 /**
+ * Model PagamentoAula
+ * 
+ */
+export type PagamentoAula = Prisma.PagamentoAulaModel
+/**
  * Model Conteudo
  * 
  */

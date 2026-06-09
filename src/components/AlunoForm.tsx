@@ -676,14 +676,33 @@ export default function AlunoForm({
 
           {/* SEMANAL */}
           {tipoCobranca === "SEMANAL" && (
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Valor por semana (R$) *</label>
-              <input name="valorCobranca" type="number" step="0.01" min={0} required
-                defaultValue={alunoInicial?.valorCobranca ?? ""}
-                placeholder="Ex: 80.00"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Dia de vencimento semanal *</label>
+                <select name="diaSemanaCobranca" required
+                  defaultValue={alunoInicial?.diaSemanaCobranca ?? ""}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">Selecione o dia…</option>
+                  <option value="0">Domingo</option>
+                  <option value="1">Segunda-feira</option>
+                  <option value="2">Terça-feira</option>
+                  <option value="3">Quarta-feira</option>
+                  <option value="4">Quinta-feira</option>
+                  <option value="5">Sexta-feira</option>
+                  <option value="6">Sábado</option>
+                </select>
+                <p className="text-xs text-slate-400 mt-1">Dia da semana em que o pagamento vence a cada semana.</p>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Valor por semana (R$) *</label>
+                <input name="valorCobranca" type="number" step="0.01" min={0} required
+                  defaultValue={alunoInicial?.valorCobranca ?? ""}
+                  placeholder="Ex: 80.00"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            </>
           )}
 
           {/* POR_AULA */}

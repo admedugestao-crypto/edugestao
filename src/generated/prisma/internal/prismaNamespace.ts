@@ -397,6 +397,7 @@ export const ModelName = {
   AlunoMateria: 'AlunoMateria',
   Nota: 'Nota',
   Pagamento: 'Pagamento',
+  PagamentoAula: 'PagamentoAula',
   Conteudo: 'Conteudo',
   AgendaAula: 'AgendaAula'
 } as const
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "usuario" | "professora" | "materia" | "professoraMateria" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "conteudo" | "agendaAula"
+    modelProps: "usuario" | "professora" | "materia" | "professoraMateria" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "agendaAula"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1380,6 +1381,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PagamentoAula: {
+      payload: Prisma.$PagamentoAulaPayload<ExtArgs>
+      fields: Prisma.PagamentoAulaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PagamentoAulaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PagamentoAulaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>
+        }
+        findFirst: {
+          args: Prisma.PagamentoAulaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PagamentoAulaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>
+        }
+        findMany: {
+          args: Prisma.PagamentoAulaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>[]
+        }
+        create: {
+          args: Prisma.PagamentoAulaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>
+        }
+        createMany: {
+          args: Prisma.PagamentoAulaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PagamentoAulaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>[]
+        }
+        delete: {
+          args: Prisma.PagamentoAulaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>
+        }
+        update: {
+          args: Prisma.PagamentoAulaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>
+        }
+        deleteMany: {
+          args: Prisma.PagamentoAulaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PagamentoAulaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PagamentoAulaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>[]
+        }
+        upsert: {
+          args: Prisma.PagamentoAulaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PagamentoAulaPayload>
+        }
+        aggregate: {
+          args: Prisma.PagamentoAulaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePagamentoAula>
+        }
+        groupBy: {
+          args: Prisma.PagamentoAulaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PagamentoAulaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PagamentoAulaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PagamentoAulaCountAggregateOutputType> | number
+        }
+      }
+    }
     Conteudo: {
       payload: Prisma.$ConteudoPayload<ExtArgs>
       fields: Prisma.ConteudoFieldRefs
@@ -1710,6 +1785,7 @@ export const AlunoScalarFieldEnum = {
   diaPagamento: 'diaPagamento',
   diaPagamento2: 'diaPagamento2',
   diaSemana: 'diaSemana',
+  diaSemanaCobranca: 'diaSemanaCobranca',
   horaAula: 'horaAula',
   dataInicioContrato: 'dataInicioContrato',
   dataFimContrato: 'dataFimContrato',
@@ -1761,6 +1837,14 @@ export const PagamentoScalarFieldEnum = {
 } as const
 
 export type PagamentoScalarFieldEnum = (typeof PagamentoScalarFieldEnum)[keyof typeof PagamentoScalarFieldEnum]
+
+
+export const PagamentoAulaScalarFieldEnum = {
+  pagamentoId: 'pagamentoId',
+  agendaAulaId: 'agendaAulaId'
+} as const
+
+export type PagamentoAulaScalarFieldEnum = (typeof PagamentoAulaScalarFieldEnum)[keyof typeof PagamentoAulaScalarFieldEnum]
 
 
 export const ConteudoScalarFieldEnum = {
@@ -2065,6 +2149,7 @@ export type GlobalOmitConfig = {
   alunoMateria?: Prisma.AlunoMateriaOmit
   nota?: Prisma.NotaOmit
   pagamento?: Prisma.PagamentoOmit
+  pagamentoAula?: Prisma.PagamentoAulaOmit
   conteudo?: Prisma.ConteudoOmit
   agendaAula?: Prisma.AgendaAulaOmit
 }

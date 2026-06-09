@@ -210,7 +210,8 @@ model Aluno {
   valorCobranca       Float?      // valor por parcela / por aula
   diaPagamento        Int?        // dia do mês (MENSAL = venc.; QUINZENAL = 1ª parcela)
   diaPagamento2       Int?        // 2ª parcela (apenas QUINZENAL)
-  diaSemana           Int?        // 0=Dom … 6=Sáb
+  diaSemana           Int?        // 0=Dom … 6=Sáb (dia fixo de aula)
+  diaSemanaCobranca   Int?        // 0=Dom … 6=Sáb (vencimento semanal — SEMANAL)
   horaAula            String?     // "14:00" — horário fixo de início da aula
   // ── Período contratual ───────────────────────────────────────────────
   dataInicioContrato  DateTime?

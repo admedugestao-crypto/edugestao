@@ -64,6 +64,7 @@ export const ModelName = {
   AlunoMateria: 'AlunoMateria',
   Nota: 'Nota',
   Pagamento: 'Pagamento',
+  PagamentoAula: 'PagamentoAula',
   Conteudo: 'Conteudo',
   AgendaAula: 'AgendaAula'
 } as const
@@ -227,6 +228,7 @@ export const AlunoScalarFieldEnum = {
   diaPagamento: 'diaPagamento',
   diaPagamento2: 'diaPagamento2',
   diaSemana: 'diaSemana',
+  diaSemanaCobranca: 'diaSemanaCobranca',
   horaAula: 'horaAula',
   dataInicioContrato: 'dataInicioContrato',
   dataFimContrato: 'dataFimContrato',
@@ -278,6 +280,14 @@ export const PagamentoScalarFieldEnum = {
 } as const
 
 export type PagamentoScalarFieldEnum = (typeof PagamentoScalarFieldEnum)[keyof typeof PagamentoScalarFieldEnum]
+
+
+export const PagamentoAulaScalarFieldEnum = {
+  pagamentoId: 'pagamentoId',
+  agendaAulaId: 'agendaAulaId'
+} as const
+
+export type PagamentoAulaScalarFieldEnum = (typeof PagamentoAulaScalarFieldEnum)[keyof typeof PagamentoAulaScalarFieldEnum]
 
 
 export const ConteudoScalarFieldEnum = {
