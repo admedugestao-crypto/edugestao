@@ -44,7 +44,7 @@ export default function AlunoForm({
   const [erro, setErro] = useState("");
 
   // ── Status controlado ──────────────────────────────────────────────────────
-  const [status, setStatus] = useState<string>(alunoInicial?.status ?? "PAUSADO");
+  const [status, setStatus] = useState<string>(alunoInicial?.status ?? "");
   const [erroStatusCad, setErroStatusCad] = useState("");
 
   // ── Rastrear preenchimento dos campos obrigatórios (exceto foto) ──────────
@@ -63,6 +63,7 @@ export default function AlunoForm({
     unidadeId:           !!alunoInicial?.unidadeId,
     serie:               !!alunoInicial?.serie,
     turma:               !!alunoInicial?.turma,
+    professoraId:        perfil !== "SUPERADMIN" || !!alunoInicial?.professoraId,
   });
 
   function setCampo(key: keyof typeof campos) {
@@ -71,18 +72,17 @@ export default function AlunoForm({
   }
 
   // Cadastro completo quando todos os campos rastreados estão preenchidos
-  // + escola selecionada + ao menos 1 matéria + tipo de cobrança definido
+  // + escola selecionada + ao menos 1 matéria + tipo de cobrança + status + datas contratuais
   const cadastroCompleto =
     Object.values(campos).every(Boolean) &&
     !!escolaId &&
     materiasSelected.length > 0 &&
-    !!tipoCobranca;
+    !!tipoCobranca &&
+    !!status &&
+    !!dataInicio &&
+    !!dataFim;
 
   function handleStatusChange(val: string) {
-    if (val !== "PAUSADO" && !cadastroCompleto) {
-      setErroStatusCad("Preencha todos os campos obrigatórios para alterar o status.");
-      return;
-    }
     setErroStatusCad("");
     setStatus(val);
   }
@@ -145,6 +145,24 @@ export default function AlunoForm({
 
     if (!tipoCobranca) {
       setErro("Selecione o tipo de cobrança.");
+      setSalvando(false);
+      return;
+    }
+
+    if (!status) {
+      setErro("Selecione o status do aluno.");
+      setSalvando(false);
+      return;
+    }
+
+    if (perfil === "SUPERADMIN" && !form.get("professoraId")) {
+      setErro("Selecione o(a) professor(a) responsável.");
+      setSalvando(false);
+      return;
+    }
+
+    if (!dataInicio || !dataFim) {
+      setErro("Preencha as datas de início e término do contrato.");
       setSalvando(false);
       return;
     }
@@ -464,38 +482,36 @@ export default function AlunoForm({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Status *</label>
             <select
               name="status"
               value={status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${!status ? "border-amber-300 bg-amber-50" : "border-slate-200"}`}
             >
+              <option value="">Selecione o status…</option>
+              <option value="ATIVO">Ativo</option>
               <option value="PAUSADO">Pausado</option>
-              <option value="ATIVO" disabled={!cadastroCompleto}>Ativo</option>
-              <option value="ENCERRADO" disabled={!cadastroCompleto}>Encerrado</option>
+              <option value="ENCERRADO">Encerrado</option>
             </select>
-            {status === "PAUSADO" && !cadastroCompleto && (
-              <p className="text-xs text-amber-600 mt-1">
-                🔒 Preencha todos os campos obrigatórios para ativar o cadastro.
-              </p>
-            )}
-            {erroStatusCad && (
-              <p className="text-xs text-red-600 mt-1">⚠️ {erroStatusCad}</p>
+            {!status && (
+              <p className="text-xs text-amber-600 mt-1">Campo obrigatório — selecione o status.</p>
             )}
           </div>
           {perfil === "SUPERADMIN" && (
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Professor(a)
+                Professor(a) *
               </label>
               {professoras.length > 0 ? (
                 <select
                   name="professoraId"
                   defaultValue={alunoInicial?.professoraId ?? ""}
+                  required
+                  onChange={(e) => setCampos((prev) => ({ ...prev, professoraId: !!e.target.value }))}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="">Sem professor(a) atribuído(a)</option>
+                  <option value="">Selecione o(a) professor(a)…</option>
                   {professoras.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.usuario.nome}
@@ -503,8 +519,8 @@ export default function AlunoForm({
                   ))}
                 </select>
               ) : (
-                <p className="text-xs text-slate-400 mt-1">
-                  Nenhum(a) professor(a) cadastrado(a). Você pode vincular depois em Usuários.
+                <p className="text-xs text-red-500 mt-1">
+                  ⚠️ Nenhum(a) professor(a) cadastrado(a). Cadastre em Usuários antes de adicionar alunos.
                 </p>
               )}
             </div>
@@ -688,32 +704,33 @@ export default function AlunoForm({
       <div className={`bg-white rounded-xl border p-5 ${erroPeriodo ? "border-red-300" : "border-slate-200"}`}>
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays size={17} className="text-indigo-600" />
-          <h2 className="font-semibold text-slate-800">Período contratual</h2>
-          <span className="text-xs text-slate-400 ml-1">(opcional)</span>
+          <h2 className="font-semibold text-slate-800">Período contratual *</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Data de início</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Data de início *</label>
             <input
               type="date"
               name="dataInicioContrato"
               value={dataInicio}
+              required
               onChange={(e) => setDataInicio(e.target.value)}
               className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                erroPeriodo ? "border-red-400 bg-red-50" : "border-slate-200"
+                erroPeriodo || !dataInicio ? "border-amber-300 bg-amber-50" : "border-slate-200"
               }`}
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Data de término</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Data de término *</label>
             <input
               type="date"
               name="dataFimContrato"
               value={dataFim}
+              required
               min={dataInicio || undefined}
               onChange={(e) => setDataFim(e.target.value)}
               className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                erroPeriodo ? "border-red-400 bg-red-50" : "border-slate-200"
+                erroPeriodo || !dataFim ? "border-amber-300 bg-amber-50" : "border-slate-200"
               }`}
             />
           </div>
@@ -722,6 +739,9 @@ export default function AlunoForm({
           <p className="text-xs text-red-600 mt-2 flex items-center gap-1">
             ⚠️ {erroPeriodo}
           </p>
+        )}
+        {(!dataInicio || !dataFim) && !erroPeriodo && (
+          <p className="text-xs text-amber-600 mt-2">Campo obrigatório — preencha as datas do contrato.</p>
         )}
       </div>
 
