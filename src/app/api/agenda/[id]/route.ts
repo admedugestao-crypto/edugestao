@@ -19,14 +19,19 @@ export async function PATCH(
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
-  // Bloqueia mudança para CANCELADA ou FALTA_PROFESSOR quando há pagamento vinculado
+  // Bloqueia mudança para CANCELADA ou FALTA_PROFESSOR quando o pagamento vinculado já foi pago.
+  // Se o pagamento ainda está "a vencer" (pago = false), permite a alteração.
   if (status === "CANCELADA" || status === "FALTA_PROFESSOR") {
-    const vinculos = await prisma.$queryRaw<{ count: bigint }[]>`
-      SELECT COUNT(*)::bigint as count FROM pagamento_aulas WHERE "agendaAulaId" = ${id}
+    const vinculosPagos = await prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(*)::bigint as count
+      FROM pagamento_aulas pa
+      JOIN pagamentos p ON p.id = pa."pagamentoId"
+      WHERE pa."agendaAulaId" = ${id}
+        AND p.pago = true
     `;
-    if (Number(vinculos[0].count) > 0) {
+    if (Number(vinculosPagos[0].count) > 0) {
       return NextResponse.json(
-        { erro: `Não é possível marcar como "${status === "CANCELADA" ? "Cancelada" : "Falta do Professor"}": esta aula está vinculada a um registro de pagamento gerado. O pagamento foi calculado incluindo esta aula.` },
+        { erro: `Não é possível marcar como "${status === "CANCELADA" ? "Cancelada" : "Falta do Professor"}": esta aula está vinculada a um pagamento já quitado.` },
         { status: 422 },
       );
     }
