@@ -388,7 +388,6 @@ export default function AgendaClient({
         alunoId:   aulaDetalhe.aluno.id,
         materiaId: aulaDetalhe.materia?.id ?? "",
         data:      aulaDetalhe.data.split("T")[0],
-        descricao: obsEdit.trim(),
       });
       router.push(`/dashboard/conteudos?${params.toString()}`);
       return;
@@ -1019,16 +1018,25 @@ export default function AgendaClient({
 
 // ── Subcomponentes ────────────────────────────────────────────────────────────
 
+// Cores hex por status — usadas no estilo inline do card
+const STATUS_COR: Record<StatusAula, { bg: string; border: string; text: string }> = {
+  AGENDADA:        { bg: "#f1f5f9", border: "#94a3b8", text: "#475569" },
+  REALIZADA:       { bg: "#d1fae5", border: "#10b981", text: "#065f46" },
+  CANCELADA:       { bg: "#fee2e2", border: "#ef4444", text: "#991b1b" },
+  FALTA_ALUNO:     { bg: "#fef3c7", border: "#f59e0b", text: "#92400e" },
+  FALTA_PROFESSOR: { bg: "#ffedd5", border: "#f97316", text: "#9a3412" },
+};
+
 function CardAula({ aula, onClick, mostrarProfessora = false }: {
   aula: Aula; onClick: () => void; mostrarProfessora?: boolean;
 }) {
-  const cfg = STATUS_CONFIG[aula.status];
-  const cor = aula.materia?.cor ?? corAluno(aula.alunoId);
+  const cfg    = STATUS_CONFIG[aula.status];
+  const cores  = STATUS_COR[aula.status];
   const todasMaterias = aula.aluno.materias?.map((m) => m.materia) ?? [];
   return (
     <button onClick={onClick}
       className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm"
-      style={{ backgroundColor: cor + "38", borderLeftColor: cor }}>
+      style={{ backgroundColor: cores.bg, borderLeftColor: cores.border }}>
       {/* Nome + indicador de status */}
       <div className="flex items-start justify-between gap-1">
         <p className="text-xs font-bold leading-tight truncate text-slate-800">{aula.aluno.nome}</p>
@@ -1037,7 +1045,7 @@ function CardAula({ aula, onClick, mostrarProfessora = false }: {
         </span>
       </div>
       {aula.horaInicio && (
-        <p className="text-[10px] font-medium mt-0.5" style={{ color: cor }}>
+        <p className="text-[10px] font-medium mt-0.5" style={{ color: cores.text }}>
           {aula.horaInicio}{aula.horaFim ? ` – ${aula.horaFim}` : ""}
         </p>
       )}
