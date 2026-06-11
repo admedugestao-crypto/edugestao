@@ -111,6 +111,7 @@ export default function AgendaClient({
   });
   const [salvando, setSalvando]   = useState(false);
   const [erroModal, setErroModal] = useState<string | null>(null);
+  const [avisoAgendamento, setAvisoAgendamento] = useState<string | null>(null); // aviso de regra não satisfeita
 
   // Alunos filtrados pela professora selecionada no modal (só para não-professores)
   const alunosFiltradosModal = !isProfessor && professoraIdModal
@@ -292,13 +293,45 @@ export default function AgendaClient({
     setDataModal(data ?? "");
     setProfessoraIdModal("");
     setErroModal(null);
+    setAvisoAgendamento(null);
     setNovaAula({ alunoId: "", materiaId: "", data: data ?? "", horaInicio: "", horaFim: "", observacao: "" });
     setModalAberto(true);
   }
 
-  async function salvarNovaAula() {
+  /** Verifica se a data/hora da nova aula viola a regra de geração automática.
+   *  Retorna uma string de aviso se houver problema, ou null se estiver ok. */
+  function verificarRegraAgendamento(): string | null {
+    if (!novaAula.data) return null;
+    const agora = new Date();
+    const horaAgora = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+
+    const [y, m, d] = novaAula.data.split("-").map(Number);
+    const dataAula = new Date(y, m - 1, d);
+
+    if (dataAula < hoje) {
+      return `A data selecionada (${novaAula.data.split("-").reverse().join("/")}) é anterior a hoje. Deseja incluir mesmo assim?`;
+    }
+    if (dataAula.getTime() === hoje.getTime() && novaAula.horaInicio && novaAula.horaInicio <= horaAgora) {
+      return `O horário ${novaAula.horaInicio} de hoje já passou (agora são ${horaAgora}). Deseja incluir mesmo assim?`;
+    }
+    return null;
+  }
+
+  async function salvarNovaAula(forcar = false) {
     if (!novaAula.alunoId || !novaAula.data) return;
     if (!isProfessor && !professoraIdModal) return;
+
+    // Verifica regra de agendamento — pede confirmação se não satisfeita
+    if (!forcar) {
+      const aviso = verificarRegraAgendamento();
+      if (aviso) {
+        setAvisoAgendamento(aviso);
+        return; // aguarda confirmação do usuário
+      }
+    }
+
+    setAvisoAgendamento(null);
     setSalvando(true);
     setErroModal(null);
     try {
@@ -681,13 +714,13 @@ export default function AgendaClient({
             </div>
             <div>
               <label className="text-xs font-medium text-slate-600">Data *</label>
-              <input type="date" value={novaAula.data} onChange={(e) => setNovaAula((p) => ({ ...p, data: e.target.value }))}
+              <input type="date" value={novaAula.data} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, data: e.target.value })); }}
                 className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-600">Início</label>
-                <input type="time" value={novaAula.horaInicio} onChange={(e) => setNovaAula((p) => ({ ...p, horaInicio: e.target.value }))}
+                <input type="time" value={novaAula.horaInicio} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
               <div>
@@ -709,16 +742,39 @@ export default function AgendaClient({
               </div>
             )}
 
+            {/* Aviso de regra de agendamento — pede confirmação */}
+            {avisoAgendamento && (
+              <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-3 text-xs text-amber-800 space-y-2">
+                <p>⚠️ <strong>Atenção:</strong> {avisoAgendamento}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => salvarNovaAula(true)}
+                    disabled={salvando}
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                    {salvando && <RefreshCw size={11} className="animate-spin"/>}
+                    Sim, incluir mesmo assim
+                  </button>
+                  <button
+                    onClick={() => setAvisoAgendamento(null)}
+                    className="px-3 py-1.5 text-xs font-medium border border-amber-300 text-amber-700 hover:bg-amber-100 rounded-lg transition-colors">
+                    Não, cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!avisoAgendamento && (
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setModalAberto(false)} className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50">
                 Cancelar
               </button>
-              <button onClick={salvarNovaAula} disabled={salvando || !novaAula.alunoId || !novaAula.data || (!isProfessor && !professoraIdModal)}
+              <button onClick={() => salvarNovaAula()} disabled={salvando || !novaAula.alunoId || !novaAula.data || (!isProfessor && !professoraIdModal)}
                 className="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg transition-colors">
                 {salvando && <RefreshCw size={13} className="animate-spin"/>}
                 Salvar
               </button>
             </div>
+            )}
           </div>
         </Modal>
       )}
