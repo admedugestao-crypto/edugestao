@@ -78,6 +78,35 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
+
+  // Bloqueia exclusão se houver aula com status REALIZADA na mesma data/aluno
+  const conteudo = await prisma.conteudo.findUnique({
+    where: { id },
+    select: { alunoId: true, data: true },
+  });
+  if (conteudo) {
+    const dY = conteudo.data.getUTCFullYear();
+    const dM = conteudo.data.getUTCMonth();
+    const dD = conteudo.data.getUTCDate();
+    const aula = await prisma.agendaAula.findFirst({
+      where: {
+        alunoId: conteudo.alunoId,
+        status:  "REALIZADA",
+        data: {
+          gte: new Date(Date.UTC(dY, dM, dD)),
+          lt:  new Date(Date.UTC(dY, dM, dD + 1)),
+        },
+      },
+      select: { id: true },
+    });
+    if (aula) {
+      return NextResponse.json(
+        { erro: "Não é possível excluir: existe uma agenda com status Realizada vinculada a este conteúdo." },
+        { status: 422 },
+      );
+    }
+  }
+
   await prisma.conteudo.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
