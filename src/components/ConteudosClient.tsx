@@ -381,7 +381,7 @@ export default function ConteudosClient({
       const res = await fetch("/api/conteudos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null }),
+        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, aulaId: aulaIdPendente || undefined }),
       });
       const data = await res.json();
       if (!res.ok) {

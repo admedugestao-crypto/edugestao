@@ -52,8 +52,11 @@ export async function POST(req: NextRequest) {
   const dataAula = new Date(body.data);
   const planejado = body.planejado ?? false;
 
-  const validacao = await validarAgenda(body.alunoId, dataAula, planejado);
-  if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
+  // Quando chamado diretamente da agenda (aulaId presente), pula validação de status
+  if (!body.aulaId) {
+    const validacao = await validarAgenda(body.alunoId, dataAula, planejado);
+    if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
+  }
 
   const conteudo = await prisma.conteudo.create({
     data: {
