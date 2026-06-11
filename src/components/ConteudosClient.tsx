@@ -399,11 +399,17 @@ export default function ConteudosClient({
 
       // Se veio da agenda, marca a aula como Realizada
       if (aulaIdPendente) {
-        await fetch(`/api/agenda/${aulaIdPendente}`, {
+        const patchRes = await fetch(`/api/agenda/${aulaIdPendente}`, {
           method:  "PATCH",
           headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify({ status: "REALIZADA", observacao: novo.descricao }),
+          body:    JSON.stringify({ status: "REALIZADA" }),
         });
+        if (!patchRes.ok) {
+          const patchJson = await patchRes.json().catch(() => ({}));
+          setErroNovo(`Conteúdo salvo, mas não foi possível atualizar a agenda: ${patchJson.erro ?? "erro desconhecido"}`);
+          setAulaIdPendente(null);
+          return;
+        }
         setAulaIdPendente(null);
       }
 
