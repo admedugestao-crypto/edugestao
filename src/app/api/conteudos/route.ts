@@ -36,8 +36,8 @@ async function validarAgenda(
     return {
       ok: false,
       erro: planejado
-        ? `Conteúdo planejado requer aula com status Agendada (atual: ${aula.status}).`
-        : `Conteúdo ministrado requer aula com status Realizada (atual: ${aula.status}).`,
+        ? `Conteúdo planejado requer agenda com status Agendada (atual: ${aula.status}).`
+        : `Conteúdo ministrado requer agenda com status Realizada (atual: ${aula.status}).`,
     };
   }
 
