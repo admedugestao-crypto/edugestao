@@ -738,7 +738,7 @@ export default function AgendaClient({
               <select value={novaAula.materiaId} onChange={(e) => setNovaAula((p) => ({ ...p, materiaId: e.target.value }))}
                 disabled={!novaAula.alunoId}
                 className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                <option value="">Sem matéria</option>
+                <option value="">Todas as matérias</option>
                 {(alunosFiltradosModal.find((a) => a.id === novaAula.alunoId)?.materias ?? []).map((m) => (
                   <option key={m.id} value={m.id}>{m.nome}</option>
                 ))}
