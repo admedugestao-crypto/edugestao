@@ -445,6 +445,15 @@ export default function AgendaClient({
   // ── Dados calculados ───────────────────────────────────────────────────────
   const diasGrade = Array.from({ length: 7 }, (_, i) => addDays(semanaRef, i));
 
+  // Matérias únicas derivadas dos alunos (garante que o filtro aparece mesmo
+  // quando a prop `materias` vem vazia por falta de vínculo professora-matéria)
+  const materiasDisponiveis: Materia[] = (() => {
+    const map = new Map<string, Materia>();
+    for (const m of materias) map.set(m.id, m);
+    for (const a of alunos) for (const m of a.materias) if (!map.has(m.id)) map.set(m.id, m);
+    return Array.from(map.values()).sort((a, b) => a.nome.localeCompare(b.nome));
+  })();
+
   // Aulas filtradas pela matéria selecionada (aplicado em toda a grade)
   const aulasFiltradas = filtroMateriaId
     ? aulas.filter((a) =>
@@ -516,14 +525,14 @@ export default function AgendaClient({
         )}
 
         {/* Filtro por matéria */}
-        {materias.length > 0 && (
+        {materiasDisponiveis.length > 0 && (
           <select
             value={filtroMateriaId}
             onChange={(e) => setFiltroMateriaId(e.target.value)}
             className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
           >
             <option value="">Todas as matérias</option>
-            {materias.map((m) => (
+            {materiasDisponiveis.map((m) => (
               <option key={m.id} value={m.id}>{m.nome}</option>
             ))}
           </select>
