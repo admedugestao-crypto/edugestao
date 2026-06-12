@@ -127,6 +127,8 @@ export default function AgendaClient({
 
   // Filtro de professora (admin)
   const [filtroProfId, setFiltroProfId] = useState("");
+  // Filtro de matéria (todos os perfis)
+  const [filtroMateriaId, setFiltroMateriaId] = useState("");
 
   // Gerar semana
   const [gerando, setGerando]             = useState(false);
@@ -443,8 +445,16 @@ export default function AgendaClient({
   // ── Dados calculados ───────────────────────────────────────────────────────
   const diasGrade = Array.from({ length: 7 }, (_, i) => addDays(semanaRef, i));
 
+  // Aulas filtradas pela matéria selecionada (aplicado em toda a grade)
+  const aulasFiltradas = filtroMateriaId
+    ? aulas.filter((a) =>
+        a.materiaId === filtroMateriaId ||
+        a.aluno.materias.some((m) => m.materia.id === filtroMateriaId)
+      )
+    : aulas;
+
   function aulasNoDia(dia: Date) {
-    return aulas.filter((a) => isSameDay(parseLocal(a.data), dia))
+    return aulasFiltradas.filter((a) => isSameDay(parseLocal(a.data), dia))
       .sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
   }
 
@@ -501,6 +511,20 @@ export default function AgendaClient({
             <option value="">Todos os professores</option>
             {professoras.map((p) => (
               <option key={p.id} value={p.id}>{p.nome}</option>
+            ))}
+          </select>
+        )}
+
+        {/* Filtro por matéria */}
+        {materias.length > 0 && (
+          <select
+            value={filtroMateriaId}
+            onChange={(e) => setFiltroMateriaId(e.target.value)}
+            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
+          >
+            <option value="">Todas as matérias</option>
+            {materias.map((m) => (
+              <option key={m.id} value={m.id}>{m.nome}</option>
             ))}
           </select>
         )}
