@@ -9,27 +9,10 @@ export async function proxy(request: NextRequest) {
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
   if (isPublic) return NextResponse.next();
 
-  const cookieNames = [...request.cookies.getAll().map((c) => c.name)];
-  const hasSessionCookie = cookieNames.some((n) =>
-    n.includes("session-token")
-  );
-  console.log(
-    "[proxy] pathname:",
-    pathname,
-    "cookies:",
-    cookieNames.join(","),
-    "hasSession:",
-    hasSessionCookie,
-    "secret_set:",
-    !!process.env.NEXTAUTH_SECRET
-  );
-
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
   });
-
-  console.log("[proxy] token:", token ? "FOUND" : "NULL");
 
   if (!token) {
     const loginUrl = new URL("/login", request.url);
