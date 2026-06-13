@@ -454,12 +454,9 @@ export default function AgendaClient({
     return Array.from(map.values()).sort((a, b) => a.nome.localeCompare(b.nome));
   })();
 
-  // Aulas filtradas pela matéria selecionada (aplicado em toda a grade)
+  // Aulas filtradas pela matéria selecionada — usa o materiaId da própria aula
   const aulasFiltradas = filtroMateriaId
-    ? aulas.filter((a) =>
-        a.materiaId === filtroMateriaId ||
-        a.aluno.materias.some((m) => m.materia.id === filtroMateriaId)
-      )
+    ? aulas.filter((a) => a.materiaId === filtroMateriaId)
     : aulas;
 
   function aulasNoDia(dia: Date) {
@@ -609,7 +606,7 @@ export default function AgendaClient({
               return (
                 <div key={i}
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
-                  {lista.map((aula) => <CardAula key={aula.id} aula={aula} mostrarProfessora={!isProfessor} onClick={() => {
+                  {lista.map((aula) => <CardAula key={aula.id} aula={aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
                     setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setErroStatus(null);
                     if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                   }}/>)}
@@ -1032,7 +1029,7 @@ export default function AgendaClient({
             </div>
 
             {/* Rodapé */}
-            <div className="flex justify-between pt-1">
+            <div className="flex justify-between pt-1 flex-wrap gap-2">
               <button onClick={() => excluirAula(aulaDetalhe.id)}
                 className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-700 transition-colors">
                 <Trash2 size={13}/> Excluir aula
@@ -1060,12 +1057,13 @@ const STATUS_COR: Record<StatusAula, { bg: string; border: string; text: string 
   FALTA_PROFESSOR: { bg: "#ffedd5", border: "#f97316", text: "#9a3412" },
 };
 
-function CardAula({ aula, onClick, mostrarProfessora = false }: {
-  aula: Aula; onClick: () => void; mostrarProfessora?: boolean;
+function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = "" }: {
+  aula: Aula; onClick: () => void; mostrarProfessora?: boolean; filtroMateriaId?: string;
 }) {
   const cfg    = STATUS_CONFIG[aula.status];
   const cores  = STATUS_COR[aula.status];
-  const todasMaterias = aula.aluno.materias?.map((m) => m.materia) ?? [];
+  const todasMaterias = (aula.aluno.materias?.map((m) => m.materia) ?? [])
+    .filter((m) => !filtroMateriaId || m.id === filtroMateriaId);
   return (
     <button onClick={onClick}
       className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm"

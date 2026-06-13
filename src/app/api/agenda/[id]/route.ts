@@ -19,6 +19,29 @@ export async function PATCH(
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
+  // Bloqueia qualquer mudança de status quando a aula está REALIZADA e tem conteúdo relacionado
+  if (status !== undefined && aula.status === "REALIZADA") {
+    const dY = aula.data.getUTCFullYear();
+    const dM = aula.data.getUTCMonth();
+    const dD = aula.data.getUTCDate();
+    const conteudo = await prisma.conteudo.findFirst({
+      where: {
+        alunoId: aula.alunoId,
+        data: {
+          gte: new Date(Date.UTC(dY, dM, dD)),
+          lt:  new Date(Date.UTC(dY, dM, dD + 1)),
+        },
+      },
+      select: { id: true },
+    });
+    if (conteudo) {
+      return NextResponse.json(
+        { erro: "Não é possível alterar o status: esta agenda está Realizada e possui conteúdo registrado." },
+        { status: 422 },
+      );
+    }
+  }
+
   // Bloqueia mudança para CANCELADA ou FALTA_PROFESSOR quando o pagamento vinculado já foi pago.
   // Se o pagamento ainda está "a vencer" (pago = false), permite a alteração.
   if (status === "CANCELADA" || status === "FALTA_PROFESSOR") {
@@ -69,14 +92,16 @@ export async function DELETE(
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
-  // Bloqueia se esta aula estiver vinculada a um registro de pagamento
-  // Usa SQL raw para não depender do modelo PagamentoAula no client gerado
-  const vinculos = await prisma.$queryRaw<{ count: bigint }[]>`
-    SELECT COUNT(*)::bigint as count FROM pagamento_aulas WHERE "agendaAulaId" = ${id}
+  // Bloqueia apenas se houver pagamento já quitado vinculado
+  const vinculosPagos = await prisma.$queryRaw<{ count: bigint }[]>`
+    SELECT COUNT(*)::bigint as count
+    FROM pagamento_aulas pa
+    JOIN pagamentos p ON p.id = pa."pagamentoId"
+    WHERE pa."agendaAulaId" = ${id} AND p.pago = true
   `;
-  if (Number(vinculos[0].count) > 0) {
+  if (Number(vinculosPagos[0].count) > 0) {
     return NextResponse.json(
-      { erro: "Não é possível excluir: esta aula está vinculada a um registro de pagamento gerado. Exclua o pagamento primeiro." },
+      { erro: "Não é possível excluir: esta aula está vinculada a um pagamento já quitado." },
       { status: 422 },
     );
   }
