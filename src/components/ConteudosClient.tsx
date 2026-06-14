@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -338,6 +339,7 @@ export default function ConteudosClient({
   isProfessor: boolean;
 }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [conteudos, setConteudos] = useState(conteudosIniciais);
   const [modal, setModal] = useState(false);
@@ -415,6 +417,8 @@ export default function ConteudosClient({
           return;
         }
         setAulaIdPendente(null);
+        router.push("/dashboard/agenda");
+        return;
       }
 
       setModal(false);
