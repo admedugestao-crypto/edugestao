@@ -166,12 +166,7 @@ function CamposForm({
     : alunos;
   const alunosFiltrados = filtrados.length > 0 ? filtrados : alunos;
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
-  const materiasFiltradas = (() => {
-    const map = new Map<string, Materia>();
-    for (const m of materias) map.set(m.id, m);
-    for (const am of alunoSel?.materias ?? []) if (!map.has(am.materia.id)) map.set(am.materia.id, am.materia);
-    return Array.from(map.values()).sort((a, b) => a.nome.localeCompare(b.nome));
-  })();
+  const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
 
   return (
     <div className="space-y-3">
