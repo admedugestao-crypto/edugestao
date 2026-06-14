@@ -6,13 +6,15 @@ export const dynamic = "force-dynamic";
 
 export async function POST(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
+  const { id } = await params;
+
   const conteudo = await prisma.conteudo.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { id: true, alunoId: true, data: true, planejado: true },
   });
 
