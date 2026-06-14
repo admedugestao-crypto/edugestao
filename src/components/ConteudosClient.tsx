@@ -214,7 +214,7 @@ function CamposForm({
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
         >
           <option value="">
-            {form.alunoId ? "Selecione..." : "Selecione o aluno primeiro"}
+            {form.alunoId ? "Todas as matérias" : "Selecione o aluno primeiro"}
           </option>
           {materiasFiltradas.map((m) => (
             <option key={m.id} value={m.id}>{m.nome}</option>
