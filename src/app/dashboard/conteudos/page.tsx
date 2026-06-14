@@ -37,13 +37,7 @@ export default async function ConteudosPage() {
       include: { usuario: { select: { nome: true } } },
       orderBy: { usuario: { nome: "asc" } },
     }),
-    (!isAdmin && professoraId)
-      ? prisma.materia.findMany({
-          where: { professoras: { some: { professoraId } } },
-          select: { id: true, nome: true, cor: true },
-          orderBy: { nome: "asc" },
-        })
-      : prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } }),
+    prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } }),
   ]);
 
   return (
