@@ -958,19 +958,6 @@ export default function AgendaClient({
             <div className="bg-slate-50 rounded-lg p-3 text-sm space-y-1">
               <p><span className="text-slate-400 text-xs">Data:</span> <span className="font-medium">{format(parseLocal(aulaDetalhe.data), "EEEE, dd/MM/yyyy", { locale: ptBR })}</span></p>
               <p><span className="text-slate-400 text-xs">Horário:</span> <span className="font-medium">{aulaDetalhe.horaInicio ?? "–"}{aulaDetalhe.horaFim ? ` → ${aulaDetalhe.horaFim}` : ""}</span></p>
-              <div className="flex items-start gap-1 flex-wrap">
-                <span className="text-slate-400 text-xs shrink-0">Matérias:</span>
-                {(aulaDetalhe.aluno.materias?.length ?? 0) > 0
-                  ? aulaDetalhe.aluno.materias.map((m) => (
-                      <span key={m.materia.id}
-                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-white"
-                        style={{ backgroundColor: m.materia.cor }}>
-                        {m.materia.nome}
-                      </span>
-                    ))
-                  : <span className="font-medium text-sm">–</span>
-                }
-              </div>
               <p><span className="text-slate-400 text-xs">Série:</span> <span className="font-medium">{aulaDetalhe.aluno.serie}{aulaDetalhe.aluno.turma ? ` · ${aulaDetalhe.aluno.turma}` : ""}</span></p>
               {!isProfessor && (
                 <p><span className="text-slate-400 text-xs">Professor(a):</span> <span className="font-medium">{aulaDetalhe.professora.usuario.nome}</span></p>
