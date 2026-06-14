@@ -43,6 +43,20 @@ export async function POST(
     );
   }
 
+  if (aula.status === "CANCELADA") {
+    return NextResponse.json(
+      { erro: "Não é possível marcar como Ministrado: a aula está Cancelada." },
+      { status: 422 },
+    );
+  }
+
+  if (aula.status === "FALTA_PROFESSOR") {
+    return NextResponse.json(
+      { erro: "Não é possível marcar como Ministrado: a aula está registrada como Falta do Professor." },
+      { status: 422 },
+    );
+  }
+
   // Mark the agenda as REALIZADA and the conteúdo as Ministrado
   await prisma.$transaction([
     prisma.agendaAula.update({
