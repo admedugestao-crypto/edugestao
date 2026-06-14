@@ -52,8 +52,8 @@ export async function POST(req: NextRequest) {
   const dataAula = new Date(body.data);
   const planejado = body.planejado ?? false;
 
-  // Quando chamado diretamente da agenda (aulaId presente), pula validação de status
-  if (!body.aulaId) {
+  // Validação de agenda só quando vem da agenda (aulaId presente) com status Ministrado
+  if (body.aulaId && !planejado) {
     const validacao = await validarAgenda(body.alunoId, dataAula, planejado);
     if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
   }

@@ -270,57 +270,6 @@ function CamposForm({
         />
       </div>
 
-      {/* Status da aula: Planejado / Ministrado — oculto em inclusão direta */}
-      {!somentePlanejado && (() => {
-        const hoje      = new Date().toISOString().split("T")[0];
-        const ehFuturo  = form.data > hoje;
-        const ehHoje    = form.data === hoje;
-
-        return (
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-2">Status da aula</label>
-            <div className="flex gap-2">
-              {/* Planejado */}
-              <button
-                type="button"
-                disabled={ehFuturo}
-                onClick={() => { setForm({ ...form, planejado: true }); onCampoChave?.(); }}
-                className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-colors ${
-                  form.planejado || ehFuturo
-                    ? "bg-amber-50 border-amber-300 text-amber-800"
-                    : "border-slate-200 text-slate-500 hover:border-amber-200 hover:bg-amber-50"
-                }`}
-              >
-                📋 Planejado
-              </button>
-
-              {/* Ministrado */}
-              <button
-                type="button"
-                disabled={ehFuturo}
-                onClick={() => { setForm({ ...form, planejado: false }); onCampoChave?.(); }}
-                className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-colors ${
-                  !form.planejado && !ehFuturo
-                    ? "bg-emerald-50 border-emerald-300 text-emerald-800"
-                    : "border-slate-200 text-slate-500 hover:border-emerald-200 hover:bg-emerald-50"
-                } ${ehFuturo ? "opacity-40 cursor-not-allowed" : ""}`}
-              >
-                ✅ Ministrado
-              </button>
-            </div>
-
-            {/* Dica contextual */}
-            {ehFuturo && (
-              <p className="text-xs text-indigo-500 mt-1">Data futura — somente Planejado é permitido.</p>
-            )}
-            {ehHoje && form.planejado && (
-              <p className="text-xs text-slate-500 mt-1">
-                Para marcar como <strong>Ministrado</strong>, a aula deve estar com status <strong>Realizada</strong> na agenda.
-              </p>
-            )}
-          </div>
-        );
-      })()}
     </div>
   );
 }
