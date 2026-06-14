@@ -55,7 +55,7 @@ const formVazio = (): FormC => ({
   arquivoUrl: "",
   arquivoNome: "",
   data: new Date().toISOString().split("T")[0],
-  planejado: false,
+  planejado: true,
 });
 
 // ── Upload de arquivo ────────────────────────────────────────────────────────
@@ -150,6 +150,7 @@ function CamposForm({
   isProfessor,
   filtroProfId,
   setFiltroProfId,
+  somentePlanejado,
   onCampoChave,
 }: {
   form: FormC;
@@ -160,6 +161,7 @@ function CamposForm({
   isProfessor: boolean;
   filtroProfId: string;
   setFiltroProfId: (id: string) => void;
+  somentePlanejado?: boolean;
   onCampoChave?: () => void;
 }) {
   const filtrados = filtroProfId
@@ -268,8 +270,8 @@ function CamposForm({
         />
       </div>
 
-      {/* Status da aula: Planejado / Ministrado */}
-      {(() => {
+      {/* Status da aula: Planejado / Ministrado — oculto em inclusão direta */}
+      {!somentePlanejado && (() => {
         const hoje      = new Date().toISOString().split("T")[0];
         const ehFuturo  = form.data > hoje;
         const ehHoje    = form.data === hoje;
@@ -322,6 +324,7 @@ function CamposForm({
     </div>
   );
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -601,6 +604,7 @@ export default function ConteudosClient({
                 isProfessor={isProfessor}
                 filtroProfId={filtroProfId}
                 setFiltroProfId={setFiltroProfId}
+                somentePlanejado={!aulaIdPendente}
                 onCampoChave={() => setErroNovo("")}
               />
             </div>
@@ -653,6 +657,7 @@ export default function ConteudosClient({
                 isProfessor={isProfessor}
                 filtroProfId={filtroProfId}
                 setFiltroProfId={setFiltroProfId}
+                somentePlanejado={true}
                 onCampoChave={() => setErroEdit("")}
               />
             </div>
