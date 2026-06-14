@@ -58,7 +58,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     where: { id },
     data: {
       alunoId:    body.alunoId,
-      materiaId:  body.materiaId,
+      materiaId:  body.materiaId || null,
       topico:     body.topico,
       descricao:  body.descricao  || null,
       arquivoUrl: body.arquivoUrl !== undefined ? body.arquivoUrl || null : undefined,

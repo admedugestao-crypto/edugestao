@@ -309,7 +309,7 @@ model PagamentoAula {
 model Conteudo {
   id        String   @id @default(cuid())
   alunoId   String
-  materiaId String
+  materiaId String?
   data      DateTime
   topico     String
   descricao  String?
@@ -317,8 +317,8 @@ model Conteudo {
   planejado  Boolean  @default(false)
   criadoEm  DateTime @default(now())
 
-  aluno   Aluno   @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  materia Materia @relation(fields: [materiaId], references: [id])
+  aluno   Aluno    @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia Materia? @relation(fields: [materiaId], references: [id])
 
   @@map("conteudos")
 }

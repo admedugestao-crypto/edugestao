@@ -20,14 +20,14 @@ type Professora = { id: string; nome: string };
 type Conteudo = {
   id: string;
   alunoId: string;
-  materiaId: string;
+  materiaId: string | null;
   topico: string;
   descricao: string | null;
   arquivoUrl: string | null;
   data: string;
   planejado: boolean;
   aluno: { nome: string; professora: string | null };
-  materia: Materia;
+  materia: Materia | null;
 };
 
 type FormC = {
@@ -214,7 +214,7 @@ function CamposForm({
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
         >
           <option value="">
-            {form.alunoId ? "Selecione..." : "Selecione o aluno primeiro"}
+            {form.alunoId ? "Todas as matérias" : "Selecione o aluno primeiro"}
           </option>
           {materiasFiltradas.map((m) => (
             <option key={m.id} value={m.id}>{m.nome}</option>
@@ -480,10 +480,9 @@ export default function ConteudosClient({
     });
   }
 
-  const podeSalvarNovo = !!novo.alunoId && !!novo.materiaId && !!novo.topico && !!novo.data;
+  const podeSalvarNovo = !!novo.alunoId && !!novo.topico && !!novo.data;
   const podeSalvarEdit =
     !!editConteudo?.alunoId &&
-    !!editConteudo?.materiaId &&
     !!editConteudo?.topico &&
     !!editConteudo?.data;
 
@@ -510,7 +509,7 @@ export default function ConteudosClient({
             >
               <div
                 className="w-2 self-stretch rounded-full mt-1 shrink-0"
-                style={{ backgroundColor: c.materia.cor }}
+                style={{ backgroundColor: c.materia?.cor ?? "#94a3b8" }}
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -542,7 +541,7 @@ export default function ConteudosClient({
                 </div>
 
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {c.aluno.nome} · {c.materia.nome}
+                  {c.aluno.nome}{c.materia ? ` · ${c.materia.nome}` : ""}
                   {!isProfessor && c.aluno.professora && (
                     <span className="text-slate-400"> · {c.aluno.professora}</span>
                   )}

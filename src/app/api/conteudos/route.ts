@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
   const conteudo = await prisma.conteudo.create({
     data: {
       alunoId:    body.alunoId,
-      materiaId:  body.materiaId,
+      materiaId:  body.materiaId || null,
       topico:     body.topico,
       descricao:  body.descricao  || null,
       arquivoUrl: body.arquivoUrl || null,
