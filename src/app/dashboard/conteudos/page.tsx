@@ -13,7 +13,7 @@ export default async function ConteudosPage() {
   const isAdmin      = perfil !== "PROFESSORA";
   const filtroProf  = (!isAdmin && professoraId) ? { professoraId } : {};
 
-  const [alunos, conteudos, professoras] = await Promise.all([
+  const [alunos, conteudos, professoras, materias] = await Promise.all([
     prisma.aluno.findMany({
       where: { ...filtroProf },
       include: { materias: { include: { materia: true } }, professora: { select: { id: true } } },
@@ -37,6 +37,13 @@ export default async function ConteudosPage() {
       include: { usuario: { select: { nome: true } } },
       orderBy: { usuario: { nome: "asc" } },
     }),
+    (!isAdmin && professoraId)
+      ? prisma.materia.findMany({
+          where: { professoras: { some: { professoraId } } },
+          select: { id: true, nome: true, cor: true },
+          orderBy: { nome: "asc" },
+        })
+      : prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } }),
   ]);
 
   return (
@@ -57,6 +64,7 @@ export default async function ConteudosPage() {
           })),
         }))}
         professoras={professoras.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
+        materias={materias}
         isProfessor={!isAdmin}
         conteudosIniciais={conteudos.map((c) => ({
           ...c,

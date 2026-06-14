@@ -145,6 +145,7 @@ function CamposForm({
   setForm,
   alunos,
   professoras,
+  materias,
   isProfessor,
   filtroProfId,
   setFiltroProfId,
@@ -154,6 +155,7 @@ function CamposForm({
   setForm: (f: FormC) => void;
   alunos: Aluno[];
   professoras: Professora[];
+  materias: Materia[];
   isProfessor: boolean;
   filtroProfId: string;
   setFiltroProfId: (id: string) => void;
@@ -164,7 +166,12 @@ function CamposForm({
     : alunos;
   const alunosFiltrados = filtrados.length > 0 ? filtrados : alunos;
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
-  const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
+  const materiasFiltradas = (() => {
+    const map = new Map<string, Materia>();
+    for (const m of materias) map.set(m.id, m);
+    for (const am of alunoSel?.materias ?? []) if (!map.has(am.materia.id)) map.set(am.materia.id, am.materia);
+    return Array.from(map.values()).sort((a, b) => a.nome.localeCompare(b.nome));
+  })();
 
   return (
     <div className="space-y-3">
@@ -325,11 +332,13 @@ function CamposForm({
 export default function ConteudosClient({
   alunos,
   professoras = [],
+  materias = [],
   conteudosIniciais,
   isProfessor,
 }: {
   alunos: Aluno[];
   professoras?: Professora[];
+  materias?: Materia[];
   conteudosIniciais: Conteudo[];
   isProfessor: boolean;
 }) {
@@ -590,6 +599,7 @@ export default function ConteudosClient({
                 setForm={setNovo}
                 alunos={alunos}
                 professoras={professoras}
+                materias={materias}
                 isProfessor={isProfessor}
                 filtroProfId={filtroProfId}
                 setFiltroProfId={setFiltroProfId}
@@ -641,6 +651,7 @@ export default function ConteudosClient({
                 setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
                 alunos={alunos}
                 professoras={professoras}
+                materias={materias}
                 isProfessor={isProfessor}
                 filtroProfId={filtroProfId}
                 setFiltroProfId={setFiltroProfId}
