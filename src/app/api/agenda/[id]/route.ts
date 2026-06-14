@@ -4,6 +4,16 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+function diaUTC(data: Date) {
+  const dY = data.getUTCFullYear();
+  const dM = data.getUTCMonth();
+  const dD = data.getUTCDate();
+  return {
+    gte: new Date(Date.UTC(dY, dM, dD)),
+    lt:  new Date(Date.UTC(dY, dM, dD + 1)),
+  };
+}
+
 // PATCH /api/agenda/[id] — atualizar status, horário, observação
 export async function PATCH(
   req: NextRequest,
@@ -21,17 +31,8 @@ export async function PATCH(
 
   // Bloqueia mudar para REALIZADA sem conteúdo registrado
   if (status === "REALIZADA") {
-    const dY = aula.data.getUTCFullYear();
-    const dM = aula.data.getUTCMonth();
-    const dD = aula.data.getUTCDate();
     const conteudo = await prisma.conteudo.findFirst({
-      where: {
-        alunoId: aula.alunoId,
-        data: {
-          gte: new Date(Date.UTC(dY, dM, dD)),
-          lt:  new Date(Date.UTC(dY, dM, dD + 1)),
-        },
-      },
+      where: { alunoId: aula.alunoId, data: diaUTC(aula.data) },
       select: { id: true },
     });
     if (!conteudo) {
@@ -42,31 +43,14 @@ export async function PATCH(
     }
   }
 
-  // Bloqueia qualquer mudança de status quando a aula está REALIZADA e tem conteúdo relacionado
-  if (status !== undefined && aula.status === "REALIZADA") {
-    const dY = aula.data.getUTCFullYear();
-    const dM = aula.data.getUTCMonth();
-    const dD = aula.data.getUTCDate();
-    const conteudo = await prisma.conteudo.findFirst({
-      where: {
-        alunoId: aula.alunoId,
-        data: {
-          gte: new Date(Date.UTC(dY, dM, dD)),
-          lt:  new Date(Date.UTC(dY, dM, dD + 1)),
-        },
-      },
-      select: { id: true },
+  // Se sair de REALIZADA para outro status → exclui o conteúdo vinculado
+  if (status !== undefined && status !== "REALIZADA" && aula.status === "REALIZADA") {
+    await prisma.conteudo.deleteMany({
+      where: { alunoId: aula.alunoId, data: diaUTC(aula.data) },
     });
-    if (conteudo) {
-      return NextResponse.json(
-        { erro: "Não é possível alterar o status: esta agenda está Realizada e possui conteúdo registrado." },
-        { status: 422 },
-      );
-    }
   }
 
   // Bloqueia mudança para CANCELADA ou FALTA_PROFESSOR quando o pagamento vinculado já foi pago.
-  // Se o pagamento ainda está "a vencer" (pago = false), permite a alteração.
   if (status === "CANCELADA" || status === "FALTA_PROFESSOR") {
     const vinculosPagos = await prisma.$queryRaw<{ count: bigint }[]>`
       SELECT COUNT(*)::bigint as count
@@ -127,6 +111,13 @@ export async function DELETE(
       { erro: "Não é possível excluir: esta aula está vinculada a um pagamento já quitado." },
       { status: 422 },
     );
+  }
+
+  // Se a aula estava REALIZADA, exclui o conteúdo vinculado
+  if (aula.status === "REALIZADA") {
+    await prisma.conteudo.deleteMany({
+      where: { alunoId: aula.alunoId, data: diaUTC(aula.data) },
+    });
   }
 
   await prisma.agendaAula.delete({ where: { id } });
