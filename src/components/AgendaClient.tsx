@@ -121,6 +121,7 @@ export default function AgendaClient({
   // Modal detalhes / edição
   const [aulaDetalhe, setAulaDetalhe] = useState<Aula | null>(null);
   const [obsEdit, setObsEdit]         = useState("");
+  const [materiaDetalheId, setMateriaDetalheId] = useState<string>("");
   const [atualizando, setAtualizando] = useState(false);
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
   const obsRef = useRef<HTMLTextAreaElement>(null);
@@ -388,7 +389,7 @@ export default function AgendaClient({
       const params = new URLSearchParams({
         aulaId:    aulaDetalhe.id,
         alunoId:   aulaDetalhe.aluno.id,
-        materiaId: aulaDetalhe.materia?.id ?? "",
+        materiaId: materiaDetalheId,
         data:      aulaDetalhe.data.split("T")[0],
       });
       router.push(`/dashboard/conteudos?${params.toString()}`);
@@ -607,7 +608,7 @@ export default function AgendaClient({
                 <div key={i}
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
                   {lista.map((aula) => <CardAula key={aula.id} aula={aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
-                    setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setErroStatus(null);
+                    setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materia?.id ?? ""); setErroStatus(null);
                     if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                   }}/>)}
                   <button onClick={() => {
@@ -683,7 +684,7 @@ export default function AgendaClient({
                     <div className="flex items-center gap-2 shrink-0 pr-5 py-4">
                       <BadgeStatus status={aula.status}/>
                       <button onClick={() => {
-                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setErroStatus(null);
+                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materia?.id ?? ""); setErroStatus(null);
                         if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}
                         className="text-xs text-slate-400 hover:text-indigo-600 transition-colors underline">
@@ -961,6 +962,23 @@ export default function AgendaClient({
                 <p><span className="text-slate-400 text-xs">Professor(a):</span> <span className="font-medium">{aulaDetalhe.professora.usuario.nome}</span></p>
               )}
             </div>
+
+            {/* Matéria da aula */}
+            {(aulaDetalhe.aluno.materias?.length ?? 0) > 0 && (
+              <div>
+                <label className="text-xs font-medium text-slate-500 block mb-1">Matéria da aula</label>
+                <select
+                  value={materiaDetalheId}
+                  onChange={(e) => setMateriaDetalheId(e.target.value)}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                >
+                  <option value="">Todas as matérias</option>
+                  {aulaDetalhe.aluno.materias.map((m) => (
+                    <option key={m.materia.id} value={m.materia.id}>{m.materia.nome}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Status rápido */}
             <div>
