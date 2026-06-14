@@ -32,7 +32,7 @@ type Conteudo = {
 
 type FormC = {
   alunoId: string;
-  materiaId: string;
+  materiaId: string | null;
   topico: string;
   descricao: string;
   arquivoUrl: string;
@@ -208,8 +208,8 @@ function CamposForm({
       <div>
         <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
         <select
-          value={form.materiaId}
-          onChange={(e) => setForm({ ...form, materiaId: e.target.value })}
+          value={form.materiaId ?? ""}
+          onChange={(e) => setForm({ ...form, materiaId: e.target.value || null })}
           disabled={!form.alunoId}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
         >
