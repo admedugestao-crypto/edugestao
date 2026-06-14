@@ -409,7 +409,36 @@ export default function ConteudosClient({
     if (!editConteudo) return;
     setSalvando(true);
     setErroEdit("");
+
+    // Verifica se o conteúdo original era Planejado e agora quer Ministrado
+    const original = conteudos.find((c) => c.id === editConteudo.id);
+    const mudandoParaMinistrado = original?.planejado === true && editConteudo.planejado === false;
+
     try {
+      if (mudandoParaMinistrado) {
+        // Primeiro salva os outros campos via PUT (mantendo planejado=true por ora)
+        const resPut = await fetch(`/api/conteudos/${editConteudo.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...editConteudo, planejado: true, arquivoUrl: editConteudo.arquivoUrl || null }),
+        });
+        if (!resPut.ok) {
+          const d = await resPut.json();
+          setErroEdit(d.erro ?? "Erro ao salvar conteúdo.");
+          return;
+        }
+        // Depois chama a rota de ministrado que valida e vincula a agenda
+        const resMin = await fetch(`/api/conteudos/${editConteudo.id}/ministrado`, { method: "POST" });
+        const dMin = await resMin.json();
+        if (!resMin.ok) {
+          setErroEdit(dMin.erro ?? "Erro ao marcar como Ministrado.");
+          return;
+        }
+        setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? { ...c, ...editConteudo, planejado: false } : c));
+        setEditConteudo(null);
+        return;
+      }
+
       const res = await fetch(`/api/conteudos/${editConteudo.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -636,7 +665,7 @@ export default function ConteudosClient({
             </div>
 
             {/* Corpo rolável */}
-            <div className="overflow-y-auto px-6 py-4 flex-1">
+            <div className="overflow-y-auto px-6 py-4 flex-1 space-y-4">
               <CamposForm
                 form={editConteudo}
                 setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
@@ -649,6 +678,35 @@ export default function ConteudosClient({
                 somentePlanejado={true}
                 onCampoChave={() => setErroEdit("")}
               />
+
+              {/* Status — só aparece ao editar */}
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Status da aula</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditConteudo({ ...editConteudo, planejado: true })}
+                    className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                      editConteudo.planejado
+                        ? "bg-amber-100 border-amber-300 text-amber-800"
+                        : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                    }`}
+                  >
+                    📋 Planejado
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditConteudo({ ...editConteudo, planejado: false })}
+                    className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                      !editConteudo.planejado
+                        ? "bg-emerald-100 border-emerald-300 text-emerald-800"
+                        : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                    }`}
+                  >
+                    ✅ Ministrado
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Rodapé fixo — erro + botões sempre visíveis */}
