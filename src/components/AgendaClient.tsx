@@ -1080,8 +1080,10 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
 }) {
   const cfg    = STATUS_CONFIG[aula.status];
   const cores  = STATUS_COR[aula.status];
-  const todasMaterias = (aula.aluno.materias?.map((m) => m.materia) ?? [])
-    .filter((m) => !filtroMateriaId || m.id === filtroMateriaId);
+  const materiasCard = aula.materia
+    ? [aula.materia]
+    : (aula.aluno.materias?.map((m) => m.materia) ?? []);
+  const todasMaterias = materiasCard.filter((m) => !filtroMateriaId || m.id === filtroMateriaId);
   return (
     <button onClick={onClick}
       className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm"
