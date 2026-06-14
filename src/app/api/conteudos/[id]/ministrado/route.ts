@@ -43,6 +43,16 @@ export async function POST(
     );
   }
 
+  // Bloqueia para datas futuras (mesma regra da agenda)
+  const hoje = new Date();
+  const hojeUTC = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), hoje.getUTCDate() + 1));
+  if (conteudo.data >= hojeUTC) {
+    return NextResponse.json(
+      { erro: "Não é possível marcar como Ministrado: a aula ainda não ocorreu." },
+      { status: 422 },
+    );
+  }
+
   if (aula.status === "CANCELADA") {
     return NextResponse.json(
       { erro: "Não é possível marcar como Ministrado: a aula está Cancelada." },
