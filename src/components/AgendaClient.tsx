@@ -415,6 +415,20 @@ export default function AgendaClient({
     }
   }
 
+  async function salvarMateria(materiaId: string) {
+    if (!aulaDetalhe) return;
+    await fetch(`/api/agenda/${aulaDetalhe.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ materiaId: materiaId || null }),
+    });
+    const materia = materiaId
+      ? (aulaDetalhe.aluno.materias.find((m) => m.materia.id === materiaId)?.materia ?? null)
+      : null;
+    setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id ? { ...a, materia, materiaId: materiaId || null } : a));
+    setAulaDetalhe((p) => p ? { ...p, materia, materiaId: materiaId || null } : p);
+  }
+
   async function salvarObservacao() {
     if (!aulaDetalhe) return;
     setAtualizando(true);
@@ -969,7 +983,7 @@ export default function AgendaClient({
                 <label className="text-xs font-medium text-slate-500 block mb-1">Matéria da aula</label>
                 <select
                   value={materiaDetalheId}
-                  onChange={(e) => setMateriaDetalheId(e.target.value)}
+                  onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 >
                   <option value="">Todas as matérias</option>
