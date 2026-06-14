@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
     if (!profId) continue; // aluno sem professor não gera agenda
 
     const diaSemanaAluno = aluno.diaSemana!;
-    const materiaId      = aluno.materias[0]?.materiaId ?? null;
+    const materiaId      = null;
 
     const horaInicio: string | null = aluno.horaAula ?? null;
     let   horaFim:    string | null = null;
