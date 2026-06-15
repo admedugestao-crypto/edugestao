@@ -50,9 +50,9 @@ export async function POST(req: NextRequest) {
   if (!isAdmin && !professoraId)
     return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
 
-  // ── Busca aulas do mês (exceto CANCELADA e FALTA_PROFESSOR) ────────────────
+  // ── Busca apenas aulas REALIZADA do mês ────────────────────────────────────
   const whereAula: any = {
-    status: { notIn: ["CANCELADA", "FALTA_PROFESSOR"] },
+    status: { in: ["REALIZADA", "FALTA_ALUNO"] },
     data:   { gte: inicioMes, lte: fimMes },
   };
   if (!isAdmin && professoraId) whereAula.professoraId = professoraId;
