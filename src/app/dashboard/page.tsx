@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Users, School, BookOpen, ClipboardList, AlertCircle, CalendarClock } from "lucide-react";
+import { Users, School, DollarSign, ClipboardList, AlertCircle, CalendarClock } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -19,7 +19,11 @@ export default async function DashboardPage() {
 
   const filtroAluno = professoraId ? { professoraId } : {};
 
-  const [totalAlunos, todasNotas, proximasProvas] =
+  const agora = new Date();
+  const mesAtual = agora.getUTCMonth() + 1;
+  const anoAtual = agora.getUTCFullYear();
+
+  const [totalAlunos, todasNotas, proximasProvas, pagamentosMes] =
     await Promise.all([
       prisma.aluno.count({
         where: { ...filtroAluno, status: "ATIVO" },
@@ -48,6 +52,14 @@ export default async function DashboardPage() {
         orderBy: { data: "asc" },
         take: 6,
       }),
+      prisma.pagamento.findMany({
+        where: {
+          mes: mesAtual,
+          ano: anoAtual,
+          ...(professoraId ? { aluno: { professoraId } } : {}),
+        },
+        select: { valorCobrado: true, pago: true },
+      }),
     ]);
 
   // Apenas notas abaixo da média da avaliação (valor < notaMax / 2)
@@ -56,14 +68,19 @@ export default async function DashboardPage() {
     .slice(0, 5);
 
   const totalEscolas = await prisma.escola.count();
-  const totalMaterias = professoraId
-    ? await prisma.professoraMateria.count({ where: { professoraId } })
-    : 0;
+
+  const totalEsperado = pagamentosMes.reduce((s, p) => s + p.valorCobrado, 0);
+  const totalRecebido = pagamentosMes.filter((p) => p.pago).reduce((s, p) => s + p.valorCobrado, 0);
+  const totalPendente = totalEsperado - totalRecebido;
+
+  function formatBRL(v: number) {
+    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
 
   const cards = [
     { label: "Alunos ativos", valor: totalAlunos, icon: Users, cor: "bg-indigo-50 text-indigo-600" },
     { label: "Escolas cadastradas", valor: totalEscolas, icon: School, cor: "bg-emerald-50 text-emerald-600" },
-    { label: "Disciplinas", valor: totalMaterias, icon: BookOpen, cor: "bg-amber-50 text-amber-600" },
+    { label: `A receber (${String(mesAtual).padStart(2,"0")}/${anoAtual})`, valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600" },
     { label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600" },
   ];
 
