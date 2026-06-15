@@ -410,11 +410,33 @@ export default function ConteudosClient({
     setSalvando(true);
     setErroEdit("");
 
-    // Verifica se o conteúdo original era Planejado e agora quer Ministrado
     const original = conteudos.find((c) => c.id === editConteudo.id);
     const mudandoParaMinistrado = original?.planejado === true && editConteudo.planejado === false;
+    const mudandoParaPlanejado  = original?.planejado === false && editConteudo.planejado === true;
 
     try {
+      if (mudandoParaPlanejado) {
+        const resPut = await fetch(`/api/conteudos/${editConteudo.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...editConteudo, planejado: false, arquivoUrl: editConteudo.arquivoUrl || null }),
+        });
+        if (!resPut.ok) {
+          const d = await resPut.json();
+          setErroEdit(d.erro ?? "Erro ao salvar conteúdo.");
+          return;
+        }
+        const resRev = await fetch(`/api/conteudos/${editConteudo.id}/reverter`, { method: "POST" });
+        const dRev = await resRev.json();
+        if (!resRev.ok) {
+          setErroEdit(dRev.erro ?? "Erro ao reverter para Planejado.");
+          return;
+        }
+        setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? { ...c, ...editConteudo, planejado: true } : c));
+        setEditConteudo(null);
+        return;
+      }
+
       if (mudandoParaMinistrado) {
         // Primeiro salva os outros campos via PUT (mantendo planejado=true por ora)
         const resPut = await fetch(`/api/conteudos/${editConteudo.id}`, {
@@ -682,30 +704,42 @@ export default function ConteudosClient({
               {/* Status — só aparece ao editar */}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Status da aula</label>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setEditConteudo({ ...editConteudo, planejado: true })}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                      editConteudo.planejado
-                        ? "bg-amber-100 border-amber-300 text-amber-800"
-                        : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
-                    }`}
-                  >
-                    📋 Planejado
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditConteudo({ ...editConteudo, planejado: false })}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                      !editConteudo.planejado
-                        ? "bg-emerald-100 border-emerald-300 text-emerald-800"
-                        : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
-                    }`}
-                  >
-                    ✅ Ministrado
-                  </button>
-                </div>
+                {/* Se já está Ministrado (veio da agenda), não permite voltar para Planejado */}
+                {conteudos.find((c) => c.id === editConteudo.id)?.planejado === false ? (
+                  <div className="flex gap-2">
+                    <div className="flex-1 py-2 rounded-lg text-sm font-medium border bg-slate-50 border-slate-200 text-slate-400 text-center cursor-not-allowed">
+                      📋 Planejado
+                    </div>
+                    <div className="flex-1 py-2 rounded-lg text-sm font-medium border bg-emerald-100 border-emerald-300 text-emerald-800 text-center">
+                      ✅ Ministrado
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditConteudo({ ...editConteudo, planejado: true })}
+                      className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                        editConteudo.planejado
+                          ? "bg-amber-100 border-amber-300 text-amber-800"
+                          : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                      }`}
+                    >
+                      📋 Planejado
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditConteudo({ ...editConteudo, planejado: false })}
+                      className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                        !editConteudo.planejado
+                          ? "bg-emerald-100 border-emerald-300 text-emerald-800"
+                          : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                      }`}
+                    >
+                      ✅ Ministrado
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
