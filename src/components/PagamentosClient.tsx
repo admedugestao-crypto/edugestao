@@ -722,21 +722,19 @@ export default function PagamentosClient({
               </button>
             </div>
 
-            <div className="px-6 py-5 space-y-4">
-              {/* Mês/Ano — informativo */}
-              <div className="bg-indigo-50 border border-indigo-100 rounded-lg px-4 py-2 text-xs text-indigo-700 font-medium">
+            <div className="px-4 py-3 space-y-3">
+              {/* Cabeçalho competência */}
+              <div className="bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-1.5 text-xs text-indigo-700 font-medium">
                 Competência: {MESES[mes - 1]} / {ano}
               </div>
 
               {/* Aluno */}
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Aluno <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Aluno <span className="text-red-500">*</span></label>
                 {formPag.modo === "criar" ? (
                   carregandoAluno ? (
-                    <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
-                      <div className="w-3.5 h-3.5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-2 text-xs text-slate-400 py-1.5">
+                      <div className="w-3 h-3 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
                       Carregando alunos…
                     </div>
                   ) : (() => {
@@ -747,134 +745,79 @@ export default function PagamentosClient({
                           value={formPag.alunoId}
                           onChange={(e) => {
                             const aluno = alunosLista.find((a) => a.id === e.target.value);
-                            setFormPag((f) => f ? {
-                              ...f,
-                              alunoId:      e.target.value,
-                              valorCobrado: aluno?.valorCobranca != null ? String(aluno.valorCobranca) : f.valorCobrado,
-                            } : f);
+                            setFormPag((f) => f ? { ...f, alunoId: e.target.value, valorCobrado: aluno?.valorCobranca != null ? String(aluno.valorCobranca) : f.valorCobrado } : f);
                             carregarAulasRealizadas(e.target.value);
                           }}
-                          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                           <option value="">Selecione um aluno…</option>
                           {alunosLista.map((a) => (
-                            <option key={a.id} value={a.id}>
-                              {a.nome} — {a.unidade.escola.nome} · {a.unidade.nome}
-                            </option>
+                            <option key={a.id} value={a.id}>{a.nome} — {a.unidade.escola.nome} · {a.unidade.nome}</option>
                           ))}
                         </select>
                         {alunoSel && (
-                          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
-                            <span className="text-slate-400">Professor:</span>
-                            <span className="font-medium text-slate-700">
-                              {alunoSel.professora ?? "—"}
-                            </span>
-                            {alunoSel.tipoCobranca && (
-                              <>
-                                <span className="text-slate-300">·</span>
-                                <span className="text-slate-500">
-                                  {TIPO_LABEL[alunoSel.tipoCobranca] ?? alunoSel.tipoCobranca}
-                                  {alunoSel.valorCobranca != null && (
-                                    <span className="ml-1 text-indigo-600 font-medium">
-                                      {moeda(alunoSel.valorCobranca)}
-                                    </span>
-                                  )}
-                                </span>
-                              </>
-                            )}
+                          <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                            <span className="text-slate-400">Prof:</span>
+                            <span className="font-medium text-slate-700">{alunoSel.professora ?? "—"}</span>
+                            {alunoSel.tipoCobranca && (<>
+                              <span className="text-slate-300">·</span>
+                              <span>{TIPO_LABEL[alunoSel.tipoCobranca] ?? alunoSel.tipoCobranca}</span>
+                              {alunoSel.valorCobranca != null && <span className="text-indigo-600 font-medium">{moeda(alunoSel.valorCobranca)}</span>}
+                            </>)}
                           </div>
                         )}
                       </>
                     );
                   })()
                 ) : (
-                  <p className="text-sm font-medium text-slate-700 border border-slate-100 bg-slate-50 rounded-lg px-3 py-2">
+                  <p className="text-sm font-medium text-slate-700 border border-slate-100 bg-slate-50 rounded-lg px-3 py-1.5">
                     {pagamentos.find((p) => p.id === formPag.id)?.aluno.nome ?? "—"}
                   </p>
                 )}
               </div>
 
-              {/* Parcela + Data vencimento */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Parcela · Vencimento · Valor · Qtd aulas — grid 4 colunas */}
+              <div className="grid grid-cols-4 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Parcela</label>
-                  <input
-                    type="number" min={1}
-                    value={formPag.parcela}
+                  <input type="number" min={1} value={formPag.parcela}
                     onChange={(e) => setFormPag((f) => f ? { ...f, parcela: e.target.value } : f)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">
-                    Vencimento <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={formPag.dataVencimento}
+                <div className="col-span-1">
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Vencimento <span className="text-red-500">*</span></label>
+                  <input type="date" value={formPag.dataVencimento}
                     onChange={(e) => setFormPag((f) => f ? { ...f, dataVencimento: e.target.value } : f)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
-              </div>
-
-              {/* Valor + Qtd aulas */}
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">
-                    Valor cobrado (R$) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number" min={0} step="0.01"
-                    value={formPag.valorCobrado}
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Valor (R$) <span className="text-red-500">*</span></label>
+                  <input type="number" min={0} step="0.01" value={formPag.valorCobrado} placeholder="0,00"
                     onChange={(e) => setFormPag((f) => f ? { ...f, valorCobrado: e.target.value } : f)}
-                    placeholder="0,00"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Qtd. aulas</label>
-                  <input
-                    type="number" min={0}
-                    value={formPag.quantidadeAulas}
+                  <input type="number" min={0} value={formPag.quantidadeAulas} placeholder="—"
                     onChange={(e) => setFormPag((f) => f ? { ...f, quantidadeAulas: e.target.value } : f)}
-                    placeholder="Opcional"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
               </div>
 
-              {/* Pago */}
+              {/* Pago + Data pagamento — mesma linha */}
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={formPag.pago}
-                    onChange={(e) => setFormPag((f) => f ? {
-                      ...f,
-                      pago: e.target.checked,
-                      dataPagamento: e.target.checked
-                        ? (f.dataPagamento || new Date().toISOString().split("T")[0])
-                        : "",
-                    } : f)}
-                    className="w-4 h-4 accent-indigo-600 rounded"
-                  />
-                  <span className="text-sm font-medium text-slate-700">Marcar como pago</span>
+                <label className="flex items-center gap-2 cursor-pointer select-none shrink-0">
+                  <input type="checkbox" checked={formPag.pago}
+                    onChange={(e) => setFormPag((f) => f ? { ...f, pago: e.target.checked, dataPagamento: e.target.checked ? (f.dataPagamento || new Date().toISOString().split("T")[0]) : "" } : f)}
+                    className="w-4 h-4 accent-indigo-600 rounded" />
+                  <span className="text-sm font-medium text-slate-700">Pago</span>
                 </label>
-              </div>
-
-              {/* Data pagamento */}
-              {formPag.pago && (
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Data do pagamento</label>
-                  <input
-                    type="date"
-                    value={formPag.dataPagamento}
+                {formPag.pago && (
+                  <input type="date" value={formPag.dataPagamento}
                     onChange={(e) => setFormPag((f) => f ? { ...f, dataPagamento: e.target.value } : f)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              )}
+                    className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                )}
+              </div>
 
               {/* Aulas Realizadas — apenas no modo criar */}
               {formPag.modo === "criar" && formPag.alunoId && (
