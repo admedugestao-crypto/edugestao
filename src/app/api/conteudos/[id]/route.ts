@@ -26,7 +26,7 @@ async function validarAgenda(
   });
 
   if (!aula) {
-    return { ok: false, erro: "Não existe aula agendada para este aluno nesta data." };
+    return { ok: false, erro: "Não existe Aula Agendada para este aluno nesta data." };
   }
 
   const statusEsperado = planejado ? "AGENDADA" : "REALIZADA";

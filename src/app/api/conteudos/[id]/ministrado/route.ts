@@ -38,7 +38,7 @@ export async function POST(
 
   if (!aula) {
     return NextResponse.json(
-      { erro: "Nenhuma aula agendada encontrada para este aluno nesta data." },
+      { erro: "Nenhuma Aula Agendada encontrada para este aluno nesta data." },
       { status: 422 },
     );
   }
@@ -50,7 +50,7 @@ export async function POST(
     const fimUTC = new Date(Date.UTC(dY, dM, dD, hh + 3, mm));
     if (new Date() < fimUTC) {
       return NextResponse.json(
-        { erro: `Não é possível marcar como Ministrado antes do término da aula (${aula.horaFim}).` },
+        { erro: `Não é possível marcar como Ministrado antes do término da Aula Agendada (${aula.horaFim}).` },
         { status: 422 },
       );
     }
@@ -59,7 +59,7 @@ export async function POST(
     const hojeUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate() + 1));
     if (conteudo.data >= hojeUTC) {
       return NextResponse.json(
-        { erro: "Não é possível marcar como Ministrado: a aula ainda não ocorreu." },
+        { erro: "Não é possível marcar como Ministrado: a Aula Agendada ainda não ocorreu." },
         { status: 422 },
       );
     }
@@ -67,14 +67,14 @@ export async function POST(
 
   if (aula.status === "CANCELADA") {
     return NextResponse.json(
-      { erro: "Não é possível marcar como Ministrado: a aula está Cancelada." },
+      { erro: "Não é possível marcar como Ministrado: a Aula Agendada está Cancelada." },
       { status: 422 },
     );
   }
 
   if (aula.status === "FALTA_PROFESSOR") {
     return NextResponse.json(
-      { erro: "Não é possível marcar como Ministrado: a aula está registrada como Falta do Professor." },
+      { erro: "Não é possível marcar como Ministrado: a Aula Agendada está registrada como Falta do Professor." },
       { status: 422 },
     );
   }

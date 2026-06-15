@@ -37,7 +37,7 @@ export async function PATCH(
     });
     if (!conteudo) {
       return NextResponse.json(
-        { erro: "Não é possível marcar como Realizada: registre primeiro o conteúdo da aula." },
+        { erro: "Não é possível marcar como Realizada: registre primeiro o conteúdo da Aula Agendada." },
         { status: 422 },
       );
     }
@@ -61,7 +61,7 @@ export async function PATCH(
     `;
     if (Number(vinculosPagos[0].count) > 0) {
       return NextResponse.json(
-        { erro: `Não é possível marcar como "${status === "CANCELADA" ? "Cancelada" : "Falta do Professor"}": esta aula está vinculada a um pagamento já quitado.` },
+        { erro: `Não é possível marcar como "${status === "CANCELADA" ? "Cancelada" : "Falta do Professor"}": esta Aula Agendada está vinculada a um pagamento já quitado.` },
         { status: 422 },
       );
     }
@@ -108,7 +108,7 @@ export async function DELETE(
   `;
   if (Number(vinculosPagos[0].count) > 0) {
     return NextResponse.json(
-      { erro: "Não é possível excluir: esta aula está vinculada a um pagamento já quitado." },
+      { erro: "Não é possível excluir: esta Aula Agendada está vinculada a um pagamento já quitado." },
       { status: 422 },
     );
   }
