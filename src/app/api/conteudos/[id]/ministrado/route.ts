@@ -33,7 +33,7 @@ export async function POST(
         lt: new Date(Date.UTC(dY, dM, dD + 1)),
       },
     },
-    select: { id: true, status: true },
+    select: { id: true, status: true, horaFim: true },
   });
 
   if (!aula) {
@@ -43,14 +43,26 @@ export async function POST(
     );
   }
 
-  // Bloqueia para datas futuras (mesma regra da agenda)
-  const hoje = new Date();
-  const hojeUTC = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), hoje.getUTCDate() + 1));
-  if (conteudo.data >= hojeUTC) {
-    return NextResponse.json(
-      { erro: "Não é possível marcar como Ministrado: a aula ainda não ocorreu." },
-      { status: 422 },
-    );
+  // Bloqueia se ainda não passou o horário de término da aula (fuso UTC-3 Brasil)
+  if (aula.horaFim) {
+    const [hh, mm] = aula.horaFim.split(":").map(Number);
+    // horaFim é horário local (UTC-3), converte para UTC somando 3h
+    const fimUTC = new Date(Date.UTC(dY, dM, dD, hh + 3, mm));
+    if (new Date() < fimUTC) {
+      return NextResponse.json(
+        { erro: `Não é possível marcar como Ministrado antes do término da aula (${aula.horaFim}).` },
+        { status: 422 },
+      );
+    }
+  } else {
+    // Sem horário definido: bloqueia se a data ainda não passou
+    const hojeUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate() + 1));
+    if (conteudo.data >= hojeUTC) {
+      return NextResponse.json(
+        { erro: "Não é possível marcar como Ministrado: a aula ainda não ocorreu." },
+        { status: 422 },
+      );
+    }
   }
 
   if (aula.status === "CANCELADA") {
