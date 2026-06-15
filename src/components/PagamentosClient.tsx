@@ -846,9 +846,11 @@ export default function PagamentosClient({
                             <input
                               type="checkbox"
                               checked={sel}
-                              onChange={() => setAulasSelecionadas((prev) =>
-                                sel ? prev.filter((id) => id !== a.id) : [...prev, a.id]
-                              )}
+                              onChange={() => {
+                                const novas = sel ? aulasSelecionadas.filter((id) => id !== a.id) : [...aulasSelecionadas, a.id];
+                                setAulasSelecionadas(novas);
+                                setFormPag((f) => f ? { ...f, quantidadeAulas: String(novas.length) } : f);
+                              }}
                               className="accent-indigo-600"
                             />
                             <span className="text-xs text-slate-700">
