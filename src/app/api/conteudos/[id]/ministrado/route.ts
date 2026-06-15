@@ -15,7 +15,7 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, alunoId: true, data: true, planejado: true },
+    select: { id: true, alunoId: true, data: true, planejado: true, materiaId: true, materia: { select: { nome: true } } },
   });
 
   if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
@@ -33,12 +33,22 @@ export async function POST(
         lt: new Date(Date.UTC(dY, dM, dD + 1)),
       },
     },
-    select: { id: true, status: true, horaFim: true },
+    select: { id: true, status: true, horaFim: true, materiaId: true, materia: { select: { nome: true } } },
   });
 
   if (!aula) {
     return NextResponse.json(
       { erro: "Nenhuma Aula Agendada encontrada para este aluno nesta data." },
+      { status: 422 },
+    );
+  }
+
+  // Valida que a matéria do conteúdo é a mesma da Aula Agendada (null = Todas as matérias, sempre compatível)
+  if (aula.materiaId && conteudo.materiaId && aula.materiaId !== conteudo.materiaId) {
+    return NextResponse.json(
+      {
+        erro: `A matéria do conteúdo (${conteudo.materia?.nome ?? conteudo.materiaId}) não corresponde à matéria da Aula Agendada (${aula.materia?.nome ?? aula.materiaId}).`,
+      },
       { status: 422 },
     );
   }
