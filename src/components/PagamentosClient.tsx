@@ -98,12 +98,13 @@ function dataVencimentoPadrao(mes: number, ano: number) {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 export default function PagamentosClient({
-  pagamentosIniciais, mesInicial, anoInicial, isAdmin, alunoFiltro,
+  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro,
 }: {
   pagamentosIniciais: PagamentoItem[];
   mesInicial:         number;
   anoInicial:         number;
   isAdmin:            boolean;
+  podeNovo?:          boolean;
   alunoFiltro?:       string | null;
 }) {
   const [mes,        setMes]        = useState(mesInicial);
@@ -475,7 +476,7 @@ export default function PagamentosClient({
               <RefreshCw size={13} className={gerando ? "animate-spin" : ""} />
               {gerando ? "Gerando…" : "Gerar cobranças"}
             </button>
-            {isAdmin && (
+            {(isAdmin || podeNovo) && (
               <>
                 <div className="w-px h-4 bg-slate-300" />
                 <button

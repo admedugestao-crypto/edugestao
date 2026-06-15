@@ -100,6 +100,7 @@ export default async function PagamentosPage({
         mesInicial={mes}
         anoInicial={ano}
         isAdmin={perfil === "SUPERADMIN"}
+        podeNovo={true}
         alunoFiltro={alunoFiltro}
       />
     </div>
