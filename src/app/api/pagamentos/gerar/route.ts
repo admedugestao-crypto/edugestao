@@ -186,13 +186,14 @@ export async function POST(req: NextRequest) {
           grupos[idx].push(aula);
         }
 
+        let parcela = 1;
         for (let i = 0; i < ocorrencias.length; i++) {
           const aulasDaSemana = grupos[i];
+          if (aulasDaSemana.length === 0) continue; // pula semanas sem aulas
           const qtd   = aulasDaSemana.length;
           const valor = info.valorCobranca * qtd;
-          // Gera parcela mesmo sem aulas nessa semana (valor 0) para manter o vencimento visível
           await upsertParcela(
-            alunoId, i + 1,
+            alunoId, parcela++,
             ocorrencias[i],
             valor, qtd,
             aulasDaSemana.map((a) => a.id),
