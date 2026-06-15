@@ -172,57 +172,85 @@ function CamposForm({
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
 
   return (
-    <div className="space-y-3">
-      {/* Professor — apenas admin */}
-      {!isProfessor && (
+    <div className="space-y-2">
+      {/* Professor + Aluno — linha única quando admin */}
+      {!isProfessor ? (
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Professor(a)</label>
+            <select
+              value={filtroProfId}
+              onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaId: "" }); onCampoChave?.(); }}
+              className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            >
+              <option value="">Todos</option>
+              {professoras.map((p) => (
+                <option key={p.id} value={p.id}>{p.nome}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Aluno *</label>
+            <select
+              value={form.alunoId}
+              onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaId: "" }); onCampoChave?.(); }}
+              className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            >
+              <option value="">Selecione...</option>
+              {alunosFiltrados.map((a) => (
+                <option key={a.id} value={a.id}>{a.nome}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      ) : (
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Professor(a) *</label>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Aluno *</label>
           <select
-            value={filtroProfId}
-            onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaId: "" }); onCampoChave?.(); }}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            value={form.alunoId}
+            onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaId: "" }); onCampoChave?.(); }}
+            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
           >
-            <option value="">Todos os professores</option>
-            {professoras.map((p) => (
-              <option key={p.id} value={p.id}>{p.nome}</option>
+            <option value="">Selecione...</option>
+            {alunosFiltrados.map((a) => (
+              <option key={a.id} value={a.id}>{a.nome}</option>
             ))}
           </select>
         </div>
       )}
 
-      {/* Aluno */}
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">
-          Aluno * <span className="text-slate-400 font-normal">({alunosFiltrados.length} disponíveis, {alunos.length} total)</span>
-        </label>
-        <select
-          value={form.alunoId}
-          onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaId: "" }); onCampoChave?.(); }}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-        >
-          <option value="">Selecione...</option>
-          {alunosFiltrados.map((a) => (
-            <option key={a.id} value={a.id}>{a.nome}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Disciplina filtrada pelo aluno */}
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
-        <select
-          value={form.materiaId ?? ""}
-          onChange={(e) => setForm({ ...form, materiaId: e.target.value || null })}
-          disabled={!form.alunoId}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
-        >
-          <option value="">
-            {form.alunoId ? "Todas as matérias" : "Selecione o aluno primeiro"}
-          </option>
-          {materiasFiltradas.map((m) => (
-            <option key={m.id} value={m.id}>{m.nome}</option>
-          ))}
-        </select>
+      {/* Disciplina + Data — mesma linha */}
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina</label>
+          <select
+            value={form.materiaId ?? ""}
+            onChange={(e) => setForm({ ...form, materiaId: e.target.value || null })}
+            disabled={!form.alunoId}
+            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
+          >
+            <option value="">
+              {form.alunoId ? "Todas as matérias" : "—"}
+            </option>
+            {materiasFiltradas.map((m) => (
+              <option key={m.id} value={m.id}>{m.nome}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
+          <input
+            type="date"
+            value={form.data}
+            onChange={(e) => {
+              const hoje = new Date().toISOString().split("T")[0];
+              const futuro = e.target.value > hoje;
+              setForm({ ...form, data: e.target.value, planejado: futuro ? true : form.planejado });
+              onCampoChave?.();
+            }}
+            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
       </div>
 
       {/* Tópico */}
@@ -232,18 +260,18 @@ function CamposForm({
           value={form.topico}
           onChange={(e) => setForm({ ...form, topico: e.target.value })}
           placeholder="Ex: Equações do 2º grau"
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
-      {/* Descrição (opcional) */}
+      {/* Descrição */}
       <div>
         <label className="block text-xs font-medium text-slate-600 mb-1">Descrição</label>
         <textarea
           value={form.descricao}
           onChange={(e) => setForm({ ...form, descricao: e.target.value })}
           rows={2}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
         />
       </div>
 
@@ -253,23 +281,6 @@ function CamposForm({
         arquivoNome={form.arquivoNome}
         onChange={(url, nome) => setForm({ ...form, arquivoUrl: url, arquivoNome: nome })}
       />
-
-      {/* Data */}
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
-        <input
-          type="date"
-          value={form.data}
-          onChange={(e) => {
-            const hoje = new Date().toISOString().split("T")[0];
-            const futuro = e.target.value > hoje;
-            setForm({ ...form, data: e.target.value, planejado: futuro ? true : form.planejado });
-            onCampoChave?.();
-          }}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-      </div>
-
     </div>
   );
 }
@@ -629,12 +640,12 @@ export default function ConteudosClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[90vh]">
             {/* Cabeçalho fixo */}
-            <div className="px-6 pt-6 pb-4 border-b border-slate-100 shrink-0">
+            <div className="px-5 pt-4 pb-3 border-b border-slate-100 shrink-0">
               <h2 className="text-lg font-bold text-slate-800">Registrar Conteúdo</h2>
             </div>
 
             {/* Corpo rolável */}
-            <div className="overflow-y-auto px-6 py-4 flex-1">
+            <div className="overflow-y-auto px-5 py-3 flex-1">
               <CamposForm
                 form={novo}
                 setForm={setNovo}
@@ -650,7 +661,7 @@ export default function ConteudosClient({
             </div>
 
             {/* Rodapé fixo — erro + botões sempre visíveis */}
-            <div className="px-6 pb-6 pt-3 border-t border-slate-100 shrink-0 space-y-3">
+            <div className="px-5 pb-4 pt-2 border-t border-slate-100 shrink-0 space-y-2">
               {erroNovo && (
                 <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
                   <AlertCircle size={15} className="text-amber-600 mt-0.5 shrink-0" />
@@ -682,12 +693,12 @@ export default function ConteudosClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[90vh]">
             {/* Cabeçalho fixo */}
-            <div className="px-6 pt-6 pb-4 border-b border-slate-100 shrink-0">
+            <div className="px-5 pt-4 pb-3 border-b border-slate-100 shrink-0">
               <h2 className="text-lg font-bold text-slate-800">Editar Conteúdo</h2>
             </div>
 
             {/* Corpo rolável */}
-            <div className="overflow-y-auto px-6 py-4 flex-1 space-y-4">
+            <div className="overflow-y-auto px-5 py-3 flex-1 space-y-4">
               <CamposForm
                 form={editConteudo}
                 setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
@@ -744,7 +755,7 @@ export default function ConteudosClient({
             </div>
 
             {/* Rodapé fixo — erro + botões sempre visíveis */}
-            <div className="px-6 pb-6 pt-3 border-t border-slate-100 shrink-0 space-y-3">
+            <div className="px-5 pb-4 pt-2 border-t border-slate-100 shrink-0 space-y-2">
               {erroEdit && (
                 <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
                   <AlertCircle size={15} className="text-amber-600 mt-0.5 shrink-0" />
