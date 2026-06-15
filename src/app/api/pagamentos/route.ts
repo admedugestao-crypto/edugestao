@@ -90,6 +90,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { alunoId, mes, ano, parcela = 1, pago, valorCobrado, dataVencimento, quantidadeAulas, observacao } = body;
 
+  const { aulaIds } = body; // array opcional de AgendaAula ids para vincular
+
   const pagamento = await prisma.pagamento.upsert({
     where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } },
     update: {
@@ -110,6 +112,14 @@ export async function POST(req: NextRequest) {
       origemManual:    true,
     },
   });
+
+  // Vincula aulas REALIZADA ao pagamento
+  if (Array.isArray(aulaIds) && aulaIds.length > 0) {
+    await prisma.pagamentoAula.createMany({
+      data: aulaIds.map((agendaAulaId: string) => ({ pagamentoId: pagamento.id, agendaAulaId })),
+      skipDuplicates: true,
+    });
+  }
 
   return NextResponse.json(pagamento);
 }

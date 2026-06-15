@@ -42,6 +42,14 @@ type PagamentoItem = {
   };
 };
 
+type AulaRealizada = {
+  id:         string;
+  data:       string;
+  horaInicio: string | null;
+  horaFim:    string | null;
+  materia:    string | null;
+};
+
 type AlunoSimples = {
   id:            string;
   nome:          string;
@@ -128,6 +136,9 @@ export default function PagamentosClient({
   const [formPag,         setFormPag]         = useState<FormPag | null>(null);
   const [alunosLista,     setAlunosLista]      = useState<AlunoSimples[]>([]);
   const [carregandoAluno, setCarregandoAluno]  = useState(false);
+  const [aulasRealizadas, setAulasRealizadas]  = useState<AulaRealizada[]>([]);
+  const [aulasSelecionadas, setAulasSelecionadas] = useState<string[]>([]);
+  const [carregandoAulas, setCarregandoAulas]  = useState(false);
   const [salvando,        setSalvando]         = useState(false);
   const [excluirId,       setExcluirId]        = useState<string | null>(null);
   const [excluindo,       setExcluindo]        = useState(false);
@@ -260,10 +271,24 @@ export default function PagamentosClient({
     setAulasModal(null);
   }
 
+  async function carregarAulasRealizadas(alunoId: string) {
+    if (!alunoId) { setAulasRealizadas([]); setAulasSelecionadas([]); return; }
+    setCarregandoAulas(true);
+    try {
+      const res = await fetch(`/api/agenda/realizadas?alunoId=${alunoId}`);
+      if (res.ok) setAulasRealizadas(await res.json());
+    } finally {
+      setCarregandoAulas(false);
+    }
+    setAulasSelecionadas([]);
+  }
+
   // ── CRUD: abrir modal criar ───────────────────────────────────────────────
   async function abrirCriar() {
     setErroCrud(null);
     setCarregandoAluno(true);
+    setAulasRealizadas([]);
+    setAulasSelecionadas([]);
     setFormPag({
       modo: "criar", alunoId: "", parcela: "1",
       dataVencimento: dataVencimentoPadrao(mes, ano),
@@ -322,6 +347,7 @@ export default function PagamentosClient({
           pago:            formPag.pago,
           dataPagamento:   formPag.pago && formPag.dataPagamento ? formPag.dataPagamento : null,
           observacao:      formPag.observacao || null,
+          aulaIds:         aulasSelecionadas,
         };
         const res = await fetch("/api/pagamentos", {
           method:  "POST",
@@ -726,6 +752,7 @@ export default function PagamentosClient({
                               alunoId:      e.target.value,
                               valorCobrado: aluno?.valorCobranca != null ? String(aluno.valorCobranca) : f.valorCobrado,
                             } : f);
+                            carregarAulasRealizadas(e.target.value);
                           }}
                           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
@@ -846,6 +873,51 @@ export default function PagamentosClient({
                     onChange={(e) => setFormPag((f) => f ? { ...f, dataPagamento: e.target.value } : f)}
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
+                </div>
+              )}
+
+              {/* Aulas Realizadas — apenas no modo criar */}
+              {formPag.modo === "criar" && formPag.alunoId && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                    Vincular Aulas Agendadas Realizadas
+                    {aulasRealizadas.length > 0 && (
+                      <span className="ml-1 text-slate-400 font-normal">({aulasRealizadas.length} disponíveis)</span>
+                    )}
+                  </label>
+                  {carregandoAulas ? (
+                    <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
+                      <div className="w-3 h-3 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                      Carregando aulas…
+                    </div>
+                  ) : aulasRealizadas.length === 0 ? (
+                    <p className="text-xs text-slate-400 py-1">Nenhuma Aula Agendada Realizada sem pagamento vinculado.</p>
+                  ) : (
+                    <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-36 overflow-y-auto">
+                      {aulasRealizadas.map((a) => {
+                        const sel = aulasSelecionadas.includes(a.id);
+                        const d = new Date(a.data);
+                        const dataFmt = `${String(d.getUTCDate()).padStart(2,"0")}/${String(d.getUTCMonth()+1).padStart(2,"0")}/${d.getUTCFullYear()}`;
+                        return (
+                          <label key={a.id} className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-slate-50 ${sel ? "bg-indigo-50" : ""}`}>
+                            <input
+                              type="checkbox"
+                              checked={sel}
+                              onChange={() => setAulasSelecionadas((prev) =>
+                                sel ? prev.filter((id) => id !== a.id) : [...prev, a.id]
+                              )}
+                              className="accent-indigo-600"
+                            />
+                            <span className="text-xs text-slate-700">
+                              {dataFmt}
+                              {a.horaInicio && <span className="text-slate-400"> · {a.horaInicio}{a.horaFim ? `–${a.horaFim}` : ""}</span>}
+                              {a.materia && <span className="text-indigo-600 ml-1">· {a.materia}</span>}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 
