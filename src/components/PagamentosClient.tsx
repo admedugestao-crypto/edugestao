@@ -498,16 +498,18 @@ export default function PagamentosClient({
           <div className="flex items-center gap-3">
             {selecionados.length > 0 && (
               <>
-                <button
-                  onClick={() => {
-                    const url = `/imprimir/recibo?ids=${selecionados.join(",")}`;
-                    window.open(url, "_blank");
-                  }}
-                  className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-900 transition-colors"
-                >
-                  <Printer size={13} />
-                  Imprimir {selecionados.length} recibo(s)
-                </button>
+                {(() => {
+                  const pagos = selecionados.filter((id) => pagamentos.find((p) => p.id === id)?.pago);
+                  return pagos.length > 0 ? (
+                    <button
+                      onClick={() => window.open(`/imprimir/recibo?ids=${pagos.join(",")}`, "_blank")}
+                      className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-900 transition-colors"
+                    >
+                      <Printer size={13} />
+                      Imprimir {pagos.length} recibo(s)
+                    </button>
+                  ) : null;
+                })()}
                 <button
                   onClick={() => setSelecionados([])}
                   className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
@@ -715,14 +717,16 @@ export default function PagamentosClient({
                             );
                           })()}
 
-                          {/* Imprimir recibo */}
-                          <button
-                            onClick={() => window.open(`/imprimir/recibo?ids=${item.id}`, "_blank")}
-                            title="Imprimir recibo"
-                            className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-emerald-100 text-slate-400 hover:text-emerald-600 transition-colors"
-                          >
-                            <Printer size={13} />
-                          </button>
+                          {/* Imprimir recibo — apenas pagamentos realizados */}
+                          {item.pago && (
+                            <button
+                              onClick={() => window.open(`/imprimir/recibo?ids=${item.id}`, "_blank")}
+                              title="Imprimir recibo"
+                              className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-emerald-100 text-slate-400 hover:text-emerald-600 transition-colors"
+                            >
+                              <Printer size={13} />
+                            </button>
+                          )}
 
                           {/* Editar */}
                           <button

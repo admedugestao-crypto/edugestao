@@ -51,10 +51,13 @@ export default async function ReciboPage({
 
   if (pagamentos.length === 0) notFound();
 
-  const total   = pagamentos.reduce((s, p) => s + p.valorCobrado, 0);
+  const pagamentosFiltrados = pagamentos.filter((p) => p.pago);
+  if (pagamentosFiltrados.length === 0) notFound();
+
+  const total   = pagamentosFiltrados.reduce((s, p) => s + p.valorCobrado, 0);
   const emissao = fmtData(new Date().toISOString());
 
-  const itens = pagamentos.map((p) => ({
+  const itens = pagamentosFiltrados.map((p) => ({
     id:            p.id,
     aluno:         p.aluno.nome,
     escola:        p.aluno.unidade.escola.nome,
