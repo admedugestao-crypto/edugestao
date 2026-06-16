@@ -146,6 +146,7 @@ export default function PagamentosClient({
   const [erroExcluir,     setErroExcluir]      = useState<string | null>(null);
   const [erroCrud,        setErroCrud]         = useState<string | null>(null);
   const [selecionados,    setSelecionados]      = useState<string[]>([]);
+  const [reciboIds,       setReciboIds]         = useState<string[]>([]);
 
   // ── Busca registros para um mês ─────────────────────────────────────────
   const buscarPagamentos = useCallback(async (m: number, a: number) => {
@@ -502,11 +503,11 @@ export default function PagamentosClient({
                   const pagos = selecionados.filter((id) => pagamentos.find((p) => p.id === id)?.pago);
                   return pagos.length > 0 ? (
                     <button
-                      onClick={() => window.open(`/imprimir/recibo?ids=${pagos.join(",")}`, "_blank")}
+                      onClick={() => setReciboIds(pagos)}
                       className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-900 transition-colors"
                     >
                       <Printer size={13} />
-                      Imprimir {pagos.length} recibo(s)
+                      Ver {pagos.length} recibo(s)
                     </button>
                   ) : null;
                 })()}
@@ -717,11 +718,11 @@ export default function PagamentosClient({
                             );
                           })()}
 
-                          {/* Imprimir recibo — apenas pagamentos realizados */}
+                          {/* Recibo — apenas pagamentos realizados */}
                           {item.pago && (
                             <button
-                              onClick={() => window.open(`/imprimir/recibo?ids=${item.id}`, "_blank")}
-                              title="Imprimir recibo"
+                              onClick={() => setReciboIds([item.id])}
+                              title="Ver recibo"
                               className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-emerald-100 text-slate-400 hover:text-emerald-600 transition-colors"
                             >
                               <Printer size={13} />
@@ -1193,6 +1194,105 @@ export default function PagamentosClient({
         </div>
       )}
 
+      {/* ── Modal Recibo ─────────────────────────────────────────────────────── */}
+      {reciboIds.length > 0 && (() => {
+        const itens = pagamentos.filter((p) => reciboIds.includes(p.id) && p.pago);
+        const total = itens.reduce((s, p) => s + p.valorCobrado, 0);
+        const hoje  = new Date().toLocaleDateString("pt-BR");
+        const TIPO_LABEL_R: Record<string,string> = {
+          MENSAL: "Mensal", QUINZENAL: "Quinzenal", SEMANAL: "Semanal", POR_AULA: "Por aula",
+        };
+        return (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+                <div className="flex items-center gap-2">
+                  <Printer size={16} className="text-emerald-600" />
+                  <h2 className="text-base font-bold text-slate-800">
+                    Recibo de Pagamento
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => window.open(`/imprimir/recibo?ids=${reciboIds.join(",")}`, "_blank")}
+                    className="flex items-center gap-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <Printer size={12} />
+                    Imprimir
+                  </button>
+                  <button onClick={() => setReciboIds([])}
+                    className="p-1 hover:bg-slate-100 rounded-lg transition-colors">
+                    <X size={18} className="text-slate-500" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Emissão */}
+              <div className="px-5 pt-3 pb-1 shrink-0">
+                <p className="text-xs text-slate-400">Emitido em {hoje}</p>
+              </div>
+
+              {/* Itens */}
+              <div className="overflow-y-auto px-5 py-3 space-y-3 flex-1">
+                {itens.map((item, idx) => (
+                  <div key={item.id} className="border border-slate-200 rounded-xl p-4">
+                    {itens.length > 1 && (
+                      <p className="text-xs font-semibold text-emerald-600 mb-2">#{idx + 1}</p>
+                    )}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                      <RField label="Aluno"          value={item.aluno.nome} />
+                      <RField label="Escola / Turma" value={`${item.aluno.unidade.escola.nome} · ${item.aluno.unidade.nome}`} />
+                      {item.aluno.professora && <RField label="Professor(a)" value={item.aluno.professora} />}
+                      <RField label="Competência"    value={`${MESES[item.mes - 1]} / ${item.ano}`} />
+                      <RField label="Tipo cobrança"  value={TIPO_LABEL_R[item.aluno.tipoCobranca] ?? item.aluno.tipoCobranca} />
+                      {item.quantidadeAulas != null && (
+                        <RField label="Qtd. de aulas" value={String(item.quantidadeAulas)} />
+                      )}
+                      <RField label="Vencimento"    value={fmtData(item.dataVencimento)} />
+                      <RField label="Pago em"        value={fmtData(item.dataPagamento)} highlight="green" />
+                      <RField label="Valor"          value={moeda(item.valorCobrado)} bold />
+                      {item.observacao && (
+                        <div className="col-span-2 mt-0.5">
+                          <span className="text-xs font-medium text-slate-500">Obs.: </span>
+                          <span className="text-xs text-slate-600">{item.observacao}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Total */}
+              {itens.length > 1 && (
+                <div className="px-5 py-3 border-t border-slate-100 flex justify-end shrink-0">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-2 text-right">
+                    <p className="text-xs text-emerald-500 font-medium">Total ({itens.length} recibos)</p>
+                    <p className="text-lg font-bold text-emerald-700">{moeda(total)}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Assinaturas */}
+              <div className="px-5 pb-5 pt-2 shrink-0">
+                <div className="grid grid-cols-2 gap-6 mt-4">
+                  <div className="text-center">
+                    <div className="border-t border-slate-300 pt-1 mt-6">
+                      <p className="text-xs text-slate-400">Assinatura do Responsável</p>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="border-t border-slate-300 pt-1 mt-6">
+                      <p className="text-xs text-slate-400">Assinatura do Professor(a)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ── Modal Qtd Aulas (POR_AULA) ───────────────────────────────────────── */}
       {aulasModal && (() => {
         const qtd = parseInt(aulasModal.qtd) || 0;
@@ -1230,6 +1330,19 @@ export default function PagamentosClient({
           </div>
         );
       })()}
+    </div>
+  );
+}
+
+function RField({ label, value, bold, highlight }: {
+  label: string; value: string; bold?: boolean; highlight?: "green";
+}) {
+  return (
+    <div className="flex gap-2">
+      <span className="text-xs font-medium text-slate-500 shrink-0 w-28">{label}:</span>
+      <span className={`text-xs ${bold ? "font-bold text-slate-800" : "text-slate-700"} ${highlight === "green" ? "text-emerald-700 font-medium" : ""}`}>
+        {value}
+      </span>
     </div>
   );
 }
