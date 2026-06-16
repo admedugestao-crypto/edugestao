@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Clock, AlertCircle,
   DollarSign, TrendingUp, TrendingDown, Users, Check, X, MessageSquare,
-  ArrowLeft, Mail, RefreshCw, Send, Plus, Pencil, Trash2,
+  ArrowLeft, Mail, RefreshCw, Send, Plus, Pencil, Trash2, Printer,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -144,6 +144,7 @@ export default function PagamentosClient({
   const [excluindo,       setExcluindo]        = useState(false);
   const [erroExcluir,     setErroExcluir]      = useState<string | null>(null);
   const [erroCrud,        setErroCrud]         = useState<string | null>(null);
+  const [selecionados,    setSelecionados]      = useState<string[]>([]);
 
   // ── Busca registros para um mês ─────────────────────────────────────────
   const buscarPagamentos = useCallback(async (m: number, a: number) => {
@@ -494,6 +495,27 @@ export default function PagamentosClient({
               : `${pagamentos.length} cobrança(s)`}
           </p>
           <div className="flex items-center gap-3">
+            {selecionados.length > 0 && (
+              <>
+                <button
+                  onClick={() => {
+                    const url = `/dashboard/pagamentos/recibo?ids=${selecionados.join(",")}`;
+                    window.open(url, "_blank");
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-900 transition-colors"
+                >
+                  <Printer size={13} />
+                  Imprimir {selecionados.length} recibo(s)
+                </button>
+                <button
+                  onClick={() => setSelecionados([])}
+                  className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  Limpar
+                </button>
+                <div className="w-px h-4 bg-slate-300" />
+              </>
+            )}
             <button
               onClick={handleGerar}
               disabled={gerando || carregando}
@@ -527,6 +549,14 @@ export default function PagamentosClient({
             <table className="w-full text-sm">
               <thead className="border-b border-slate-100">
                 <tr>
+                  <th className="px-3 py-3">
+                    <input
+                      type="checkbox"
+                      className="accent-indigo-600 w-4 h-4"
+                      checked={selecionados.length === pagamentos.length && pagamentos.length > 0}
+                      onChange={(e) => setSelecionados(e.target.checked ? pagamentos.map((p) => p.id) : [])}
+                    />
+                  </th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Aluno</th>
                   {isAdmin && <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Professor</th>}
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Tipo</th>
@@ -543,6 +573,17 @@ export default function PagamentosClient({
                   const loading = marcando === item.id;
                   return (
                     <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                      {/* Checkbox */}
+                      <td className="px-3 py-3">
+                        <input
+                          type="checkbox"
+                          className="accent-indigo-600 w-4 h-4"
+                          checked={selecionados.includes(item.id)}
+                          onChange={(e) => setSelecionados((prev) =>
+                            e.target.checked ? [...prev, item.id] : prev.filter((id) => id !== item.id)
+                          )}
+                        />
+                      </td>
                       {/* Aluno */}
                       <td className="px-4 py-3">
                         <p className="font-medium text-slate-800">{item.aluno.nome}</p>
@@ -672,6 +713,15 @@ export default function PagamentosClient({
                               </button>
                             );
                           })()}
+
+                          {/* Imprimir recibo */}
+                          <button
+                            onClick={() => window.open(`/dashboard/pagamentos/recibo?ids=${item.id}`, "_blank")}
+                            title="Imprimir recibo"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-emerald-100 text-slate-400 hover:text-emerald-600 transition-colors"
+                          >
+                            <Printer size={13} />
+                          </button>
 
                           {/* Editar */}
                           <button
