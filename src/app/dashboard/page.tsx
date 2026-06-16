@@ -19,7 +19,7 @@ export default async function DashboardPage() {
   const perfil       = (session?.user as any)?.perfil as string | null;
   const isAdmin      = perfil === "SUPERADMIN";
 
-  const filtroAluno = professoraId ? { professoraId } : {};
+  const filtroAluno = (!isAdmin && professoraId) ? { professoraId } : {};
 
   const agora    = new Date();
   const mesAtual = agora.getUTCMonth() + 1;
