@@ -377,10 +377,12 @@ export type MateriaCreateNestedOneWithoutConteudosInput = {
   connect?: Prisma.MateriaWhereUniqueInput
 }
 
-export type MateriaUpdateOneRequiredWithoutConteudosNestedInput = {
+export type MateriaUpdateOneWithoutConteudosNestedInput = {
   create?: Prisma.XOR<Prisma.MateriaCreateWithoutConteudosInput, Prisma.MateriaUncheckedCreateWithoutConteudosInput>
   connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutConteudosInput
   upsert?: Prisma.MateriaUpsertWithoutConteudosInput
+  disconnect?: Prisma.MateriaWhereInput | boolean
+  delete?: Prisma.MateriaWhereInput | boolean
   connect?: Prisma.MateriaWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.MateriaUpdateToOneWithWhereWithoutConteudosInput, Prisma.MateriaUpdateWithoutConteudosInput>, Prisma.MateriaUncheckedUpdateWithoutConteudosInput>
 }

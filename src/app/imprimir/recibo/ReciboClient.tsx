@@ -4,20 +4,20 @@ import { useEffect } from "react";
 import { Printer } from "lucide-react";
 
 type Item = {
-  id:           string;
-  aluno:        string;
-  escola:       string;
-  unidade:      string;
-  professora:   string | null;
-  competencia:  string;
-  tipo:         string;
-  parcela:      number;
-  qtdAulas:     number | null;
-  valorCobrado: string;
-  vencimento:   string;
-  pago:         boolean;
+  id:            string;
+  aluno:         string;
+  escola:        string;
+  unidade:       string;
+  professora:    string | null;
+  competencia:   string;
+  tipo:          string;
+  parcela:       number;
+  qtdAulas:      number | null;
+  valorCobrado:  string;
+  vencimento:    string;
+  pago:          boolean;
   dataPagamento: string;
-  observacao:   string | null;
+  observacao:    string | null;
 };
 
 export default function ReciboClient({
@@ -65,11 +65,11 @@ export default function ReciboClient({
                 <p className="text-xs font-semibold text-indigo-600 mb-2">#{idx + 1}</p>
               )}
               <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
-                <Row label="Aluno" value={item.aluno} />
+                <Row label="Aluno"          value={item.aluno} />
                 <Row label="Escola / Turma" value={`${item.escola} · ${item.unidade}`} />
                 {item.professora && <Row label="Professor(a)" value={item.professora} />}
-                <Row label="Competência" value={item.competencia} />
-                <Row label="Tipo de cobrança" value={item.tipo} />
+                <Row label="Competência"    value={item.competencia} />
+                <Row label="Tipo cobrança"  value={item.tipo} />
                 {(item.tipo === "Quinzenal" || item.tipo === "Semanal") && (
                   <Row label="Parcela" value={`${item.parcela}ª`} />
                 )}
@@ -109,7 +109,7 @@ export default function ReciboClient({
           <p className="text-xs text-slate-400">
             Este documento é um comprovante gerado pelo sistema EduGestão.
           </p>
-          <div className="mt-8 grid grid-cols-2 gap-8 print:grid">
+          <div className="mt-8 grid grid-cols-2 gap-8">
             <div className="text-center">
               <div className="border-t border-slate-400 pt-2 mt-8">
                 <p className="text-xs text-slate-500">Assinatura do Responsável</p>
@@ -130,9 +130,9 @@ export default function ReciboClient({
 function Row({
   label, value, bold, highlight,
 }: {
-  label:     string;
-  value:     string;
-  bold?:     boolean;
+  label:      string;
+  value:      string;
+  bold?:      boolean;
   highlight?: "green" | "red";
 }) {
   return (

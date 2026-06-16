@@ -499,7 +499,7 @@ export default function PagamentosClient({
               <>
                 <button
                   onClick={() => {
-                    const url = `/dashboard/pagamentos/recibo?ids=${selecionados.join(",")}`;
+                    const url = `/imprimir/recibo?ids=${selecionados.join(",")}`;
                     window.open(url, "_blank");
                   }}
                   className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-900 transition-colors"
@@ -716,7 +716,7 @@ export default function PagamentosClient({
 
                           {/* Imprimir recibo */}
                           <button
-                            onClick={() => window.open(`/dashboard/pagamentos/recibo?ids=${item.id}`, "_blank")}
+                            onClick={() => window.open(`/imprimir/recibo?ids=${item.id}`, "_blank")}
                             title="Imprimir recibo"
                             className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-emerald-100 text-slate-400 hover:text-emerald-600 transition-colors"
                           >
