@@ -16,6 +16,8 @@ function parseDataLocal(iso: Date | string) {
 export default async function DashboardPage() {
   const session = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;
+  const perfil       = (session?.user as any)?.perfil as string | null;
+  const isAdmin      = perfil === "SUPERADMIN";
 
   const filtroAluno = professoraId ? { professoraId } : {};
 
@@ -26,7 +28,7 @@ export default async function DashboardPage() {
   const [totalAlunos, todasNotas, proximasProvas, pagamentosMes] =
     await Promise.all([
       prisma.aluno.count({ where: { ...filtroAluno, status: "ATIVO" } }),
-      prisma.nota.findMany({
+      isAdmin ? Promise.resolve([]) : prisma.nota.findMany({
         where: { aluno: filtroAluno },
         include: {
           aluno: { select: { nome: true } },
@@ -35,7 +37,7 @@ export default async function DashboardPage() {
         },
         orderBy: { criadoEm: "desc" },
       }),
-      prisma.avaliacao.findMany({
+      isAdmin ? Promise.resolve([]) : prisma.avaliacao.findMany({
         where: {
           data: { gte: new Date() },
           ...(professoraId ? { unidade: { alunos: { some: { professoraId, status: "ATIVO" } } } } : {}),
@@ -71,7 +73,7 @@ export default async function DashboardPage() {
     { label: "Alunos ativos",    valor: totalAlunos,        icon: Users,         cor: "bg-indigo-50 text-indigo-600" },
     { label: "Escolas cadastradas", valor: totalEscolas,    icon: School,        cor: "bg-emerald-50 text-emerald-600" },
     { label: `A receber (${String(mesAtual).padStart(2,"0")}/${anoAtual})`, valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600", link: "/dashboard/pagamentos" },
-    { label: "Notas lançadas",   valor: todasNotas.length,  icon: ClipboardList, cor: "bg-rose-50 text-rose-600" },
+    ...(!isAdmin ? [{ label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600" } as const] : []),
   ];
 
   return (
@@ -100,57 +102,59 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <CalendarClock size={18} className="text-indigo-600" />
-            <h2 className="font-semibold text-slate-800">Próximas provas</h2>
+      {!isAdmin && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <CalendarClock size={18} className="text-indigo-600" />
+              <h2 className="font-semibold text-slate-800">Próximas provas</h2>
+            </div>
+            {proximasProvas.length === 0 ? (
+              <p className="text-slate-500 text-sm">Nenhuma prova agendada.</p>
+            ) : (
+              <ul className="space-y-2">
+                {proximasProvas.map((av) => (
+                  <li key={av.id} className="flex items-start justify-between gap-3 text-sm">
+                    <div>
+                      <span className="font-medium text-slate-700">{av.nome}</span>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {av.unidade.escola.nome} · {av.serie}
+                        {av.materia && <> · <span className="text-indigo-500">{av.materia.nome}</span></>}
+                        {av.periodo && <> · <span className="text-slate-500">{av.periodo}</span></>}
+                      </p>
+                    </div>
+                    <span className="text-indigo-600 font-medium whitespace-nowrap">
+                      {format(parseDataLocal(av.data), "dd/MM/yyyy", { locale: ptBR })}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          {proximasProvas.length === 0 ? (
-            <p className="text-slate-500 text-sm">Nenhuma prova agendada.</p>
-          ) : (
-            <ul className="space-y-2">
-              {proximasProvas.map((av) => (
-                <li key={av.id} className="flex items-start justify-between gap-3 text-sm">
-                  <div>
-                    <span className="font-medium text-slate-700">{av.nome}</span>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {av.unidade.escola.nome} · {av.serie}
-                      {av.materia && <> · <span className="text-indigo-500">{av.materia.nome}</span></>}
-                      {av.periodo && <> · <span className="text-slate-500">{av.periodo}</span></>}
-                    </p>
-                  </div>
-                  <span className="text-indigo-600 font-medium whitespace-nowrap">
-                    {format(parseDataLocal(av.data), "dd/MM/yyyy", { locale: ptBR })}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <AlertCircle size={18} className="text-rose-500" />
-            <h2 className="font-semibold text-slate-800">Atenção necessária</h2>
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertCircle size={18} className="text-rose-500" />
+              <h2 className="font-semibold text-slate-800">Atenção necessária</h2>
+            </div>
+            {alunosBaixoDesempenho.length === 0 ? (
+              <p className="text-slate-500 text-sm">Nenhum aluno abaixo da média.</p>
+            ) : (
+              <ul className="space-y-2">
+                {alunosBaixoDesempenho.map((n) => (
+                  <li key={n.id} className="flex items-center justify-between text-sm">
+                    <div>
+                      <span className="font-medium text-slate-700">{n.aluno.nome}</span>
+                      <span className="text-slate-500 ml-2">{n.materia.nome}</span>
+                    </div>
+                    <span className="text-rose-600 font-bold">{n.valor.toFixed(1)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          {alunosBaixoDesempenho.length === 0 ? (
-            <p className="text-slate-500 text-sm">Nenhum aluno abaixo da média.</p>
-          ) : (
-            <ul className="space-y-2">
-              {alunosBaixoDesempenho.map((n) => (
-                <li key={n.id} className="flex items-center justify-between text-sm">
-                  <div>
-                    <span className="font-medium text-slate-700">{n.aluno.nome}</span>
-                    <span className="text-slate-500 ml-2">{n.materia.nome}</span>
-                  </div>
-                  <span className="text-rose-600 font-bold">{n.valor.toFixed(1)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
-      </div>
+      )}
 
       <div className="flex gap-3">
         <Link
