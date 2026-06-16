@@ -76,7 +76,8 @@ type FormPag = {
 function status(item: PagamentoItem): "pago" | "atrasado" | "avencer" {
   if (item.pago) return "pago";
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const venc = new Date(item.dataVencimento);
+  const [y, m, d] = item.dataVencimento.split("T")[0].split("-").map(Number);
+  const venc = new Date(y, m - 1, d + 1); // D+1: atrasado só a partir do dia seguinte ao vencimento
   return venc < hoje ? "atrasado" : "avencer";
 }
 
