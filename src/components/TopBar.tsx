@@ -8,7 +8,7 @@ export default function TopBar({ usuario }: { usuario: any }) {
   return (
     <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
       <div className="flex items-center gap-3">
-        <Image src="/logo-edugestao.png" alt="EduGestão" width={36} height={36} className="rounded-lg shrink-0" />
+        <Image src="/logo-edugestao.png" alt="EduGestão" width={44} height={44} className="rounded-xl shrink-0 object-contain" />
         <div className="leading-tight">
           <p className="text-sm font-bold text-indigo-700">Gestão Educacional</p>
           <p className="text-xs text-slate-400">EduGestão</p>
