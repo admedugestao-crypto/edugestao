@@ -70,10 +70,10 @@ export default async function DashboardPage() {
   }
 
   const cards = [
-    { label: "Alunos ativos",    valor: totalAlunos,        icon: Users,         cor: "bg-indigo-50 text-indigo-600" },
-    { label: "Escolas cadastradas", valor: totalEscolas,    icon: School,        cor: "bg-emerald-50 text-emerald-600" },
+    { label: "Alunos ativos",       valor: totalAlunos,           icon: Users,         cor: "bg-indigo-50 text-indigo-600",  link: "/dashboard/alunos" },
+    { label: "Escolas cadastradas", valor: totalEscolas,           icon: School,        cor: "bg-emerald-50 text-emerald-600", link: "/dashboard/escolas" },
     { label: `A receber (${String(mesAtual).padStart(2,"0")}/${anoAtual})`, valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600", link: "/dashboard/pagamentos" },
-    ...(!isAdmin ? [{ label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600" } as const] : []),
+    ...(!isAdmin ? [{ label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600", link: "/dashboard/notas" } as const] : []),
   ];
 
   return (
