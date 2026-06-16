@@ -1,16 +1,23 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Users, School, DollarSign, ClipboardList, AlertCircle, CalendarClock } from "lucide-react";
+import { Users, School, ClipboardList, AlertCircle, CalendarClock, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const dynamic = "force-dynamic";
 
+const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+               "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
 function parseDataLocal(iso: Date | string) {
   const str = iso instanceof Date ? iso.toISOString() : iso;
   const [y, m, d] = str.split("T")[0].split("-").map(Number);
   return new Date(y, m - 1, d);
+}
+
+function moeda(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 export default async function DashboardPage() {
@@ -19,15 +26,13 @@ export default async function DashboardPage() {
 
   const filtroAluno = professoraId ? { professoraId } : {};
 
-  const agora = new Date();
+  const agora    = new Date();
   const mesAtual = agora.getUTCMonth() + 1;
   const anoAtual = agora.getUTCFullYear();
 
   const [totalAlunos, todasNotas, proximasProvas, pagamentosMes] =
     await Promise.all([
-      prisma.aluno.count({
-        where: { ...filtroAluno, status: "ATIVO" },
-      }),
+      prisma.aluno.count({ where: { ...filtroAluno, status: "ATIVO" } }),
       prisma.nota.findMany({
         where: { aluno: filtroAluno },
         include: {
@@ -40,13 +45,7 @@ export default async function DashboardPage() {
       prisma.avaliacao.findMany({
         where: {
           data: { gte: new Date() },
-          ...(professoraId
-            ? {
-                unidade: {
-                  alunos: { some: { professoraId, status: "ATIVO" } },
-                },
-              }
-            : {}),
+          ...(professoraId ? { unidade: { alunos: { some: { professoraId, status: "ATIVO" } } } } : {}),
         },
         include: { unidade: { include: { escola: true } }, materia: true },
         orderBy: { data: "asc" },
@@ -58,53 +57,102 @@ export default async function DashboardPage() {
           ano: anoAtual,
           ...(professoraId ? { aluno: { professoraId } } : {}),
         },
-        select: { valorCobrado: true, pago: true },
+        select: { valorCobrado: true, pago: true, dataVencimento: true },
       }),
     ]);
 
-  // Apenas notas abaixo da média da avaliação (valor < notaMax / 2)
   const alunosBaixoDesempenho = todasNotas
     .filter((n) => n.valor < n.avaliacao.notaMax / 2)
     .slice(0, 5);
 
-  const totalEscolas = await prisma.escola.count();
-
+  const totalEscolas  = await prisma.escola.count();
   const totalEsperado = pagamentosMes.reduce((s, p) => s + p.valorCobrado, 0);
   const totalRecebido = pagamentosMes.filter((p) => p.pago).reduce((s, p) => s + p.valorCobrado, 0);
   const totalPendente = totalEsperado - totalRecebido;
 
-  function formatBRL(v: number) {
-    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-  }
-
-  const cards = [
-    { label: "Alunos ativos", valor: totalAlunos, icon: Users, cor: "bg-indigo-50 text-indigo-600" },
-    { label: "Escolas cadastradas", valor: totalEscolas, icon: School, cor: "bg-emerald-50 text-emerald-600" },
-    { label: `A receber (${String(mesAtual).padStart(2,"0")}/${anoAtual})`, valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600" },
-    { label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600" },
-  ];
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const qtdAtrasados = pagamentosMes.filter((p) => {
+    if (p.pago) return false;
+    const [y, m, d] = p.dataVencimento.toISOString().split("T")[0].split("-").map(Number);
+    return new Date(y, m - 1, d + 1) < hoje;
+  }).length;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-        <p className="text-slate-500 text-sm mt-1">
-          Bem-vinda, {session?.user?.name}
-        </p>
+        <p className="text-slate-500 text-sm mt-1">Bem-vinda, {session?.user?.name}</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map((c) => (
-          <div key={c.label} className="bg-white rounded-xl border border-slate-200 p-4">
-            <div className={`inline-flex p-2 rounded-lg ${c.cor} mb-3`}>
-              <c.icon size={20} />
-            </div>
-            <p className="text-2xl font-bold text-slate-800">{c.valor}</p>
-            <p className="text-sm text-slate-500 mt-0.5">{c.label}</p>
+      {/* Cards gerais */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="inline-flex p-2 rounded-lg bg-indigo-50 text-indigo-600 mb-3">
+            <Users size={20} />
           </div>
-        ))}
+          <p className="text-2xl font-bold text-slate-800">{totalAlunos}</p>
+          <p className="text-sm text-slate-500 mt-0.5">Alunos ativos</p>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="inline-flex p-2 rounded-lg bg-emerald-50 text-emerald-600 mb-3">
+            <School size={20} />
+          </div>
+          <p className="text-2xl font-bold text-slate-800">{totalEscolas}</p>
+          <p className="text-sm text-slate-500 mt-0.5">Escolas cadastradas</p>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="inline-flex p-2 rounded-lg bg-rose-50 text-rose-600 mb-3">
+            <ClipboardList size={20} />
+          </div>
+          <p className="text-2xl font-bold text-slate-800">{todasNotas.length}</p>
+          <p className="text-sm text-slate-500 mt-0.5">Notas lançadas</p>
+        </div>
       </div>
 
+      {/* Resumo financeiro do mês — igual à tela de Pagamentos */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <DollarSign size={16} className="text-amber-500" />
+          <h2 className="font-semibold text-slate-700 text-sm">
+            Financeiro — {MESES[mesAtual - 1]} {anoAtual}
+          </h2>
+          <Link href="/dashboard/pagamentos" className="ml-auto text-xs text-indigo-500 hover:underline">
+            Ver detalhes →
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <DollarSign size={16} className="text-slate-500" />
+              <p className="text-xs font-medium text-slate-500">Total esperado</p>
+            </div>
+            <p className="text-lg font-bold text-slate-800">{moeda(totalEsperado)}</p>
+          </div>
+          <div className="bg-white rounded-xl border border-emerald-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp size={16} className="text-emerald-500" />
+              <p className="text-xs font-medium text-emerald-600">Recebido</p>
+            </div>
+            <p className="text-lg font-bold text-emerald-700">{moeda(totalRecebido)}</p>
+          </div>
+          <div className="bg-white rounded-xl border border-amber-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingDown size={16} className="text-amber-500" />
+              <p className="text-xs font-medium text-amber-600">Pendente</p>
+            </div>
+            <p className="text-lg font-bold text-amber-700">{moeda(totalPendente)}</p>
+          </div>
+          <div className="bg-white rounded-xl border border-red-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle size={16} className="text-red-500" />
+              <p className="text-xs font-medium text-red-600">Atrasados</p>
+            </div>
+            <p className="text-lg font-bold text-red-700">{qtdAtrasados}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Próximas provas + Atenção necessária */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-2 mb-4">
