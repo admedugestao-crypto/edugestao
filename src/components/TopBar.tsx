@@ -8,7 +8,8 @@ export default function TopBar({ usuario }: { usuario: any }) {
   return (
     <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
       <div className="flex items-center gap-3">
-        <Image src="/icone Edugestão.jpg" alt="EduGestão" width={34} height={34} className="shrink-0 object-contain" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icone-edugestao.jpg" alt="EduGestão" style={{ width: 34, height: 34, objectFit: "contain" }} className="shrink-0" />
         <div className="leading-tight">
           <p className="text-sm font-bold text-indigo-700">Gestão Educacional</p>
           <p className="text-xs text-slate-400">EduGestão</p>
