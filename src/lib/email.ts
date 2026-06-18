@@ -561,6 +561,131 @@ export async function enviarEmailProva(
   }
 }
 
+// ── Template HTML — Recibo Múltiplo ──────────────────────────────────────────
+function templateReciboMultiplo(params: {
+  nomeResponsavel: string;
+  nomeProfessora: string;
+  itens: Array<{
+    nomeAluno:     string;
+    tipoCobranca:  string;
+    valorCobrado:  number;
+    dataPagamento: Date;
+    mes:           number;
+    ano:           number;
+    parcela?:      number;
+    quantidadeAulas?: number | null;
+  }>;
+  total: number;
+}) {
+  const { nomeResponsavel, nomeProfessora, itens, total } = params;
+
+  const linhas = itens.map((item) => {
+    const tipoFmt     = TIPO_LABEL[item.tipoCobranca] ?? item.tipoCobranca;
+    const parcelaFmt  = item.parcela && item.parcela > 1 ? ` (${item.parcela}ª)` : "";
+    const dataFmt     = item.dataPagamento.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const mesFmt      = `${MESES[item.mes - 1]}/${item.ano}`;
+    return `
+      <tr style="border-bottom:1px solid #e2e8f0;">
+        <td style="padding:10px 12px;color:#111827;font-size:13px;font-weight:bold;">${item.nomeAluno}</td>
+        <td style="padding:10px 12px;color:#6b7280;font-size:12px;">${mesFmt}</td>
+        <td style="padding:10px 12px;color:#6b7280;font-size:12px;">${tipoFmt}${parcelaFmt}</td>
+        <td style="padding:10px 12px;color:#15803d;font-size:13px;font-weight:bold;">${dataFmt}</td>
+        <td style="padding:10px 12px;color:#15803d;font-size:13px;font-weight:bold;text-align:right;">${moeda(item.valorCobrado)}</td>
+      </tr>`;
+  }).join("");
+
+  const tituloEmail = itens.length === 1
+    ? `✅ Pagamento confirmado — ${itens[0].nomeAluno} · ${MESES[itens[0].mes - 1]} de ${itens[0].ano}`
+    : `✅ ${itens.length} pagamentos confirmados — EduGestão`;
+
+  return {
+    subject: tituloEmail,
+    html: `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <tr>
+          <td style="background:#111827;padding:24px 32px;text-align:center;">
+            <p style="margin:0;color:#fff;font-size:22px;font-weight:bold;letter-spacing:1px;">▲ EduGestão</p>
+            <p style="margin:6px 0 0;color:#9ca3af;font-size:13px;">Gestão Educacional</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f0fdf4;border-bottom:3px solid #86efac;padding:16px 32px;">
+            <p style="margin:0;color:#15803d;font-size:15px;font-weight:bold;">
+              ✅ ${itens.length === 1 ? "Pagamento recebido com sucesso!" : `${itens.length} pagamentos recebidos com sucesso!`}
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;">
+              Prezado(a) <strong>${nomeResponsavel}</strong>,
+            </p>
+            <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+              Confirmamos o recebimento ${itens.length === 1 ? "do pagamento" : "dos pagamentos"} abaixo. Guarde este e-mail como comprovante.
+            </p>
+
+            <!-- Tabela de pagamentos -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+              style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:24px;overflow:hidden;">
+              <thead>
+                <tr style="background:#e2e8f0;">
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Aluno(a)</th>
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Competência</th>
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Tipo</th>
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Pago em</th>
+                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:#374151;">Valor</th>
+                </tr>
+              </thead>
+              <tbody>${linhas}</tbody>
+              ${itens.length > 1 ? `
+              <tfoot>
+                <tr style="background:#f0fdf4;">
+                  <td colspan="4" style="padding:12px;color:#15803d;font-size:13px;font-weight:bold;text-align:right;">Total</td>
+                  <td style="padding:12px;color:#15803d;font-size:15px;font-weight:bold;text-align:right;">${moeda(total)}</td>
+                </tr>
+              </tfoot>` : ""}
+            </table>
+
+            <p style="margin:0 0 8px;color:#6b7280;font-size:13px;">Professor(a): <strong style="color:#374151;">${nomeProfessora}</strong></p>
+            <p style="margin:16px 0 0;color:#374151;font-size:14px;">Agradecemos a pontualidade! 🙏</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
+            <p style="margin:0;color:#9ca3af;font-size:12px;">
+              Mensagem automática enviada pelo <strong>EduGestão</strong>.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  };
+}
+
+export async function enviarEmailReciboMultiplo(params: Parameters<typeof templateReciboMultiplo>[0] & {
+  emailResponsavel: string;
+}): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte();
+  if (!transporte) return { ok: false, erro: "E-mail não configurado no servidor." };
+  const { subject, html } = templateReciboMultiplo(params);
+  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  try {
+    await transporte.sendMail({ from, to: params.emailResponsavel, subject, html });
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, erro: err?.message ?? "Erro ao enviar e-mail." };
+  }
+}
+
 // ── Função principal de envio ─────────────────────────────────────────────────
 export async function enviarEmailAtraso(params: Parameters<typeof templateAtraso>[0] & {
   emailResponsavel: string;

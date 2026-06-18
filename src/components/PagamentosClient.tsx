@@ -145,8 +145,37 @@ export default function PagamentosClient({
   const [excluindo,       setExcluindo]        = useState(false);
   const [erroExcluir,     setErroExcluir]      = useState<string | null>(null);
   const [erroCrud,        setErroCrud]         = useState<string | null>(null);
-  const [selecionados,    setSelecionados]      = useState<string[]>([]);
-  const [reciboIds,       setReciboIds]         = useState<string[]>([]);
+  const [selecionados,         setSelecionados]         = useState<string[]>([]);
+  const [reciboIds,            setReciboIds]            = useState<string[]>([]);
+  const [enviandoReciboEmail,  setEnviandoReciboEmail]  = useState(false);
+  const [reciboEmailMsg,       setReciboEmailMsg]       = useState<{ ok: boolean; msg: string } | null>(null);
+
+  // ── Enviar recibo(s) por e-mail ──────────────────────────────────────────
+  async function enviarReciboEmail(ids: string[]) {
+    setEnviandoReciboEmail(true);
+    setReciboEmailMsg(null);
+    try {
+      const res  = await fetch("/api/email/recibo-multiplo", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setReciboEmailMsg({ ok: true, msg: `E-mail enviado com sucesso para ${data.enviados} responsável(is)!` });
+        // Atualiza emailTipo/emailEnviadoEm nos pagamentos locais
+        const agora = new Date().toISOString();
+        setPagamentos((prev) => prev.map((p) =>
+          ids.includes(p.id) ? { ...p, emailTipo: "recibo", emailEnviadoEm: agora } : p,
+        ));
+      } else {
+        setReciboEmailMsg({ ok: false, msg: data.erro ?? "Erro ao enviar e-mail." });
+      }
+      setTimeout(() => setReciboEmailMsg(null), 6000);
+    } finally {
+      setEnviandoReciboEmail(false);
+    }
+  }
 
   // ── Busca registros para um mês ─────────────────────────────────────────
   const buscarPagamentos = useCallback(async (m: number, a: number) => {
@@ -1214,6 +1243,25 @@ export default function PagamentosClient({
                   </h2>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Enviar por e-mail */}
+                  {(() => {
+                    const itensEmail = pagamentos.filter((p) => reciboIds.includes(p.id) && p.pago && p.aluno.emailResponsavel);
+                    if (itensEmail.length === 0) return null;
+                    return (
+                      <button
+                        onClick={() => enviarReciboEmail(itensEmail.map((p) => p.id))}
+                        disabled={enviandoReciboEmail}
+                        title={`Enviar recibo por e-mail para ${[...new Set(itensEmail.map((p) => p.aluno.emailResponsavel))].join(", ")}`}
+                        className="flex items-center gap-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        {enviandoReciboEmail
+                          ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          : <Mail size={12} />
+                        }
+                        Enviar e-mail
+                      </button>
+                    );
+                  })()}
                   <button
                     onClick={() => window.open(`/imprimir/recibo?ids=${reciboIds.join(",")}`, "_blank")}
                     className="flex items-center gap-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg transition-colors"
@@ -1221,16 +1269,21 @@ export default function PagamentosClient({
                     <Printer size={12} />
                     Imprimir
                   </button>
-                  <button onClick={() => setReciboIds([])}
+                  <button onClick={() => { setReciboIds([]); setReciboEmailMsg(null); }}
                     className="p-1 hover:bg-slate-100 rounded-lg transition-colors">
                     <X size={18} className="text-slate-500" />
                   </button>
                 </div>
               </div>
 
-              {/* Emissão */}
-              <div className="px-5 pt-3 pb-1 shrink-0">
+              {/* Emissão + feedback e-mail */}
+              <div className="px-5 pt-3 pb-1 shrink-0 flex items-center justify-between gap-3">
                 <p className="text-xs text-slate-400">Emitido em {hoje}</p>
+                {reciboEmailMsg && (
+                  <p className={`text-xs font-medium ${reciboEmailMsg.ok ? "text-emerald-600" : "text-red-600"}`}>
+                    {reciboEmailMsg.msg}
+                  </p>
+                )}
               </div>
 
               {/* Itens */}
