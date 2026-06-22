@@ -4,9 +4,11 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
 function createPrismaClient(): PrismaClient {
-  const connectionString =
+  const rawUrl =
+    process.env.DIRECT_URL ??
     process.env.DATABASE_URL ??
     "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
+  const connectionString = rawUrl.replace("?pgbouncer=true", "").replace("&pgbouncer=true", "");
   const adapter = new PrismaPg({ connectionString });
   // @ts-ignore — PrismaClient aceita adapter no Prisma 7
   return new PrismaClient({ adapter });
