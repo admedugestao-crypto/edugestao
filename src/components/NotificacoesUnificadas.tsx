@@ -134,7 +134,7 @@ export default function NotificacoesUnificadas({
   avaliacoes: Avaliacao[];
   historicoWhatsapp: HistoricoWhatsapp[];
   whatsappConfigurado: boolean;
-  provedor?: "zapi" | "evolution" | null;
+  provedor?: "fonnte" | "zapi" | "evolution" | null;
   historicoEmail: HistoricoEmail[];
   emailAtivo: boolean;
 }) {
@@ -184,7 +184,7 @@ function AbaWhatsapp({
   avaliacoes: Avaliacao[];
   historico: HistoricoWhatsapp[];
   whatsappConfigurado: boolean;
-  provedor?: "zapi" | "evolution" | null;
+  provedor?: "fonnte" | "zapi" | "evolution" | null;
 }) {
   const router = useRouter();
   const [disparando, setDisparando]   = useState(false);
@@ -230,7 +230,9 @@ function AbaWhatsapp({
         <div>
           <p className={`text-sm font-medium ${whatsappConfigurado ? "text-emerald-800" : "text-amber-800"}`}>
             {whatsappConfigurado
-              ? provedor === "zapi" ? "Z-API configurada — envio automático ativo" : "Evolution API configurada — envio automático ativo"
+              ? provedor === "zapi" ? "Z-API configurada — envio automático ativo"
+              : provedor === "fonnte" ? "Fonnte configurada — envio automático ativo"
+              : "Evolution API configurada — envio automático ativo"
               : "Nenhuma API configurada — envio manual via WhatsApp"}
           </p>
           <p className={`text-xs mt-0.5 ${whatsappConfigurado ? "text-emerald-600" : "text-amber-600"}`}>
@@ -362,8 +364,18 @@ function AbaWhatsapp({
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
+          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
             <p className="text-xs text-slate-400">{historico.length} registro(s)</p>
+            <button
+              onClick={async () => {
+                if (!confirm("Deseja limpar todo o histórico de notificações?")) return;
+                await fetch("/api/notificacoes/limpar", { method: "DELETE" });
+                router.refresh();
+              }}
+              className="text-xs text-red-500 hover:text-red-700 font-medium"
+            >
+              Limpar histórico
+            </button>
           </div>
         </div>
       )}
