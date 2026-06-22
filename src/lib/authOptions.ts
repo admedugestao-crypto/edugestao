@@ -14,14 +14,23 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const usuario = await prisma.usuario.findUnique({
-          where: { email: credentials.email },
-          include: { professora: true },
-        });
+        let usuario;
+        try {
+          usuario = await prisma.usuario.findUnique({
+            where: { email: credentials.email },
+            include: { professora: true },
+          });
+        } catch (e: any) {
+          console.error("DB ERROR:", e.message);
+          return null;
+        }
+
+        console.log("USUARIO:", usuario ? "encontrado" : "nao encontrado", "ATIVO:", usuario?.ativo);
 
         if (!usuario || !usuario.ativo) return null;
 
         const senhaCorreta = await bcrypt.compare(credentials.password, usuario.senhaHash);
+        console.log("SENHA OK:", senhaCorreta);
         if (!senhaCorreta) return null;
 
         return {
