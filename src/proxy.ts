@@ -5,7 +5,7 @@ import { getToken } from "next-auth/jwt";
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const publicPaths = ["/login", "/cadastro", "/api/auth", "/api/cadastro"];
+  const publicPaths = ["/login", "/cadastro", "/api/auth", "/api/cadastro", "/api/dev-fix"];
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
   if (isPublic) return NextResponse.next();
 
