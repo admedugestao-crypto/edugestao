@@ -189,19 +189,19 @@ function AbaWhatsapp({
   const router = useRouter();
   const [disparando, setDisparando]   = useState(false);
   const [resultado, setResultado]     = useState<{ enviadas: number; pendentes: any[] } | null>(null);
+  const [msgDisparo, setMsgDisparo2]  = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
   const [statusLocal, setStatusLocal] = useState<Record<string, boolean>>({});
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
 
   async function dispararNotificacoes() {
-    setDisparando(true); setResultado(null);
-    // Fire-and-forget: não espera resposta para evitar timeout da Vercel Hobby (10s)
+    setDisparando(true); setResultado(null); setMsgDisparo2(null);
     fetch("/api/cron/notificacoes", { method: "POST" }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
-    setResultado({ enviadas: "–", info: "Notificações disparadas! Verifique o histórico em instantes." });
+    setMsgDisparo2("Notificações disparadas! Verifique o histórico em instantes.");
     setDisparando(false);
-    setTimeout(() => router.refresh(), 3000);
+    setTimeout(() => { setMsgDisparo2(null); router.refresh(); }, 4000);
   }
 
   function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean) {
@@ -254,6 +254,11 @@ function AbaWhatsapp({
             {disparando ? "Verificando..." : "Disparar agora"}
           </button>
         </div>
+        {msgDisparo2 && (
+          <p className="text-sm text-emerald-600 flex items-center gap-1 mb-2">
+            <CheckCircle2 size={14} /> {msgDisparo2}
+          </p>
+        )}
         {avaliacoes.length === 0 ? (
           <p className="text-slate-500 text-sm">Nenhuma prova nos próximos 7 dias.</p>
         ) : (
