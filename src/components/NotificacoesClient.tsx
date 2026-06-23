@@ -53,14 +53,16 @@ export default function NotificacoesClient({
     enviadas: number;
     pendentes: { numero: string; mensagem: string; professorNome: string; avaliacaoNome: string }[];
   } | null>(null);
+  const [msgDisparo, setMsgDisparo] = useState<string | null>(null);
 
   async function dispararNotificacoes() {
     setDisparando(true);
     setResultado(null);
     fetch("/api/cron/notificacoes", { method: "POST" }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
-    setResultado({ info: "Notificações disparadas! Verifique o histórico em instantes." });
+    setMsgDisparo("Notificações disparadas! Verifique o histórico em instantes.");
     setDisparando(false);
+    setTimeout(() => setMsgDisparo(null), 4000);
   }
 
   const hoje = new Date();

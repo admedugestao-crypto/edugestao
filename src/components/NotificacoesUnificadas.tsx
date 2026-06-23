@@ -189,19 +189,19 @@ function AbaWhatsapp({
   const router = useRouter();
   const [disparando, setDisparando]   = useState(false);
   const [resultado, setResultado]     = useState<{ enviadas: number; pendentes: any[] } | null>(null);
-  const [msgDisparo, setMsgDisparo2]  = useState<string | null>(null);
+  const [msgDisparoWpp, setMsgDisparoWpp] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
   const [statusLocal, setStatusLocal] = useState<Record<string, boolean>>({});
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
 
   async function dispararNotificacoes() {
-    setDisparando(true); setResultado(null); setMsgDisparo2(null);
+    setDisparando(true); setResultado(null); setMsgDisparoWpp(null);
     fetch("/api/cron/notificacoes", { method: "POST" }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
-    setMsgDisparo2("Notificações disparadas! Verifique o histórico em instantes.");
+    setMsgDisparoWpp("Notificações disparadas! Verifique o histórico em instantes.");
     setDisparando(false);
-    setTimeout(() => { setMsgDisparo2(null); router.refresh(); }, 4000);
+    setTimeout(() => { setMsgDisparoWpp(null); router.refresh(); }, 4000);
   }
 
   function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean) {
@@ -254,9 +254,9 @@ function AbaWhatsapp({
             {disparando ? "Verificando..." : "Disparar agora"}
           </button>
         </div>
-        {msgDisparo2 && (
+        {msgDisparoWpp && (
           <p className="text-sm text-emerald-600 flex items-center gap-1 mb-2">
-            <CheckCircle2 size={14} /> {msgDisparo2}
+            <CheckCircle2 size={14} /> {msgDisparoWpp}
           </p>
         )}
         {avaliacoes.length === 0 ? (
