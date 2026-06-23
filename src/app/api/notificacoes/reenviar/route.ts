@@ -6,6 +6,20 @@ import { enviarEmailProva, emailConfigurado } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
+async function enviarFonnte(numero: string, mensagem: string): Promise<boolean> {
+  const token = process.env.FONNTE_TOKEN;
+  if (!token) return false;
+  try {
+    const res = await fetch("https://api.fonnte.com/send", {
+      method: "POST",
+      headers: { "Authorization": token, "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ target: numero, message: mensagem, countryCode: "55" }).toString(),
+    });
+    const data = await res.json();
+    return data.status === true;
+  } catch { return false; }
+}
+
 async function enviarZAPI(numero: string, mensagem: string): Promise<boolean> {
   const instanceId   = process.env.ZAPI_INSTANCE_ID;
   const token        = process.env.ZAPI_TOKEN;
@@ -93,12 +107,14 @@ export async function POST(req: NextRequest) {
       nomesAlunos,
     });
 
+    const fonnteConf    = !!process.env.FONNTE_TOKEN;
     const zapiConf      = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);
     const evolutionConf = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
 
     let enviada = false;
-    if (zapiConf)      enviada = await enviarZAPI(numero, mensagem);
-    else if (evolutionConf) enviada = await enviarEvolution(numero, mensagem);
+    if (fonnteConf)          enviada = await enviarFonnte(numero, mensagem);
+    else if (zapiConf)       enviada = await enviarZAPI(numero, mensagem);
+    else if (evolutionConf)  enviada = await enviarEvolution(numero, mensagem);
 
     if (!enviada) return NextResponse.json({ erro: "Falha ao enviar via WhatsApp. Verifique a configuração da API." }, { status: 500 });
 

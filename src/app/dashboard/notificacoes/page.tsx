@@ -59,6 +59,22 @@ export default async function NotificacoesPage() {
     take: 100,
   });
 
+  // ── Aulas nos próximos 7 dias com responsável cadastrado ───────────────────
+  const aulasProximas = await prisma.agendaAula.findMany({
+    where: {
+      data: { gte: hoje, lte: em7dias },
+      status: "AGENDADA",
+      aluno: { telefoneResponsavel: { not: null } },
+    },
+    include: {
+      aluno: { select: { nome: true, responsavel: true, telefoneResponsavel: true } },
+      professora: { include: { usuario: { select: { nome: true } } } },
+      materia: { select: { nome: true } },
+      notificacao: true,
+    },
+    orderBy: { data: "asc" },
+  });
+
   // ── Dados Notificações de Aula ──────────────────────────────────────────────
   const historicoAulas = await prisma.notificacaoAula.findMany({
     include: {
@@ -140,6 +156,16 @@ export default async function NotificacoesPage() {
           },
         }))}
         emailAtivo={emailConfigurado()}
+        aulasProximas={aulasProximas.map((a) => ({
+          id: a.id,
+          data: a.data.toISOString(),
+          horaInicio: a.horaInicio,
+          horaFim: a.horaFim,
+          notificacaoEnviada: a.notificacao?.enviada ?? false,
+          aluno: a.aluno,
+          professora: { usuario: { nome: a.professora.usuario.nome } },
+          materia: a.materia,
+        }))}
         historicoAulas={historicoAulas.map((n) => ({
           id: n.id,
           enviada: n.enviada,
