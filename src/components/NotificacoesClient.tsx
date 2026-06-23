@@ -46,7 +46,7 @@ export default function NotificacoesClient({
   avaliacoes: Avaliacao[];
   historico: Historico[];
   evolutionConfigurada: boolean;
-  provedor?: "zapi" | "evolution" | null;
+  provedor?: "fonnte" | "zapi" | "evolution" | null;
 }) {
   const [disparando, setDisparando] = useState(false);
   const [resultado, setResultado] = useState<{
@@ -57,9 +57,9 @@ export default function NotificacoesClient({
   async function dispararNotificacoes() {
     setDisparando(true);
     setResultado(null);
-    const res = await fetch("/api/cron/notificacoes", { method: "POST" });
-    const data = await res.json();
-    setResultado(data);
+    fetch("/api/cron/notificacoes", { method: "POST" }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
+    setResultado({ info: "Notificações disparadas! Verifique o histórico em instantes." });
     setDisparando(false);
   }
 
@@ -78,9 +78,9 @@ export default function NotificacoesClient({
         <div>
           <p className={`text-sm font-medium ${evolutionConfigurada ? "text-emerald-800" : "text-amber-800"}`}>
             {evolutionConfigurada
-              ? provedor === "zapi"
-                ? "Z-API configurada — envio automático ativo"
-                : "Evolution API configurada — envio automático ativo"
+              ? provedor === "zapi" ? "Z-API configurada — envio automático ativo"
+              : provedor === "fonnte" ? "Fonnte configurada — envio automático ativo"
+              : "Evolution API configurada — envio automático ativo"
               : "Nenhuma API configurada — envio manual via WhatsApp"}
           </p>
           <p className={`text-xs mt-0.5 ${evolutionConfigurada ? "text-emerald-600" : "text-amber-600"}`}>

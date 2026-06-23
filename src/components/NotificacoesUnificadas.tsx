@@ -196,11 +196,12 @@ function AbaWhatsapp({
 
   async function dispararNotificacoes() {
     setDisparando(true); setResultado(null);
-    const res  = await fetch("/api/cron/notificacoes", { method: "POST" });
-    const data = await res.json();
-    setResultado(data?.whatsapp ?? data);
+    // Fire-and-forget: não espera resposta para evitar timeout da Vercel Hobby (10s)
+    fetch("/api/cron/notificacoes", { method: "POST" }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
+    setResultado({ enviadas: "–", info: "Notificações disparadas! Verifique o histórico em instantes." });
     setDisparando(false);
-    router.refresh();
+    setTimeout(() => router.refresh(), 3000);
   }
 
   function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean) {
@@ -410,19 +411,12 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
   async function dispararAgora() {
     setDisparando(true); setMsgDisparo(null);
     try {
-      const res  = await fetch("/api/cron/notificacoes");
-      const data = await res.json();
-      const enviados = data?.email?.enviadas ?? 0;
-      const erros    = data?.email?.erros?.length ?? 0;
-      setMsgDisparo({
-        ok: res.ok,
-        txt: res.ok
-          ? `Processo concluído — ${enviados} e-mail(s) enviado(s)${erros > 0 ? `, ${erros} erro(s)` : ""}.`
-          : "Erro ao executar o processo.",
-      });
-      if (res.ok) router.refresh();
+      fetch("/api/cron/notificacoes").catch(() => {});
+      await new Promise((r) => setTimeout(r, 1500));
+      setMsgDisparo({ ok: true, txt: "Notificações disparadas! Verifique o histórico em instantes." });
+      setTimeout(() => router.refresh(), 3000);
     } catch {
-      setMsgDisparo({ ok: false, txt: "Falha na comunicação com o servidor." });
+      setMsgDisparo({ ok: false, txt: "Falha ao disparar notificações." });
     } finally {
       setDisparando(false);
       setTimeout(() => setMsgDisparo(null), 6000);
