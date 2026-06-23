@@ -310,6 +310,48 @@ function AbaWhatsapp({
         )}
       </div>
 
+      {/* Aulas próximas 7 dias */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <h2 className="font-semibold text-slate-800 mb-4">Aulas nos próximos 7 dias</h2>
+        {aulasProximas.length === 0 ? (
+          <p className="text-slate-500 text-sm">Nenhuma aula nos próximos 7 dias com responsável cadastrado.</p>
+        ) : (
+          <div className="space-y-2">
+            {aulasProximas.map((aula) => {
+              const dataAula = parseDataLocal(aula.data);
+              const diasAula = Math.round((dataAula.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+              const horario = aula.horaInicio
+                ? aula.horaFim ? `${aula.horaInicio}–${aula.horaFim}` : aula.horaInicio
+                : null;
+              return (
+                <div key={aula.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div>
+                    <span className="font-medium text-slate-700 text-sm">{aula.aluno.nome}</span>
+                    {aula.materia && <span className="text-slate-500 text-sm ml-2">· {aula.materia.nome}</span>}
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {aula.aluno.responsavel && <>{aula.aluno.responsavel} · </>}
+                      {aula.aluno.telefoneResponsavel}
+                      {horario && <> · {horario}</>}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0 ml-4 flex flex-col items-end gap-1">
+                    <span className={`text-sm font-bold ${diasAula === 0 ? "text-red-600" : diasAula === 1 ? "text-amber-600" : "text-indigo-600"}`}>
+                      {diasAula === 0 ? "Hoje" : diasAula === 1 ? "Amanhã" : `${diasAula} dias`}
+                    </span>
+                    <p className="text-xs text-slate-400">{fmtData(aula.data)}</p>
+                    {aula.notificacaoEnviada ? (
+                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Enviado</span>
+                    ) : diasAula === 1 ? (
+                      <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Pendente</span>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Resultado do disparo */}
       {resultado && (
         <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -557,49 +599,6 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
                       {dias === 0 ? "Hoje" : dias === 1 ? "Amanhã" : `${dias} dias`}
                     </span>
                     <p className="text-xs text-slate-400">{fmtData(av.data)}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Aulas próximas 7 dias */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <h2 className="font-semibold text-slate-800 mb-4">Aulas nos próximos 7 dias</h2>
-        {aulasProximas.length === 0 ? (
-          <p className="text-slate-500 text-sm">Nenhuma aula nos próximos 7 dias com responsável cadastrado.</p>
-        ) : (
-          <div className="space-y-2">
-            {aulasProximas.map((aula) => {
-              const dataAula = parseDataLocal(aula.data);
-              const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-              const dias = Math.round((dataAula.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-              const horario = aula.horaInicio
-                ? aula.horaFim ? `${aula.horaInicio}–${aula.horaFim}` : aula.horaInicio
-                : null;
-              return (
-                <div key={aula.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div>
-                    <span className="font-medium text-slate-700 text-sm">{aula.aluno.nome}</span>
-                    {aula.materia && <span className="text-slate-500 text-sm ml-2">· {aula.materia.nome}</span>}
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {aula.aluno.responsavel && <>{aula.aluno.responsavel} · </>}
-                      {aula.aluno.telefoneResponsavel}
-                      {horario && <> · {horario}</>}
-                    </p>
-                  </div>
-                  <div className="text-right shrink-0 ml-4 flex flex-col items-end gap-1">
-                    <span className={`text-sm font-bold ${dias === 0 ? "text-red-600" : dias === 1 ? "text-amber-600" : "text-indigo-600"}`}>
-                      {dias === 0 ? "Hoje" : dias === 1 ? "Amanhã" : `${dias} dias`}
-                    </span>
-                    <p className="text-xs text-slate-400">{fmtData(aula.data)}</p>
-                    {aula.notificacaoEnviada ? (
-                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Enviado</span>
-                    ) : dias === 1 ? (
-                      <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Pendente</span>
-                    ) : null}
                   </div>
                 </div>
               );
