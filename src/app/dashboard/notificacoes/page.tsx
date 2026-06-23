@@ -59,9 +59,25 @@ export default async function NotificacoesPage() {
     take: 100,
   });
 
+  // ── Dados Notificações de Aula ──────────────────────────────────────────────
+  const historicoAulas = await prisma.notificacaoAula.findMany({
+    include: {
+      agendaAula: {
+        include: {
+          aluno: { select: { nome: true, responsavel: true } },
+          professora: { include: { usuario: { select: { nome: true } } } },
+          materia: { select: { nome: true } },
+        },
+      },
+    },
+    orderBy: { criadoEm: "desc" },
+    take: 50,
+  });
+
+  const fonnteConfigurada    = !!process.env.FONNTE_TOKEN;
   const zapiConfigurada      = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);
   const evolutionConfigurada = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
-  const provedor: "zapi" | "evolution" | null = zapiConfigurada ? "zapi" : evolutionConfigurada ? "evolution" : null;
+  const provedor: "fonnte" | "zapi" | "evolution" | null = fonnteConfigurada ? "fonnte" : zapiConfigurada ? "zapi" : evolutionConfigurada ? "evolution" : null;
 
   function serAvaliacao(a: (typeof avaliacoes)[0]) {
     return {
@@ -102,7 +118,7 @@ export default async function NotificacoesPage() {
             unidade: { nome: n.avaliacao.unidade.nome, escola: { nome: n.avaliacao.unidade.escola.nome } },
           },
         }))}
-        whatsappConfigurado={zapiConfigurada || evolutionConfigurada}
+        whatsappConfigurado={fonnteConfigurada || zapiConfigurada || evolutionConfigurada}
         provedor={provedor}
         // E-mail
         historicoEmail={historicoEmail.map((n) => ({
@@ -124,6 +140,20 @@ export default async function NotificacoesPage() {
           },
         }))}
         emailAtivo={emailConfigurado()}
+        historicoAulas={historicoAulas.map((n) => ({
+          id: n.id,
+          enviada: n.enviada,
+          whatsapp: n.whatsapp ?? "",
+          criadoEm: n.criadoEm.toISOString(),
+          agendaAula: {
+            data: n.agendaAula.data.toISOString(),
+            horaInicio: n.agendaAula.horaInicio,
+            horaFim: n.agendaAula.horaFim,
+            aluno: n.agendaAula.aluno,
+            professora: { usuario: { nome: n.agendaAula.professora.usuario.nome } },
+            materia: n.agendaAula.materia,
+          },
+        }))}
       />
     </div>
   );

@@ -25,6 +25,16 @@ type HistoricoWhatsapp = {
   avaliacao: { nome: string; data: string; materia: { nome: string } | null; unidade: { nome: string; escola: { nome: string } } };
 };
 
+type HistoricoAula = {
+  id: string; enviada: boolean; whatsapp: string; criadoEm: string;
+  agendaAula: {
+    data: string; horaInicio: string | null; horaFim: string | null;
+    aluno: { nome: string; responsavel: string | null };
+    professora: { usuario: { nome: string } };
+    materia: { nome: string } | null;
+  };
+};
+
 type HistoricoEmail = {
   id: string; diasAntes: number; emailEnviado: boolean; email: string; criadoEm: string;
   enviada: boolean; whatsapp: string | null;
@@ -129,7 +139,7 @@ function ContextMenu({
 // ── Componente raiz ────────────────────────────────────────────────────────────
 export default function NotificacoesUnificadas({
   avaliacoes, historicoWhatsapp, whatsappConfigurado, provedor,
-  historicoEmail, emailAtivo,
+  historicoEmail, emailAtivo, historicoAulas,
 }: {
   avaliacoes: Avaliacao[];
   historicoWhatsapp: HistoricoWhatsapp[];
@@ -137,6 +147,7 @@ export default function NotificacoesUnificadas({
   provedor?: "fonnte" | "zapi" | "evolution" | null;
   historicoEmail: HistoricoEmail[];
   emailAtivo: boolean;
+  historicoAulas: HistoricoAula[];
 }) {
   const [aba, setAba] = useState<"whatsapp" | "email">("whatsapp");
 
@@ -166,6 +177,7 @@ export default function NotificacoesUnificadas({
         <AbaWhatsapp
           avaliacoes={avaliacoes}
           historico={historicoWhatsapp}
+          historicoAulas={historicoAulas}
           whatsappConfigurado={whatsappConfigurado}
           provedor={provedor}
         />
@@ -179,10 +191,11 @@ export default function NotificacoesUnificadas({
 
 // ── Aba WhatsApp ──────────────────────────────────────────────────────────────
 function AbaWhatsapp({
-  avaliacoes, historico, whatsappConfigurado, provedor,
+  avaliacoes, historico, historicoAulas, whatsappConfigurado, provedor,
 }: {
   avaliacoes: Avaliacao[];
   historico: HistoricoWhatsapp[];
+  historicoAulas: HistoricoAula[];
   whatsappConfigurado: boolean;
   provedor?: "fonnte" | "zapi" | "evolution" | null;
 }) {
@@ -382,6 +395,57 @@ function AbaWhatsapp({
             >
               Limpar histórico
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Histórico de notificações de aula para responsáveis */}
+      {historicoAulas.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+            <MessageSquare size={15} className="text-indigo-600" />
+            <h2 className="font-semibold text-slate-800">Histórico — Lembretes de Aula (Responsáveis)</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 border-b border-slate-100">
+                <tr>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Aluno</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Responsável</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Aula</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Data</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {historicoAulas.map((n) => (
+                  <tr key={n.id} className="hover:bg-slate-50">
+                    <td className="py-2.5 px-4 text-slate-700 text-xs font-medium">{n.agendaAula.aluno.nome}</td>
+                    <td className="py-2.5 px-4 text-slate-500 text-xs">{n.agendaAula.aluno.responsavel ?? "—"}</td>
+                    <td className="py-2.5 px-4 text-slate-600 text-xs">
+                      {n.agendaAula.materia?.nome ?? "—"}
+                      {n.agendaAula.horaInicio && (
+                        <span className="text-slate-400 ml-1">
+                          · {n.agendaAula.horaInicio}{n.agendaAula.horaFim ? ` – ${n.agendaAula.horaFim}` : ""}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtData(n.agendaAula.data)}</td>
+                    <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(n.criadoEm)}</td>
+                    <td className="py-2.5 px-4">
+                      {n.enviada
+                        ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
+                        : <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium"><Clock size={12}/> Pendente</span>
+                      }
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
+            <p className="text-xs text-slate-400">{historicoAulas.length} registro(s)</p>
           </div>
         </div>
       )}
