@@ -337,10 +337,11 @@ model AgendaAula {
   observacao   String?
   criadoEm     DateTime   @default(now())
 
-  professora    Professora      @relation(fields: [professoraId], references: [id], onDelete: Cascade)
-  aluno         Aluno           @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  materia       Materia?        @relation(fields: [materiaId], references: [id])
+  professora    Professora       @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  aluno         Aluno            @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia       Materia?         @relation(fields: [materiaId], references: [id])
   pagamentos    PagamentoAula[]
+  notificacao   NotificacaoAula?
 
   @@map("agenda_aulas")
 }
@@ -351,4 +352,18 @@ enum StatusAula {
   CANCELADA
   FALTA_ALUNO
   FALTA_PROFESSOR
+}
+
+// ─── Notificações de Aula para Responsáveis ───────────────────────────────────
+
+model NotificacaoAula {
+  id           String   @id @default(cuid())
+  agendaAulaId String   @unique
+  enviada      Boolean  @default(false)
+  whatsapp     String?
+  criadoEm     DateTime @default(now())
+
+  agendaAula AgendaAula @relation(fields: [agendaAulaId], references: [id], onDelete: Cascade)
+
+  @@map("notificacoes_aula")
 }

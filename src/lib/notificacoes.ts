@@ -271,3 +271,83 @@ export async function processarNotificacoesEmail(): Promise<{
 
   return resultado;
 }
+
+// ── PROCESSO 3: WhatsApp para responsáveis (1 dia antes da aula) ─────────────
+export async function processarNotificacoesAula(): Promise<{
+  enviadas: number;
+  erros: string[];
+}> {
+  const resultado = { enviadas: 0, erros: [] as string[] };
+  const zapiConfigurada = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);
+  const evolutionConfigurada = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
+
+  if (!zapiConfigurada && !evolutionConfigurada) return resultado;
+
+  const amanha = new Date();
+  amanha.setDate(amanha.getDate() + 1);
+  amanha.setHours(0, 0, 0, 0);
+  const fimAmanha = new Date(amanha);
+  fimAmanha.setHours(23, 59, 59, 999);
+
+  const aulas = await prisma.agendaAula.findMany({
+    where: {
+      data: { gte: amanha, lte: fimAmanha },
+      status: "AGENDADA",
+      aluno: { telefoneResponsavel: { not: null } },
+    },
+    include: {
+      aluno: true,
+      professora: { include: { usuario: { select: { nome: true } } } },
+      materia: true,
+      notificacao: true,
+    },
+  });
+
+  for (const aula of aulas) {
+    if (aula.notificacao?.enviada) continue;
+
+    const numero = formatarWhatsapp(aula.aluno.telefoneResponsavel!);
+
+    const dataFormatada = new Date(aula.data).toLocaleDateString("pt-BR", {
+      weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
+    });
+
+    const horario = aula.horaInicio
+      ? aula.horaFim ? `${aula.horaInicio} – ${aula.horaFim}` : aula.horaInicio
+      : "horário a confirmar";
+
+    const mensagem = [
+      `📚 *EduGestão – Lembrete de Aula*`,
+      ``,
+      `Olá${aula.aluno.responsavel ? `, *${aula.aluno.responsavel}*` : ""}!`,
+      ``,
+      `⚠️ *Amanhã* seu(sua) aluno(a) *${aula.aluno.nome}* tem aula agendada:`,
+      ``,
+      ...(aula.materia ? [`📖 *Disciplina:* ${aula.materia.nome}`] : []),
+      `📆 *Data:* ${dataFormatada}`,
+      `🕐 *Horário:* ${horario}`,
+      `👩‍🏫 *Professor(a):* ${aula.professora.usuario.nome}`,
+      ``,
+      `_Mensagem automática do EduGestão_`,
+    ].join("\n");
+
+    try {
+      let enviada = false;
+      if (zapiConfigurada) enviada = await enviarViaZAPI(numero, mensagem);
+      else if (evolutionConfigurada) enviada = await enviarViaEvolutionAPI(numero, mensagem);
+
+      await prisma.notificacaoAula.upsert({
+        where: { agendaAulaId: aula.id },
+        update: { enviada, whatsapp: numero },
+        create: { agendaAulaId: aula.id, enviada, whatsapp: numero },
+      });
+
+      if (enviada) resultado.enviadas++;
+      else resultado.erros.push(`${aula.aluno.nome} (${numero}): envio falhou`);
+    } catch (err) {
+      resultado.erros.push(`${aula.aluno.nome}: ${String(err)}`);
+    }
+  }
+
+  return resultado;
+}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { processarNotificacoes, processarNotificacoesEmail } from "@/lib/notificacoes";
+import { processarNotificacoes, processarNotificacoesEmail, processarNotificacoesAula } from "@/lib/notificacoes";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +21,9 @@ export async function POST(req: NextRequest) {
 
   const whatsapp = await processarNotificacoes();
   const email    = await processarNotificacoesEmail();
+  const aulas    = await processarNotificacoesAula();
 
-  return NextResponse.json({ whatsapp, email });
+  return NextResponse.json({ whatsapp, email, aulas });
 }
 
 // GET: permite disparar manualmente pelo browser (apenas com CRON_SECRET ou sem segredo)
@@ -41,6 +42,7 @@ export async function GET(req: NextRequest) {
 
   const whatsapp = await processarNotificacoes();
   const email    = await processarNotificacoesEmail();
+  const aulas    = await processarNotificacoesAula();
 
-  return NextResponse.json({ whatsapp, email });
+  return NextResponse.json({ whatsapp, email, aulas });
 }
