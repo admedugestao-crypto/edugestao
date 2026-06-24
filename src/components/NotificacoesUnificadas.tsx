@@ -268,21 +268,23 @@ function AbaWhatsapp({
         </div>
       </div>
 
-      {/* Provas próximos 7 dias */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-800">Provas nos próximos 7 dias</h2>
-          <button onClick={dispararNotificacoes} disabled={disparando}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-            {disparando ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
-            {disparando ? "Verificando..." : "Disparar agora"}
-          </button>
-        </div>
+      {/* Botão disparar + feedback */}
+      <div className="flex items-center gap-4">
+        <button onClick={dispararNotificacoes} disabled={disparando}
+          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          {disparando ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
+          {disparando ? "Verificando..." : "Disparar agora"}
+        </button>
         {msgDisparoWpp && (
-          <p className="text-sm text-emerald-600 flex items-center gap-1 mb-2">
+          <p className="text-sm text-emerald-600 flex items-center gap-1">
             <CheckCircle2 size={14} /> {msgDisparoWpp}
           </p>
         )}
+      </div>
+
+      {/* Provas próximos 7 dias */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <h2 className="font-semibold text-slate-800 mb-4">Provas nos próximos 7 dias</h2>
         {avaliacoes.length === 0 ? (
           <p className="text-slate-500 text-sm">Nenhuma prova nos próximos 7 dias.</p>
         ) : (
