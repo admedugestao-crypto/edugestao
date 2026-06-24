@@ -221,7 +221,7 @@ function AbaWhatsapp({
 
   async function dispararNotificacoes() {
     setDisparando(true); setResultado(null); setMsgDisparoWpp(null);
-    fetch("/api/cron/notificacoes", { method: "POST" }).catch(() => {});
+    fetch("/api/cron/notificacoes/whatsapp", { method: "POST" }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
     setMsgDisparoWpp("Notificações disparadas! Verifique o histórico em instantes.");
     setDisparando(false);
@@ -533,7 +533,7 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
   async function dispararAgora() {
     setDisparando(true); setMsgDisparo(null);
     try {
-      fetch("/api/cron/notificacoes").catch(() => {});
+      fetch("/api/cron/notificacoes/email", { method: "POST" }).catch(() => {});
       await new Promise((r) => setTimeout(r, 1500));
       setMsgDisparo({ ok: true, txt: "Notificações disparadas! Verifique o histórico em instantes." });
       setTimeout(() => router.refresh(), 3000);
