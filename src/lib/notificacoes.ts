@@ -321,7 +321,7 @@ export async function processarNotificacoesAula(): Promise<{
       ``,
       `Olá${aula.aluno.responsavel ? `, *${aula.aluno.responsavel}*` : ""}!`,
       ``,
-      `⚠️ *Amanhã* seu(sua) aluno(a) *${aula.aluno.nome}* tem aula agendada:`,
+      `⚠️ *Amanhã* a(o) *${aula.aluno.nome}* tem aula agendada:`,
       ``,
       ...(aula.materia ? [`📖 *Disciplina:* ${aula.materia.nome}`] : []),
       `📆 *Data:* ${dataFormatada}`,
