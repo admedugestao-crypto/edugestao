@@ -282,81 +282,88 @@ function AbaWhatsapp({
         )}
       </div>
 
-      {/* Provas e Aulas próximos 7 dias — frame único */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-5">
-        {/* Provas */}
-        <div>
-          <h2 className="font-semibold text-slate-800 mb-3">Provas nos próximos 7 dias</h2>
-          {avaliacoes.length === 0 ? (
-            <p className="text-slate-500 text-sm">Nenhuma prova nos próximos 7 dias.</p>
-          ) : (
-            <div className="space-y-2">
-              {avaliacoes.map((av) => {
-                const dataProva = parseDataLocal(av.data);
-                const dias = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-                return (
-                  <div key={av.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <span className="font-medium text-slate-700 text-sm">{av.nome}</span>
-                      {av.materia && <span className="text-slate-500 text-sm ml-2">· {av.materia.nome}</span>}
-                      <p className="text-xs text-slate-400 mt-0.5">{av.unidade.escola.nome} · {av.unidade.nome} · {av.serie}</p>
-                    </div>
-                    <div className="text-right shrink-0 ml-4">
-                      <span className={`text-sm font-bold ${dias === 0 ? "text-red-600" : dias <= 2 ? "text-amber-600" : "text-indigo-600"}`}>
-                        {dias === 0 ? "Hoje" : dias === 1 ? "Amanhã" : `${dias} dias`}
-                      </span>
-                      <p className="text-xs text-slate-400">{fmtData(av.data)}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+      {/* Próximos 7 dias — tabela unificada */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+          <MessageSquare size={15} className="text-indigo-600" />
+          <h2 className="font-semibold text-slate-800">Próximos 7 dias</h2>
         </div>
-
-        <div className="border-t border-slate-100" />
-
-        {/* Aulas */}
-        <div>
-          <h2 className="font-semibold text-slate-800 mb-3">Aulas nos próximos 7 dias</h2>
-          {aulasProximas.length === 0 ? (
-            <p className="text-slate-500 text-sm">Nenhuma aula nos próximos 7 dias com responsável cadastrado.</p>
-          ) : (
-            <div className="space-y-2">
-              {aulasProximas.map((aula) => {
-                const dataAula = parseDataLocal(aula.data);
-                const diasAula = Math.round((dataAula.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-                const horario = aula.horaInicio
-                  ? aula.horaFim ? `${aula.horaInicio}–${aula.horaFim}` : aula.horaInicio
-                  : null;
-                return (
-                  <div key={aula.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <span className="font-medium text-slate-700 text-sm">{aula.aluno.nome}</span>
-                      {aula.materia && <span className="text-slate-500 text-sm ml-2">· {aula.materia.nome}</span>}
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        {aula.aluno.responsavel && <>{aula.aluno.responsavel} · </>}
-                        {aula.aluno.telefoneResponsavel}
-                        {horario && <> · {horario}</>}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0 ml-4 flex flex-col items-end gap-1">
-                      <span className={`text-sm font-bold ${diasAula === 0 ? "text-red-600" : diasAula === 1 ? "text-amber-600" : "text-indigo-600"}`}>
-                        {diasAula === 0 ? "Hoje" : diasAula === 1 ? "Amanhã" : `${diasAula} dias`}
-                      </span>
-                      <p className="text-xs text-slate-400">{fmtData(aula.data)}</p>
-                      {aula.notificacaoEnviada ? (
-                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Enviado</span>
-                      ) : diasAula === 1 ? (
-                        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Pendente</span>
-                      ) : null}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        {avaliacoes.length === 0 && aulasProximas.length === 0 ? (
+          <p className="px-5 py-4 text-sm text-slate-500">Nenhuma prova ou aula nos próximos 7 dias.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 border-b border-slate-100">
+                <tr>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Tipo</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Descrição</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Detalhe</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Data</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Prazo</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {avaliacoes.map((av) => {
+                  const dataProva = parseDataLocal(av.data);
+                  const dias = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+                  return (
+                    <tr key={`av-${av.id}`} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 text-xs font-medium">Prova</span>
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-700 text-xs font-medium">
+                        {av.nome}{av.materia && <span className="text-slate-400 ml-1 font-normal">· {av.materia.nome}</span>}
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-500 text-xs">{av.unidade.escola.nome} · {av.unidade.nome} · {av.serie}</td>
+                      <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtData(av.data)}</td>
+                      <td className="py-2.5 px-4">
+                        <span className={`text-xs font-bold ${dias === 0 ? "text-red-600" : dias <= 2 ? "text-amber-600" : "text-indigo-600"}`}>
+                          {dias === 0 ? "Hoje" : dias === 1 ? "Amanhã" : `${dias} dias`}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-400 text-xs">—</td>
+                    </tr>
+                  );
+                })}
+                {aulasProximas.map((aula) => {
+                  const dataAula = parseDataLocal(aula.data);
+                  const diasAula = Math.round((dataAula.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+                  const horario = aula.horaInicio
+                    ? aula.horaFim ? `${aula.horaInicio}–${aula.horaFim}` : aula.horaInicio
+                    : null;
+                  return (
+                    <tr key={`aula-${aula.id}`} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium">Aula</span>
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-700 text-xs font-medium">
+                        {aula.aluno.nome}{aula.materia && <span className="text-slate-400 ml-1 font-normal">· {aula.materia.nome}</span>}
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-500 text-xs">
+                        {aula.aluno.responsavel && <>{aula.aluno.responsavel} · </>}{aula.aluno.telefoneResponsavel}{horario && <> · {horario}</>}
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtData(aula.data)}</td>
+                      <td className="py-2.5 px-4">
+                        <span className={`text-xs font-bold ${diasAula === 0 ? "text-red-600" : diasAula === 1 ? "text-amber-600" : "text-indigo-600"}`}>
+                          {diasAula === 0 ? "Hoje" : diasAula === 1 ? "Amanhã" : `${diasAula} dias`}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-4">
+                        {aula.notificacaoEnviada
+                          ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
+                          : diasAula === 1
+                            ? <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium"><Clock size={12}/> Pendente</span>
+                            : <span className="text-slate-400 text-xs">—</span>
+                        }
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Resultado do disparo */}
