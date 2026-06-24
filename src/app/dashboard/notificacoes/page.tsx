@@ -35,7 +35,6 @@ export default async function NotificacoesPage() {
   });
 
   const historicoWhatsapp = await prisma.notificacaoProva.findMany({
-    where: { whatsapp: { not: null } },
     include: {
       professora: { include: { usuario: { select: { nome: true } } } },
       avaliacao: {
@@ -120,7 +119,7 @@ export default async function NotificacoesPage() {
         avaliacoes={avaliacoes.map(serAvaliacao) as any}
         historicoWhatsapp={historicoWhatsapp.map((n) => ({
           id: n.id,
-          whatsapp: n.whatsapp!,
+          whatsapp: n.whatsapp ?? "",
           diasAntes: n.diasAntes,
           enviada: n.enviada,
           emailEnviado: n.emailEnviado,
