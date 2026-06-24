@@ -5,8 +5,8 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefi
 
 function createPrismaClient(): PrismaClient {
   const rawUrl =
-    process.env.DIRECT_URL ??
     process.env.DATABASE_URL ??
+    process.env.DIRECT_URL ??
     "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
   const connectionString = rawUrl.replace("?pgbouncer=true", "").replace("&pgbouncer=true", "");
   const adapter = new PrismaPg({ connectionString });
