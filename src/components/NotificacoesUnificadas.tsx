@@ -386,128 +386,98 @@ function AbaWhatsapp({
         </div>
       )}
 
-      {/* Histórico WhatsApp */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-          <MessageSquare size={15} className="text-emerald-600" />
-          <h2 className="font-semibold text-slate-800">Histórico de notificações WhatsApp</h2>
-        </div>
-        {historico.length === 0 ? (
-          <p className="px-5 py-4 text-sm text-slate-500">Nenhuma notificação enviada ainda. Clique em "Disparar agora" para enviar.</p>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-100">
-                  <tr>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Canal</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Professor</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Avaliação</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Antecedência</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {historico.map((n) => {
-                    const enviada = statusLocal[n.id] ?? n.enviada;
-                    return (
-                      <tr key={n.id} className="hover:bg-slate-50">
-                        <td className="py-2.5 px-4">
-                          <span
-                            title="Botão direito para enviar/reenviar via WhatsApp"
-                            onContextMenu={(e) => abrirMenu(e, n.id, enviada)}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium cursor-context-menu select-none hover:bg-emerald-200 transition-colors"
-                          >
-                            <MessageSquare size={10}/>WhatsApp
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-4 text-slate-700 text-xs">{n.professora.usuario.nome}</td>
-                        <td className="py-2.5 px-4 text-slate-600 text-xs">
-                          {n.avaliacao.nome}
-                          {n.avaliacao.materia && <span className="text-slate-400 ml-1">· {n.avaliacao.materia.nome}</span>}
-                        </td>
-                        <td className="py-2.5 px-4"><BadgeDias dias={n.diasAntes} /></td>
-                        <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(n.criadoEm)}</td>
-                        <td className="py-2.5 px-4">
-                          {enviada
-                            ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
-                            : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falha</span>
-                          }
-                        </td>
+      {/* Histórico unificado WhatsApp */}
+      {(() => {
+        const linhasProva = historico.map((n) => ({
+          key: `p-${n.id}`,
+          tipo: "Prova" as const,
+          destinatario: n.professora.usuario.nome,
+          descricao: n.avaliacao.nome + (n.avaliacao.materia ? ` · ${n.avaliacao.materia.nome}` : ""),
+          detalhe: <BadgeDias dias={n.diasAntes} />,
+          criadoEm: n.criadoEm,
+          enviada: statusLocal[n.id] ?? n.enviada,
+          onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.id, statusLocal[n.id] ?? n.enviada),
+        }));
+        const linhasAula = historicoAulas.map((n) => ({
+          key: `a-${n.id}`,
+          tipo: "Lembrete de Aula" as const,
+          destinatario: n.agendaAula.aluno.responsavel ?? "—",
+          descricao: (n.agendaAula.materia?.nome ?? "—") + (n.agendaAula.horaInicio ? ` · ${n.agendaAula.horaInicio}${n.agendaAula.horaFim ? `–${n.agendaAula.horaFim}` : ""}` : ""),
+          detalhe: <span className="text-xs text-slate-400">{fmtData(n.agendaAula.data)}</span>,
+          criadoEm: n.criadoEm,
+          enviada: n.enviada,
+          onContextMenu: undefined as undefined | ((e: React.MouseEvent) => void),
+        }));
+        const linhas = [...linhasProva, ...linhasAula].sort(
+          (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
+        );
+        return (
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+              <MessageSquare size={15} className="text-emerald-600" />
+              <h2 className="font-semibold text-slate-800">Histórico de notificações WhatsApp</h2>
+            </div>
+            {linhas.length === 0 ? (
+              <p className="px-5 py-4 text-sm text-slate-500">Nenhuma notificação enviada ainda. Clique em "Disparar agora" para enviar.</p>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 border-b border-slate-100">
+                      <tr>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Tipo</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Destinatário</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Descrição</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Detalhe</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-              <p className="text-xs text-slate-400">{historico.length} registro(s)</p>
-              <button
-                onClick={async () => {
-                  if (!confirm("Deseja limpar todo o histórico de notificações?")) return;
-                  await fetch("/api/notificacoes/limpar", { method: "DELETE" });
-                  router.refresh();
-                }}
-                className="text-xs text-red-500 hover:text-red-700 font-medium"
-              >
-                Limpar histórico
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Histórico de notificações de aula para responsáveis */}
-      {historicoAulas.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-            <MessageSquare size={15} className="text-indigo-600" />
-            <h2 className="font-semibold text-slate-800">Histórico — Lembretes de Aula (Responsáveis)</h2>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {linhas.map((l) => (
+                        <tr key={l.key} className="hover:bg-slate-50">
+                          <td className="py-2.5 px-4">
+                            <span
+                              title={l.onContextMenu ? "Botão direito para enviar/reenviar via WhatsApp" : undefined}
+                              onContextMenu={l.onContextMenu}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${l.tipo === "Prova" ? "bg-violet-100 text-violet-700" : "bg-indigo-100 text-indigo-700"} ${l.onContextMenu ? "cursor-context-menu select-none hover:opacity-80 transition-opacity" : ""}`}
+                            >
+                              {l.tipo}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-700 text-xs">{l.destinatario}</td>
+                          <td className="py-2.5 px-4 text-slate-600 text-xs">{l.descricao}</td>
+                          <td className="py-2.5 px-4">{l.detalhe}</td>
+                          <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(l.criadoEm)}</td>
+                          <td className="py-2.5 px-4">
+                            {l.enviada
+                              ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
+                              : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falha</span>
+                            }
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                  <p className="text-xs text-slate-400">{linhas.length} registro(s)</p>
+                  <button
+                    onClick={async () => {
+                      if (!confirm("Deseja limpar todo o histórico de notificações?")) return;
+                      await fetch("/api/notificacoes/limpar", { method: "DELETE" });
+                      router.refresh();
+                    }}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium"
+                  >
+                    Limpar histórico
+                  </button>
+                </div>
+              </>
+            )}
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b border-slate-100">
-                <tr>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Aluno</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Responsável</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Aula</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Data</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {historicoAulas.map((n) => (
-                  <tr key={n.id} className="hover:bg-slate-50">
-                    <td className="py-2.5 px-4 text-slate-700 text-xs font-medium">{n.agendaAula.aluno.nome}</td>
-                    <td className="py-2.5 px-4 text-slate-500 text-xs">{n.agendaAula.aluno.responsavel ?? "—"}</td>
-                    <td className="py-2.5 px-4 text-slate-600 text-xs">
-                      {n.agendaAula.materia?.nome ?? "—"}
-                      {n.agendaAula.horaInicio && (
-                        <span className="text-slate-400 ml-1">
-                          · {n.agendaAula.horaInicio}{n.agendaAula.horaFim ? ` – ${n.agendaAula.horaFim}` : ""}
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtData(n.agendaAula.data)}</td>
-                    <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(n.criadoEm)}</td>
-                    <td className="py-2.5 px-4">
-                      {n.enviada
-                        ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
-                        : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falha</span>
-                      }
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
-            <p className="text-xs text-slate-400">{historicoAulas.length} registro(s)</p>
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
