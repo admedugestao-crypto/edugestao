@@ -387,72 +387,76 @@ function AbaWhatsapp({
       )}
 
       {/* Histórico WhatsApp */}
-      {historico.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-            <MessageSquare size={15} className="text-emerald-600" />
-            <h2 className="font-semibold text-slate-800">Histórico de notificações WhatsApp</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b border-slate-100">
-                <tr>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Canal</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Professor</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Avaliação</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Antecedência</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {historico.map((n) => {
-                  const enviada = statusLocal[n.id] ?? n.enviada;
-                  return (
-                    <tr key={n.id} className="hover:bg-slate-50">
-                      <td className="py-2.5 px-4">
-                        <span
-                          title="Botão direito para enviar/reenviar via WhatsApp"
-                          onContextMenu={(e) => abrirMenu(e, n.id, enviada)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium cursor-context-menu select-none hover:bg-emerald-200 transition-colors"
-                        >
-                          <MessageSquare size={10}/>WhatsApp
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4 text-slate-700 text-xs">{n.professora.usuario.nome}</td>
-                      <td className="py-2.5 px-4 text-slate-600 text-xs">
-                        {n.avaliacao.nome}
-                        {n.avaliacao.materia && <span className="text-slate-400 ml-1">· {n.avaliacao.materia.nome}</span>}
-                      </td>
-                      <td className="py-2.5 px-4"><BadgeDias dias={n.diasAntes} /></td>
-                      <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(n.criadoEm)}</td>
-                      <td className="py-2.5 px-4">
-                        {enviada
-                          ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
-                          : <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium"><Clock size={12}/> Pendente</span>
-                        }
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-            <p className="text-xs text-slate-400">{historico.length} registro(s)</p>
-            <button
-              onClick={async () => {
-                if (!confirm("Deseja limpar todo o histórico de notificações?")) return;
-                await fetch("/api/notificacoes/limpar", { method: "DELETE" });
-                router.refresh();
-              }}
-              className="text-xs text-red-500 hover:text-red-700 font-medium"
-            >
-              Limpar histórico
-            </button>
-          </div>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+          <MessageSquare size={15} className="text-emerald-600" />
+          <h2 className="font-semibold text-slate-800">Histórico de notificações WhatsApp</h2>
         </div>
-      )}
+        {historico.length === 0 ? (
+          <p className="px-5 py-4 text-sm text-slate-500">Nenhuma notificação enviada ainda. Clique em "Disparar agora" para enviar.</p>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 border-b border-slate-100">
+                  <tr>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Canal</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Professor</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Avaliação</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Antecedência</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {historico.map((n) => {
+                    const enviada = statusLocal[n.id] ?? n.enviada;
+                    return (
+                      <tr key={n.id} className="hover:bg-slate-50">
+                        <td className="py-2.5 px-4">
+                          <span
+                            title="Botão direito para enviar/reenviar via WhatsApp"
+                            onContextMenu={(e) => abrirMenu(e, n.id, enviada)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium cursor-context-menu select-none hover:bg-emerald-200 transition-colors"
+                          >
+                            <MessageSquare size={10}/>WhatsApp
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-4 text-slate-700 text-xs">{n.professora.usuario.nome}</td>
+                        <td className="py-2.5 px-4 text-slate-600 text-xs">
+                          {n.avaliacao.nome}
+                          {n.avaliacao.materia && <span className="text-slate-400 ml-1">· {n.avaliacao.materia.nome}</span>}
+                        </td>
+                        <td className="py-2.5 px-4"><BadgeDias dias={n.diasAntes} /></td>
+                        <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(n.criadoEm)}</td>
+                        <td className="py-2.5 px-4">
+                          {enviada
+                            ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
+                            : <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium"><Clock size={12}/> Pendente</span>
+                          }
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+              <p className="text-xs text-slate-400">{historico.length} registro(s)</p>
+              <button
+                onClick={async () => {
+                  if (!confirm("Deseja limpar todo o histórico de notificações?")) return;
+                  await fetch("/api/notificacoes/limpar", { method: "DELETE" });
+                  router.refresh();
+                }}
+                className="text-xs text-red-500 hover:text-red-700 font-medium"
+              >
+                Limpar histórico
+              </button>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Histórico de notificações de aula para responsáveis */}
       {historicoAulas.length > 0 && (
