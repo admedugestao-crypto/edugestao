@@ -432,7 +432,7 @@ function AbaWhatsapp({
                         <td className="py-2.5 px-4">
                           {enviada
                             ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
-                            : <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium"><Clock size={12}/> Pendente</span>
+                            : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falha</span>
                           }
                         </td>
                       </tr>
@@ -495,7 +495,7 @@ function AbaWhatsapp({
                     <td className="py-2.5 px-4">
                       {n.enviada
                         ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
-                        : <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium"><Clock size={12}/> Pendente</span>
+                        : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falha</span>
                       }
                     </td>
                   </tr>
