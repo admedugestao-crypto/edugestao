@@ -627,59 +627,80 @@ export default function AgendaClient({
   return (
     <>
     {/* ── Layout de impressão (visível apenas ao imprimir) ───────────────── */}
-    <div className="hidden print:block text-[11px] font-sans">
+    <div className="hidden print:block text-[10px] font-sans">
       {/* Cabeçalho */}
-      <div className="mb-3 border-b border-slate-300 pb-2">
-        <h1 className="text-base font-bold text-slate-800">Agenda Semanal de Aulas</h1>
-        {professoraNomeImpressao && (
-          <p className="text-slate-600">Professor(a): <strong>{professoraNomeImpressao}</strong></p>
-        )}
-        <p className="text-slate-500">
-          Período: {format(semanaRef, "dd/MM/yyyy", { locale: ptBR })} a {format(addDays(semanaRef, 6), "dd/MM/yyyy", { locale: ptBR })}
+      <div className="mb-2 pb-2 border-b border-slate-300 flex items-baseline justify-between">
+        <div>
+          <h1 className="text-sm font-bold text-slate-800">Agenda Semanal de Aulas</h1>
+          {professoraNomeImpressao && (
+            <p className="text-slate-600">Professor(a): <strong>{professoraNomeImpressao}</strong></p>
+          )}
+          <p className="text-slate-500">
+            {format(semanaRef, "dd/MM/yyyy", { locale: ptBR })} a {format(addDays(semanaRef, 6), "dd/MM/yyyy", { locale: ptBR })}
+          </p>
+        </div>
+        <p className="text-slate-400">
+          Impresso em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
         </p>
       </div>
 
-      {/* Grade semanal */}
-      <div className="grid grid-cols-7 border border-slate-300">
-        {/* Cabeçalhos dos dias */}
-        {diasGrade.map((dia, i) => (
-          <div key={i} className="border-r last:border-r-0 border-slate-300 bg-slate-100 px-1.5 py-1 text-center font-semibold text-slate-700">
-            <div>{DIAS_PT[dia.getDay()]}</div>
-            <div className="font-bold text-slate-900">{format(dia, "dd/MM")}</div>
-          </div>
-        ))}
-        {/* Aulas de cada dia */}
+      {/* Grade semanal — cabeçalhos */}
+      <div className="grid grid-cols-7 border border-slate-200 rounded-t overflow-hidden">
         {diasGrade.map((dia, i) => {
-          const aulasD = aulasNoDia(dia).filter((a) => a.status !== "CANCELADA");
+          const hoje = isToday(dia);
           return (
-            <div key={i} className="border-r last:border-r-0 border-t border-slate-300 px-1.5 py-1.5 align-top min-h-[80px]">
-              {aulasD.length === 0 ? (
-                <p className="text-slate-300 text-center mt-2">—</p>
-              ) : (
-                <div className="space-y-1.5">
-                  {aulasD.map((a) => (
-                    <div key={a.id} className="border border-slate-200 rounded px-1.5 py-1">
-                      <p className="font-semibold text-slate-800 leading-tight">{a.aluno.nome}</p>
+            <div key={i} className={`border-r last:border-r-0 border-slate-200 py-1.5 px-1 text-center ${hoje ? "bg-indigo-50" : "bg-slate-50"}`}>
+              <p className={`font-semibold ${hoje ? "text-indigo-600" : "text-slate-500"}`}>{DIAS_PT[dia.getDay()]}</p>
+              <p className={`text-sm font-bold leading-none mt-0.5 ${hoje ? "text-indigo-700" : "text-slate-800"}`}>{format(dia, "dd")}</p>
+            </div>
+          );
+        })}
+
+        {/* Conteúdo de cada dia */}
+        {diasGrade.map((dia, i) => {
+          const timeline = timelineDia(dia);
+          return (
+            <div key={i} className="border-r last:border-r-0 border-t border-slate-200 p-1 space-y-1 min-h-[60px] align-top">
+              {timeline.map((item, j) =>
+                item.tipo === "aula" ? (() => {
+                  const a = item.aula;
+                  const cores = STATUS_COR[a.status];
+                  const materiasCard = a.materia
+                    ? [a.materia]
+                    : (a.aluno.materias?.map((m) => m.materia) ?? []);
+                  return (
+                    <div key={a.id}
+                      className="rounded px-1.5 py-1 border-l-[3px] text-left"
+                      style={{ backgroundColor: cores.bg, borderLeftColor: cores.border }}>
+                      <p className="font-bold leading-tight" style={{ color: cores.text }}>{a.aluno.nome}</p>
                       {(a.horaInicio || a.horaFim) && (
-                        <p className="text-slate-500">{a.horaInicio}{a.horaFim ? `–${a.horaFim}` : ""}</p>
+                        <p style={{ color: cores.text }} className="opacity-80">{a.horaInicio}{a.horaFim ? `–${a.horaFim}` : ""}</p>
                       )}
-                      {a.materia && (
-                        <p className="text-slate-500 truncate">{a.materia.nome}</p>
+                      {materiasCard.slice(0, 2).map((m) => (
+                        <span key={m.id} className="inline-block rounded px-1 mr-0.5 text-white leading-tight mt-0.5" style={{ backgroundColor: m.cor, fontSize: "9px" }}>
+                          {m.nome}
+                        </span>
+                      ))}
+                      {!isProfessor && (
+                        <p className="text-slate-400 truncate">Prof. {a.professora.usuario.nome}</p>
                       )}
-                      <p className="text-slate-400">{STATUS_CONFIG[a.status].label}</p>
                     </div>
-                  ))}
-                </div>
+                  );
+                })() : (
+                  <div key={`livre-${j}`}
+                    className="flex items-center gap-1 px-1 py-0.5 rounded"
+                    style={{ backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0" }}>
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#4ade80" }}/>
+                    <span style={{ color: "#15803d", fontSize: "9px" }} className="font-medium leading-none">
+                      {item.inicio}–{item.fim} livre
+                    </span>
+                  </div>
+                )
               )}
             </div>
           );
         })}
       </div>
-
-      {/* Rodapé */}
-      <p className="mt-3 text-slate-400 text-right">
-        Impresso em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-      </p>
     </div>
 
     {/* ── Interface normal (oculta ao imprimir) ─────────────────────────────── */}
