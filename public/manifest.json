@@ -1,0 +1,24 @@
+{
+  "name": "EduGestão — Agenda",
+  "short_name": "EduAgenda",
+  "description": "Agenda de aulas EduGestão",
+  "start_url": "/m/agenda",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icone-edugestao.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icone-edugestao.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
