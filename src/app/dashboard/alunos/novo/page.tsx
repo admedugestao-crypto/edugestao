@@ -7,9 +7,10 @@ export const dynamic = "force-dynamic";
 export default async function NovoAlunoPage() {
   const session = await auth();
   const perfil = (session?.user as any)?.perfil as string;
+  const sessionUserId = (session?.user as any)?.id as string;
   const isAdmin = perfil === "SUPERADMIN";
 
-  const [escolas, materias, professoras] = await Promise.all([
+  const [escolas, materias, professorasComDisp, professoraSession] = await Promise.all([
     prisma.escola.findMany({
       include: { unidades: { orderBy: { nome: "asc" } } },
       orderBy: { nome: "asc" },
@@ -17,11 +18,19 @@ export default async function NovoAlunoPage() {
     prisma.materia.findMany({ orderBy: { nome: "asc" } }),
     isAdmin
       ? prisma.professora.findMany({
-          include: { usuario: { select: { nome: true } } },
+          select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
           orderBy: { usuario: { nome: "asc" } },
         })
       : Promise.resolve([]),
+    !isAdmin
+      ? prisma.professora.findUnique({
+          where: { usuarioId: sessionUserId },
+          select: { disponibilidade: true },
+        })
+      : Promise.resolve(null),
   ]);
+
+  const dispProfessora = isAdmin ? null : ((professoraSession?.disponibilidade as any) ?? []);
 
   return (
     <div className="space-y-5">
@@ -32,8 +41,9 @@ export default async function NovoAlunoPage() {
       <AlunoForm
         escolas={escolas}
         materias={materias}
-        professoras={professoras}
+        professoras={professorasComDisp}
         perfil={perfil}
+        dispProfessora={dispProfessora}
       />
     </div>
   );

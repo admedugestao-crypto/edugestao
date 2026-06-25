@@ -12,7 +12,13 @@ type Escola = {
   unidades: { id: string; nome: string }[];
 };
 type Materia = { id: string; nome: string; cor: string };
-type Professora = { id: string; usuario: { nome: string } };
+type Horario = { dia: string; inicio: string; fim: string };
+type Professora = { id: string; usuario: { nome: string }; disponibilidade?: Horario[] };
+
+const DIA_NOME: Record<string, string> = {
+  "0": "Domingo", "1": "Segunda", "2": "Terça",
+  "3": "Quarta", "4": "Quinta", "5": "Sexta", "6": "Sábado",
+};
 
 export default function AlunoForm({
   escolas,
@@ -20,12 +26,14 @@ export default function AlunoForm({
   alunoInicial,
   professoras = [],
   perfil,
+  dispProfessora = null,
 }: {
   escolas: Escola[];
   materias: Materia[];
   alunoInicial?: any;
   professoras?: Professora[];
   perfil?: string;
+  dispProfessora?: Horario[] | null;
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -104,6 +112,37 @@ export default function AlunoForm({
   const [erroExcluir, setErroExcluir] = useState("");
   const [excluindo, setExcluindo] = useState(false);
 
+  // ── Agenda controlada ──────────────────────────────────────────────────────
+  const [diaSemana, setDiaSemana] = useState<string>(
+    alunoInicial?.diaSemana != null ? String(alunoInicial.diaSemana) : ""
+  );
+  const [horaAula, setHoraAula] = useState<string>(alunoInicial?.horaAula ?? "");
+  const [professoraId, setProfessoraId] = useState<string>(alunoInicial?.professoraId ?? "");
+
+  function getDisponibilidade(): Horario[] {
+    if (perfil !== "SUPERADMIN") return dispProfessora ?? [];
+    const prof = professoras.find((p) => p.id === professoraId);
+    return (prof?.disponibilidade as Horario[]) ?? [];
+  }
+
+  function validarAgenda(): string | null {
+    if (!diaSemana || !horaAula) return null;
+    const disp = getDisponibilidade();
+    if (disp.length === 0) return null;
+    const nomeDia = DIA_NOME[diaSemana];
+    const horariosDia = disp.filter((h) => h.dia === nomeDia);
+    if (horariosDia.length === 0)
+      return `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}.`;
+    const dentro = horariosDia.some((h) => horaAula >= h.inicio && horaAula < h.fim);
+    if (!dentro) {
+      const faixas = horariosDia.map((h) => `${h.inicio}–${h.fim}`).join(", ");
+      return `Horário ${horaAula} fora da disponibilidade de ${nomeDia} (${faixas}).`;
+    }
+    return null;
+  }
+
+  const erroAgenda = validarAgenda();
+
   const unidades =
     escolas.find((e) => e.id === escolaId)?.unidades ?? [];
 
@@ -175,6 +214,14 @@ export default function AlunoForm({
       setSalvando(false);
       return;
     }
+
+    const erroAg = validarAgenda();
+    if (erroAg) {
+      setErro(erroAg);
+      setSalvando(false);
+      return;
+    }
+
     form.set("materias", JSON.stringify(materiasSelected));
 
     const url = alunoInicial
@@ -507,9 +554,9 @@ export default function AlunoForm({
               {professoras.length > 0 ? (
                 <select
                   name="professoraId"
-                  defaultValue={alunoInicial?.professoraId ?? ""}
+                  value={professoraId}
                   required
-                  onChange={(e) => setCampos((prev) => ({ ...prev, professoraId: !!e.target.value }))}
+                  onChange={(e) => { setProfessoraId(e.target.value); setCampos((prev) => ({ ...prev, professoraId: !!e.target.value })); }}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Selecione o(a) professor(a)…</option>
@@ -568,9 +615,9 @@ export default function AlunoForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Dia fixo de aula</label>
-            <select name="diaSemana"
-              defaultValue={alunoInicial?.diaSemana ?? ""}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            <select name="diaSemana" value={diaSemana}
+              onChange={(e) => setDiaSemana(e.target.value)}
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${erroAgenda ? "border-amber-400 bg-amber-50" : "border-slate-200"}`}
             >
               <option value="">Sem dia fixo</option>
               <option value="0">Domingo</option>
@@ -584,13 +631,18 @@ export default function AlunoForm({
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Horário de início</label>
-            <input type="time" name="horaAula"
-              defaultValue={alunoInicial?.horaAula ?? ""}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            <input type="time" name="horaAula" value={horaAula}
+              onChange={(e) => setHoraAula(e.target.value)}
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${erroAgenda ? "border-amber-400 bg-amber-50" : "border-slate-200"}`}
             />
             <p className="text-xs text-slate-400 mt-1">Duração fixa de 1 hora. Usado pelo "Gerar semana".</p>
           </div>
         </div>
+        {erroAgenda && (
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-3">
+            ⚠️ {erroAgenda}
+          </p>
+        )}
       </div>
 
       {/* Cobrança */}
