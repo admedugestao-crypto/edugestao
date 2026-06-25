@@ -42,6 +42,7 @@ export type ProfessoraCountAggregateOutputType = {
   id: number
   usuarioId: number
   telefone: number
+  disponibilidade: number
   criadoEm: number
   _all: number
 }
@@ -65,6 +66,7 @@ export type ProfessoraCountAggregateInputType = {
   id?: true
   usuarioId?: true
   telefone?: true
+  disponibilidade?: true
   criadoEm?: true
   _all?: true
 }
@@ -145,6 +147,7 @@ export type ProfessoraGroupByOutputType = {
   id: string
   usuarioId: string
   telefone: string | null
+  disponibilidade: runtime.JsonValue | null
   criadoEm: Date
   _count: ProfessoraCountAggregateOutputType | null
   _min: ProfessoraMinAggregateOutputType | null
@@ -173,6 +176,7 @@ export type ProfessoraWhereInput = {
   id?: Prisma.StringFilter<"Professora"> | string
   usuarioId?: Prisma.StringFilter<"Professora"> | string
   telefone?: Prisma.StringNullableFilter<"Professora"> | string | null
+  disponibilidade?: Prisma.JsonNullableFilter<"Professora">
   criadoEm?: Prisma.DateTimeFilter<"Professora"> | Date | string
   usuario?: Prisma.XOR<Prisma.UsuarioScalarRelationFilter, Prisma.UsuarioWhereInput>
   materias?: Prisma.ProfessoraMateriaListRelationFilter
@@ -185,6 +189,7 @@ export type ProfessoraOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrderInput | Prisma.SortOrder
+  disponibilidade?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   usuario?: Prisma.UsuarioOrderByWithRelationInput
   materias?: Prisma.ProfessoraMateriaOrderByRelationAggregateInput
@@ -200,6 +205,7 @@ export type ProfessoraWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProfessoraWhereInput[]
   NOT?: Prisma.ProfessoraWhereInput | Prisma.ProfessoraWhereInput[]
   telefone?: Prisma.StringNullableFilter<"Professora"> | string | null
+  disponibilidade?: Prisma.JsonNullableFilter<"Professora">
   criadoEm?: Prisma.DateTimeFilter<"Professora"> | Date | string
   usuario?: Prisma.XOR<Prisma.UsuarioScalarRelationFilter, Prisma.UsuarioWhereInput>
   materias?: Prisma.ProfessoraMateriaListRelationFilter
@@ -212,6 +218,7 @@ export type ProfessoraOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrderInput | Prisma.SortOrder
+  disponibilidade?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   _count?: Prisma.ProfessoraCountOrderByAggregateInput
   _max?: Prisma.ProfessoraMaxOrderByAggregateInput
@@ -225,12 +232,14 @@ export type ProfessoraScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Professora"> | string
   usuarioId?: Prisma.StringWithAggregatesFilter<"Professora"> | string
   telefone?: Prisma.StringNullableWithAggregatesFilter<"Professora"> | string | null
+  disponibilidade?: Prisma.JsonNullableWithAggregatesFilter<"Professora">
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"Professora"> | Date | string
 }
 
 export type ProfessoraCreateInput = {
   id?: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
@@ -243,6 +252,7 @@ export type ProfessoraUncheckedCreateInput = {
   id?: string
   usuarioId: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutProfessoraInput
@@ -253,6 +263,7 @@ export type ProfessoraUncheckedCreateInput = {
 export type ProfessoraUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
@@ -265,6 +276,7 @@ export type ProfessoraUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUncheckedUpdateManyWithoutProfessoraNestedInput
@@ -276,12 +288,14 @@ export type ProfessoraCreateManyInput = {
   id?: string
   usuarioId: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
 }
 
 export type ProfessoraUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -289,6 +303,7 @@ export type ProfessoraUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -301,6 +316,7 @@ export type ProfessoraCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrder
+  disponibilidade?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -416,6 +432,7 @@ export type ProfessoraUpdateOneRequiredWithoutAulasNestedInput = {
 export type ProfessoraCreateWithoutUsuarioInput = {
   id?: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
@@ -426,6 +443,7 @@ export type ProfessoraCreateWithoutUsuarioInput = {
 export type ProfessoraUncheckedCreateWithoutUsuarioInput = {
   id?: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutProfessoraInput
@@ -452,6 +470,7 @@ export type ProfessoraUpdateToOneWithWhereWithoutUsuarioInput = {
 export type ProfessoraUpdateWithoutUsuarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
@@ -462,6 +481,7 @@ export type ProfessoraUpdateWithoutUsuarioInput = {
 export type ProfessoraUncheckedUpdateWithoutUsuarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUncheckedUpdateManyWithoutProfessoraNestedInput
@@ -472,6 +492,7 @@ export type ProfessoraUncheckedUpdateWithoutUsuarioInput = {
 export type ProfessoraCreateWithoutMateriasInput = {
   id?: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
@@ -483,6 +504,7 @@ export type ProfessoraUncheckedCreateWithoutMateriasInput = {
   id?: string
   usuarioId: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutProfessoraInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutProfessoraInput
@@ -508,6 +530,7 @@ export type ProfessoraUpdateToOneWithWhereWithoutMateriasInput = {
 export type ProfessoraUpdateWithoutMateriasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
@@ -519,6 +542,7 @@ export type ProfessoraUncheckedUpdateWithoutMateriasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   alunos?: Prisma.AlunoUncheckedUpdateManyWithoutProfessoraNestedInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutProfessoraNestedInput
@@ -528,6 +552,7 @@ export type ProfessoraUncheckedUpdateWithoutMateriasInput = {
 export type ProfessoraCreateWithoutNotificacoesInput = {
   id?: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
@@ -539,6 +564,7 @@ export type ProfessoraUncheckedCreateWithoutNotificacoesInput = {
   id?: string
   usuarioId: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutProfessoraInput
@@ -564,6 +590,7 @@ export type ProfessoraUpdateToOneWithWhereWithoutNotificacoesInput = {
 export type ProfessoraUpdateWithoutNotificacoesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
@@ -575,6 +602,7 @@ export type ProfessoraUncheckedUpdateWithoutNotificacoesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUncheckedUpdateManyWithoutProfessoraNestedInput
@@ -584,6 +612,7 @@ export type ProfessoraUncheckedUpdateWithoutNotificacoesInput = {
 export type ProfessoraCreateWithoutAlunosInput = {
   id?: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
@@ -595,6 +624,7 @@ export type ProfessoraUncheckedCreateWithoutAlunosInput = {
   id?: string
   usuarioId: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutProfessoraInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutProfessoraInput
@@ -620,6 +650,7 @@ export type ProfessoraUpdateToOneWithWhereWithoutAlunosInput = {
 export type ProfessoraUpdateWithoutAlunosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
@@ -631,6 +662,7 @@ export type ProfessoraUncheckedUpdateWithoutAlunosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutProfessoraNestedInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutProfessoraNestedInput
@@ -640,6 +672,7 @@ export type ProfessoraUncheckedUpdateWithoutAlunosInput = {
 export type ProfessoraCreateWithoutAulasInput = {
   id?: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
@@ -651,6 +684,7 @@ export type ProfessoraUncheckedCreateWithoutAulasInput = {
   id?: string
   usuarioId: string
   telefone?: string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutProfessoraInput
@@ -676,6 +710,7 @@ export type ProfessoraUpdateToOneWithWhereWithoutAulasInput = {
 export type ProfessoraUpdateWithoutAulasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
@@ -687,6 +722,7 @@ export type ProfessoraUncheckedUpdateWithoutAulasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUncheckedUpdateManyWithoutProfessoraNestedInput
@@ -755,6 +791,7 @@ export type ProfessoraSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   usuarioId?: boolean
   telefone?: boolean
+  disponibilidade?: boolean
   criadoEm?: boolean
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
   materias?: boolean | Prisma.Professora$materiasArgs<ExtArgs>
@@ -768,6 +805,7 @@ export type ProfessoraSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   usuarioId?: boolean
   telefone?: boolean
+  disponibilidade?: boolean
   criadoEm?: boolean
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["professora"]>
@@ -776,6 +814,7 @@ export type ProfessoraSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   usuarioId?: boolean
   telefone?: boolean
+  disponibilidade?: boolean
   criadoEm?: boolean
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["professora"]>
@@ -784,10 +823,11 @@ export type ProfessoraSelectScalar = {
   id?: boolean
   usuarioId?: boolean
   telefone?: boolean
+  disponibilidade?: boolean
   criadoEm?: boolean
 }
 
-export type ProfessoraOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "usuarioId" | "telefone" | "criadoEm", ExtArgs["result"]["professora"]>
+export type ProfessoraOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "usuarioId" | "telefone" | "disponibilidade" | "criadoEm", ExtArgs["result"]["professora"]>
 export type ProfessoraInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
   materias?: boolean | Prisma.Professora$materiasArgs<ExtArgs>
@@ -816,6 +856,7 @@ export type $ProfessoraPayload<ExtArgs extends runtime.Types.Extensions.Internal
     id: string
     usuarioId: string
     telefone: string | null
+    disponibilidade: runtime.JsonValue | null
     criadoEm: Date
   }, ExtArgs["result"]["professora"]>
   composites: {}
@@ -1248,6 +1289,7 @@ export interface ProfessoraFieldRefs {
   readonly id: Prisma.FieldRef<"Professora", 'String'>
   readonly usuarioId: Prisma.FieldRef<"Professora", 'String'>
   readonly telefone: Prisma.FieldRef<"Professora", 'String'>
+  readonly disponibilidade: Prisma.FieldRef<"Professora", 'Json'>
   readonly criadoEm: Prisma.FieldRef<"Professora", 'DateTime'>
 }
     

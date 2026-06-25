@@ -112,11 +112,21 @@ export default function AlunoForm({
   const [erroExcluir, setErroExcluir] = useState("");
   const [excluindo, setExcluindo] = useState(false);
 
-  // ── Agenda controlada ──────────────────────────────────────────────────────
-  const [diaSemana, setDiaSemana] = useState<string>(
-    alunoInicial?.diaSemana != null ? String(alunoInicial.diaSemana) : ""
-  );
-  const [horaAula, setHoraAula] = useState<string>(alunoInicial?.horaAula ?? "");
+  // ── Agenda semanal (lista) ─────────────────────────────────────────────────
+  type AgendaEntry = { diaSemana: string; horaAula: string };
+
+  function entradaInicial(): AgendaEntry[] {
+    const saved = alunoInicial?.agendaSemanal;
+    if (Array.isArray(saved) && saved.length > 0)
+      return saved.map((e: any) => ({ diaSemana: String(e.diaSemana), horaAula: e.horaAula ?? "" }));
+    // retrocompat: campo legado
+    if (alunoInicial?.diaSemana != null && alunoInicial?.horaAula)
+      return [{ diaSemana: String(alunoInicial.diaSemana), horaAula: alunoInicial.horaAula }];
+    return [];
+  }
+
+  const [agendaSemanal, setAgendaSemanal] = useState<AgendaEntry[]>(entradaInicial);
+  const [erroAgenda, setErroAgenda] = useState<string>("");
   const [professoraId, setProfessoraId] = useState<string>(alunoInicial?.professoraId ?? "");
 
   function getDisponibilidade(): Horario[] {
@@ -125,23 +135,50 @@ export default function AlunoForm({
     return (prof?.disponibilidade as Horario[]) ?? [];
   }
 
-  function validarAgenda(): string | null {
-    if (!diaSemana || !horaAula) return null;
+  function validarAgendaLista(lista: AgendaEntry[]): string | null {
     const disp = getDisponibilidade();
-    if (disp.length === 0) return null;
-    const nomeDia = DIA_NOME[diaSemana];
-    const horariosDia = disp.filter((h) => h.dia === nomeDia);
-    if (horariosDia.length === 0)
-      return `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}.`;
-    const dentro = horariosDia.some((h) => horaAula >= h.inicio && horaAula < h.fim);
-    if (!dentro) {
-      const faixas = horariosDia.map((h) => `${h.inicio}–${h.fim}`).join(", ");
-      return `Horário ${horaAula} fora da disponibilidade de ${nomeDia} (${faixas}).`;
+    for (let i = 0; i < lista.length; i++) {
+      const { diaSemana, horaAula } = lista[i];
+      if (!diaSemana || !horaAula) continue;
+      // duplicata exata
+      for (let j = i + 1; j < lista.length; j++) {
+        if (lista[j].diaSemana === diaSemana && lista[j].horaAula === horaAula)
+          return `Horário duplicado: ${DIA_NOME[diaSemana]} às ${horaAula}.`;
+      }
+      // validar contra disponibilidade
+      if (disp.length > 0) {
+        const nomeDia = DIA_NOME[diaSemana];
+        const horariosDia = disp.filter((h) => h.dia === nomeDia);
+        if (horariosDia.length === 0)
+          return `Professor(a) não tem disponibilidade para ${nomeDia}.`;
+        const dentro = horariosDia.some((h) => horaAula >= h.inicio && horaAula < h.fim);
+        if (!dentro) {
+          const faixas = horariosDia.map((h) => `${h.inicio}–${h.fim}`).join(", ");
+          return `${DIA_NOME[diaSemana]} ${horaAula} fora da disponibilidade (${faixas}).`;
+        }
+      }
     }
     return null;
   }
 
-  const erroAgenda = validarAgenda();
+  function addEntrada() {
+    setAgendaSemanal((prev) => [...prev, { diaSemana: "1", horaAula: "08:00" }]);
+  }
+
+  function removeEntrada(i: number) {
+    setAgendaSemanal((prev) => prev.filter((_, j) => j !== i));
+    setErroAgenda("");
+  }
+
+  function updateEntrada(i: number, field: keyof AgendaEntry, value: string) {
+    setAgendaSemanal((prev) => {
+      const next = [...prev];
+      next[i] = { ...next[i], [field]: value };
+      const err = validarAgendaLista(next);
+      setErroAgenda(err ?? "");
+      return next;
+    });
+  }
 
   const unidades =
     escolas.find((e) => e.id === escolaId)?.unidades ?? [];
@@ -215,7 +252,7 @@ export default function AlunoForm({
       return;
     }
 
-    const erroAg = validarAgenda();
+    const erroAg = validarAgendaLista(agendaSemanal);
     if (erroAg) {
       setErro(erroAg);
       setSalvando(false);
@@ -223,6 +260,12 @@ export default function AlunoForm({
     }
 
     form.set("materias", JSON.stringify(materiasSelected));
+    form.set("agendaSemanal", JSON.stringify(
+      agendaSemanal.filter((e) => e.diaSemana && e.horaAula).map((e) => ({
+        diaSemana: Number(e.diaSemana),
+        horaAula: e.horaAula,
+      }))
+    ));
 
     const url = alunoInicial
       ? `/api/alunos/${alunoInicial.id}`
@@ -607,42 +650,48 @@ export default function AlunoForm({
 
       {/* Agenda */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <CalendarDays size={17} className="text-indigo-600" />
-          <h2 className="font-semibold text-slate-800">Agenda</h2>
-          <span className="text-xs text-slate-400 ml-1">(opcional)</span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <CalendarDays size={17} className="text-indigo-600" />
+            <h2 className="font-semibold text-slate-800">Agenda semanal</h2>
+            <span className="text-xs text-slate-400 ml-1">(opcional)</span>
+          </div>
+          <button type="button" onClick={addEntrada}
+            className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium">
+            + Adicionar horário
+          </button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Dia fixo de aula</label>
-            <select name="diaSemana" value={diaSemana}
-              onChange={(e) => setDiaSemana(e.target.value)}
-              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${erroAgenda ? "border-amber-400 bg-amber-50" : "border-slate-200"}`}
-            >
-              <option value="">Sem dia fixo</option>
-              <option value="0">Domingo</option>
-              <option value="1">Segunda-feira</option>
-              <option value="2">Terça-feira</option>
-              <option value="3">Quarta-feira</option>
-              <option value="4">Quinta-feira</option>
-              <option value="5">Sexta-feira</option>
-              <option value="6">Sábado</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Horário de início</label>
-            <input type="time" name="horaAula" value={horaAula}
-              onChange={(e) => setHoraAula(e.target.value)}
-              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${erroAgenda ? "border-amber-400 bg-amber-50" : "border-slate-200"}`}
-            />
-            <p className="text-xs text-slate-400 mt-1">Duração fixa de 1 hora. Usado pelo "Gerar semana".</p>
-          </div>
+        {agendaSemanal.length === 0 && (
+          <p className="text-xs text-slate-400 italic">Nenhum horário fixo cadastrado.</p>
+        )}
+        <div className="space-y-2">
+          {agendaSemanal.map((entry, i) => (
+            <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg p-2">
+              <select value={entry.diaSemana}
+                onChange={(e) => updateEntrada(i, "diaSemana", e.target.value)}
+                className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                <option value="0">Domingo</option>
+                <option value="1">Segunda-feira</option>
+                <option value="2">Terça-feira</option>
+                <option value="3">Quarta-feira</option>
+                <option value="4">Quinta-feira</option>
+                <option value="5">Sexta-feira</option>
+                <option value="6">Sábado</option>
+              </select>
+              <input type="time" value={entry.horaAula}
+                onChange={(e) => updateEntrada(i, "horaAula", e.target.value)}
+                className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <button type="button" onClick={() => removeEntrada(i)}
+                className="text-slate-400 hover:text-red-500 transition-colors ml-auto text-lg leading-none">×</button>
+            </div>
+          ))}
         </div>
         {erroAgenda && (
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-3">
             ⚠️ {erroAgenda}
           </p>
         )}
+        <p className="text-xs text-slate-400 mt-3">Duração fixa de 1 hora por entrada. Usado pelo "Gerar semana".</p>
       </div>
 
       {/* Cobrança */}

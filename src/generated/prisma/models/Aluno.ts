@@ -68,8 +68,8 @@ export type AlunoMinAggregateOutputType = {
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
-  diaSemanaCobranca: number | null
   horaAula: string | null
+  diaSemanaCobranca: number | null
   dataInicioContrato: Date | null
   dataFimContrato: Date | null
   criadoEm: Date | null
@@ -102,8 +102,8 @@ export type AlunoMaxAggregateOutputType = {
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
-  diaSemanaCobranca: number | null
   horaAula: string | null
+  diaSemanaCobranca: number | null
   dataInicioContrato: Date | null
   dataFimContrato: Date | null
   criadoEm: Date | null
@@ -136,8 +136,9 @@ export type AlunoCountAggregateOutputType = {
   diaPagamento: number
   diaPagamento2: number
   diaSemana: number
-  diaSemanaCobranca: number
   horaAula: number
+  agendaSemanal: number
+  diaSemanaCobranca: number
   dataInicioContrato: number
   dataFimContrato: number
   criadoEm: number
@@ -188,8 +189,8 @@ export type AlunoMinAggregateInputType = {
   diaPagamento?: true
   diaPagamento2?: true
   diaSemana?: true
-  diaSemanaCobranca?: true
   horaAula?: true
+  diaSemanaCobranca?: true
   dataInicioContrato?: true
   dataFimContrato?: true
   criadoEm?: true
@@ -222,8 +223,8 @@ export type AlunoMaxAggregateInputType = {
   diaPagamento?: true
   diaPagamento2?: true
   diaSemana?: true
-  diaSemanaCobranca?: true
   horaAula?: true
+  diaSemanaCobranca?: true
   dataInicioContrato?: true
   dataFimContrato?: true
   criadoEm?: true
@@ -256,8 +257,9 @@ export type AlunoCountAggregateInputType = {
   diaPagamento?: true
   diaPagamento2?: true
   diaSemana?: true
-  diaSemanaCobranca?: true
   horaAula?: true
+  agendaSemanal?: true
+  diaSemanaCobranca?: true
   dataInicioContrato?: true
   dataFimContrato?: true
   criadoEm?: true
@@ -377,8 +379,9 @@ export type AlunoGroupByOutputType = {
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
-  diaSemanaCobranca: number | null
   horaAula: string | null
+  agendaSemanal: runtime.JsonValue | null
+  diaSemanaCobranca: number | null
   dataInicioContrato: Date | null
   dataFimContrato: Date | null
   criadoEm: Date
@@ -434,8 +437,9 @@ export type AlunoWhereInput = {
   diaPagamento?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableFilter<"Aluno"> | number | null
-  diaSemanaCobranca?: Prisma.IntNullableFilter<"Aluno"> | number | null
   horaAula?: Prisma.StringNullableFilter<"Aluno"> | string | null
+  agendaSemanal?: Prisma.JsonNullableFilter<"Aluno">
+  diaSemanaCobranca?: Prisma.IntNullableFilter<"Aluno"> | number | null
   dataInicioContrato?: Prisma.DateTimeNullableFilter<"Aluno"> | Date | string | null
   dataFimContrato?: Prisma.DateTimeNullableFilter<"Aluno"> | Date | string | null
   criadoEm?: Prisma.DateTimeFilter<"Aluno"> | Date | string
@@ -475,8 +479,9 @@ export type AlunoOrderByWithRelationInput = {
   diaPagamento?: Prisma.SortOrderInput | Prisma.SortOrder
   diaPagamento2?: Prisma.SortOrderInput | Prisma.SortOrder
   diaSemana?: Prisma.SortOrderInput | Prisma.SortOrder
-  diaSemanaCobranca?: Prisma.SortOrderInput | Prisma.SortOrder
   horaAula?: Prisma.SortOrderInput | Prisma.SortOrder
+  agendaSemanal?: Prisma.SortOrderInput | Prisma.SortOrder
+  diaSemanaCobranca?: Prisma.SortOrderInput | Prisma.SortOrder
   dataInicioContrato?: Prisma.SortOrderInput | Prisma.SortOrder
   dataFimContrato?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
@@ -519,8 +524,9 @@ export type AlunoWhereUniqueInput = Prisma.AtLeast<{
   diaPagamento?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableFilter<"Aluno"> | number | null
-  diaSemanaCobranca?: Prisma.IntNullableFilter<"Aluno"> | number | null
   horaAula?: Prisma.StringNullableFilter<"Aluno"> | string | null
+  agendaSemanal?: Prisma.JsonNullableFilter<"Aluno">
+  diaSemanaCobranca?: Prisma.IntNullableFilter<"Aluno"> | number | null
   dataInicioContrato?: Prisma.DateTimeNullableFilter<"Aluno"> | Date | string | null
   dataFimContrato?: Prisma.DateTimeNullableFilter<"Aluno"> | Date | string | null
   criadoEm?: Prisma.DateTimeFilter<"Aluno"> | Date | string
@@ -560,8 +566,9 @@ export type AlunoOrderByWithAggregationInput = {
   diaPagamento?: Prisma.SortOrderInput | Prisma.SortOrder
   diaPagamento2?: Prisma.SortOrderInput | Prisma.SortOrder
   diaSemana?: Prisma.SortOrderInput | Prisma.SortOrder
-  diaSemanaCobranca?: Prisma.SortOrderInput | Prisma.SortOrder
   horaAula?: Prisma.SortOrderInput | Prisma.SortOrder
+  agendaSemanal?: Prisma.SortOrderInput | Prisma.SortOrder
+  diaSemanaCobranca?: Prisma.SortOrderInput | Prisma.SortOrder
   dataInicioContrato?: Prisma.SortOrderInput | Prisma.SortOrder
   dataFimContrato?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
@@ -602,8 +609,9 @@ export type AlunoScalarWhereWithAggregatesInput = {
   diaPagamento?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
-  diaSemanaCobranca?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
   horaAula?: Prisma.StringNullableWithAggregatesFilter<"Aluno"> | string | null
+  agendaSemanal?: Prisma.JsonNullableWithAggregatesFilter<"Aluno">
+  diaSemanaCobranca?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
   dataInicioContrato?: Prisma.DateTimeNullableWithAggregatesFilter<"Aluno"> | Date | string | null
   dataFimContrato?: Prisma.DateTimeNullableWithAggregatesFilter<"Aluno"> | Date | string | null
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"Aluno"> | Date | string
@@ -634,8 +642,9 @@ export type AlunoCreateInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -675,8 +684,9 @@ export type AlunoUncheckedCreateInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -712,8 +722,9 @@ export type AlunoUpdateInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -753,8 +764,9 @@ export type AlunoUncheckedUpdateInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -792,8 +804,9 @@ export type AlunoCreateManyInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -824,8 +837,9 @@ export type AlunoUpdateManyMutationInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -858,8 +872,9 @@ export type AlunoUncheckedUpdateManyInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -902,8 +917,9 @@ export type AlunoCountOrderByAggregateInput = {
   diaPagamento?: Prisma.SortOrder
   diaPagamento2?: Prisma.SortOrder
   diaSemana?: Prisma.SortOrder
-  diaSemanaCobranca?: Prisma.SortOrder
   horaAula?: Prisma.SortOrder
+  agendaSemanal?: Prisma.SortOrder
+  diaSemanaCobranca?: Prisma.SortOrder
   dataInicioContrato?: Prisma.SortOrder
   dataFimContrato?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
@@ -944,8 +960,8 @@ export type AlunoMaxOrderByAggregateInput = {
   diaPagamento?: Prisma.SortOrder
   diaPagamento2?: Prisma.SortOrder
   diaSemana?: Prisma.SortOrder
-  diaSemanaCobranca?: Prisma.SortOrder
   horaAula?: Prisma.SortOrder
+  diaSemanaCobranca?: Prisma.SortOrder
   dataInicioContrato?: Prisma.SortOrder
   dataFimContrato?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
@@ -978,8 +994,8 @@ export type AlunoMinOrderByAggregateInput = {
   diaPagamento?: Prisma.SortOrder
   diaPagamento2?: Prisma.SortOrder
   diaSemana?: Prisma.SortOrder
-  diaSemanaCobranca?: Prisma.SortOrder
   horaAula?: Prisma.SortOrder
+  diaSemanaCobranca?: Prisma.SortOrder
   dataInicioContrato?: Prisma.SortOrder
   dataFimContrato?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
@@ -1201,8 +1217,9 @@ export type AlunoCreateWithoutProfessoraInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1240,8 +1257,9 @@ export type AlunoUncheckedCreateWithoutProfessoraInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1308,8 +1326,9 @@ export type AlunoScalarWhereInput = {
   diaPagamento?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableFilter<"Aluno"> | number | null
-  diaSemanaCobranca?: Prisma.IntNullableFilter<"Aluno"> | number | null
   horaAula?: Prisma.StringNullableFilter<"Aluno"> | string | null
+  agendaSemanal?: Prisma.JsonNullableFilter<"Aluno">
+  diaSemanaCobranca?: Prisma.IntNullableFilter<"Aluno"> | number | null
   dataInicioContrato?: Prisma.DateTimeNullableFilter<"Aluno"> | Date | string | null
   dataFimContrato?: Prisma.DateTimeNullableFilter<"Aluno"> | Date | string | null
   criadoEm?: Prisma.DateTimeFilter<"Aluno"> | Date | string
@@ -1340,8 +1359,9 @@ export type AlunoCreateWithoutUnidadeInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1379,8 +1399,9 @@ export type AlunoUncheckedCreateWithoutUnidadeInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1442,8 +1463,9 @@ export type AlunoCreateWithoutMateriasInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1482,8 +1504,9 @@ export type AlunoUncheckedCreateWithoutMateriasInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1534,8 +1557,9 @@ export type AlunoUpdateWithoutMateriasInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1574,8 +1598,9 @@ export type AlunoUncheckedUpdateWithoutMateriasInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1610,8 +1635,9 @@ export type AlunoCreateWithoutNotasInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1650,8 +1676,9 @@ export type AlunoUncheckedCreateWithoutNotasInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1702,8 +1729,9 @@ export type AlunoUpdateWithoutNotasInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1742,8 +1770,9 @@ export type AlunoUncheckedUpdateWithoutNotasInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1778,8 +1807,9 @@ export type AlunoCreateWithoutPagamentosInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1818,8 +1848,9 @@ export type AlunoUncheckedCreateWithoutPagamentosInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1870,8 +1901,9 @@ export type AlunoUpdateWithoutPagamentosInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1910,8 +1942,9 @@ export type AlunoUncheckedUpdateWithoutPagamentosInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1946,8 +1979,9 @@ export type AlunoCreateWithoutConteudosInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -1986,8 +2020,9 @@ export type AlunoUncheckedCreateWithoutConteudosInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -2038,8 +2073,9 @@ export type AlunoUpdateWithoutConteudosInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2078,8 +2114,9 @@ export type AlunoUncheckedUpdateWithoutConteudosInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2114,8 +2151,9 @@ export type AlunoCreateWithoutAulasInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -2154,8 +2192,9 @@ export type AlunoUncheckedCreateWithoutAulasInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -2206,8 +2245,9 @@ export type AlunoUpdateWithoutAulasInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2246,8 +2286,9 @@ export type AlunoUncheckedUpdateWithoutAulasInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2283,8 +2324,9 @@ export type AlunoCreateManyProfessoraInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -2315,8 +2357,9 @@ export type AlunoUpdateWithoutProfessoraInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2354,8 +2397,9 @@ export type AlunoUncheckedUpdateWithoutProfessoraInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2392,8 +2436,9 @@ export type AlunoUncheckedUpdateManyWithoutProfessoraInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2425,8 +2470,9 @@ export type AlunoCreateManyUnidadeInput = {
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
-  diaSemanaCobranca?: number | null
   horaAula?: string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: number | null
   dataInicioContrato?: Date | string | null
   dataFimContrato?: Date | string | null
   criadoEm?: Date | string
@@ -2457,8 +2503,9 @@ export type AlunoUpdateWithoutUnidadeInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2496,8 +2543,9 @@ export type AlunoUncheckedUpdateWithoutUnidadeInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2534,8 +2582,9 @@ export type AlunoUncheckedUpdateManyWithoutUnidadeInput = {
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   horaAula?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  agendaSemanal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  diaSemanaCobranca?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dataInicioContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dataFimContrato?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2635,8 +2684,9 @@ export type AlunoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   diaPagamento?: boolean
   diaPagamento2?: boolean
   diaSemana?: boolean
-  diaSemanaCobranca?: boolean
   horaAula?: boolean
+  agendaSemanal?: boolean
+  diaSemanaCobranca?: boolean
   dataInicioContrato?: boolean
   dataFimContrato?: boolean
   criadoEm?: boolean
@@ -2677,8 +2727,9 @@ export type AlunoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   diaPagamento?: boolean
   diaPagamento2?: boolean
   diaSemana?: boolean
-  diaSemanaCobranca?: boolean
   horaAula?: boolean
+  agendaSemanal?: boolean
+  diaSemanaCobranca?: boolean
   dataInicioContrato?: boolean
   dataFimContrato?: boolean
   criadoEm?: boolean
@@ -2713,8 +2764,9 @@ export type AlunoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   diaPagamento?: boolean
   diaPagamento2?: boolean
   diaSemana?: boolean
-  diaSemanaCobranca?: boolean
   horaAula?: boolean
+  agendaSemanal?: boolean
+  diaSemanaCobranca?: boolean
   dataInicioContrato?: boolean
   dataFimContrato?: boolean
   criadoEm?: boolean
@@ -2749,15 +2801,16 @@ export type AlunoSelectScalar = {
   diaPagamento?: boolean
   diaPagamento2?: boolean
   diaSemana?: boolean
-  diaSemanaCobranca?: boolean
   horaAula?: boolean
+  agendaSemanal?: boolean
+  diaSemanaCobranca?: boolean
   dataInicioContrato?: boolean
   dataFimContrato?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
 }
 
-export type AlunoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "professoraId" | "unidadeId" | "nome" | "dataNascimento" | "fotoUrl" | "serie" | "turma" | "responsavel" | "telefoneResponsavel" | "emailResponsavel" | "rua" | "numero" | "complemento" | "bairro" | "cidade" | "estado" | "cep" | "observacoes" | "status" | "tipoCobranca" | "valorCobranca" | "diaPagamento" | "diaPagamento2" | "diaSemana" | "diaSemanaCobranca" | "horaAula" | "dataInicioContrato" | "dataFimContrato" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["aluno"]>
+export type AlunoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "professoraId" | "unidadeId" | "nome" | "dataNascimento" | "fotoUrl" | "serie" | "turma" | "responsavel" | "telefoneResponsavel" | "emailResponsavel" | "rua" | "numero" | "complemento" | "bairro" | "cidade" | "estado" | "cep" | "observacoes" | "status" | "tipoCobranca" | "valorCobranca" | "diaPagamento" | "diaPagamento2" | "diaSemana" | "horaAula" | "agendaSemanal" | "diaSemanaCobranca" | "dataInicioContrato" | "dataFimContrato" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["aluno"]>
 export type AlunoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   professora?: boolean | Prisma.Aluno$professoraArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
@@ -2814,8 +2867,9 @@ export type $AlunoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     diaPagamento: number | null
     diaPagamento2: number | null
     diaSemana: number | null
-    diaSemanaCobranca: number | null
     horaAula: string | null
+    agendaSemanal: runtime.JsonValue | null
+    diaSemanaCobranca: number | null
     dataInicioContrato: Date | null
     dataFimContrato: Date | null
     criadoEm: Date
@@ -3275,8 +3329,9 @@ export interface AlunoFieldRefs {
   readonly diaPagamento: Prisma.FieldRef<"Aluno", 'Int'>
   readonly diaPagamento2: Prisma.FieldRef<"Aluno", 'Int'>
   readonly diaSemana: Prisma.FieldRef<"Aluno", 'Int'>
-  readonly diaSemanaCobranca: Prisma.FieldRef<"Aluno", 'Int'>
   readonly horaAula: Prisma.FieldRef<"Aluno", 'String'>
+  readonly agendaSemanal: Prisma.FieldRef<"Aluno", 'Json'>
+  readonly diaSemanaCobranca: Prisma.FieldRef<"Aluno", 'Int'>
   readonly dataInicioContrato: Prisma.FieldRef<"Aluno", 'DateTime'>
   readonly dataFimContrato: Prisma.FieldRef<"Aluno", 'DateTime'>
   readonly criadoEm: Prisma.FieldRef<"Aluno", 'DateTime'>

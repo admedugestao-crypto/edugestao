@@ -64,165 +64,118 @@ export async function POST(req: NextRequest) {
   }
 
 
-  // Alunos COM parâmetros de agenda → gerar aulas
-  const alunos = await prisma.aluno.findMany({
-    where: { ...whereBase, diaSemana: { not: null }, horaAula: { not: null } },
+  // Todos os alunos ativos (com ou sem agenda)
+  const todosAlunos = await prisma.aluno.findMany({
+    where: whereBase,
     select: {
-      id: true, nome: true, professoraId: true, diaSemana: true, horaAula: true,
+      id: true, nome: true, professoraId: true,
+      diaSemana: true, horaAula: true, agendaSemanal: true,
       dataInicioContrato: true, dataFimContrato: true,
       materias: { select: { materiaId: true } },
     },
   });
 
-  // Alunos SEM parâmetros de agenda → listar no relatório
-  const alunosSemAgenda = await prisma.aluno.findMany({
-    where: {
-      ...whereBase,
-      OR: [{ diaSemana: null }, { horaAula: null }],
-    },
-    select: { nome: true, diaSemana: true, horaAula: true, dataFimContrato: true },
-  });
+  // Separa quem tem agenda
+  type AgendaEntry = { diaSemana: number; horaAula: string };
+  function getEntradas(a: typeof todosAlunos[0]): AgendaEntry[] {
+    const saved = a.agendaSemanal as any;
+    if (Array.isArray(saved) && saved.length > 0) return saved;
+    if (a.diaSemana != null && a.horaAula) return [{ diaSemana: a.diaSemana, horaAula: a.horaAula }];
+    return [];
+  }
 
-  const semAgendaLista: SemAgendaDet[] = alunosSemAgenda.map((a) => {
-    const faltaDia     = a.diaSemana === null;
-    const faltaHorario = a.horaAula  === null;
-    const motivo =
-      faltaDia && faltaHorario ? "Sem dia fixo e sem horário de aula"
-      : faltaDia               ? "Sem dia fixo de aula"
-      :                          "Sem horário de aula";
-    return { alunoNome: a.nome, motivo };
-  });
+  const alunos     = todosAlunos.filter((a) => getEntradas(a).length > 0);
+  const semAgenda  = todosAlunos.filter((a) => getEntradas(a).length === 0);
+
+  const semAgendaLista: SemAgendaDet[] = semAgenda.map((a) => ({
+    alunoNome: a.nome,
+    motivo: "Sem horário fixo de aula cadastrado",
+  }));
 
   let criadas   = 0;
   let ignoradas = 0;
   const conflitosLista: ConflitoDet[] = [];
 
   for (const aluno of alunos) {
-    // Admin sempre usa o professor do aluno; professora usa o próprio ID da sessão
     const profId = perfil === "SUPERADMIN"
       ? aluno.professoraId
       : (professoraId ?? aluno.professoraId);
-    if (!profId) continue; // aluno sem professor não gera agenda
+    if (!profId) continue;
 
-    const diaSemanaAluno = aluno.diaSemana!;
-    const materiaId      = null;
-
-    const horaInicio: string | null = aluno.horaAula ?? null;
-    let   horaFim:    string | null = null;
-    if (horaInicio) {
-      const [h, m] = horaInicio.split(":").map(Number);
-      horaFim = `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-    }
-
-    // Respeita o período contratual do aluno
-    // Início: o mais tardio entre (inicio da semana selecionada) e (dataInicioContrato)
+    // Período contratual
     let inicioAluno = new Date(inicio);
     if (aluno.dataInicioContrato) {
-      const contratoInicio = new Date(aluno.dataInicioContrato);
-      contratoInicio.setHours(0, 0, 0, 0);
-      if (contratoInicio > inicioAluno) inicioAluno = contratoInicio;
+      const ci = new Date(aluno.dataInicioContrato); ci.setHours(0,0,0,0);
+      if (ci > inicioAluno) inicioAluno = ci;
     }
-
-    // Fim: o mais cedo entre (fim do ano) e (dataFimContrato)
     let fimAluno = fimAnoInt;
     if (aluno.dataFimContrato) {
-      const contratoFim = new Date(aluno.dataFimContrato);
-      contratoFim.setHours(0, 0, 0, 0);
-      const contratoFimInt = toInt(contratoFim);
-      if (contratoFimInt < fimAluno) fimAluno = contratoFimInt;
+      const cf = new Date(aluno.dataFimContrato); cf.setHours(0,0,0,0);
+      const cfInt = toInt(cf);
+      if (cfInt < fimAluno) fimAluno = cfInt;
     }
-
-    // Se o período contratual já encerrou antes do início, pula o aluno
     if (toInt(inicioAluno) > fimAluno) continue;
 
-    let dataAula = new Date(inicioAluno);
-    while (dataAula.getDay() !== diaSemanaAluno) {
-      dataAula.setDate(dataAula.getDate() + 1);
-    }
+    // Itera sobre cada entrada da agenda semanal
+    for (const entrada of getEntradas(aluno)) {
+      const diaSemanaEntrada = entrada.diaSemana;
+      const horaInicio       = entrada.horaAula;
+      const [h, m]           = horaInicio.split(":").map(Number);
+      const horaFim          = `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
-    while (toInt(dataAula) <= fimAluno) {
-      const dY = dataAula.getFullYear();
-      const dM = dataAula.getMonth();
-      const dD = dataAula.getDate();
-
-      const dataUTC  = new Date(Date.UTC(dY, dM, dD));
-      const rangeGte = new Date(Date.UTC(dY, dM, dD));
-      const rangeLt  = new Date(Date.UTC(dY, dM, dD + 1));
-
-      const aulasNoDia = await prisma.agendaAula.findMany({
-        where: {
-          professoraId: profId!,
-          data: { gte: rangeGte, lt: rangeLt },
-        },
-        select: {
-          alunoId:    true,
-          horaInicio: true,
-          horaFim:    true,
-          status:     true,
-          aluno:      { select: { nome: true } },
-        },
-      });
-
-      const jaExiste = aulasNoDia.some((a) => a.alunoId === aluno.id);
-
-      // Para o dia atual, pula se o horário de início já passou no momento da geração
-      const ehHoje = toInt(dataAula) === toInt(hoje);
-      if (ehHoje && horaInicio && horaInicio <= horaAgora) {
-        ignoradas++;
-        dataAula.setDate(dataAula.getDate() + 7);
-        continue;
+      let dataAula = new Date(inicioAluno);
+      while (dataAula.getDay() !== diaSemanaEntrada) {
+        dataAula.setDate(dataAula.getDate() + 1);
       }
 
-      if (jaExiste) {
-        ignoradas++;
-      } else if (horaInicio && horaFim) {
+      while (toInt(dataAula) <= fimAluno) {
+        const dY = dataAula.getFullYear();
+        const dM = dataAula.getMonth();
+        const dD = dataAula.getDate();
+
+        const dataUTC  = new Date(Date.UTC(dY, dM, dD));
+        const rangeGte = new Date(Date.UTC(dY, dM, dD));
+        const rangeLt  = new Date(Date.UTC(dY, dM, dD + 1));
+
+        // Para o dia atual, pula se o horário já passou
+        const ehHoje = toInt(dataAula) === toInt(hoje);
+        if (ehHoje && horaInicio <= horaAgora) {
+          ignoradas++;
+          dataAula.setDate(dataAula.getDate() + 7);
+          continue;
+        }
+
+        const aulasNoDia = await prisma.agendaAula.findMany({
+          where: { professoraId: profId!, data: { gte: rangeGte, lt: rangeLt } },
+          select: { alunoId: true, horaInicio: true, horaFim: true, status: true, aluno: { select: { nome: true } } },
+        });
+
+        // Já existe aula deste aluno neste dia neste horário
+        const jaExiste = aulasNoDia.some((a) => a.alunoId === aluno.id && a.horaInicio === horaInicio);
+        if (jaExiste) { ignoradas++; dataAula.setDate(dataAula.getDate() + 7); continue; }
+
         const aulaConflitante = aulasNoDia.find(
-          (a) => a.status !== "CANCELADA" &&
-                 a.horaInicio && a.horaFim &&
-                 horaInicio < a.horaFim &&
-                 horaFim    > a.horaInicio,
+          (a) => a.status !== "CANCELADA" && a.horaInicio && a.horaFim &&
+                 horaInicio < a.horaFim && horaFim > a.horaInicio,
         );
 
         if (aulaConflitante) {
           conflitosLista.push({
-            alunoNome:          aluno.nome,
-            data:               dataUTC.toISOString().split("T")[0],
-            horaInicio,
-            horaFim,
-            conflitoCom:        aulaConflitante.aluno.nome,
+            alunoNome: aluno.nome, data: dataUTC.toISOString().split("T")[0],
+            horaInicio, horaFim,
+            conflitoCom: aulaConflitante.aluno.nome,
             conflitoHoraInicio: aulaConflitante.horaInicio!,
             conflitoHoraFim:    aulaConflitante.horaFim!,
           });
         } else {
           await prisma.agendaAula.create({
-            data: {
-              professoraId: profId!,
-              alunoId:      aluno.id,
-              materiaId,
-              data:         dataUTC,
-              horaInicio,
-              horaFim,
-              status:       "AGENDADA",
-            },
+            data: { professoraId: profId!, alunoId: aluno.id, materiaId: null, data: dataUTC, horaInicio, horaFim, status: "AGENDADA" },
           });
           criadas++;
         }
-      } else {
-        await prisma.agendaAula.create({
-          data: {
-            professoraId: profId!,
-            alunoId:      aluno.id,
-            materiaId,
-            data:         dataUTC,
-            horaInicio,
-            horaFim,
-            status:       "AGENDADA",
-          },
-        });
-        criadas++;
-      }
 
-      dataAula.setDate(dataAula.getDate() + 7);
+        dataAula.setDate(dataAula.getDate() + 7);
+      }
     }
   }
 
