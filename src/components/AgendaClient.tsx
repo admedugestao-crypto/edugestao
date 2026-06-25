@@ -516,10 +516,13 @@ export default function AgendaClient({
   // Timeline unificado: aulas + slots livres (chunks de 1h) dentro da disponibilidade
   function timelineDia(dia: Date): TimelineItem[] {
     const profId = isProfessor ? professoraIdSessao : (filtroProfId || null);
+
+    // Admin sem professor filtrado: não mostra nada
+    if (!isProfessor && !profId) return [];
+
     const aulasD = aulasNoDia(dia);
 
     if (!profId) {
-      // Sem professor selecionado: só aulas
       return aulasD.map((a) => ({ tipo: "aula", aula: a, inicio: toMin(a.horaInicio ?? "00:00") }));
     }
 
