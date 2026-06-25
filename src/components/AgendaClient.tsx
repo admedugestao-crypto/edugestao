@@ -389,8 +389,11 @@ export default function AgendaClient({
   }
 
   async function salvarNovaAula(forcar = false) {
+    if (!isProfessor && !professoraIdModal) {
+      setErroModal("Selecione o(a) professor(a) antes de salvar.");
+      return;
+    }
     if (!novaAula.alunoId || !novaAula.data) return;
-    if (!isProfessor && !professoraIdModal) return;
 
     // Verifica regras de agendamento
     if (!forcar) {
