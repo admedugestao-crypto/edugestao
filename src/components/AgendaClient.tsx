@@ -156,8 +156,8 @@ export default function AgendaClient({
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
-  // Filtro de professora (admin)
-  const [filtroProfId, setFiltroProfId] = useState("");
+  // Filtro de professora (admin) — inicia no primeiro professor
+  const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
   // Filtro de matéria (todos os perfis)
   const [filtroMateriaId, setFiltroMateriaId] = useState("");
 
@@ -660,7 +660,6 @@ export default function AgendaClient({
             onChange={(e) => setFiltroProfId(e.target.value)}
             className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
           >
-            <option value="">Todos os professores</option>
             {professoras.map((p) => (
               <option key={p.id} value={p.id}>{p.nome}</option>
             ))}
