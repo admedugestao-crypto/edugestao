@@ -5,3 +5,15 @@ body {
   background-color: #f1f5f9;
   color: #0f172a;
 }
+
+/* Altura real do viewport mobile (exclui barra do browser/PWA) */
+.h-dvh  { height: 100dvh; }
+.min-h-dvh { min-height: 100dvh; }
+
+/* Remove scrollbar visível em listas horizontais */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Safe area para notch/home indicator iOS */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
