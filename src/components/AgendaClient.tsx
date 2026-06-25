@@ -331,23 +331,60 @@ export default function AgendaClient({
     setModalAberto(true);
   }
 
-  /** Verifica se a data/hora da nova aula viola a regra de geração automática.
-   *  Retorna uma string de aviso se houver problema, ou null se estiver ok. */
-  function verificarRegraAgendamento(): string | null {
+  /** Verifica regras de agendamento manual — retorna aviso (confirmável) ou erro (bloqueante).
+   *  { tipo: "aviso" } → pede confirmação; { tipo: "erro" } → bloqueia. */
+  function verificarRegraAgendamento(): { tipo: "aviso" | "erro"; msg: string } | null {
     if (!novaAula.data) return null;
     const agora = new Date();
     const horaAgora = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-
     const [y, m, d] = novaAula.data.split("-").map(Number);
     const dataAula = new Date(y, m - 1, d);
 
-    if (dataAula < hoje) {
-      return `A data selecionada (${novaAula.data.split("-").reverse().join("/")}) é anterior a hoje. Deseja incluir mesmo assim?`;
+    // Data passada
+    if (dataAula < hoje)
+      return { tipo: "aviso", msg: `A data selecionada (${novaAula.data.split("-").reverse().join("/")}) é anterior a hoje. Deseja incluir mesmo assim?` };
+
+    // Horário já passou hoje
+    if (dataAula.getTime() === hoje.getTime() && novaAula.horaInicio && novaAula.horaInicio <= horaAgora)
+      return { tipo: "aviso", msg: `O horário ${novaAula.horaInicio} de hoje já passou (agora são ${horaAgora}). Deseja incluir mesmo assim?` };
+
+    if (!novaAula.horaInicio || !novaAula.horaFim) return null;
+
+    const profId = isProfessor ? professoraIdSessao : professoraIdModal;
+
+    // Verificar disponibilidade do professor
+    if (profId) {
+      const disp = disponibilidades.find((dp) => dp.professoraId === profId);
+      if (disp && disp.slots.length > 0) {
+        const nomeDia = DIAS_SEMANA_FULL[dataAula.getDay()];
+        const horariosDia = disp.slots.filter((s) => s.dia === nomeDia);
+        if (horariosDia.length === 0)
+          return { tipo: "erro", msg: `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}.` };
+        const inicioMin = toMin(novaAula.horaInicio);
+        const fimMin    = toMin(novaAula.horaFim);
+        const dentro = horariosDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
+        if (!dentro) {
+          const faixas = horariosDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
+          return { tipo: "erro", msg: `Horário ${novaAula.horaInicio}–${novaAula.horaFim} fora da disponibilidade de ${nomeDia} (${faixas}).` };
+        }
+      }
     }
-    if (dataAula.getTime() === hoje.getTime() && novaAula.horaInicio && novaAula.horaInicio <= horaAgora) {
-      return `O horário ${novaAula.horaInicio} de hoje já passou (agora são ${horaAgora}). Deseja incluir mesmo assim?`;
-    }
+
+    // Verificar conflito com aulas já existentes
+    const aulasNaData = aulas.filter(
+      (a) => a.data.startsWith(novaAula.data) &&
+             a.status !== "CANCELADA" &&
+             a.horaInicio && a.horaFim,
+    );
+    const inicioNova = toMin(novaAula.horaInicio);
+    const fimNova    = toMin(novaAula.horaFim);
+    const conflito = aulasNaData.find(
+      (a) => inicioNova < toMin(a.horaFim!) && fimNova > toMin(a.horaInicio!),
+    );
+    if (conflito)
+      return { tipo: "erro", msg: `Conflito com aula de ${conflito.aluno.nome} (${conflito.horaInicio}–${conflito.horaFim}) nesta data.` };
+
     return null;
   }
 
@@ -355,12 +392,17 @@ export default function AgendaClient({
     if (!novaAula.alunoId || !novaAula.data) return;
     if (!isProfessor && !professoraIdModal) return;
 
-    // Verifica regra de agendamento — pede confirmação se não satisfeita
+    // Verifica regras de agendamento
     if (!forcar) {
-      const aviso = verificarRegraAgendamento();
-      if (aviso) {
-        setAvisoAgendamento(aviso);
-        return; // aguarda confirmação do usuário
+      const check = verificarRegraAgendamento();
+      if (check) {
+        if (check.tipo === "erro") {
+          setErroModal(check.msg);
+          return; // bloqueia — não permite forçar
+        }
+        // aviso — pede confirmação
+        setAvisoAgendamento(check.msg);
+        return;
       }
     }
 
