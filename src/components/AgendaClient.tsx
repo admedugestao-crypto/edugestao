@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, Plus, RefreshCw, X,
   CheckCircle2, XCircle, Clock, UserX, UserCheck,
-  CalendarDays, List, Zap, Trash2,
+  CalendarDays, List, Zap, Trash2, Printer,
 } from "lucide-react";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -618,9 +618,72 @@ export default function AgendaClient({
   const totalDia  = aulasHoje.length;
   const realizadas = aulasHoje.filter((a) => a.status === "REALIZADA").length;
 
+  // ── Nome do professor filtrado (para o cabeçalho de impressão) ─────────────
+  const professoraNomeImpressao = isProfessor
+    ? (professoras.find((p) => p.id === professoraIdSessao)?.nome ?? "")
+    : (professoras.find((p) => p.id === filtroProfId)?.nome ?? "");
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-4">
+    <>
+    {/* ── Layout de impressão (visível apenas ao imprimir) ───────────────── */}
+    <div className="hidden print:block text-[11px] font-sans">
+      {/* Cabeçalho */}
+      <div className="mb-3 border-b border-slate-300 pb-2">
+        <h1 className="text-base font-bold text-slate-800">Agenda Semanal de Aulas</h1>
+        {professoraNomeImpressao && (
+          <p className="text-slate-600">Professor(a): <strong>{professoraNomeImpressao}</strong></p>
+        )}
+        <p className="text-slate-500">
+          Período: {format(semanaRef, "dd/MM/yyyy", { locale: ptBR })} a {format(addDays(semanaRef, 6), "dd/MM/yyyy", { locale: ptBR })}
+        </p>
+      </div>
+
+      {/* Grade semanal */}
+      <div className="grid grid-cols-7 border border-slate-300">
+        {/* Cabeçalhos dos dias */}
+        {diasGrade.map((dia, i) => (
+          <div key={i} className="border-r last:border-r-0 border-slate-300 bg-slate-100 px-1.5 py-1 text-center font-semibold text-slate-700">
+            <div>{DIAS_PT[dia.getDay()]}</div>
+            <div className="font-bold text-slate-900">{format(dia, "dd/MM")}</div>
+          </div>
+        ))}
+        {/* Aulas de cada dia */}
+        {diasGrade.map((dia, i) => {
+          const aulasD = aulasNoDia(dia).filter((a) => a.status !== "CANCELADA");
+          return (
+            <div key={i} className="border-r last:border-r-0 border-t border-slate-300 px-1.5 py-1.5 align-top min-h-[80px]">
+              {aulasD.length === 0 ? (
+                <p className="text-slate-300 text-center mt-2">—</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {aulasD.map((a) => (
+                    <div key={a.id} className="border border-slate-200 rounded px-1.5 py-1">
+                      <p className="font-semibold text-slate-800 leading-tight">{a.aluno.nome}</p>
+                      {(a.horaInicio || a.horaFim) && (
+                        <p className="text-slate-500">{a.horaInicio}{a.horaFim ? `–${a.horaFim}` : ""}</p>
+                      )}
+                      {a.materia && (
+                        <p className="text-slate-500 truncate">{a.materia.nome}</p>
+                      )}
+                      <p className="text-slate-400">{STATUS_CONFIG[a.status].label}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Rodapé */}
+      <p className="mt-3 text-slate-400 text-right">
+        Impresso em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+      </p>
+    </div>
+
+    {/* ── Interface normal (oculta ao imprimir) ─────────────────────────────── */}
+    <div className="space-y-4 print:hidden">
 
       {/* ── Barra de controles ─────────────────────────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
@@ -705,6 +768,10 @@ export default function AgendaClient({
         <button onClick={carregar} disabled={carregando}
           className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors disabled:opacity-50">
           <RefreshCw size={14} className={carregando ? "animate-spin text-indigo-500" : "text-slate-500"}/>
+        </button>
+        <button onClick={() => window.print()} title="Imprimir agenda semanal"
+          className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+          <Printer size={14} className="text-slate-500"/>
         </button>
       </div>
 
@@ -1210,6 +1277,7 @@ export default function AgendaClient({
         </Modal>
       )}
     </div>
+    </>
   );
 }
 
