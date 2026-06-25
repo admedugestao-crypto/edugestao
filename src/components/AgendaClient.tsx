@@ -324,9 +324,7 @@ export default function AgendaClient({
   // ── Nova aula ──────────────────────────────────────────────────────────────
   function abrirModal(data?: string) {
     setDataModal(data ?? "");
-    // Pré-popula professor se admin já tem filtro ativo
-    const profPreSel = !isProfessor ? filtroProfId : "";
-    setProfessoraIdModal(profPreSel);
+    setProfessoraIdModal("");
     setErroModal(null);
     setAvisoAgendamento(null);
     setNovaAula({ alunoId: "", materiaId: "", data: data ?? "", horaInicio: "", horaFim: "", observacao: "" });
