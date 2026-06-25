@@ -351,6 +351,10 @@ export default function AgendaClient({
 
     if (!novaAula.horaInicio || !novaAula.horaFim) return null;
 
+    // Duração mínima de 1 hora
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60)
+      return { tipo: "erro", msg: "A duração mínima da aula é de 1 hora." };
+
     const profId = isProfessor ? professoraIdSessao : professoraIdModal;
 
     // Verificar disponibilidade do professor
