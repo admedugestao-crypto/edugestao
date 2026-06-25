@@ -509,31 +509,57 @@ export default function AgendaClient({
       .sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
   }
 
-  // Slots livres por dia para o professor ativo (sessão ou filtro admin)
-  function slotLivresDia(dia: Date): { inicio: string; fim: string }[] {
+  type TimelineItem =
+    | { tipo: "aula"; aula: Aula; inicio: number }
+    | { tipo: "livre"; inicio: string; fim: string; inicioMin: number };
+
+  // Timeline unificado: aulas + slots livres (chunks de 1h) dentro da disponibilidade
+  function timelineDia(dia: Date): TimelineItem[] {
     const profId = isProfessor ? professoraIdSessao : (filtroProfId || null);
-    if (!profId) return [];
+    const aulasD = aulasNoDia(dia);
+
+    if (!profId) {
+      // Sem professor selecionado: só aulas
+      return aulasD.map((a) => ({ tipo: "aula", aula: a, inicio: toMin(a.horaInicio ?? "00:00") }));
+    }
+
     const disp = disponibilidades.find((d) => d.professoraId === profId);
-    if (!disp || disp.slots.length === 0) return [];
+    if (!disp || disp.slots.length === 0) {
+      return aulasD.map((a) => ({ tipo: "aula", aula: a, inicio: toMin(a.horaInicio ?? "00:00") }));
+    }
+
     const nomeDia = DIAS_SEMANA_FULL[dia.getDay()];
     const janelas = disp.slots
       .filter((s) => s.dia === nomeDia)
       .map((s) => ({ inicio: toMin(s.inicio), fim: toMin(s.fim) }));
-    if (janelas.length === 0) return [];
-    // Aulas do dia do professor filtrado (não canceladas)
+    if (janelas.length === 0) {
+      return aulasD.map((a) => ({ tipo: "aula", aula: a, inicio: toMin(a.horaInicio ?? "00:00") }));
+    }
+
+    // Aulas não canceladas com horário (para subtrair da disponibilidade)
     const aulasAtivas = aulas.filter(
-      (a) => isSameDay(parseLocal(a.data), dia) &&
-             a.status !== "CANCELADA" &&
-             a.horaInicio && a.horaFim,
+      (a) => isSameDay(parseLocal(a.data), dia) && a.status !== "CANCELADA" && a.horaInicio && a.horaFim,
     );
-    const ocupados = aulasAtivas.map((a) => ({
-      inicio: toMin(a.horaInicio!),
-      fim:    toMin(a.horaFim!),
-    }));
-    return subtrairOcupados(janelas, ocupados).map((j) => ({
-      inicio: fromMin(j.inicio),
-      fim:    fromMin(j.fim),
-    }));
+    const ocupados = aulasAtivas.map((a) => ({ inicio: toMin(a.horaInicio!), fim: toMin(a.horaFim!) }));
+    const livresRaw = subtrairOcupados(janelas, ocupados);
+
+    // Expande slots livres em chunks de 60 min
+    const chunks: { inicio: number; fim: number }[] = [];
+    for (const l of livresRaw) {
+      let cur = l.inicio;
+      while (cur + 60 <= l.fim) { chunks.push({ inicio: cur, fim: cur + 60 }); cur += 60; }
+      if (cur < l.fim && l.fim - cur >= 30) chunks.push({ inicio: cur, fim: l.fim }); // resto ≥ 30 min
+    }
+
+    const items: TimelineItem[] = [
+      ...aulasD.map((a) => ({ tipo: "aula" as const, aula: a, inicio: toMin(a.horaInicio ?? "00:00") })),
+      ...chunks.map((c) => ({ tipo: "livre" as const, inicio: fromMin(c.inicio), fim: fromMin(c.fim), inicioMin: c.inicio })),
+    ];
+    return items.sort((a, b) => {
+      const ia = a.tipo === "aula" ? a.inicio : a.inicioMin;
+      const ib = b.tipo === "aula" ? b.inicio : b.inicioMin;
+      return ia - ib;
+    });
   }
 
   const aulasHoje = aulasNoDia(diaRef);
@@ -673,36 +699,32 @@ export default function AgendaClient({
           </div>
           <div className="grid grid-cols-7 min-h-[320px]">
             {diasGrade.map((dia, i) => {
-              const lista  = aulasNoDia(dia);
-              const hoje   = isToday(dia);
-              const livres = slotLivresDia(dia);
+              const timeline = timelineDia(dia);
+              const hoje     = isToday(dia);
+              const ds = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
               return (
                 <div key={i}
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
-                  {lista.map((aula) => <CardAula key={aula.id} aula={aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
-                    setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materia?.id ?? ""); setErroStatus(null);
-                    if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
-                  }}/>)}
-                  {livres.map((s, j) => (
-                    <div key={j}
-                      className="flex items-center gap-1 px-1.5 py-1 rounded-md bg-emerald-50 border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-colors"
-                      title={`Horário livre: ${s.inicio} – ${s.fim}`}
-                      onClick={() => {
-                        const ds = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
-                        abrirModal(ds);
-                      }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"/>
-                      <span className="text-[10px] text-emerald-700 font-medium leading-none">
-                        {s.inicio} – {s.fim}
-                      </span>
-                    </div>
-                  ))}
-                  <button onClick={() => {
-                    const d = dia;
-                    const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-                    abrirModal(s);
-                  }}
+                  {timeline.map((item, j) =>
+                    item.tipo === "aula" ? (
+                      <CardAula key={item.aula.id} aula={item.aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
+                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materia?.id ?? ""); setErroStatus(null);
+                        if (item.aula.status === "REALIZADA" && !item.aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
+                      }}/>
+                    ) : (
+                      <div key={`livre-${j}`}
+                        className="flex items-center gap-1 px-1.5 py-1 rounded-md bg-emerald-50 border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-colors"
+                        title="Horário livre — clique para agendar"
+                        onClick={() => abrirModal(ds)}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"/>
+                        <span className="text-[10px] text-emerald-700 font-medium leading-none">
+                          {item.inicio} – {item.fim} livre
+                        </span>
+                      </div>
+                    )
+                  )}
+                  <button onClick={() => abrirModal(ds)}
                     className="w-full text-left text-xs text-slate-400 hover:text-indigo-500 px-1 py-0.5 rounded transition-colors">
                     + aula
                   </button>
