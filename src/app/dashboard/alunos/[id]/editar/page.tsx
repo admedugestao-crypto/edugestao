@@ -30,11 +30,11 @@ export default async function EditarAlunoPage({
     }),
     prisma.materia.findMany({ orderBy: { nome: "asc" } }),
     isAdmin
-      ? prisma.professora.findMany({
+      ? (prisma.professora.findMany({
           select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
           orderBy: { usuario: { nome: "asc" } },
-        }) as any[]
-      : Promise.resolve([]),
+        }) as unknown as Promise<any[]>)
+      : Promise.resolve([] as any[]),
     !isAdmin
       ? prisma.professora.findUnique({
           where: { usuarioId: sessionUserId },
