@@ -189,10 +189,6 @@ export default function AgendaMobile({
         </div>
         <div className="flex items-center gap-2">
           {loading && <RefreshCw size={15} className="animate-spin opacity-75"/>}
-          <button onClick={() => router.push("/dashboard/agenda")}
-            className="text-xs opacity-75 hover:opacity-100 border border-white/30 rounded-lg px-2 py-1">
-            Desktop
-          </button>
           <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
             <LogOut size={18}/>
           </button>
