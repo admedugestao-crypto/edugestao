@@ -454,9 +454,12 @@ export default function UsuariosClient({
 
               {/* Disponibilidade — só para professor */}
               {form.perfil === "PROFESSORA" && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-medium text-slate-600">Disponibilidade de atendimento</label>
+                <div className="border-t border-slate-200 pt-4 mt-2">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-700">Disponibilidade de atendimento</p>
+                      <p className="text-xs text-slate-400">Horários disponíveis por dia da semana</p>
+                    </div>
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, disponibilidade: [...form.disponibilidade, { dia: "Segunda", inicio: "08:00", fim: "12:00" }] })}
