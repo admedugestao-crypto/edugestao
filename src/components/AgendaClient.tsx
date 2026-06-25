@@ -1099,37 +1099,38 @@ export default function AgendaClient({
           titulo={aulaDetalhe.aluno.nome}
           onClose={() => setAulaDetalhe(null)}
         >
-          <div className="space-y-4">
-            {/* Info */}
-            <div className="bg-slate-50 rounded-lg p-3 text-sm space-y-1">
-              <p><span className="text-slate-400 text-xs">Data:</span> <span className="font-medium">{format(parseLocal(aulaDetalhe.data), "EEEE, dd/MM/yyyy", { locale: ptBR })}</span></p>
-              <p><span className="text-slate-400 text-xs">Horário:</span> <span className="font-medium">{aulaDetalhe.horaInicio ?? "–"}{aulaDetalhe.horaFim ? ` → ${aulaDetalhe.horaFim}` : ""}</span></p>
-              <p><span className="text-slate-400 text-xs">Série:</span> <span className="font-medium">{aulaDetalhe.aluno.serie}{aulaDetalhe.aluno.turma ? ` · ${aulaDetalhe.aluno.turma}` : ""}</span></p>
+          <div className="space-y-3">
+            {/* Info em grid 2 colunas */}
+            <div className="bg-slate-50 rounded-lg px-3 py-2 grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs">
+              <div><span className="text-slate-400">Data:</span> <span className="font-medium">{format(parseLocal(aulaDetalhe.data), "EEE, dd/MM/yyyy", { locale: ptBR })}</span></div>
+              <div><span className="text-slate-400">Horário:</span> <span className="font-medium">{aulaDetalhe.horaInicio ?? "–"}{aulaDetalhe.horaFim ? ` → ${aulaDetalhe.horaFim}` : ""}</span></div>
+              <div><span className="text-slate-400">Série:</span> <span className="font-medium">{aulaDetalhe.aluno.serie}{aulaDetalhe.aluno.turma ? ` · ${aulaDetalhe.aluno.turma}` : ""}</span></div>
               {!isProfessor && (
-                <p><span className="text-slate-400 text-xs">Professor(a):</span> <span className="font-medium">{aulaDetalhe.professora.usuario.nome}</span></p>
+                <div className="col-span-2"><span className="text-slate-400">Professor(a):</span> <span className="font-medium">{aulaDetalhe.professora.usuario.nome}</span></div>
               )}
             </div>
 
-            {/* Matéria da aula */}
-            {(aulaDetalhe.aluno.materias?.length ?? 0) > 0 && (
-              <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1">Matéria da aula</label>
-                <select
-                  value={materiaDetalheId}
-                  onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                >
-                  <option value="">Todas as matérias</option>
-                  {aulaDetalhe.aluno.materias.map((m) => (
-                    <option key={m.materia.id} value={m.materia.id}>{m.materia.nome}</option>
-                  ))}
-                </select>
-              </div>
-            )}
+            {/* Matéria + Status lado a lado quando possível */}
+            <div className="flex flex-wrap gap-3 items-end">
+              {(aulaDetalhe.aluno.materias?.length ?? 0) > 0 && (
+                <div className="flex-1 min-w-[140px]">
+                  <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
+                  <select
+                    value={materiaDetalheId}
+                    onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
+                    className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  >
+                    <option value="">Sem matéria</option>
+                    {aulaDetalhe.aluno.materias.map((m) => (
+                      <option key={m.materia.id} value={m.materia.id}>{m.materia.nome}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
 
-            {/* Status rápido */}
+            {/* Status */}
             <div>
-              <p className="text-xs font-medium text-slate-500 mb-2">Status</p>
               {(() => {
                 const dataAula = parseLocal(aulaDetalhe.data);
                 const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
@@ -1137,30 +1138,30 @@ export default function AgendaClient({
                 return (
                   <>
                     {isFutura && (
-                      <p className="mb-2 text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2">
-                        🔒 Aula futura: somente <strong>Cancelar</strong> está disponível antes da data da aula.
+                      <p className="mb-1.5 text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-md px-2.5 py-1.5">
+                        🔒 Aula futura: somente <strong>Cancelar</strong> disponível.
                       </p>
                     )}
                     <div className="flex flex-wrap gap-1.5">
                       {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => {
                         const bloqueado = atualizando || (isFutura && s !== "CANCELADA");
                         return (
-                        <button key={s} disabled={bloqueado}
-                          onClick={() => atualizarStatus(aulaDetalhe.id, s)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
-                            bloqueado ? "opacity-40 cursor-not-allowed bg-white border-slate-200 text-slate-400"
-                            : aulaDetalhe.status === s
-                              ? `${STATUS_CONFIG[s].bg} ${STATUS_CONFIG[s].cor} border-current`
-                              : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
-                          }`}>
-                          {STATUS_CONFIG[s].icon}
-                          {STATUS_CONFIG[s].label}
-                        </button>
+                          <button key={s} disabled={bloqueado}
+                            onClick={() => atualizarStatus(aulaDetalhe.id, s)}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                              bloqueado ? "opacity-40 cursor-not-allowed bg-white border-slate-200 text-slate-400"
+                              : aulaDetalhe.status === s
+                                ? `${STATUS_CONFIG[s].bg} ${STATUS_CONFIG[s].cor} border-current`
+                                : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                            }`}>
+                            {STATUS_CONFIG[s].icon}
+                            {STATUS_CONFIG[s].label}
+                          </button>
                         );
                       })}
                     </div>
                     {erroStatus && (
-                      <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                      <p className="mt-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5">
                         ⚠️ {erroStatus}
                       </p>
                     )}
@@ -1173,13 +1174,12 @@ export default function AgendaClient({
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">
                 Observação / conteúdo da aula
-                {erroStatus && <span className="ml-1 text-amber-600">*</span>}
               </label>
               <textarea
                 ref={obsRef}
                 value={obsEdit}
                 onChange={(e) => { setObsEdit(e.target.value); if (e.target.value.trim()) setErroStatus(null); }}
-                rows={3}
+                rows={2}
                 placeholder="O que foi trabalhado na aula..."
                 className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none transition-colors ${
                   erroStatus
@@ -1187,22 +1187,24 @@ export default function AgendaClient({
                     : "border-slate-200 focus:ring-indigo-500"
                 }`}
               />
-              <button onClick={salvarObservacao} disabled={atualizando || obsEdit === (aulaDetalhe.observacao ?? "")}
-                className="mt-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:opacity-40 transition-colors">
-                Salvar observação
-              </button>
             </div>
 
             {/* Rodapé */}
-            <div className="flex justify-between pt-1 flex-wrap gap-2">
+            <div className="flex justify-between items-center flex-wrap gap-2">
               <button onClick={() => excluirAula(aulaDetalhe.id)}
                 className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-700 transition-colors">
                 <Trash2 size={13}/> Excluir aula
               </button>
-              <button onClick={() => setAulaDetalhe(null)}
-                className="px-4 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-                Fechar
-              </button>
+              <div className="flex gap-2">
+                <button onClick={salvarObservacao} disabled={atualizando || obsEdit === (aulaDetalhe.observacao ?? "")}
+                  className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-40 transition-colors">
+                  Salvar observação
+                </button>
+                <button onClick={() => setAulaDetalhe(null)}
+                  className="px-4 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                  Fechar
+                </button>
+              </div>
             </div>
           </div>
         </Modal>
