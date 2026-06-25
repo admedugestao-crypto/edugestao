@@ -35,10 +35,11 @@ enum Perfil {
 // ─── Professoras ──────────────────────────────────────────────────────────────
 
 model Professora {
-  id        String   @id @default(cuid())
-  usuarioId String   @unique
-  telefone  String?
-  criadoEm DateTime @default(now())
+  id             String   @id @default(cuid())
+  usuarioId      String   @unique
+  telefone       String?
+  disponibilidade Json?
+  criadoEm       DateTime @default(now())
 
   usuario       Usuario             @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   materias      ProfessoraMateria[]

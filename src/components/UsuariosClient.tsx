@@ -1,7 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Plus, Pencil, Trash2, Camera, ShieldCheck, GraduationCap, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2, Camera, ShieldCheck, GraduationCap, Eye, EyeOff, PlusCircle, X } from "lucide-react";
+
+type Horario = { dia: string; inicio: string; fim: string };
+
+const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
 type Perfil = "SUPERADMIN" | "PROFESSORA";
 
@@ -14,6 +18,7 @@ type Usuario = {
   foto: string | null;
   whatsapp: string | null;
   criadoEm: string;
+  disponibilidade: Horario[];
 };
 
 type FormUsuario = {
@@ -24,6 +29,7 @@ type FormUsuario = {
   ativo: boolean;
   foto: string;
   whatsapp: string;
+  disponibilidade: Horario[];
 };
 
 const formVazio: FormUsuario = {
@@ -34,6 +40,7 @@ const formVazio: FormUsuario = {
   ativo: true,
   foto: "",
   whatsapp: "",
+  disponibilidade: [],
 };
 
 function perfilLabel(perfil: Perfil) {
@@ -187,6 +194,7 @@ export default function UsuariosClient({
       ativo: u.ativo,
       foto: u.foto ?? "",
       whatsapp: u.whatsapp ?? "",
+      disponibilidade: u.disponibilidade ?? [],
     });
     setEditId(u.id);
     setErro("");
@@ -443,6 +451,70 @@ export default function UsuariosClient({
                   </select>
                 </div>
               </div>
+
+              {/* Disponibilidade — só para professor */}
+              {form.perfil === "PROFESSORA" && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-medium text-slate-600">Disponibilidade de atendimento</label>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, disponibilidade: [...form.disponibilidade, { dia: "Segunda", inicio: "08:00", fim: "12:00" }] })}
+                      className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                    >
+                      <PlusCircle size={13}/> Adicionar horário
+                    </button>
+                  </div>
+                  {form.disponibilidade.length === 0 && (
+                    <p className="text-xs text-slate-400 italic">Nenhum horário cadastrado.</p>
+                  )}
+                  <div className="space-y-2">
+                    {form.disponibilidade.map((h, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <select
+                          value={h.dia}
+                          onChange={(e) => {
+                            const d = [...form.disponibilidade];
+                            d[i] = { ...d[i], dia: e.target.value };
+                            setForm({ ...form, disponibilidade: d });
+                          }}
+                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                        >
+                          {DIAS.map((d) => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                        <input
+                          type="time"
+                          value={h.inicio}
+                          onChange={(e) => {
+                            const d = [...form.disponibilidade];
+                            d[i] = { ...d[i], inicio: e.target.value };
+                            setForm({ ...form, disponibilidade: d });
+                          }}
+                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <span className="text-xs text-slate-400">até</span>
+                        <input
+                          type="time"
+                          value={h.fim}
+                          onChange={(e) => {
+                            const d = [...form.disponibilidade];
+                            d[i] = { ...d[i], fim: e.target.value };
+                            setForm({ ...form, disponibilidade: d });
+                          }}
+                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setForm({ ...form, disponibilidade: form.disponibilidade.filter((_, j) => j !== i) })}
+                          className="text-slate-400 hover:text-red-500 transition-colors"
+                        >
+                          <X size={14}/>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {erro && (

@@ -11,7 +11,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const { nome, email, senha, perfil, ativo, foto, whatsapp } = body;
+  const { nome, email, senha, perfil, ativo, foto, whatsapp, disponibilidade } = body;
 
   if (!nome || !email) {
     return NextResponse.json({ erro: "Nome e e-mail são obrigatórios." }, { status: 400 });
@@ -62,9 +62,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     },
   });
 
-  // Cria registro de professora se mudou para PROFESSORA e não tinha
-  if (perfilFinal === "PROFESSORA" && !usuarioAtual?.professora) {
-    await prisma.professora.create({ data: { usuarioId: id } });
+  // Atualiza disponibilidade se for professora
+  if (perfilFinal === "PROFESSORA") {
+    if (!usuarioAtual?.professora) {
+      await prisma.professora.create({ data: { usuarioId: id, disponibilidade: disponibilidade ?? [] } });
+    } else if (disponibilidade !== undefined) {
+      await prisma.professora.update({ where: { usuarioId: id }, data: { disponibilidade } });
+    }
   }
 
   return NextResponse.json(usuario);

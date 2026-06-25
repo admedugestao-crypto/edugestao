@@ -19,6 +19,7 @@ export default async function UsuariosPage() {
       foto: true,
       whatsapp: true,
       criadoEm: true,
+      professora: { select: { disponibilidade: true } },
     },
     orderBy: { nome: "asc" },
   });
@@ -26,6 +27,7 @@ export default async function UsuariosPage() {
   const usuariosSerial = usuarios.map((u) => ({
     ...u,
     criadoEm: u.criadoEm.toISOString(),
+    disponibilidade: (u.professora?.disponibilidade as any) ?? [],
   }));
 
   return (
