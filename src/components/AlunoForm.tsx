@@ -135,15 +135,25 @@ export default function AlunoForm({
     return (prof?.disponibilidade as Horario[]) ?? [];
   }
 
+  function toMinutes(hora: string): number {
+    const [h, m] = hora.split(":").map(Number);
+    return h * 60 + m;
+  }
+
   function validarAgendaLista(lista: AgendaEntry[]): string | null {
     const disp = getDisponibilidade();
     for (let i = 0; i < lista.length; i++) {
       const { diaSemana, horaAula } = lista[i];
       if (!diaSemana || !horaAula) continue;
-      // duplicata exata
+      // sobreposição no mesmo dia (duração fixa de 60 min)
       for (let j = i + 1; j < lista.length; j++) {
-        if (lista[j].diaSemana === diaSemana && lista[j].horaAula === horaAula)
-          return `Horário duplicado: ${DIA_NOME[diaSemana]} às ${horaAula}.`;
+        if (lista[j].diaSemana !== diaSemana || !lista[j].horaAula) continue;
+        const inicioA = toMinutes(horaAula);
+        const fimA    = inicioA + 60;
+        const inicioB = toMinutes(lista[j].horaAula);
+        const fimB    = inicioB + 60;
+        if (inicioA < fimB && inicioB < fimA)
+          return `Conflito em ${DIA_NOME[diaSemana]}: ${horaAula} e ${lista[j].horaAula} se sobrepõem (duração 1h cada).`;
       }
       // validar contra disponibilidade
       if (disp.length > 0) {
