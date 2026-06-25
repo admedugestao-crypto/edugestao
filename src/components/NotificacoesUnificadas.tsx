@@ -216,6 +216,8 @@ function AbaWhatsapp({
   const [msgDisparoWpp, setMsgDisparoWpp] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
   const [statusLocal, setStatusLocal] = useState<Record<string, boolean>>({});
+  const [busca, setBusca]               = useState("");
+  const [filtroStatus, setFiltroStatus] = useState<"todos" | "enviado" | "falhou">("todos");
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
 
@@ -408,6 +410,7 @@ function AbaWhatsapp({
           detalhe: <BadgeDias dias={n.diasAntes} />,
           criadoEm: n.criadoEm,
           enviada: statusLocal[n.id] ?? n.enviada,
+          searchText: `${n.professora.usuario.nome} ${n.avaliacao.nome} ${n.avaliacao.materia?.nome ?? ""}`.toLowerCase(),
           onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.id, statusLocal[n.id] ?? n.enviada),
         }));
         const linhasAula = historicoAulas.map((n) => ({
@@ -418,76 +421,125 @@ function AbaWhatsapp({
           detalhe: <span className="text-xs text-slate-400">{fmtData(n.agendaAula.data)}</span>,
           criadoEm: n.criadoEm,
           enviada: n.enviada,
+          searchText: `${n.agendaAula.aluno.nome} ${n.agendaAula.aluno.responsavel ?? ""} ${n.agendaAula.materia?.nome ?? ""}`.toLowerCase(),
           onContextMenu: undefined as undefined | ((e: React.MouseEvent) => void),
         }));
-        const linhas = [...linhasProva, ...linhasAula].sort(
+        const todasLinhas = [...linhasProva, ...linhasAula].sort(
           (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
         );
+        const totalEnviados = todasLinhas.filter((l) => l.enviada).length;
+        const totalFalhos   = todasLinhas.length - totalEnviados;
+        const linhasFiltradas = todasLinhas.filter((l) => {
+          const textoOk  = busca === "" || l.searchText.includes(busca.toLowerCase()) || l.destinatario.toLowerCase().includes(busca.toLowerCase()) || l.descricao.toLowerCase().includes(busca.toLowerCase());
+          const statusOk = filtroStatus === "todos" || (filtroStatus === "enviado" ? l.enviada : !l.enviada);
+          return textoOk && statusOk;
+        });
         return (
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-              <MessageSquare size={15} className="text-emerald-600" />
-              <h2 className="font-semibold text-slate-800">Histórico de notificações WhatsApp</h2>
+          <>
+            {/* Cards resumo */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white rounded-xl border border-slate-200 p-4">
+                <p className="text-xs font-medium text-slate-500 mb-1">Total registrado</p>
+                <p className="text-2xl font-bold text-slate-800">{todasLinhas.length}</p>
+              </div>
+              <div className="bg-white rounded-xl border border-emerald-200 p-4">
+                <p className="text-xs font-medium text-emerald-600 mb-1">Enviados</p>
+                <p className="text-2xl font-bold text-emerald-700">{totalEnviados}</p>
+              </div>
+              <div className="bg-white rounded-xl border border-red-200 p-4">
+                <p className="text-xs font-medium text-red-600 mb-1">Falhas</p>
+                <p className="text-2xl font-bold text-red-700">{totalFalhos}</p>
+              </div>
             </div>
-            {linhas.length === 0 ? (
-              <p className="px-5 py-4 text-sm text-slate-500">Nenhuma notificação enviada ainda. Clique em "Disparar agora" para enviar.</p>
-            ) : (
-              <>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="bg-slate-50 border-b border-slate-100">
-                      <tr>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Tipo</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Destinatário</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Descrição</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Detalhe</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                      {linhas.map((l) => (
-                        <tr key={l.key} className="hover:bg-slate-50">
-                          <td className="py-2.5 px-4">
-                            <span
-                              title={l.onContextMenu ? "Botão direito para enviar/reenviar via WhatsApp" : undefined}
-                              onContextMenu={l.onContextMenu}
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${l.tipo === "Prova" ? "bg-violet-100 text-violet-700" : "bg-indigo-100 text-indigo-700"} ${l.onContextMenu ? "cursor-context-menu select-none hover:opacity-80 transition-opacity" : ""}`}
-                            >
-                              {l.tipo}
-                            </span>
-                          </td>
-                          <td className="py-2.5 px-4 text-slate-700 text-xs">{l.destinatario}</td>
-                          <td className="py-2.5 px-4 text-slate-600 text-xs">{l.descricao}</td>
-                          <td className="py-2.5 px-4">{l.detalhe}</td>
-                          <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(l.criadoEm)}</td>
-                          <td className="py-2.5 px-4">
-                            {l.enviada
-                              ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
-                              : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falha</span>
-                            }
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-                  <p className="text-xs text-slate-400">{linhas.length} registro(s)</p>
-                  <button
-                    onClick={async () => {
-                      if (!confirm("Deseja limpar todo o histórico de notificações?")) return;
-                      await fetch("/api/notificacoes/limpar", { method: "DELETE" });
-                      router.refresh();
-                    }}
-                    className="text-xs text-red-500 hover:text-red-700 font-medium"
-                  >
-                    Limpar histórico
+
+            {/* Barra filtros */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input value={busca} onChange={(e) => setBusca(e.target.value)}
+                  placeholder="Buscar destinatário, descrição..."
+                  className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+                {(["todos","enviado","falhou"] as const).map((v) => (
+                  <button key={v} onClick={() => setFiltroStatus(v)}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                      filtroStatus === v ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"
+                    }`}>
+                    {v === "todos" ? "Todos" : v === "enviado" ? "Enviados" : "Falhas"}
                   </button>
-                </div>
-              </>
-            )}
-          </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tabela */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+                <MessageSquare size={15} className="text-emerald-600" />
+                <h2 className="font-semibold text-slate-800">Histórico de notificações WhatsApp</h2>
+              </div>
+              {linhasFiltradas.length === 0 ? (
+                <p className="px-5 py-4 text-sm text-slate-500">
+                  {todasLinhas.length === 0 ? "Nenhuma notificação enviada ainda." : "Nenhum resultado para o filtro aplicado."}
+                </p>
+              ) : (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                          <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Tipo</th>
+                          <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Destinatário</th>
+                          <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Descrição</th>
+                          <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Detalhe</th>
+                          <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th>
+                          <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-50">
+                        {linhasFiltradas.map((l) => (
+                          <tr key={l.key} className="hover:bg-slate-50">
+                            <td className="py-2.5 px-4">
+                              <span
+                                title={l.onContextMenu ? "Botão direito para enviar/reenviar via WhatsApp" : undefined}
+                                onContextMenu={l.onContextMenu}
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${l.tipo === "Prova" ? "bg-violet-100 text-violet-700" : "bg-indigo-100 text-indigo-700"} ${l.onContextMenu ? "cursor-context-menu select-none hover:opacity-80 transition-opacity" : ""}`}
+                              >
+                                {l.tipo}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-4 text-slate-700 text-xs">{l.destinatario}</td>
+                            <td className="py-2.5 px-4 text-slate-600 text-xs">{l.descricao}</td>
+                            <td className="py-2.5 px-4">{l.detalhe}</td>
+                            <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtDataHora(l.criadoEm)}</td>
+                            <td className="py-2.5 px-4">
+                              {l.enviada
+                                ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
+                                : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falha</span>
+                              }
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                    <p className="text-xs text-slate-400">{linhasFiltradas.length} registro(s)</p>
+                    <button
+                      onClick={async () => {
+                        if (!confirm("Deseja limpar todo o histórico de notificações?")) return;
+                        await fetch("/api/notificacoes/limpar", { method: "DELETE" });
+                        router.refresh();
+                      }}
+                      className="text-xs text-red-500 hover:text-red-700 font-medium"
+                    >
+                      Limpar histórico
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </>
         );
       })()}
     </div>
