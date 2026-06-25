@@ -135,7 +135,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { alunoId, materiaId, data, horaInicio, horaFim, observacao, professoraId: bodyProfId } = body;
 
-  const professoraId = sessProfId ?? (perfil !== "PROFESSORA" ? bodyProfId : null);
+  // Admin escolhe o professor no modal → usa bodyProfId; professora usa sua própria sessão
+  const professoraId = perfil === "SUPERADMIN" ? (bodyProfId ?? null) : (sessProfId ?? null);
 
   if (!professoraId)
     return NextResponse.json({ erro: "professoraId é obrigatório" }, { status: 403 });
