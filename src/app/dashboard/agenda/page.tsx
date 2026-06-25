@@ -32,8 +32,9 @@ export default async function AgendaPage() {
       })
     : await prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } });
 
-  // Professoras com disponibilidade
+  // Professoras com disponibilidade (excluir admins)
   const professorasRaw = await prisma.professora.findMany({
+    where: { usuario: { perfil: "PROFESSORA" } },
     select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
     orderBy: { usuario: { nome: "asc" } },
   });
