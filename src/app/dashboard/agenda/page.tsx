@@ -32,13 +32,16 @@ export default async function AgendaPage() {
       })
     : await prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } });
 
-  // Se não for professora, busca lista de professoras para seleção no form
-  const professoras = !isProfessor
-    ? await prisma.professora.findMany({
-        include: { usuario: { select: { nome: true } } },
-        orderBy: { usuario: { nome: "asc" } },
-      })
-    : [];
+  // Professoras com disponibilidade
+  const professorasRaw = await prisma.professora.findMany({
+    select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
+    orderBy: { usuario: { nome: "asc" } },
+  });
+
+  const disponibilidades = professorasRaw.map((p) => ({
+    professoraId: p.id,
+    slots: (p.disponibilidade as any) ?? [],
+  }));
 
   return (
     <div className="space-y-5">
@@ -53,8 +56,10 @@ export default async function AgendaPage() {
           materias: a.materias.map((m) => m.materia),
         }))}
         materias={materias}
-        professoras={professoras.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
+        professoras={professorasRaw.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
         isProfessor={isProfessor}
+        disponibilidades={disponibilidades}
+        professoraIdSessao={professoraId ?? ""}
       />
     </div>
   );

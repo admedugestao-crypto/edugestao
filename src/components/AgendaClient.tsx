@@ -35,6 +35,8 @@ type AlunoOpt = {
 };
 
 type ProfessoraOpt = { id: string; nome: string };
+type SlotDisp = { dia: string; inicio: string; fim: string };
+type DispProfessora = { professoraId: string; slots: SlotDisp[] };
 
 type Aula = {
   id: string;
@@ -86,13 +88,41 @@ function corAluno(id: string) {
   return palette[Math.abs(hash) % palette.length];
 }
 
+// ── Helpers de disponibilidade ────────────────────────────────────────────────
+function toMin(hora: string) {
+  const [h, m] = hora.split(":").map(Number);
+  return h * 60 + m;
+}
+function fromMin(min: number) {
+  return `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
+}
+// Subtrai intervalos ocupados de uma lista de janelas livres
+function subtrairOcupados(
+  janelas: { inicio: number; fim: number }[],
+  ocupados: { inicio: number; fim: number }[],
+): { inicio: number; fim: number }[] {
+  let livres = [...janelas];
+  for (const oc of ocupados) {
+    livres = livres.flatMap((j) => {
+      if (oc.fim <= j.inicio || oc.inicio >= j.fim) return [j];
+      const antes = oc.inicio > j.inicio ? [{ inicio: j.inicio, fim: oc.inicio }] : [];
+      const depois = oc.fim < j.fim ? [{ inicio: oc.fim, fim: j.fim }] : [];
+      return [...antes, ...depois];
+    });
+  }
+  return livres.filter((j) => j.fim - j.inicio >= 30); // ignora < 30 min
+}
+
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function AgendaClient({
   alunos, materias, professoras = [], isProfessor = true,
+  disponibilidades = [], professoraIdSessao = "",
 }: {
   alunos: AlunoOpt[];
   materias: Materia[];
   professoras?: ProfessoraOpt[];
+  disponibilidades?: DispProfessora[];
+  professoraIdSessao?: string;
   isProfessor?: boolean;
 }) {
   const router = useRouter();
@@ -479,6 +509,33 @@ export default function AgendaClient({
       .sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
   }
 
+  // Slots livres por dia para o professor ativo (sessão ou filtro admin)
+  function slotLivresDia(dia: Date): { inicio: string; fim: string }[] {
+    const profId = isProfessor ? professoraIdSessao : (filtroProfId || null);
+    if (!profId) return [];
+    const disp = disponibilidades.find((d) => d.professoraId === profId);
+    if (!disp || disp.slots.length === 0) return [];
+    const nomeDia = DIAS_SEMANA_FULL[dia.getDay()];
+    const janelas = disp.slots
+      .filter((s) => s.dia === nomeDia)
+      .map((s) => ({ inicio: toMin(s.inicio), fim: toMin(s.fim) }));
+    if (janelas.length === 0) return [];
+    // Aulas do dia do professor filtrado (não canceladas)
+    const aulasAtivas = aulas.filter(
+      (a) => isSameDay(parseLocal(a.data), dia) &&
+             a.status !== "CANCELADA" &&
+             a.horaInicio && a.horaFim,
+    );
+    const ocupados = aulasAtivas.map((a) => ({
+      inicio: toMin(a.horaInicio!),
+      fim:    toMin(a.horaFim!),
+    }));
+    return subtrairOcupados(janelas, ocupados).map((j) => ({
+      inicio: fromMin(j.inicio),
+      fim:    fromMin(j.fim),
+    }));
+  }
+
   const aulasHoje = aulasNoDia(diaRef);
   const totalDia  = aulasHoje.length;
   const realizadas = aulasHoje.filter((a) => a.status === "REALIZADA").length;
@@ -616,8 +673,9 @@ export default function AgendaClient({
           </div>
           <div className="grid grid-cols-7 min-h-[320px]">
             {diasGrade.map((dia, i) => {
-              const lista = aulasNoDia(dia);
-              const hoje  = isToday(dia);
+              const lista  = aulasNoDia(dia);
+              const hoje   = isToday(dia);
+              const livres = slotLivresDia(dia);
               return (
                 <div key={i}
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
@@ -625,6 +683,21 @@ export default function AgendaClient({
                     setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materia?.id ?? ""); setErroStatus(null);
                     if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                   }}/>)}
+                  {livres.map((s, j) => (
+                    <div key={j}
+                      className="flex items-center gap-1 px-1.5 py-1 rounded-md bg-emerald-50 border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-colors"
+                      title={`Horário livre: ${s.inicio} – ${s.fim}`}
+                      onClick={() => {
+                        const ds = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
+                        abrirModal(ds);
+                      }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"/>
+                      <span className="text-[10px] text-emerald-700 font-medium leading-none">
+                        {s.inicio} – {s.fim}
+                      </span>
+                    </div>
+                  ))}
                   <button onClick={() => {
                     const d = dia;
                     const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
