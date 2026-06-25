@@ -170,18 +170,23 @@ export default function UsuariosClient({
 }) {
   const [usuarios, setUsuarios] = useState(usuariosIniciais);
   const [modal, setModal] = useState(false);
+  const [abaModal, setAbaModal] = useState<"dados" | "disponibilidade">("dados");
   const [form, setForm] = useState<FormUsuario>(formVazio);
   const [editId, setEditId] = useState<string | null>(null);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; nome: string } | null>(null);
   const [erroDelete, setErroDelete] = useState("");
   const [erro, setErro] = useState("");
+  const [erroDisp, setErroDisp] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [salvandoDisp, setSalvandoDisp] = useState(false);
 
   function abrirNovo() {
     setForm(formVazio);
     setEditId(null);
     setErro("");
+    setErroDisp("");
+    setAbaModal("dados");
     setModal(true);
   }
 
@@ -198,7 +203,45 @@ export default function UsuariosClient({
     });
     setEditId(u.id);
     setErro("");
+    setErroDisp("");
+    setAbaModal("dados");
     setModal(true);
+  }
+
+  async function salvarDisponibilidade() {
+    setErroDisp("");
+    if (!editId) return;
+    // Validação: duplicidade de dia+início
+    const vistos = new Set<string>();
+    for (const h of form.disponibilidade) {
+      const chave = `${h.dia}-${h.inicio}`;
+      if (vistos.has(chave)) {
+        setErroDisp(`Horário duplicado: ${h.dia} às ${h.inicio}.`);
+        return;
+      }
+      vistos.add(chave);
+      if (h.inicio >= h.fim) {
+        setErroDisp(`Hora fim deve ser maior que hora início (${h.dia}).`);
+        return;
+      }
+    }
+    setSalvandoDisp(true);
+    try {
+      const res = await fetch(`/api/usuarios/${editId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, disponibilidade: form.disponibilidade }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setErroDisp(data.erro ?? "Erro ao salvar.");
+        return;
+      }
+      setErroDisp("✓ Disponibilidade salva com sucesso!");
+      setTimeout(() => setErroDisp(""), 3000);
+    } finally {
+      setSalvandoDisp(false);
+    }
   }
 
   async function salvar() {
@@ -352,192 +395,164 @@ export default function UsuariosClient({
       {/* ── Modal Criar / Editar ──────────────────────────────────────────────── */}
       {modal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-slate-800 mb-5">
-              {editId ? "Editar usuário" : "Novo usuário"}
-            </h2>
-
-            {/* Foto */}
-            <div className="flex justify-center mb-5">
-              <FotoUpload
-                foto={form.foto}
-                nome={form.nome}
-                onChange={(base64) => setForm({ ...form, foto: base64 })}
-              />
-            </div>
-
-            <div className="space-y-3">
-              {/* Nome */}
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
-                <input
-                  value={form.nome}
-                  onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                  placeholder="Nome completo"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              {/* E-mail */}
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">E-mail *</label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="email@exemplo.com"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              {/* WhatsApp */}
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">WhatsApp</label>
-                <input
-                  type="tel"
-                  value={form.whatsapp}
-                  onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
-                  placeholder="(11) 99999-9999"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              {/* Senha */}
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  {editId ? "Nova senha (deixe em branco para manter)" : "Senha *"}
-                </label>
-                <div className="relative">
-                  <input
-                    type={mostrarSenha ? "text" : "password"}
-                    value={form.senha}
-                    onChange={(e) => setForm({ ...form, senha: e.target.value })}
-                    placeholder={editId ? "Deixe em branco para não alterar" : "Mínimo 6 caracteres"}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setMostrarSenha((v) => !v)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                    tabIndex={-1}
-                  >
-                    {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Perfil + Status */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Perfil *</label>
-                  <select
-                    value={form.perfil}
-                    onChange={(e) => setForm({ ...form, perfil: e.target.value as Perfil })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="PROFESSORA">Professor</option>
-                    <option value="SUPERADMIN">Administrador</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
-                  <select
-                    value={form.ativo ? "true" : "false"}
-                    onChange={(e) => setForm({ ...form, ativo: e.target.value === "true" })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="true">Ativo</option>
-                    <option value="false">Desativado</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Disponibilidade — só para professor */}
-              {form.perfil === "PROFESSORA" && (
-                <div className="border-t border-slate-200 pt-4 mt-2">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-700">Disponibilidade de atendimento</p>
-                      <p className="text-xs text-slate-400">Horários disponíveis por dia da semana</p>
-                    </div>
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+            {/* Cabeçalho + abas */}
+            <div className="px-6 pt-6 pb-0">
+              <h2 className="text-lg font-bold text-slate-800 mb-4">
+                {editId ? "Editar usuário" : "Novo usuário"}
+              </h2>
+              {editId && form.perfil === "PROFESSORA" && (
+                <div className="flex border-b border-slate-200 mb-5">
+                  {(["dados", "disponibilidade"] as const).map((aba) => (
                     <button
-                      type="button"
-                      onClick={() => setForm({ ...form, disponibilidade: [...form.disponibilidade, { dia: "Segunda", inicio: "08:00", fim: "12:00" }] })}
-                      className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                      key={aba}
+                      onClick={() => setAbaModal(aba)}
+                      className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                        abaModal === aba
+                          ? "border-indigo-600 text-indigo-600"
+                          : "border-transparent text-slate-500 hover:text-slate-700"
+                      }`}
                     >
-                      <PlusCircle size={13}/> Adicionar horário
+                      {aba === "dados" ? "Dados" : "Disponibilidade"}
                     </button>
-                  </div>
-                  {form.disponibilidade.length === 0 && (
-                    <p className="text-xs text-slate-400 italic">Nenhum horário cadastrado.</p>
-                  )}
-                  <div className="space-y-2">
-                    {form.disponibilidade.map((h, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <select
-                          value={h.dia}
-                          onChange={(e) => {
-                            const d = [...form.disponibilidade];
-                            d[i] = { ...d[i], dia: e.target.value };
-                            setForm({ ...form, disponibilidade: d });
-                          }}
-                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                        >
-                          {DIAS.map((d) => <option key={d} value={d}>{d}</option>)}
-                        </select>
-                        <input
-                          type="time"
-                          value={h.inicio}
-                          onChange={(e) => {
-                            const d = [...form.disponibilidade];
-                            d[i] = { ...d[i], inicio: e.target.value };
-                            setForm({ ...form, disponibilidade: d });
-                          }}
-                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        <span className="text-xs text-slate-400">até</span>
-                        <input
-                          type="time"
-                          value={h.fim}
-                          onChange={(e) => {
-                            const d = [...form.disponibilidade];
-                            d[i] = { ...d[i], fim: e.target.value };
-                            setForm({ ...form, disponibilidade: d });
-                          }}
-                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setForm({ ...form, disponibilidade: form.disponibilidade.filter((_, j) => j !== i) })}
-                          className="text-slate-400 hover:text-red-500 transition-colors"
-                        >
-                          <X size={14}/>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               )}
             </div>
+            <div className="px-6 pb-6">
 
-            {erro && (
-              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erro}</p>
+            {/* ── Aba Dados ── */}
+            {abaModal === "dados" && (
+              <>
+                <div className="flex justify-center mb-5">
+                  <FotoUpload
+                    foto={form.foto}
+                    nome={form.nome}
+                    onChange={(base64) => setForm({ ...form, foto: base64 })}
+                  />
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
+                    <input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                      placeholder="Nome completo"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">E-mail *</label>
+                    <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="email@exemplo.com"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">WhatsApp</label>
+                    <input type="tel" value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+                      placeholder="(11) 99999-9999"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                      {editId ? "Nova senha (deixe em branco para manter)" : "Senha *"}
+                    </label>
+                    <div className="relative">
+                      <input type={mostrarSenha ? "text" : "password"} value={form.senha}
+                        onChange={(e) => setForm({ ...form, senha: e.target.value })}
+                        placeholder={editId ? "Deixe em branco para não alterar" : "Mínimo 6 caracteres"}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                      <button type="button" onClick={() => setMostrarSenha((v) => !v)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors" tabIndex={-1}>
+                        {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Perfil *</label>
+                      <select value={form.perfil} onChange={(e) => setForm({ ...form, perfil: e.target.value as Perfil })}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="PROFESSORA">Professor</option>
+                        <option value="SUPERADMIN">Administrador</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
+                      <select value={form.ativo ? "true" : "false"} onChange={(e) => setForm({ ...form, ativo: e.target.value === "true" })}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="true">Ativo</option>
+                        <option value="false">Desativado</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                {erro && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erro}</p>}
+                <div className="flex gap-3 mt-5">
+                  <button onClick={salvar} disabled={salvando}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+                    {salvando ? "Salvando..." : editId ? "Salvar dados" : "Criar usuário"}
+                  </button>
+                  <button onClick={() => { setModal(false); setErro(""); }}
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
+                    Cancelar
+                  </button>
+                </div>
+              </>
             )}
 
-            <div className="flex gap-3 mt-5">
-              <button
-                onClick={salvar}
-                disabled={salvando}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
-              >
-                {salvando ? "Salvando..." : editId ? "Salvar alterações" : "Criar usuário"}
-              </button>
-              <button
-                onClick={() => { setModal(false); setErro(""); }}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors"
-              >
-                Cancelar
-              </button>
+            {/* ── Aba Disponibilidade ── */}
+            {abaModal === "disponibilidade" && (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs text-slate-500">Horários disponíveis para atendimento por dia da semana.</p>
+                  <button type="button"
+                    onClick={() => setForm({ ...form, disponibilidade: [...form.disponibilidade, { dia: "Segunda", inicio: "08:00", fim: "12:00" }] })}
+                    className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium shrink-0 ml-3">
+                    <PlusCircle size={13}/> Adicionar
+                  </button>
+                </div>
+                {form.disponibilidade.length === 0 && (
+                  <p className="text-xs text-slate-400 italic mb-4">Nenhum horário cadastrado.</p>
+                )}
+                <div className="space-y-2 mb-4">
+                  {form.disponibilidade.map((h, i) => (
+                    <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg p-2">
+                      <select value={h.dia}
+                        onChange={(e) => { const d = [...form.disponibilidade]; d[i] = { ...d[i], dia: e.target.value }; setForm({ ...form, disponibilidade: d }); }}
+                        className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        {DIAS.map((d) => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                      <input type="time" value={h.inicio}
+                        onChange={(e) => { const d = [...form.disponibilidade]; d[i] = { ...d[i], inicio: e.target.value }; setForm({ ...form, disponibilidade: d }); }}
+                        className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                      <span className="text-xs text-slate-400">até</span>
+                      <input type="time" value={h.fim}
+                        onChange={(e) => { const d = [...form.disponibilidade]; d[i] = { ...d[i], fim: e.target.value }; setForm({ ...form, disponibilidade: d }); }}
+                        className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                      <button type="button"
+                        onClick={() => setForm({ ...form, disponibilidade: form.disponibilidade.filter((_, j) => j !== i) })}
+                        className="text-slate-400 hover:text-red-500 transition-colors ml-auto">
+                        <X size={14}/>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {erroDisp && (
+                  <p className={`text-sm rounded-lg px-3 py-2 mb-3 ${erroDisp.startsWith("✓") ? "text-emerald-700 bg-emerald-50" : "text-red-600 bg-red-50"}`}>
+                    {erroDisp}
+                  </p>
+                )}
+                <div className="flex gap-3">
+                  <button onClick={salvarDisponibilidade} disabled={salvandoDisp}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+                    {salvandoDisp ? "Salvando..." : "Salvar disponibilidade"}
+                  </button>
+                  <button onClick={() => { setModal(false); setErroDisp(""); }}
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
+                    Fechar
+                  </button>
+                </div>
+              </>
+            )}
+
             </div>
           </div>
         </div>

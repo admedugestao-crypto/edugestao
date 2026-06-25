@@ -121,3 +121,8 @@ export type Conteudo = Prisma.ConteudoModel
  * 
  */
 export type AgendaAula = Prisma.AgendaAulaModel
+/**
+ * Model NotificacaoAula
+ * 
+ */
+export type NotificacaoAula = Prisma.NotificacaoAulaModel
