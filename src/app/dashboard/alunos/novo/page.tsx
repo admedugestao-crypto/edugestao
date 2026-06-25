@@ -20,7 +20,7 @@ export default async function NovoAlunoPage() {
       ? prisma.professora.findMany({
           select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
           orderBy: { usuario: { nome: "asc" } },
-        })
+        }) as any[]
       : Promise.resolve([]),
     !isAdmin
       ? prisma.professora.findUnique({

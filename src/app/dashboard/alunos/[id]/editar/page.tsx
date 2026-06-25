@@ -31,9 +31,9 @@ export default async function EditarAlunoPage({
     prisma.materia.findMany({ orderBy: { nome: "asc" } }),
     isAdmin
       ? prisma.professora.findMany({
-          include: { usuario: { select: { nome: true } }, },
+          select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
           orderBy: { usuario: { nome: "asc" } },
-        })
+        }) as any[]
       : Promise.resolve([]),
     !isAdmin
       ? prisma.professora.findUnique({
@@ -45,15 +45,6 @@ export default async function EditarAlunoPage({
 
   if (!aluno) notFound();
 
-  // Para admin: inclui disponibilidade de cada professora
-  const professorasComDisp = isAdmin
-    ? await prisma.professora.findMany({
-        select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
-        orderBy: { usuario: { nome: "asc" } },
-      })
-    : [];
-
-  // disponibilidade da professora logada (não-admin) ou null
   const dispProfessora = isAdmin ? null : ((professoraSession?.disponibilidade as any) ?? []);
 
   const alunoInicial = {
@@ -72,7 +63,7 @@ export default async function EditarAlunoPage({
         escolas={escolas}
         materias={materias}
         alunoInicial={alunoInicial}
-        professoras={isAdmin ? professorasComDisp : professoras}
+        professoras={professoras}
         perfil={perfil}
         dispProfessora={dispProfessora}
       />
