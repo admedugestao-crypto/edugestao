@@ -211,18 +211,18 @@ export default function UsuariosClient({
   async function salvarDisponibilidade() {
     setErroDisp("");
     if (!editId) return;
-    // Validação: duplicidade de dia+início
-    const vistos = new Set<string>();
-    for (const h of form.disponibilidade) {
-      const chave = `${h.dia}-${h.inicio}`;
-      if (vistos.has(chave)) {
-        setErroDisp(`Horário duplicado: ${h.dia} às ${h.inicio}.`);
-        return;
-      }
-      vistos.add(chave);
+    for (let i = 0; i < form.disponibilidade.length; i++) {
+      const h = form.disponibilidade[i];
       if (h.inicio >= h.fim) {
         setErroDisp(`Hora fim deve ser maior que hora início (${h.dia}).`);
         return;
+      }
+      for (let j = i + 1; j < form.disponibilidade.length; j++) {
+        const o = form.disponibilidade[j];
+        if (h.dia === o.dia && h.inicio < o.fim && o.inicio < h.fim) {
+          setErroDisp(`Conflito em ${h.dia}: ${h.inicio}–${h.fim} sobrepõe ${o.inicio}–${o.fim}.`);
+          return;
+        }
       }
     }
     setSalvandoDisp(true);
