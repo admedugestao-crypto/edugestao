@@ -183,7 +183,7 @@ function CamposForm({
               onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaId: "" }); onCampoChave?.(); }}
               className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
-              <option value="">Todos</option>
+              <option value="" disabled>Selecione...</option>
               {professoras.map((p) => (
                 <option key={p.id} value={p.id}>{p.nome}</option>
               ))}
