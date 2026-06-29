@@ -164,10 +164,9 @@ function CamposForm({
   somentePlanejado?: boolean;
   onCampoChave?: () => void;
 }) {
-  const filtrados = filtroProfId
+  const alunosFiltrados = filtroProfId
     ? alunos.filter((a) => a.professoraId === filtroProfId)
-    : alunos;
-  const alunosFiltrados = filtrados.length > 0 ? filtrados : alunos;
+    : [];
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
 
