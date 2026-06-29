@@ -34,6 +34,7 @@ export default async function ConteudosPage() {
       take: 50,
     }),
     prisma.professora.findMany({
+      where: { usuario: { perfil: "PROFESSORA" } },
       include: { usuario: { select: { nome: true } } },
       orderBy: { usuario: { nome: "asc" } },
     }),
