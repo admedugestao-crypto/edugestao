@@ -665,9 +665,7 @@ export default function AgendaClient({
                 item.tipo === "aula" ? (() => {
                   const a = item.aula;
                   const cores = STATUS_COR[a.status];
-                  const materiasCard = a.materia
-                    ? [a.materia]
-                    : (a.aluno.materias?.map((m) => m.materia) ?? []);
+                  const materiasCard = a.materia ? [a.materia] : [];
                   return (
                     <div key={a.id}
                       className="rounded px-1.5 py-1 border-l-[3px] text-left"
@@ -1318,9 +1316,7 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
 }) {
   const cfg    = STATUS_CONFIG[aula.status];
   const cores  = STATUS_COR[aula.status];
-  const materiasCard = aula.materia
-    ? [aula.materia]
-    : (aula.aluno.materias?.map((m) => m.materia) ?? []);
+  const materiasCard = aula.materia ? [aula.materia] : [];
   const todasMaterias = materiasCard.filter((m) => !filtroMateriaId || m.id === filtroMateriaId);
   return (
     <button onClick={onClick}
