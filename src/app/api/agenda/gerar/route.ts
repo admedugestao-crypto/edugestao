@@ -168,8 +168,9 @@ export async function POST(req: NextRequest) {
             conflitoHoraFim:    aulaConflitante.horaFim!,
           });
         } else {
+          const materiaId = aluno.materias[0]?.materiaId ?? null;
           await prisma.agendaAula.create({
-            data: { professoraId: profId!, alunoId: aluno.id, materiaId: null, data: dataUTC, horaInicio, horaFim, status: "AGENDADA" },
+            data: { professoraId: profId!, alunoId: aluno.id, materiaId, data: dataUTC, horaInicio, horaFim, status: "AGENDADA" },
           });
           criadas++;
         }
