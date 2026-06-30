@@ -147,15 +147,12 @@ export async function POST(req: NextRequest) {
 
         const aulasNoDia = await prisma.agendaAula.findMany({
           where: { professoraId: profId!, data: { gte: rangeGte, lt: rangeLt } },
-          select: { alunoId: true, horaInicio: true, horaFim: true, status: true, aluno: { select: { nome: true } } },
+          select: { alunoId: true, horaInicio: true, horaFim: true, status: true, materiaId: true, aluno: { select: { nome: true } } },
         });
 
-        // Já existe aula deste aluno neste dia neste horário
-        const jaExiste = aulasNoDia.some((a) => a.alunoId === aluno.id && a.horaInicio === horaInicio);
-        if (jaExiste) { ignoradas++; dataAula.setDate(dataAula.getDate() + 7); continue; }
-
+        // Conflito real de horário: outro aluno ocupando o mesmo professor neste intervalo
         const aulaConflitante = aulasNoDia.find(
-          (a) => a.status !== "CANCELADA" && a.horaInicio && a.horaFim &&
+          (a) => a.alunoId !== aluno.id && a.status !== "CANCELADA" && a.horaInicio && a.horaFim &&
                  horaInicio < a.horaFim && horaFim > a.horaInicio,
         );
 
@@ -167,8 +164,22 @@ export async function POST(req: NextRequest) {
             conflitoHoraInicio: aulaConflitante.horaInicio!,
             conflitoHoraFim:    aulaConflitante.horaFim!,
           });
-        } else {
-          const materiaId = aluno.materias[0]?.materiaId ?? null;
+          dataAula.setDate(dataAula.getDate() + 7);
+          continue;
+        }
+
+        // Uma aula por matéria parametrizada no cadastro do aluno (ou sem matéria, se nenhuma cadastrada)
+        const materiaIds: (string | null)[] = aluno.materias.length > 0
+          ? aluno.materias.map((m) => m.materiaId)
+          : [null];
+
+        for (const materiaId of materiaIds) {
+          // Já existe aula deste aluno, neste horário, para esta matéria
+          const jaExiste = aulasNoDia.some(
+            (a) => a.alunoId === aluno.id && a.horaInicio === horaInicio && a.materiaId === materiaId,
+          );
+          if (jaExiste) { ignoradas++; continue; }
+
           await prisma.agendaAula.create({
             data: { professoraId: profId!, alunoId: aluno.id, materiaId, data: dataUTC, horaInicio, horaFim, status: "AGENDADA" },
           });
