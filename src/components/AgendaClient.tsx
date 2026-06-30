@@ -294,6 +294,7 @@ export default function AgendaClient({
 
   async function excluirPeriodo() {
     if (isProfessor && !limparAlunoId) return;
+    if (!limparInicio || !limparFim) { setMsgLimpar("Erro: Data início e data fim são obrigatórias."); return; }
     if (!confirm("Excluir as aulas do aluno no período selecionado? Esta ação não pode ser desfeita.")) return;
     setExcluindo(true);
     try {
