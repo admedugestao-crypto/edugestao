@@ -1157,6 +1157,17 @@ export default function AgendaClient({
               </div>
             </div>
 
+            {/* Feedback exclusão em lote */}
+            {msgLimpar && (
+              <div className={`text-sm font-medium px-3 py-2 rounded-lg border ${
+                msgLimpar.startsWith("Erro")
+                  ? "bg-red-50 border-red-200 text-red-800"
+                  : "bg-emerald-50 border-emerald-200 text-emerald-800"
+              }`}>
+                {msgLimpar}
+              </div>
+            )}
+
             {/* Aviso de impacto */}
             {limparAlunoId && (
               <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
