@@ -77,19 +77,19 @@ export async function DELETE(req: NextRequest) {
     alunoId?: string; inicio?: string; fim?: string; professoraId?: string;
   };
 
-  if (!alunoId)
+  // Admin pode excluir sem filtrar por aluno; professora exige alunoId
+  if (!isAdmin && !alunoId)
     return NextResponse.json({ erro: "alunoId é obrigatório" }, { status: 400 });
 
   if (!isAdmin && !sessProfId)
     return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
 
-  const where: any = { alunoId };
+  const where: any = {};
+  if (alunoId) where.alunoId = alunoId;
 
   if (isAdmin) {
-    // Admin pode filtrar por professora específica ou excluir de todas
     if (bodyProfId) where.professoraId = bodyProfId;
   } else {
-    // Professora só exclui as próprias aulas
     where.professoraId = sessProfId;
   }
 

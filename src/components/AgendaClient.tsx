@@ -1135,10 +1135,13 @@ export default function AgendaClient({
 
             {/* Aluno */}
             <div>
-              <label className="text-xs font-medium text-slate-600">Aluno *</label>
+              <label className="text-xs font-medium text-slate-600">
+                Aluno {isProfessor && <span className="text-red-500">*</span>}
+                {!isProfessor && <span className="text-slate-400">(opcional — deixe em branco para todos)</span>}
+              </label>
               <select value={limparAlunoId} onChange={(e) => setLimparAlunoId(e.target.value)}
                 className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
-                <option value="">Selecionar aluno...</option>
+                <option value="">{isProfessor ? "Selecionar aluno..." : "Todos os alunos"}</option>
                 {alunosFiltradosLimpar.map((a) => (
                   <option key={a.id} value={a.id}>{a.nome} — {a.serie}{a.turma ? ` (${a.turma})` : ""}</option>
                 ))}
@@ -1171,12 +1174,16 @@ export default function AgendaClient({
             )}
 
             {/* Aviso de impacto */}
-            {limparAlunoId && (
+            {(limparAlunoId || !isProfessor) && (
               <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
                 ⚠️ Esta ação <strong>não pode ser desfeita</strong>.
-                {!limparInicio && !limparFim
-                  ? " Todas as aulas do aluno serão excluídas."
-                  : ` Aulas do aluno${limparInicio ? ` a partir de ${limparInicio}` : ""}${limparFim ? ` até ${limparFim}` : ""} serão excluídas.`
+                {limparAlunoId
+                  ? (!limparInicio && !limparFim
+                      ? " Todas as aulas do aluno serão excluídas."
+                      : ` Aulas do aluno${limparInicio ? ` a partir de ${limparInicio}` : ""}${limparFim ? ` até ${limparFim}` : ""} serão excluídas.`)
+                  : (!limparInicio && !limparFim
+                      ? " Todas as aulas de todos os alunos serão excluídas."
+                      : ` Todas as aulas${limparInicio ? ` a partir de ${limparInicio}` : ""}${limparFim ? ` até ${limparFim}` : ""} serão excluídas.`)
                 }
               </div>
             )}
@@ -1187,7 +1194,7 @@ export default function AgendaClient({
                 Cancelar
               </button>
               <button onClick={excluirPeriodo}
-                disabled={excluindo || !limparAlunoId}
+                disabled={excluindo || (isProfessor && !limparAlunoId)}
                 className="flex items-center gap-2 px-4 py-2 text-sm bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white rounded-lg transition-colors">
                 {excluindo ? <RefreshCw size={13} className="animate-spin"/> : <Trash2 size={13}/>}
                 {excluindo ? "Excluindo..." : "Excluir"}
