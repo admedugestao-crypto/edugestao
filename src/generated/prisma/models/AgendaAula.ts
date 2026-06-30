@@ -225,6 +225,7 @@ export type AgendaAulaWhereInput = {
   professora?: Prisma.XOR<Prisma.ProfessoraScalarRelationFilter, Prisma.ProfessoraWhereInput>
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
+  materias?: Prisma.AgendaAulaMateriaListRelationFilter
   pagamentos?: Prisma.PagamentoAulaListRelationFilter
   notificacao?: Prisma.XOR<Prisma.NotificacaoAulaNullableScalarRelationFilter, Prisma.NotificacaoAulaWhereInput> | null
 }
@@ -243,6 +244,7 @@ export type AgendaAulaOrderByWithRelationInput = {
   professora?: Prisma.ProfessoraOrderByWithRelationInput
   aluno?: Prisma.AlunoOrderByWithRelationInput
   materia?: Prisma.MateriaOrderByWithRelationInput
+  materias?: Prisma.AgendaAulaMateriaOrderByRelationAggregateInput
   pagamentos?: Prisma.PagamentoAulaOrderByRelationAggregateInput
   notificacao?: Prisma.NotificacaoAulaOrderByWithRelationInput
 }
@@ -264,6 +266,7 @@ export type AgendaAulaWhereUniqueInput = Prisma.AtLeast<{
   professora?: Prisma.XOR<Prisma.ProfessoraScalarRelationFilter, Prisma.ProfessoraWhereInput>
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
+  materias?: Prisma.AgendaAulaMateriaListRelationFilter
   pagamentos?: Prisma.PagamentoAulaListRelationFilter
   notificacao?: Prisma.XOR<Prisma.NotificacaoAulaNullableScalarRelationFilter, Prisma.NotificacaoAulaWhereInput> | null
 }, "id">
@@ -311,6 +314,7 @@ export type AgendaAulaCreateInput = {
   professora: Prisma.ProfessoraCreateNestedOneWithoutAulasInput
   aluno: Prisma.AlunoCreateNestedOneWithoutAulasInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAulasInput
+  materias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaCreateNestedOneWithoutAgendaAulaInput
 }
@@ -326,6 +330,7 @@ export type AgendaAulaUncheckedCreateInput = {
   status?: $Enums.StatusAula
   observacao?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaUncheckedCreateNestedOneWithoutAgendaAulaInput
 }
@@ -341,6 +346,7 @@ export type AgendaAulaUpdateInput = {
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutAulasNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutAulasNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAulasNestedInput
+  materias?: Prisma.AgendaAulaMateriaUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -356,6 +362,7 @@ export type AgendaAulaUncheckedUpdateInput = {
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUncheckedUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -594,6 +601,20 @@ export type EnumStatusAulaFieldUpdateOperationsInput = {
   set?: $Enums.StatusAula
 }
 
+export type AgendaAulaCreateNestedOneWithoutMateriasInput = {
+  create?: Prisma.XOR<Prisma.AgendaAulaCreateWithoutMateriasInput, Prisma.AgendaAulaUncheckedCreateWithoutMateriasInput>
+  connectOrCreate?: Prisma.AgendaAulaCreateOrConnectWithoutMateriasInput
+  connect?: Prisma.AgendaAulaWhereUniqueInput
+}
+
+export type AgendaAulaUpdateOneRequiredWithoutMateriasNestedInput = {
+  create?: Prisma.XOR<Prisma.AgendaAulaCreateWithoutMateriasInput, Prisma.AgendaAulaUncheckedCreateWithoutMateriasInput>
+  connectOrCreate?: Prisma.AgendaAulaCreateOrConnectWithoutMateriasInput
+  upsert?: Prisma.AgendaAulaUpsertWithoutMateriasInput
+  connect?: Prisma.AgendaAulaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AgendaAulaUpdateToOneWithWhereWithoutMateriasInput, Prisma.AgendaAulaUpdateWithoutMateriasInput>, Prisma.AgendaAulaUncheckedUpdateWithoutMateriasInput>
+}
+
 export type AgendaAulaCreateNestedOneWithoutNotificacaoInput = {
   create?: Prisma.XOR<Prisma.AgendaAulaCreateWithoutNotificacaoInput, Prisma.AgendaAulaUncheckedCreateWithoutNotificacaoInput>
   connectOrCreate?: Prisma.AgendaAulaCreateOrConnectWithoutNotificacaoInput
@@ -618,6 +639,7 @@ export type AgendaAulaCreateWithoutProfessoraInput = {
   criadoEm?: Date | string
   aluno: Prisma.AlunoCreateNestedOneWithoutAulasInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAulasInput
+  materias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaCreateNestedOneWithoutAgendaAulaInput
 }
@@ -632,6 +654,7 @@ export type AgendaAulaUncheckedCreateWithoutProfessoraInput = {
   status?: $Enums.StatusAula
   observacao?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaUncheckedCreateNestedOneWithoutAgendaAulaInput
 }
@@ -688,6 +711,7 @@ export type AgendaAulaCreateWithoutMateriaInput = {
   criadoEm?: Date | string
   professora: Prisma.ProfessoraCreateNestedOneWithoutAulasInput
   aluno: Prisma.AlunoCreateNestedOneWithoutAulasInput
+  materias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaCreateNestedOneWithoutAgendaAulaInput
 }
@@ -702,6 +726,7 @@ export type AgendaAulaUncheckedCreateWithoutMateriaInput = {
   status?: $Enums.StatusAula
   observacao?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaUncheckedCreateNestedOneWithoutAgendaAulaInput
 }
@@ -742,6 +767,7 @@ export type AgendaAulaCreateWithoutAlunoInput = {
   criadoEm?: Date | string
   professora: Prisma.ProfessoraCreateNestedOneWithoutAulasInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAulasInput
+  materias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaCreateNestedOneWithoutAgendaAulaInput
 }
@@ -756,6 +782,7 @@ export type AgendaAulaUncheckedCreateWithoutAlunoInput = {
   status?: $Enums.StatusAula
   observacao?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaUncheckedCreateNestedOneWithoutAgendaAulaInput
 }
@@ -797,6 +824,7 @@ export type AgendaAulaCreateWithoutPagamentosInput = {
   professora: Prisma.ProfessoraCreateNestedOneWithoutAulasInput
   aluno: Prisma.AlunoCreateNestedOneWithoutAulasInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAulasInput
+  materias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaCreateNestedOneWithoutAgendaAulaInput
 }
 
@@ -811,6 +839,7 @@ export type AgendaAulaUncheckedCreateWithoutPagamentosInput = {
   status?: $Enums.StatusAula
   observacao?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
   notificacao?: Prisma.NotificacaoAulaUncheckedCreateNestedOneWithoutAgendaAulaInput
 }
 
@@ -841,6 +870,7 @@ export type AgendaAulaUpdateWithoutPagamentosInput = {
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutAulasNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutAulasNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAulasNestedInput
+  materias?: Prisma.AgendaAulaMateriaUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUpdateOneWithoutAgendaAulaNestedInput
 }
 
@@ -855,6 +885,83 @@ export type AgendaAulaUncheckedUpdateWithoutPagamentosInput = {
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
+  notificacao?: Prisma.NotificacaoAulaUncheckedUpdateOneWithoutAgendaAulaNestedInput
+}
+
+export type AgendaAulaCreateWithoutMateriasInput = {
+  id?: string
+  data: Date | string
+  horaInicio?: string | null
+  horaFim?: string | null
+  status?: $Enums.StatusAula
+  observacao?: string | null
+  criadoEm?: Date | string
+  professora: Prisma.ProfessoraCreateNestedOneWithoutAulasInput
+  aluno: Prisma.AlunoCreateNestedOneWithoutAulasInput
+  materia?: Prisma.MateriaCreateNestedOneWithoutAulasInput
+  pagamentos?: Prisma.PagamentoAulaCreateNestedManyWithoutAgendaAulaInput
+  notificacao?: Prisma.NotificacaoAulaCreateNestedOneWithoutAgendaAulaInput
+}
+
+export type AgendaAulaUncheckedCreateWithoutMateriasInput = {
+  id?: string
+  professoraId: string
+  alunoId: string
+  materiaId?: string | null
+  data: Date | string
+  horaInicio?: string | null
+  horaFim?: string | null
+  status?: $Enums.StatusAula
+  observacao?: string | null
+  criadoEm?: Date | string
+  pagamentos?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutAgendaAulaInput
+  notificacao?: Prisma.NotificacaoAulaUncheckedCreateNestedOneWithoutAgendaAulaInput
+}
+
+export type AgendaAulaCreateOrConnectWithoutMateriasInput = {
+  where: Prisma.AgendaAulaWhereUniqueInput
+  create: Prisma.XOR<Prisma.AgendaAulaCreateWithoutMateriasInput, Prisma.AgendaAulaUncheckedCreateWithoutMateriasInput>
+}
+
+export type AgendaAulaUpsertWithoutMateriasInput = {
+  update: Prisma.XOR<Prisma.AgendaAulaUpdateWithoutMateriasInput, Prisma.AgendaAulaUncheckedUpdateWithoutMateriasInput>
+  create: Prisma.XOR<Prisma.AgendaAulaCreateWithoutMateriasInput, Prisma.AgendaAulaUncheckedCreateWithoutMateriasInput>
+  where?: Prisma.AgendaAulaWhereInput
+}
+
+export type AgendaAulaUpdateToOneWithWhereWithoutMateriasInput = {
+  where?: Prisma.AgendaAulaWhereInput
+  data: Prisma.XOR<Prisma.AgendaAulaUpdateWithoutMateriasInput, Prisma.AgendaAulaUncheckedUpdateWithoutMateriasInput>
+}
+
+export type AgendaAulaUpdateWithoutMateriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  data?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  professora?: Prisma.ProfessoraUpdateOneRequiredWithoutAulasNestedInput
+  aluno?: Prisma.AlunoUpdateOneRequiredWithoutAulasNestedInput
+  materia?: Prisma.MateriaUpdateOneWithoutAulasNestedInput
+  pagamentos?: Prisma.PagamentoAulaUpdateManyWithoutAgendaAulaNestedInput
+  notificacao?: Prisma.NotificacaoAulaUpdateOneWithoutAgendaAulaNestedInput
+}
+
+export type AgendaAulaUncheckedUpdateWithoutMateriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  professoraId?: Prisma.StringFieldUpdateOperationsInput | string
+  alunoId?: Prisma.StringFieldUpdateOperationsInput | string
+  materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  data?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pagamentos?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUncheckedUpdateOneWithoutAgendaAulaNestedInput
 }
 
@@ -869,6 +976,7 @@ export type AgendaAulaCreateWithoutNotificacaoInput = {
   professora: Prisma.ProfessoraCreateNestedOneWithoutAulasInput
   aluno: Prisma.AlunoCreateNestedOneWithoutAulasInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAulasInput
+  materias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaCreateNestedManyWithoutAgendaAulaInput
 }
 
@@ -883,6 +991,7 @@ export type AgendaAulaUncheckedCreateWithoutNotificacaoInput = {
   status?: $Enums.StatusAula
   observacao?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
   pagamentos?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutAgendaAulaInput
 }
 
@@ -913,6 +1022,7 @@ export type AgendaAulaUpdateWithoutNotificacaoInput = {
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutAulasNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutAulasNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAulasNestedInput
+  materias?: Prisma.AgendaAulaMateriaUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUpdateManyWithoutAgendaAulaNestedInput
 }
 
@@ -927,6 +1037,7 @@ export type AgendaAulaUncheckedUpdateWithoutNotificacaoInput = {
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutAgendaAulaNestedInput
 }
 
@@ -952,6 +1063,7 @@ export type AgendaAulaUpdateWithoutProfessoraInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutAulasNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAulasNestedInput
+  materias?: Prisma.AgendaAulaMateriaUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -966,6 +1078,7 @@ export type AgendaAulaUncheckedUpdateWithoutProfessoraInput = {
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUncheckedUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -1004,6 +1117,7 @@ export type AgendaAulaUpdateWithoutMateriaInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutAulasNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutAulasNestedInput
+  materias?: Prisma.AgendaAulaMateriaUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -1018,6 +1132,7 @@ export type AgendaAulaUncheckedUpdateWithoutMateriaInput = {
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUncheckedUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -1056,6 +1171,7 @@ export type AgendaAulaUpdateWithoutAlunoInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutAulasNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAulasNestedInput
+  materias?: Prisma.AgendaAulaMateriaUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -1070,6 +1186,7 @@ export type AgendaAulaUncheckedUpdateWithoutAlunoInput = {
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   pagamentos?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutAgendaAulaNestedInput
   notificacao?: Prisma.NotificacaoAulaUncheckedUpdateOneWithoutAgendaAulaNestedInput
 }
@@ -1092,10 +1209,12 @@ export type AgendaAulaUncheckedUpdateManyWithoutAlunoInput = {
  */
 
 export type AgendaAulaCountOutputType = {
+  materias: number
   pagamentos: number
 }
 
 export type AgendaAulaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  materias?: boolean | AgendaAulaCountOutputTypeCountMateriasArgs
   pagamentos?: boolean | AgendaAulaCountOutputTypeCountPagamentosArgs
 }
 
@@ -1107,6 +1226,13 @@ export type AgendaAulaCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.E
    * Select specific fields to fetch from the AgendaAulaCountOutputType
    */
   select?: Prisma.AgendaAulaCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * AgendaAulaCountOutputType without action
+ */
+export type AgendaAulaCountOutputTypeCountMateriasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AgendaAulaMateriaWhereInput
 }
 
 /**
@@ -1131,6 +1257,7 @@ export type AgendaAulaSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.AgendaAula$materiaArgs<ExtArgs>
+  materias?: boolean | Prisma.AgendaAula$materiasArgs<ExtArgs>
   pagamentos?: boolean | Prisma.AgendaAula$pagamentosArgs<ExtArgs>
   notificacao?: boolean | Prisma.AgendaAula$notificacaoArgs<ExtArgs>
   _count?: boolean | Prisma.AgendaAulaCountOutputTypeDefaultArgs<ExtArgs>
@@ -1186,6 +1313,7 @@ export type AgendaAulaInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.AgendaAula$materiaArgs<ExtArgs>
+  materias?: boolean | Prisma.AgendaAula$materiasArgs<ExtArgs>
   pagamentos?: boolean | Prisma.AgendaAula$pagamentosArgs<ExtArgs>
   notificacao?: boolean | Prisma.AgendaAula$notificacaoArgs<ExtArgs>
   _count?: boolean | Prisma.AgendaAulaCountOutputTypeDefaultArgs<ExtArgs>
@@ -1207,6 +1335,7 @@ export type $AgendaAulaPayload<ExtArgs extends runtime.Types.Extensions.Internal
     professora: Prisma.$ProfessoraPayload<ExtArgs>
     aluno: Prisma.$AlunoPayload<ExtArgs>
     materia: Prisma.$MateriaPayload<ExtArgs> | null
+    materias: Prisma.$AgendaAulaMateriaPayload<ExtArgs>[]
     pagamentos: Prisma.$PagamentoAulaPayload<ExtArgs>[]
     notificacao: Prisma.$NotificacaoAulaPayload<ExtArgs> | null
   }
@@ -1618,6 +1747,7 @@ export interface Prisma__AgendaAulaClient<T, Null = never, ExtArgs extends runti
   professora<T extends Prisma.ProfessoraDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProfessoraDefaultArgs<ExtArgs>>): Prisma.Prisma__ProfessoraClient<runtime.Types.Result.GetResult<Prisma.$ProfessoraPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   aluno<T extends Prisma.AlunoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlunoDefaultArgs<ExtArgs>>): Prisma.Prisma__AlunoClient<runtime.Types.Result.GetResult<Prisma.$AlunoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   materia<T extends Prisma.AgendaAula$materiaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgendaAula$materiaArgs<ExtArgs>>): Prisma.Prisma__MateriaClient<runtime.Types.Result.GetResult<Prisma.$MateriaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  materias<T extends Prisma.AgendaAula$materiasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgendaAula$materiasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgendaAulaMateriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pagamentos<T extends Prisma.AgendaAula$pagamentosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgendaAula$pagamentosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PagamentoAulaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notificacao<T extends Prisma.AgendaAula$notificacaoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgendaAula$notificacaoArgs<ExtArgs>>): Prisma.Prisma__NotificacaoAulaClient<runtime.Types.Result.GetResult<Prisma.$NotificacaoAulaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -2076,6 +2206,30 @@ export type AgendaAula$materiaArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.MateriaInclude<ExtArgs> | null
   where?: Prisma.MateriaWhereInput
+}
+
+/**
+ * AgendaAula.materias
+ */
+export type AgendaAula$materiasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AgendaAulaMateria
+   */
+  select?: Prisma.AgendaAulaMateriaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AgendaAulaMateria
+   */
+  omit?: Prisma.AgendaAulaMateriaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AgendaAulaMateriaInclude<ExtArgs> | null
+  where?: Prisma.AgendaAulaMateriaWhereInput
+  orderBy?: Prisma.AgendaAulaMateriaOrderByWithRelationInput | Prisma.AgendaAulaMateriaOrderByWithRelationInput[]
+  cursor?: Prisma.AgendaAulaMateriaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AgendaAulaMateriaScalarFieldEnum | Prisma.AgendaAulaMateriaScalarFieldEnum[]
 }
 
 /**

@@ -63,6 +63,7 @@ model Materia {
   notas         Nota[]
   conteudos     Conteudo[]
   aulas         AgendaAula[]
+  aulasMaterias AgendaAulaMateria[]
 
   @@map("materias")
 }
@@ -339,13 +340,28 @@ model AgendaAula {
   observacao   String?
   criadoEm     DateTime   @default(now())
 
-  professora    Professora       @relation(fields: [professoraId], references: [id], onDelete: Cascade)
-  aluno         Aluno            @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  materia       Materia?         @relation(fields: [materiaId], references: [id])
+  professora    Professora          @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  aluno         Aluno               @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia       Materia?            @relation(fields: [materiaId], references: [id])
+  materias      AgendaAulaMateria[]
   pagamentos    PagamentoAula[]
   notificacao   NotificacaoAula?
 
   @@map("agenda_aulas")
+}
+
+// Matérias adicionais vinculadas a uma mesma aula (geração automática traz
+// todas as matérias parametrizadas no cadastro do aluno em um único registro)
+model AgendaAulaMateria {
+  id           String @id @default(cuid())
+  agendaAulaId String
+  materiaId    String
+
+  agendaAula AgendaAula @relation(fields: [agendaAulaId], references: [id], onDelete: Cascade)
+  materia    Materia    @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@unique([agendaAulaId, materiaId])
+  @@map("agenda_aula_materias")
 }
 
 enum StatusAula {

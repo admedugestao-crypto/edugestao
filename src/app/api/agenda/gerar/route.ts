@@ -168,23 +168,23 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Uma aula por matéria parametrizada no cadastro do aluno (ou sem matéria, se nenhuma cadastrada)
-        const materiaIds: (string | null)[] = aluno.materias.length > 0
-          ? aluno.materias.map((m) => m.materiaId)
-          : [null];
+        // Já existe aula deste aluno neste dia neste horário
+        const jaExiste = aulasNoDia.some((a) => a.alunoId === aluno.id && a.horaInicio === horaInicio);
+        if (jaExiste) { ignoradas++; dataAula.setDate(dataAula.getDate() + 7); continue; }
 
-        for (const materiaId of materiaIds) {
-          // Já existe aula deste aluno, neste horário, para esta matéria
-          const jaExiste = aulasNoDia.some(
-            (a) => a.alunoId === aluno.id && a.horaInicio === horaInicio && a.materiaId === materiaId,
-          );
-          if (jaExiste) { ignoradas++; continue; }
-
-          await prisma.agendaAula.create({
-            data: { professoraId: profId!, alunoId: aluno.id, materiaId, data: dataUTC, horaInicio, horaFim, status: "AGENDADA" },
-          });
-          criadas++;
-        }
+        // Uma única aula, vinculada a todas as matérias parametrizadas no cadastro do aluno
+        const materiaIds = aluno.materias.map((m) => m.materiaId);
+        await prisma.agendaAula.create({
+          data: {
+            professoraId: profId!, alunoId: aluno.id,
+            materiaId: materiaIds[0] ?? null,
+            data: dataUTC, horaInicio, horaFim, status: "AGENDADA",
+            materias: materiaIds.length > 0
+              ? { create: materiaIds.map((materiaId) => ({ materiaId })) }
+              : undefined,
+          },
+        });
+        criadas++;
 
         dataAula.setDate(dataAula.getDate() + 7);
       }

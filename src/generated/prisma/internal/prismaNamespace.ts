@@ -400,6 +400,7 @@ export const ModelName = {
   PagamentoAula: 'PagamentoAula',
   Conteudo: 'Conteudo',
   AgendaAula: 'AgendaAula',
+  AgendaAulaMateria: 'AgendaAulaMateria',
   NotificacaoAula: 'NotificacaoAula'
 } as const
 
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "usuario" | "professora" | "materia" | "professoraMateria" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "agendaAula" | "notificacaoAula"
+    modelProps: "usuario" | "professora" | "materia" | "professoraMateria" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1604,6 +1605,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AgendaAulaMateria: {
+      payload: Prisma.$AgendaAulaMateriaPayload<ExtArgs>
+      fields: Prisma.AgendaAulaMateriaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AgendaAulaMateriaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AgendaAulaMateriaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>
+        }
+        findFirst: {
+          args: Prisma.AgendaAulaMateriaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AgendaAulaMateriaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>
+        }
+        findMany: {
+          args: Prisma.AgendaAulaMateriaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>[]
+        }
+        create: {
+          args: Prisma.AgendaAulaMateriaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>
+        }
+        createMany: {
+          args: Prisma.AgendaAulaMateriaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AgendaAulaMateriaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>[]
+        }
+        delete: {
+          args: Prisma.AgendaAulaMateriaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>
+        }
+        update: {
+          args: Prisma.AgendaAulaMateriaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>
+        }
+        deleteMany: {
+          args: Prisma.AgendaAulaMateriaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AgendaAulaMateriaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AgendaAulaMateriaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>[]
+        }
+        upsert: {
+          args: Prisma.AgendaAulaMateriaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgendaAulaMateriaPayload>
+        }
+        aggregate: {
+          args: Prisma.AgendaAulaMateriaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAgendaAulaMateria>
+        }
+        groupBy: {
+          args: Prisma.AgendaAulaMateriaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgendaAulaMateriaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AgendaAulaMateriaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgendaAulaMateriaCountAggregateOutputType> | number
+        }
+      }
+    }
     NotificacaoAula: {
       payload: Prisma.$NotificacaoAulaPayload<ExtArgs>
       fields: Prisma.NotificacaoAulaFieldRefs
@@ -1955,6 +2030,15 @@ export const AgendaAulaScalarFieldEnum = {
 export type AgendaAulaScalarFieldEnum = (typeof AgendaAulaScalarFieldEnum)[keyof typeof AgendaAulaScalarFieldEnum]
 
 
+export const AgendaAulaMateriaScalarFieldEnum = {
+  id: 'id',
+  agendaAulaId: 'agendaAulaId',
+  materiaId: 'materiaId'
+} as const
+
+export type AgendaAulaMateriaScalarFieldEnum = (typeof AgendaAulaMateriaScalarFieldEnum)[keyof typeof AgendaAulaMateriaScalarFieldEnum]
+
+
 export const NotificacaoAulaScalarFieldEnum = {
   id: 'id',
   agendaAulaId: 'agendaAulaId',
@@ -2271,6 +2355,7 @@ export type GlobalOmitConfig = {
   pagamentoAula?: Prisma.PagamentoAulaOmit
   conteudo?: Prisma.ConteudoOmit
   agendaAula?: Prisma.AgendaAulaOmit
+  agendaAulaMateria?: Prisma.AgendaAulaMateriaOmit
   notificacaoAula?: Prisma.NotificacaoAulaOmit
 }
 

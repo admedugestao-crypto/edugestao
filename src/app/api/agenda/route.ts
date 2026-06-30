@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
         },
       },
       materia:    { select: { id: true, nome: true, cor: true } },
+      materias:   { select: { materia: { select: { id: true, nome: true, cor: true } } } },
       professora: { select: { usuario: { select: { nome: true } } } },
     },
     orderBy: [{ data: "asc" }, { horaInicio: "asc" }],

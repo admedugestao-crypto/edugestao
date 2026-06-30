@@ -67,6 +67,7 @@ export const ModelName = {
   PagamentoAula: 'PagamentoAula',
   Conteudo: 'Conteudo',
   AgendaAula: 'AgendaAula',
+  AgendaAulaMateria: 'AgendaAulaMateria',
   NotificacaoAula: 'NotificacaoAula'
 } as const
 
@@ -322,6 +323,15 @@ export const AgendaAulaScalarFieldEnum = {
 } as const
 
 export type AgendaAulaScalarFieldEnum = (typeof AgendaAulaScalarFieldEnum)[keyof typeof AgendaAulaScalarFieldEnum]
+
+
+export const AgendaAulaMateriaScalarFieldEnum = {
+  id: 'id',
+  agendaAulaId: 'agendaAulaId',
+  materiaId: 'materiaId'
+} as const
+
+export type AgendaAulaMateriaScalarFieldEnum = (typeof AgendaAulaMateriaScalarFieldEnum)[keyof typeof AgendaAulaMateriaScalarFieldEnum]
 
 
 export const NotificacaoAulaScalarFieldEnum = {
