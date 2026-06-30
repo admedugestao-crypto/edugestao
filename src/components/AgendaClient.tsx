@@ -293,7 +293,7 @@ export default function AgendaClient({
   }
 
   async function excluirPeriodo() {
-    if (!limparAlunoId) return;
+    if (isProfessor && !limparAlunoId) return;
     if (!confirm("Excluir as aulas do aluno no período selecionado? Esta ação não pode ser desfeita.")) return;
     setExcluindo(true);
     try {
