@@ -106,23 +106,28 @@ export async function DELETE(req: NextRequest) {
   const aulasParaExcluir = await prisma.agendaAula.findMany({ where, select: { id: true } });
   const ids = aulasParaExcluir.map((a) => a.id);
 
+  let idsVinculados: string[] = [];
   if (ids.length > 0) {
-    // Verifica via SQL raw se alguma tem pagamento vinculado
-    const vinculos = await prisma.$queryRaw<{ count: bigint }[]>`
-      SELECT COUNT(*)::bigint as count FROM pagamento_aulas
+    // Verifica via SQL raw quais têm pagamento vinculado, para preservá-las
+    const vinculos = await prisma.$queryRaw<{ agendaAulaId: string }[]>`
+      SELECT DISTINCT "agendaAulaId" FROM pagamento_aulas
       WHERE "agendaAulaId" = ANY(${ids}::text[])
     `;
-    const qtdVinculadas = Number(vinculos[0].count);
-    if (qtdVinculadas > 0) {
-      return NextResponse.json(
-        { erro: `Não é possível excluir: ${qtdVinculadas} aula(s) do período estão vinculadas a registros de pagamento gerados. Exclua os pagamentos primeiro.` },
-        { status: 422 },
-      );
-    }
+    idsVinculados = vinculos.map((v) => v.agendaAulaId);
   }
 
-  const { count } = await prisma.agendaAula.deleteMany({ where });
-  return NextResponse.json({ excluidas: count });
+  const idsExcluiveis = ids.filter((id) => !idsVinculados.includes(id));
+  const { count } = idsExcluiveis.length > 0
+    ? await prisma.agendaAula.deleteMany({ where: { id: { in: idsExcluiveis } } })
+    : { count: 0 };
+
+  return NextResponse.json({
+    excluidas: count,
+    preservadas: idsVinculados.length,
+    avisoPagamento: idsVinculados.length > 0
+      ? `${idsVinculados.length} aula(s) vinculada(s) a pagamentos foram preservadas e não foram excluídas.`
+      : null,
+  });
 }
 
 // POST /api/agenda  — criar aula avulsa

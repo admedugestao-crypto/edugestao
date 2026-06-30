@@ -311,7 +311,9 @@ export default function AgendaClient({
         setMsgLimpar(`Erro: ${data.erro ?? "Falha ao excluir."}`);
         return;
       }
-      setMsgLimpar(`${data.excluidas} aula(s) excluída(s).`);
+      setMsgLimpar(
+        `${data.excluidas} aula(s) excluída(s).${data.avisoPagamento ? ` ${data.avisoPagamento}` : ""}`,
+      );
       setModalLimpar(false);
       await carregar();
     } catch {
