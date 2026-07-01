@@ -158,7 +158,7 @@ export default function AgendaClient({
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
   // Filtro de professora (admin) — inicia no primeiro professor
-  const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
+  const [filtroProfId, setFiltroProfId] = useState(() => isProfessor ? (professoras[0]?.id ?? "") : "");
   // Filtro de matéria (todos os perfis)
   const [filtroMateriaId, setFiltroMateriaId] = useState("");
 
@@ -578,6 +578,9 @@ export default function AgendaClient({
     if (!profId) {
       return aulasD.map((a) => ({ tipo: "aula", aula: a, inicio: toMin(a.horaInicio ?? "00:00") }));
     }
+
+    // Sem aulas no dia: não exibe slots livres
+    if (aulasD.length === 0) return [];
 
     const disp = disponibilidades.find((d) => d.professoraId === profId);
     if (!disp || disp.slots.length === 0) {
