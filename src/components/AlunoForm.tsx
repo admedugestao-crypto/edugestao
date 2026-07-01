@@ -51,6 +51,32 @@ export default function AlunoForm({
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
 
+  // ── Endereço controlado para preenchimento via CEP ────────────────────────
+  const [cep,         setCep]         = useState(alunoInicial?.cep         ?? "");
+  const [rua,         setRua]         = useState(alunoInicial?.rua         ?? "");
+  const [bairro,      setBairro]      = useState(alunoInicial?.bairro      ?? "");
+  const [cidade,      setCidade]      = useState(alunoInicial?.cidade      ?? "");
+  const [estado,      setEstado]      = useState(alunoInicial?.estado      ?? "");
+  const [buscandoCep, setBuscandoCep] = useState(false);
+
+  async function buscarCep(valor: string) {
+    const digits = valor.replace(/\D/g, "");
+    if (digits.length !== 8) return;
+    setBuscandoCep(true);
+    try {
+      const res  = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+      const data = await res.json();
+      if (data.erro) return;
+      setRua(data.logradouro ?? "");
+      setBairro(data.bairro ?? "");
+      setCidade(data.localidade ?? "");
+      setEstado(data.uf ?? "");
+      setCampos((p) => ({ ...p, rua: !!data.logradouro, bairro: !!data.bairro, cidade: !!data.localidade, estado: !!data.uf }));
+    } catch { /* ignora erro de rede */ } finally {
+      setBuscandoCep(false);
+    }
+  }
+
   // ── Status controlado ──────────────────────────────────────────────────────
   const [status, setStatus] = useState<string>(alunoInicial?.status ?? "");
   const [erroStatusCad, setErroStatusCad] = useState("");
@@ -432,13 +458,19 @@ export default function AlunoForm({
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">CEP *</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              CEP * {buscandoCep && <span className="text-indigo-400 font-normal">buscando...</span>}
+            </label>
             <input
               name="cep"
               required
-              defaultValue={alunoInicial?.cep}
+              value={cep}
               placeholder="00000-000"
-              onChange={setCampo("cep")}
+              onChange={(e) => {
+                setCep(e.target.value);
+                setCampos((p) => ({ ...p, cep: !!e.target.value.trim() }));
+                buscarCep(e.target.value);
+              }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -447,8 +479,8 @@ export default function AlunoForm({
             <input
               name="rua"
               required
-              defaultValue={alunoInicial?.rua}
-              onChange={setCampo("rua")}
+              value={rua}
+              onChange={(e) => { setRua(e.target.value); setCampos((p) => ({ ...p, rua: !!e.target.value.trim() })); }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -475,8 +507,8 @@ export default function AlunoForm({
             <input
               name="bairro"
               required
-              defaultValue={alunoInicial?.bairro}
-              onChange={setCampo("bairro")}
+              value={bairro}
+              onChange={(e) => { setBairro(e.target.value); setCampos((p) => ({ ...p, bairro: !!e.target.value.trim() })); }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -485,8 +517,8 @@ export default function AlunoForm({
             <input
               name="cidade"
               required
-              defaultValue={alunoInicial?.cidade}
-              onChange={setCampo("cidade")}
+              value={cidade}
+              onChange={(e) => { setCidade(e.target.value); setCampos((p) => ({ ...p, cidade: !!e.target.value.trim() })); }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -495,10 +527,10 @@ export default function AlunoForm({
             <input
               name="estado"
               required
-              defaultValue={alunoInicial?.estado}
+              value={estado}
               maxLength={2}
+              onChange={(e) => { setEstado(e.target.value); setCampos((p) => ({ ...p, estado: !!e.target.value.trim() })); }}
               placeholder="SP"
-              onChange={setCampo("estado")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
