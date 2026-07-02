@@ -41,6 +41,7 @@ type DispProfessora = { professoraId: string; slots: SlotDisp[] };
 type Aula = {
   id: string;
   alunoId: string;
+  professoraId: string;
   materiaId: string | null;
   data: string;
   horaInicio: string | null;
@@ -1244,6 +1245,35 @@ export default function AgendaClient({
                 <div className="col-span-2"><span className="text-slate-400">Professor(a):</span> <span className="font-medium">{aulaDetalhe.professora.usuario.nome}</span></div>
               )}
             </div>
+
+            {/* Aviso de disponibilidade */}
+            {(() => {
+              if (!aulaDetalhe.horaInicio || !aulaDetalhe.horaFim) return null;
+              const disp = disponibilidades.find((d) => d.professoraId === aulaDetalhe.professoraId);
+              if (!disp || disp.slots.length === 0) return null;
+              const dataAula = parseLocal(aulaDetalhe.data);
+              const nomeDia  = DIAS_SEMANA_FULL[dataAula.getDay()];
+              const slotsDia = disp.slots.filter((s) => s.dia === nomeDia);
+              if (slotsDia.length === 0) {
+                return (
+                  <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-2 text-xs text-amber-800">
+                    ⚠️ Professor(a) <strong>não tem disponibilidade</strong> cadastrada para <strong>{nomeDia}</strong>. Confirme se este agendamento está correto.
+                  </div>
+                );
+              }
+              const inicioMin = toMin(aulaDetalhe.horaInicio);
+              const fimMin    = toMin(aulaDetalhe.horaFim);
+              const dentro    = slotsDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
+              if (!dentro) {
+                const faixas = slotsDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
+                return (
+                  <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-2 text-xs text-amber-800">
+                    ⚠️ Horário <strong>{aulaDetalhe.horaInicio}–{aulaDetalhe.horaFim}</strong> está <strong>fora da disponibilidade</strong> de {nomeDia} ({faixas}). Confirme se este agendamento está correto.
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
             {/* Matéria + Status lado a lado quando possível */}
             <div className="flex flex-wrap gap-3 items-end">
