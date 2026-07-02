@@ -755,6 +755,7 @@ export default function AgendaClient({
             onChange={(e) => setFiltroProfId(e.target.value)}
             className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
           >
+            <option value="">Todas as professoras</option>
             {professoras.map((p) => (
               <option key={p.id} value={p.id}>{p.nome}</option>
             ))}
