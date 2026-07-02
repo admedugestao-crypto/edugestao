@@ -53,8 +53,9 @@ export async function POST(req: NextRequest) {
   const planejado = body.planejado ?? false;
 
   // Planejado: sem validação de agenda
-  // Ministrado: sempre exige aula com status REALIZADA para o aluno + data
-  if (!planejado) {
+  // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após
+  // Ministrado avulso: exige aula com status REALIZADA
+  if (!planejado && !body.aulaId) {
     const validacao = await validarAgenda(body.alunoId, dataAula, planejado);
     if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
   }
