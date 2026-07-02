@@ -1275,10 +1275,11 @@ export default function AgendaClient({
                           <button key={s} disabled={bloqueado}
                             onClick={() => atualizarStatus(aulaDetalhe.id, s)}
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
-                              bloqueado ? "opacity-40 cursor-not-allowed bg-white border-slate-200 text-slate-400"
-                              : aulaDetalhe.status === s
-                                ? `${STATUS_CONFIG[s].bg} ${STATUS_CONFIG[s].cor} border-current`
-                                : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                              aulaDetalhe.status === s
+                                ? `${STATUS_CONFIG[s].bg} ${STATUS_CONFIG[s].cor} border-current ${bloqueado ? "opacity-70 cursor-not-allowed" : ""}`
+                                : bloqueado
+                                  ? "opacity-40 cursor-not-allowed bg-white border-slate-200 text-slate-400"
+                                  : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
                             }`}>
                             {STATUS_CONFIG[s].icon}
                             {STATUS_CONFIG[s].label}
