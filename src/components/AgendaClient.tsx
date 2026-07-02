@@ -376,13 +376,13 @@ export default function AgendaClient({
         const nomeDia = DIAS_SEMANA_FULL[dataAula.getDay()];
         const horariosDia = disp.slots.filter((s) => s.dia === nomeDia);
         if (horariosDia.length === 0)
-          return { tipo: "erro", msg: `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}.` };
+          return { tipo: "aviso", msg: `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}. Deseja incluir mesmo assim?` };
         const inicioMin = toMin(novaAula.horaInicio);
         const fimMin    = toMin(novaAula.horaFim);
         const dentro = horariosDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
         if (!dentro) {
           const faixas = horariosDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
-          return { tipo: "erro", msg: `Horário ${novaAula.horaInicio}–${novaAula.horaFim} fora da disponibilidade de ${nomeDia} (${faixas}).` };
+          return { tipo: "aviso", msg: `Horário ${novaAula.horaInicio}–${novaAula.horaFim} está fora da disponibilidade de ${nomeDia} (${faixas}). Deseja incluir mesmo assim?` };
         }
       }
     }
