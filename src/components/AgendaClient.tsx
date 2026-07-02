@@ -1328,7 +1328,7 @@ export default function AgendaClient({
 
             {/* Matéria + Status lado a lado quando possível */}
             <div className="flex flex-wrap gap-3 items-end">
-              {(aulaDetalhe.aluno.materias?.length ?? 0) > 0 && (
+              {(aulaDetalhe.materias?.length ?? 0) > 0 && (
                 <div className="flex-1 min-w-[140px]">
                   <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
                   <select
@@ -1336,8 +1336,10 @@ export default function AgendaClient({
                     onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
                     className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
-                    <option value="">Todas as matérias do aluno</option>
-                    {aulaDetalhe.aluno.materias.map((m) => (
+                    {(aulaDetalhe.materias?.length ?? 0) > 1 && (
+                      <option value="">Todas da aula</option>
+                    )}
+                    {aulaDetalhe.materias.map((m) => (
                       <option key={m.materia.id} value={m.materia.id}>{m.materia.nome}</option>
                     ))}
                   </select>
