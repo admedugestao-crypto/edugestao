@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
 
         const aulasNoDia = await prisma.agendaAula.findMany({
           where: { professoraId: profId!, data: { gte: rangeGte, lt: rangeLt } },
-          select: { alunoId: true, horaInicio: true, horaFim: true, status: true, materiaId: true, aluno: { select: { nome: true } } },
+          select: { id: true, alunoId: true, horaInicio: true, horaFim: true, status: true, materiaId: true, aluno: { select: { nome: true } } },
         });
 
         // Conflito real de horário: outro aluno ocupando o mesmo professor neste intervalo
