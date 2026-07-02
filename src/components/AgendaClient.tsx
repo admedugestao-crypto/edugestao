@@ -862,7 +862,7 @@ export default function AgendaClient({
                   {timeline.map((item, j) =>
                     item.tipo === "aula" ? (
                       <CardAula key={item.aula.id} aula={item.aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
-                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materia?.id ?? ""); setErroStatus(null);
+                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materias?.length === 1 ? (item.aula.materias[0].materia.id) : ""); setErroStatus(null);
                         if (item.aula.status === "REALIZADA" && !item.aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}/>
                     ) : (
@@ -949,7 +949,7 @@ export default function AgendaClient({
                     <div className="flex items-center gap-2 shrink-0 pr-5 py-4">
                       <BadgeStatus status={aula.status}/>
                       <button onClick={() => {
-                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materia?.id ?? ""); setErroStatus(null);
+                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materias?.length === 1 ? (aula.materias[0].materia.id) : ""); setErroStatus(null);
                         if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}
                         className="text-xs text-slate-400 hover:text-indigo-600 transition-colors underline">
