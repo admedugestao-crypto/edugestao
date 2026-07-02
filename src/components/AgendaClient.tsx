@@ -1073,30 +1073,36 @@ export default function AgendaClient({
             )}
 
             {/* Aviso de regra de agendamento — pede confirmação */}
-            {avisoAgendamento && (
-              <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-3 text-xs text-amber-800 space-y-2">
-                <p>⚠️ <strong>Atenção:</strong> {avisoAgendamento.msg}</p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      const tipoAtual = avisoAgendamento.tipo;
-                      setAvisoAgendamento(null);
-                      if (tipoAtual === "disp") salvarNovaAula(false, true);
-                      else salvarNovaAula(true, true);
-                    }}
-                    disabled={salvando}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors disabled:opacity-50">
-                    {salvando && <RefreshCw size={11} className="animate-spin"/>}
-                    Sim, incluir mesmo assim
-                  </button>
-                  <button
-                    onClick={() => setAvisoAgendamento(null)}
-                    className="px-3 py-1.5 text-xs font-medium border border-amber-300 text-amber-700 hover:bg-amber-100 rounded-lg transition-colors">
-                    Não, cancelar
-                  </button>
+            {avisoAgendamento && (() => {
+              const isDisp = avisoAgendamento.tipo === "disp";
+              return (
+                <div className={`rounded-xl border-2 px-4 py-3 text-xs space-y-2 ${isDisp ? "bg-orange-50 border-orange-400 text-orange-900" : "bg-blue-50 border-blue-400 text-blue-900"}`}>
+                  <p className="font-semibold text-sm">
+                    {isDisp ? "🗓️ Fora da disponibilidade" : "🕐 Atenção com o horário"}
+                  </p>
+                  <p>{avisoAgendamento.msg}</p>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => {
+                        const tipoAtual = avisoAgendamento.tipo;
+                        setAvisoAgendamento(null);
+                        if (tipoAtual === "disp") salvarNovaAula(false, true);
+                        else salvarNovaAula(true, true);
+                      }}
+                      disabled={salvando}
+                      className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white rounded-lg transition-colors disabled:opacity-50 ${isDisp ? "bg-orange-500 hover:bg-orange-600" : "bg-blue-500 hover:bg-blue-600"}`}>
+                      {salvando && <RefreshCw size={11} className="animate-spin"/>}
+                      Sim, incluir mesmo assim
+                    </button>
+                    <button
+                      onClick={() => setAvisoAgendamento(null)}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${isDisp ? "border border-orange-400 text-orange-700 hover:bg-orange-100" : "border border-blue-400 text-blue-700 hover:bg-blue-100"}`}>
+                      Não, cancelar
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {!avisoAgendamento && (
             <div className="flex justify-end gap-2 pt-2">
