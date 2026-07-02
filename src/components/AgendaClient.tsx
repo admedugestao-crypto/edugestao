@@ -450,11 +450,9 @@ export default function AgendaClient({
     setNovaAula((p) => ({ ...p, alunoId: "", materiaId: "" }));
   }
 
-  // Ao selecionar aluno, pré-preenche matéria
+  // Ao selecionar aluno, inicia com "Todas as matérias" (materiaId vazio)
   function onSelectAluno(alunoId: string) {
-    const aluno = alunosFiltradosModal.find((a) => a.id === alunoId);
-    const materiaId = aluno?.materias[0]?.id ?? "";
-    setNovaAula((p) => ({ ...p, alunoId, materiaId }));
+    setNovaAula((p) => ({ ...p, alunoId, materiaId: "" }));
   }
 
   // ── Atualizar status ───────────────────────────────────────────────────────
@@ -501,17 +499,25 @@ export default function AgendaClient({
 
   async function salvarMateria(materiaId: string) {
     if (!aulaDetalhe) return;
+    const todas = !materiaId; // "" = todas as matérias do aluno
     await fetch(`/api/agenda/${aulaDetalhe.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ materiaId: materiaId || null }),
+      body: JSON.stringify(todas ? { todasMaterias: true } : { materiaId }),
     });
-    const materia = materiaId
-      ? (aulaDetalhe.aluno.materias.find((m) => m.materia.id === materiaId)?.materia ?? null)
-      : null;
-    const novasMaterias = materia ? [{ materia }] : [];
-    setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id ? { ...a, materia, materiaId: materiaId || null, materias: novasMaterias } : a));
-    setAulaDetalhe((p) => p ? { ...p, materia, materiaId: materiaId || null, materias: novasMaterias } : p);
+    // Atualiza estado local
+    if (todas) {
+      const novasMaterias = aulaDetalhe.aluno.materias.map((m) => ({ materia: m.materia }));
+      const primeiraMateria = aulaDetalhe.aluno.materias[0]?.materia ?? null;
+      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
+        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
+      setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
+    } else {
+      const materia = aulaDetalhe.aluno.materias.find((m) => m.materia.id === materiaId)?.materia ?? null;
+      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
+        ? { ...a, materia, materiaId: materiaId, materias: materia ? [{ materia }] : [] } : a));
+      setAulaDetalhe((p) => p ? { ...p, materia, materiaId: materiaId, materias: materia ? [{ materia }] : [] } : p);
+    }
     setMateriaSalva(true);
     setTimeout(() => setMateriaSalva(false), 2500);
   }
@@ -673,8 +679,8 @@ export default function AgendaClient({
                 item.tipo === "aula" ? (() => {
                   const a = item.aula;
                   const cores = STATUS_COR[a.status];
-                  const materiasCard = a.aluno.materias?.length > 0
-                    ? a.aluno.materias.map((m) => m.materia)
+                  const materiasCard = a.materias?.length > 0
+                    ? a.materias.map((m) => m.materia)
                     : (a.materia ? [a.materia] : []);
                   return (
                     <div key={a.id}
@@ -923,8 +929,8 @@ export default function AgendaClient({
                     <div className="flex-1 py-4 pr-2">
                       <p className="text-sm font-bold text-slate-800">{aula.aluno.nome}</p>
                       <p className="text-xs mt-0.5 font-semibold" style={{ color: cor }}>
-                        {aula.aluno.materias?.length > 0
-                          ? aula.aluno.materias.map((m) => m.materia.nome).join(", ")
+                        {aula.materias?.length > 0
+                          ? aula.materias.map((m) => m.materia.nome).join(", ")
                           : (aula.materia?.nome ?? "Sem matéria")}
                       </p>
                       <p className="text-xs text-slate-400 mt-0.5">
@@ -1237,7 +1243,7 @@ export default function AgendaClient({
                     onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
                     className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
-                    <option value="">Sem matéria</option>
+                    <option value="">Todas as matérias do aluno</option>
                     {aulaDetalhe.aluno.materias.map((m) => (
                       <option key={m.materia.id} value={m.materia.id}>{m.materia.nome}</option>
                     ))}
@@ -1350,8 +1356,8 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
 }) {
   const cfg    = STATUS_CONFIG[aula.status];
   const cores  = STATUS_COR[aula.status];
-  const materiasCard = aula.aluno.materias?.length > 0
-    ? aula.aluno.materias.map((m) => m.materia)
+  const materiasCard = aula.materias?.length > 0
+    ? aula.materias.map((m) => m.materia)
     : (aula.materia ? [aula.materia] : []);
   const todasMaterias = materiasCard.filter((m) => !filtroMateriaId || m.id === filtroMateriaId);
   return (

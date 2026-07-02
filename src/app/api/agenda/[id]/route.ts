@@ -24,7 +24,35 @@ export async function PATCH(
 
   const { id } = await params;
   const body   = await req.json();
-  const { status, horaInicio, horaFim, observacao, materiaId, data } = body;
+  const { status, horaInicio, horaFim, observacao, materiaId, todasMaterias, data } = body;
+
+  // Troca para "Todas as matérias": restaura N:N com todas as matérias do aluno
+  if (todasMaterias) {
+    const alulaCheck = await prisma.agendaAula.findUnique({
+      where: { id },
+      select: { alunoId: true, aluno: { select: { materias: { select: { materiaId: true } } } } },
+    });
+    if (alulaCheck) {
+      const ids = alulaCheck.aluno.materias.map((m) => m.materiaId);
+      await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: id } });
+      if (ids.length > 0) {
+        await prisma.agendaAulaMateria.createMany({
+          data: ids.map((mid) => ({ agendaAulaId: id, materiaId: mid })),
+          skipDuplicates: true,
+        });
+      }
+      await prisma.agendaAula.update({
+        where: { id },
+        data: { materiaId: ids[0] ?? null },
+      });
+    }
+  }
+
+  // Troca para matéria específica: atualiza N:N para só essa matéria
+  if (materiaId) {
+    await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: id } });
+    await prisma.agendaAulaMateria.create({ data: { agendaAulaId: id, materiaId } });
+  }
 
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
