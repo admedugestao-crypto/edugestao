@@ -19,6 +19,15 @@ export type SemAgendaDet = {
   motivo:    string; // o que está faltando no cadastro
 };
 
+export type ForaDisponibilidadeDet = {
+  alunoNome:   string;
+  data:        string; // "YYYY-MM-DD"
+  diaSemana:   string;
+  horaInicio:  string;
+  horaFim:     string;
+  motivo:      string; // descrição do problema de disponibilidade
+};
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
@@ -94,9 +103,25 @@ export async function POST(req: NextRequest) {
     motivo: "Sem horário fixo de aula cadastrado",
   }));
 
+  // Busca disponibilidade de todos os professores envolvidos
+  const profIds = [...new Set(alunos.map((a) => a.professoraId).filter(Boolean))] as string[];
+  const professoras = profIds.length > 0
+    ? await prisma.professora.findMany({
+        where: { id: { in: profIds } },
+        select: { id: true, disponibilidade: true },
+      })
+    : [];
+  const dispMap = new Map(
+    professoras.map((p) => [p.id, (p.disponibilidade as any[]) ?? []])
+  );
+
+  const DIAS_SEMANA = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+  function toMin(h: string) { const [hh, mm] = h.split(":").map(Number); return hh * 60 + mm; }
+
   let criadas   = 0;
   let ignoradas = 0;
   const conflitosLista: ConflitoDet[] = [];
+  const foraDispLista: ForaDisponibilidadeDet[] = [];
 
   for (const aluno of alunos) {
     const profId = perfil === "SUPERADMIN"
@@ -190,6 +215,34 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
+        // Verificar disponibilidade do professor
+        const slots = dispMap.get(profId!) ?? [];
+        const nomeDia = DIAS_SEMANA[dataAula.getDay()];
+        if (slots.length > 0) {
+          const slotsDia = slots.filter((s: any) => s.dia === nomeDia);
+          if (slotsDia.length === 0) {
+            foraDispLista.push({
+              alunoNome: aluno.nome,
+              data: dataUTC.toISOString().split("T")[0],
+              diaSemana: nomeDia, horaInicio, horaFim,
+              motivo: `Professor(a) não tem disponibilidade para ${nomeDia}`,
+            });
+          } else {
+            const inicioMin = toMin(horaInicio);
+            const fimMin    = toMin(horaFim);
+            const dentro = slotsDia.some((s: any) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
+            if (!dentro) {
+              const faixas = slotsDia.map((s: any) => `${s.inicio}–${s.fim}`).join(", ");
+              foraDispLista.push({
+                alunoNome: aluno.nome,
+                data: dataUTC.toISOString().split("T")[0],
+                diaSemana: nomeDia, horaInicio, horaFim,
+                motivo: `Horário ${horaInicio}–${horaFim} fora da disponibilidade de ${nomeDia} (${faixas})`,
+              });
+            }
+          }
+        }
+
         // Uma única aula, vinculada a todas as matérias parametrizadas no cadastro do aluno
         const materiaIds = aluno.materias.map((m) => m.materiaId);
         await prisma.agendaAula.create({
@@ -209,5 +262,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ criadas, ignoradas, conflitos: conflitosLista, semAgenda: semAgendaLista });
+  return NextResponse.json({ criadas, ignoradas, conflitos: conflitosLista, semAgenda: semAgendaLista, foraDisponibilidade: foraDispLista });
 }

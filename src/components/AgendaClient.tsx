@@ -171,6 +171,7 @@ export default function AgendaClient({
   const [msgGerar, setMsgGerar]           = useState<string | null>(null);
   const [conflitosModal,  setConflitosModal]  = useState<ConflitoDet[]>([]);
   const [semAgendaModal,  setSemAgendaModal]  = useState<SemAgendaDet[]>([]);
+  const [foraDispModal,   setForaDispModal]   = useState<{ alunoNome: string; data: string; diaSemana: string; horaInicio: string; horaFim: string; motivo: string }[]>([]);
   // Modal seleção de professor para admin gerar agenda
   const [modalGerarAberto, setModalGerarAberto] = useState(false);
   const [gerarProfId, setGerarProfId]           = useState("");
@@ -258,10 +259,11 @@ export default function AgendaClient({
         setMsgGerar(`Erro: ${data.erro ?? "Falha ao gerar agenda."}`);
         return;
       }
-      const nConflitos  = Array.isArray(data.conflitos)  ? data.conflitos.length  : 0;
-      const nSemAgenda  = Array.isArray(data.semAgenda)  ? data.semAgenda.length  : 0;
+      const nConflitos  = Array.isArray(data.conflitos)          ? data.conflitos.length          : 0;
+      const nSemAgenda  = Array.isArray(data.semAgenda)           ? data.semAgenda.length           : 0;
+      const nForaDisp   = Array.isArray(data.foraDisponibilidade) ? data.foraDisponibilidade.length : 0;
 
-      if (data.criadas === 0 && data.ignoradas === 0 && nConflitos === 0 && nSemAgenda === 0) {
+      if (data.criadas === 0 && data.ignoradas === 0 && nConflitos === 0 && nSemAgenda === 0 && nForaDisp === 0) {
         setMsgGerar("Nenhum aluno com parâmetros de agenda configurados.");
       } else {
         const partes: string[] = [];
@@ -269,13 +271,15 @@ export default function AgendaClient({
         if (data.ignoradas > 0) partes.push(`${data.ignoradas} já existiam`);
         if (nConflitos     > 0) partes.push(`${nConflitos} conflito(s) de horário`);
         if (nSemAgenda     > 0) partes.push(`${nSemAgenda} aluno(s) sem agenda no cadastro`);
+        if (nForaDisp      > 0) partes.push(`${nForaDisp} aula(s) fora da disponibilidade`);
         setMsgGerar(partes.join(" · ") + ".");
       }
 
-      // Abre a tela de resultados se houver conflitos ou alunos sem agenda
-      if (nConflitos > 0 || nSemAgenda > 0) {
+      // Abre a tela de resultados se houver pendências
+      if (nConflitos > 0 || nSemAgenda > 0 || nForaDisp > 0) {
         setConflitosModal(data.conflitos as ConflitoDet[]);
         setSemAgendaModal(data.semAgenda as SemAgendaDet[]);
+        setForaDispModal(data.foraDisponibilidade ?? []);
       }
       await carregar();
     } catch {
@@ -1127,11 +1131,12 @@ export default function AgendaClient({
       )}
 
       {/* ── Tela de Conflitos ─────────────────────────────────────────────── */}
-      {(conflitosModal.length > 0 || semAgendaModal.length > 0) && (
+      {(conflitosModal.length > 0 || semAgendaModal.length > 0 || foraDispModal.length > 0) && (
         <TelaConflitos
           conflitos={conflitosModal}
           semAgenda={semAgendaModal}
-          onFechar={() => { setConflitosModal([]); setSemAgendaModal([]); }}
+          foraDisponibilidade={foraDispModal}
+          onFechar={() => { setConflitosModal([]); setSemAgendaModal([]); setForaDispModal([]); }}
         />
       )}
 
@@ -1530,11 +1535,14 @@ function BadgeStatus({ status }: { status: StatusAula }) {
 }
 
 // ── Tela de Conflitos ─────────────────────────────────────────────────────────
+type ForaDispDet = { alunoNome: string; data: string; diaSemana: string; horaInicio: string; horaFim: string; motivo: string };
+
 function TelaConflitos({
-  conflitos, semAgenda, onFechar,
+  conflitos, semAgenda, foraDisponibilidade, onFechar,
 }: {
   conflitos: ConflitoDet[];
   semAgenda: SemAgendaDet[];
+  foraDisponibilidade: ForaDispDet[];
   onFechar:  () => void;
 }) {
   function imprimir() {
@@ -1604,9 +1612,11 @@ function TelaConflitos({
           <div>
             <h3 className="font-semibold text-slate-800 text-base">Relatório de geração de agenda</h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              {conflitos.length > 0  && `${conflitos.length} conflito(s) de horário`}
-              {conflitos.length > 0 && semAgenda.length > 0 && " · "}
-              {semAgenda.length > 0  && `${semAgenda.length} aluno(s) sem parâmetros de agenda`}
+              {[
+                conflitos.length > 0 && `${conflitos.length} conflito(s) de horário`,
+                semAgenda.length > 0 && `${semAgenda.length} aluno(s) sem parâmetros`,
+                foraDisponibilidade.length > 0 && `${foraDisponibilidade.length} aula(s) fora da disponibilidade`,
+              ].filter(Boolean).join(" · ")}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -1692,6 +1702,43 @@ function TelaConflitos({
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Seção fora da disponibilidade */}
+          {foraDisponibilidade.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-2">
+                🕐 Fora da disponibilidade — {foraDisponibilidade.length} aula(s) gerada(s) fora do horário do professor
+              </p>
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="bg-orange-50 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    <th className="text-left px-4 py-2.5">Aluno</th>
+                    <th className="text-left px-4 py-2.5">Data</th>
+                    <th className="text-left px-4 py-2.5">Horário</th>
+                    <th className="text-left px-4 py-2.5">Motivo</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {foraDisponibilidade.map((f, i) => {
+                    const [y, m, d] = f.data.split("-").map(Number);
+                    const dataFmt = `${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")}/${y}`;
+                    return (
+                      <tr key={i} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-4 py-3 font-medium text-slate-800">{f.alunoNome}</td>
+                        <td className="px-4 py-3 text-slate-600">{dataFmt} ({f.diaSemana})</td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-700">
+                            {f.horaInicio} – {f.horaFim}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 text-xs">{f.motivo}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
