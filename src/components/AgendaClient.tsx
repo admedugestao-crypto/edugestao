@@ -509,8 +509,9 @@ export default function AgendaClient({
     const materia = materiaId
       ? (aulaDetalhe.aluno.materias.find((m) => m.materia.id === materiaId)?.materia ?? null)
       : null;
-    setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id ? { ...a, materia, materiaId: materiaId || null } : a));
-    setAulaDetalhe((p) => p ? { ...p, materia, materiaId: materiaId || null } : p);
+    const novasMaterias = materia ? [{ materia }] : [];
+    setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id ? { ...a, materia, materiaId: materiaId || null, materias: novasMaterias } : a));
+    setAulaDetalhe((p) => p ? { ...p, materia, materiaId: materiaId || null, materias: novasMaterias } : p);
     setMateriaSalva(true);
     setTimeout(() => setMateriaSalva(false), 2500);
   }

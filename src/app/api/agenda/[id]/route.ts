@@ -67,6 +67,14 @@ export async function PATCH(
     }
   }
 
+  // Se materiaId foi explicitamente alterado, sincroniza a tabela N:N para refletir só essa matéria
+  if (materiaId !== undefined) {
+    await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: id } });
+    if (materiaId) {
+      await prisma.agendaAulaMateria.create({ data: { agendaAulaId: id, materiaId } });
+    }
+  }
+
   const updated = await prisma.agendaAula.update({
     where: { id },
     data: {
@@ -80,6 +88,7 @@ export async function PATCH(
     include: {
       aluno:   { select: { id: true, nome: true, serie: true, turma: true } },
       materia: { select: { id: true, nome: true, cor: true } },
+      materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
     },
   });
 
