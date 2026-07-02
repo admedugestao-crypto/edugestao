@@ -155,6 +155,7 @@ export default function AgendaClient({
   const [materiaDetalheId, setMateriaDetalheId] = useState<string>("");
   const [atualizando, setAtualizando] = useState(false);
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
+  const [materiaSalva, setMateriaSalva] = useState(false);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
   // Filtro de professora (admin) — inicia no primeiro professor
@@ -510,6 +511,8 @@ export default function AgendaClient({
       : null;
     setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id ? { ...a, materia, materiaId: materiaId || null } : a));
     setAulaDetalhe((p) => p ? { ...p, materia, materiaId: materiaId || null } : p);
+    setMateriaSalva(true);
+    setTimeout(() => setMateriaSalva(false), 2500);
   }
 
   async function salvarObservacao() {
@@ -1238,6 +1241,9 @@ export default function AgendaClient({
                       <option key={m.materia.id} value={m.materia.id}>{m.materia.nome}</option>
                     ))}
                   </select>
+                  {materiaSalva && (
+                    <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>
+                  )}
                 </div>
               )}
             </div>
