@@ -1252,7 +1252,7 @@ export default function AgendaClient({
                   <>
                     {isFutura && (
                       <p className="mb-1.5 text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-md px-2.5 py-1.5">
-                        🔒 Aula futura: somente <strong>Cancelar</strong> disponível.
+                        🔒 Aula futura: status bloqueado — somente <strong>Cancelar</strong> disponível. Matéria e observação podem ser editadas normalmente.
                       </p>
                     )}
                     <div className="flex flex-wrap gap-1.5">
