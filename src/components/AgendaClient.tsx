@@ -893,7 +893,7 @@ export default function AgendaClient({
                   {timeline.map((item, j) =>
                     item.tipo === "aula" ? (
                       <CardAula key={item.aula.id} aula={item.aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
-                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materias?.length === 1 ? (item.aula.materias[0].materia.id) : ""); setErroStatus(null); setVerConteudo(false);
+                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materias?.length === 1 ? item.aula.materias[0].materia.id : (item.aula.materias?.length === 0 ? (item.aula.materiaId ?? "") : "")); setErroStatus(null); setVerConteudo(false);
                         if (item.aula.status === "REALIZADA" && !item.aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}/>
                     ) : (
