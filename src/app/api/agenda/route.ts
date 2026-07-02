@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
   const conteudos = alunoIds.length > 0
     ? await prisma.conteudo.findMany({
         where: { alunoId: { in: alunoIds }, data: { gte: dataInicio, lt: dataFim } },
-        select: { alunoId: true, data: true, planejado: true },
+        select: { alunoId: true, data: true, planejado: true, topico: true, descricao: true, arquivoUrl: true },
       })
     : [];
 

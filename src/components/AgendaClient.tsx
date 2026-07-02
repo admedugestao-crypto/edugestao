@@ -51,7 +51,7 @@ type Aula = {
   materia:    Materia | null;
   materias:   { materia: Materia }[];
   professora: { usuario: { nome: string } };
-  conteudo:   { planejado: boolean } | null;
+  conteudo:   { planejado: boolean; topico: string; descricao: string | null; arquivoUrl: string | null } | null;
 };
 
 type StatusAula = "AGENDADA" | "REALIZADA" | "CANCELADA" | "FALTA_ALUNO" | "FALTA_PROFESSOR";
@@ -157,6 +157,7 @@ export default function AgendaClient({
   const [atualizando, setAtualizando] = useState(false);
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
   const [materiaSalva, setMateriaSalva] = useState(false);
+  const [verConteudo, setVerConteudo]   = useState(false);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
   // Filtro de professora (admin) — inicia no primeiro professor
@@ -863,7 +864,7 @@ export default function AgendaClient({
                   {timeline.map((item, j) =>
                     item.tipo === "aula" ? (
                       <CardAula key={item.aula.id} aula={item.aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
-                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materias?.length === 1 ? (item.aula.materias[0].materia.id) : ""); setErroStatus(null);
+                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materias?.length === 1 ? (item.aula.materias[0].materia.id) : ""); setErroStatus(null); setVerConteudo(false);
                         if (item.aula.status === "REALIZADA" && !item.aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}/>
                     ) : (
@@ -960,7 +961,7 @@ export default function AgendaClient({
                     <div className="flex items-center gap-2 shrink-0 pr-5 py-4">
                       <BadgeStatus status={aula.status}/>
                       <button onClick={() => {
-                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materias?.length === 1 ? (aula.materias[0].materia.id) : ""); setErroStatus(null);
+                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materias?.length === 1 ? (aula.materias[0].materia.id) : ""); setErroStatus(null); setVerConteudo(false);
                         if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}
                         className="text-xs text-slate-400 hover:text-indigo-600 transition-colors underline">
@@ -1307,6 +1308,49 @@ export default function AgendaClient({
                 );
               })()}
             </div>
+
+            {/* Conteúdo vinculado */}
+            {aulaDetalhe.conteudo && (
+              <div>
+                <button
+                  onClick={() => setVerConteudo((v) => !v)}
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
+                    aulaDetalhe.conteudo.planejado
+                      ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                      : "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <BookOpen size={13}/>
+                    {aulaDetalhe.conteudo.planejado ? "Conteúdo planejado" : "Conteúdo ministrado"}
+                    {" "}— {aulaDetalhe.conteudo.topico}
+                  </span>
+                  <ChevronRight size={13} className={`transition-transform ${verConteudo ? "rotate-90" : ""}`}/>
+                </button>
+                {verConteudo && (
+                  <div className={`mt-1 p-3 rounded-lg border text-xs space-y-2 ${
+                    aulaDetalhe.conteudo.planejado
+                      ? "bg-blue-50 border-blue-100 text-blue-900"
+                      : "bg-emerald-50 border-emerald-100 text-emerald-900"
+                  }`}>
+                    <p><span className="font-semibold">Tópico:</span> {aulaDetalhe.conteudo.topico}</p>
+                    {aulaDetalhe.conteudo.descricao && (
+                      <p><span className="font-semibold">Descrição:</span> {aulaDetalhe.conteudo.descricao}</p>
+                    )}
+                    {aulaDetalhe.conteudo.arquivoUrl && (
+                      <a
+                        href={aulaDetalhe.conteudo.arquivoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white border border-current font-medium hover:opacity-80 transition-opacity"
+                      >
+                        <BookOpen size={11}/> Ver documento anexo
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Observação */}
             <div>
