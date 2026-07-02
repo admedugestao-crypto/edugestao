@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, Plus, RefreshCw, X,
   CheckCircle2, XCircle, Clock, UserX, UserCheck,
-  CalendarDays, List, Zap, Trash2, Printer,
+  CalendarDays, List, Zap, Trash2, Printer, BookOpen,
 } from "lucide-react";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -51,6 +51,7 @@ type Aula = {
   materia:    Materia | null;
   materias:   { materia: Materia }[];
   professora: { usuario: { nome: string } };
+  conteudo:   { planejado: boolean } | null;
 };
 
 type StatusAula = "AGENDADA" | "REALIZADA" | "CANCELADA" | "FALTA_ALUNO" | "FALTA_PROFESSOR";
@@ -941,6 +942,16 @@ export default function AgendaClient({
                           Prof. {aula.professora.usuario.nome}
                         </p>
                       )}
+                      {aula.conteudo && (
+                        <span className={`inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                          aula.conteudo.planejado
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}>
+                          <BookOpen size={10}/>
+                          Conteúdo {aula.conteudo.planejado ? "planejado" : "ministrado"}
+                        </span>
+                      )}
                       {aula.observacao && (
                         <p className="text-xs text-slate-500 mt-1 italic">"{aula.observacao}"</p>
                       )}
@@ -1388,6 +1399,16 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
             </span>
           ))}
         </div>
+      )}
+      {aula.conteudo && (
+        <span className={`inline-flex items-center gap-0.5 mt-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold leading-none ${
+          aula.conteudo.planejado
+            ? "bg-blue-100 text-blue-700"
+            : "bg-emerald-100 text-emerald-700"
+        }`}>
+          <BookOpen size={8}/>
+          {aula.conteudo.planejado ? "Planejado" : "Ministrado"}
+        </span>
       )}
       {mostrarProfessora && (
         <p className="text-[10px] text-slate-500 mt-0.5 truncate">

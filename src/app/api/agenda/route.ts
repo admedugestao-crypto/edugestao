@@ -60,7 +60,28 @@ export async function GET(req: NextRequest) {
     orderBy: [{ data: "asc" }, { horaInicio: "asc" }],
   });
 
-  return NextResponse.json(aulas);
+  // Busca conteúdos do período para enriquecer cada aula com indicador
+  const alunoIds = [...new Set(aulas.map((a) => a.alunoId))];
+  const conteudos = alunoIds.length > 0
+    ? await prisma.conteudo.findMany({
+        where: { alunoId: { in: alunoIds }, data: { gte: dataInicio, lt: dataFim } },
+        select: { alunoId: true, data: true, planejado: true },
+      })
+    : [];
+
+  const conteudoMap = new Map(
+    conteudos.map((c) => [
+      `${c.alunoId}|${c.data.toISOString().split("T")[0]}`,
+      { planejado: c.planejado },
+    ])
+  );
+
+  const aulasComConteudo = aulas.map((a) => ({
+    ...a,
+    conteudo: conteudoMap.get(`${a.alunoId}|${a.data.toISOString().split("T")[0]}`) ?? null,
+  }));
+
+  return NextResponse.json(aulasComConteudo);
 }
 
 // DELETE /api/agenda  — excluir aulas em lote por aluno + período
