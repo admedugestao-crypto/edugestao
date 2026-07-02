@@ -57,17 +57,20 @@ export async function PATCH(
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
-  // Bloqueia mudar para REALIZADA sem conteúdo registrado
+  // Bloqueia mudar para REALIZADA sem conteúdo registrado; se conteúdo for planejado, converte para ministrado
   if (status === "REALIZADA") {
     const conteudo = await prisma.conteudo.findFirst({
       where: { alunoId: aula.alunoId, data: diaUTC(aula.data) },
-      select: { id: true },
+      select: { id: true, planejado: true },
     });
     if (!conteudo) {
       return NextResponse.json(
         { erro: "Não é possível marcar como Realizada: registre primeiro o conteúdo da Aula Agendada." },
         { status: 422 },
       );
+    }
+    if (conteudo.planejado) {
+      await prisma.conteudo.update({ where: { id: conteudo.id }, data: { planejado: false } });
     }
   }
 

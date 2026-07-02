@@ -1277,12 +1277,12 @@ export default function AgendaClient({
                   <>
                     {isFutura && (
                       <p className="mb-1.5 text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-md px-2.5 py-1.5">
-                        🔒 Aula futura: status bloqueado — somente <strong>Cancelar</strong> disponível. Matéria e observação podem ser editadas normalmente.
+                        🔒 Aula futura: somente <strong>Cancelar</strong> disponível{aulaDetalhe.conteudo ? " — ou marcar como Realizada se houver conteúdo planejado" : ""}. Matéria e observação podem ser editadas normalmente.
                       </p>
                     )}
                     <div className="flex flex-wrap gap-1.5">
                       {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => {
-                        const bloqueado = atualizando || (isFutura && s !== "CANCELADA");
+                        const bloqueado = atualizando || (isFutura && s !== "CANCELADA" && !(s === "REALIZADA" && aulaDetalhe.conteudo));
                         return (
                           <button key={s} disabled={bloqueado}
                             onClick={() => atualizarStatus(aulaDetalhe.id, s)}
