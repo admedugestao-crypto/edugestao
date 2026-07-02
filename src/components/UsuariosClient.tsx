@@ -258,6 +258,11 @@ export default function UsuariosClient({
       setErro("A nova senha deve ter pelo menos 6 caracteres.");
       return;
     }
+    if (form.perfil === "PROFESSORA" && form.disponibilidade.length === 0) {
+      setErro("Professor(a) deve ter pelo menos um horário de disponibilidade cadastrado.");
+      setAbaModal("disponibilidade");
+      return;
+    }
 
     setSalvando(true);
     try {
