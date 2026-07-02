@@ -371,19 +371,24 @@ export default function AgendaClient({
 
     // Verificar disponibilidade do professor
     if (profId) {
-      const disp = disponibilidades.find((dp) => dp.professoraId === profId);
-      if (disp && disp.slots.length > 0) {
-        const nomeDia = DIAS_SEMANA_FULL[dataAula.getDay()];
-        const horariosDia = disp.slots.filter((s) => s.dia === nomeDia);
-        if (horariosDia.length === 0)
-          return { tipo: "aviso", msg: `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}. Deseja incluir mesmo assim?` };
-        const inicioMin = toMin(novaAula.horaInicio);
-        const fimMin    = toMin(novaAula.horaFim);
-        const dentro = horariosDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
-        if (!dentro) {
-          const faixas = horariosDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
-          return { tipo: "aviso", msg: `Horário ${novaAula.horaInicio}–${novaAula.horaFim} está fora da disponibilidade de ${nomeDia} (${faixas}). Deseja incluir mesmo assim?` };
-        }
+      const disp  = disponibilidades.find((dp) => dp.professoraId === profId);
+      const slots = disp?.slots ?? [];
+      const nomeDia = DIAS_SEMANA_FULL[dataAula.getDay()];
+
+      if (slots.length === 0) {
+        return { tipo: "aviso", msg: `Professor(a) não tem disponibilidade cadastrada. Deseja incluir mesmo assim?` };
+      }
+
+      const horariosDia = slots.filter((s) => s.dia === nomeDia);
+      if (horariosDia.length === 0)
+        return { tipo: "aviso", msg: `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}. Deseja incluir mesmo assim?` };
+
+      const inicioMin = toMin(novaAula.horaInicio);
+      const fimMin    = toMin(novaAula.horaFim);
+      const dentro = horariosDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
+      if (!dentro) {
+        const faixas = horariosDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
+        return { tipo: "aviso", msg: `Horário ${novaAula.horaInicio}–${novaAula.horaFim} está fora da disponibilidade de ${nomeDia} (${faixas}). Deseja incluir mesmo assim?` };
       }
     }
 
