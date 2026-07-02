@@ -570,9 +570,6 @@ export default function AgendaClient({
   function timelineDia(dia: Date): TimelineItem[] {
     const profId = isProfessor ? professoraIdSessao : (filtroProfId || null);
 
-    // Admin sem professor filtrado: não mostra nada
-    if (!isProfessor && !profId) return [];
-
     const aulasD = aulasNoDia(dia);
 
     if (!profId) {
