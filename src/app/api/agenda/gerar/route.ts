@@ -34,14 +34,16 @@ export async function POST(req: NextRequest) {
   const [ay, am, ad] = semanaInicio.split("-").map(Number);
   const baseSemana = new Date(ay, am - 1, ad, 0, 0, 0, 0);
 
-  const agora  = new Date();                          // data+hora exata da geração
+  const agora  = new Date();                          // data+hora exata da geração (UTC no servidor)
+  // Converte para horário de Brasília (UTC-3) para comparar com horaInicio das aulas
+  const agoraBrasil = new Date(agora.getTime() - 3 * 60 * 60 * 1000);
   const hoje   = new Date(agora); hoje.setHours(0, 0, 0, 0);
   // Gera a partir de hoje; para o dia atual verifica hora (veja cheque abaixo)
   const inicio = baseSemana >= hoje ? baseSemana : hoje;
 
-  // Hora atual no formato "HH:MM" — usada para descartar aulas de hoje cujo
+  // Hora atual em horário de Brasília — usada para descartar aulas de hoje cujo
   // horário de início já passou no momento da geração
-  const horaAgora = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
+  const horaAgora = `${String(agoraBrasil.getUTCHours()).padStart(2, "0")}:${String(agoraBrasil.getUTCMinutes()).padStart(2, "0")}`;
 
   const anoCorrente = hoje.getFullYear();
   const fimAnoInt   = anoCorrente * 10000 + 1231;
