@@ -1328,26 +1328,31 @@ export default function AgendaClient({
 
             {/* Matéria + Status lado a lado quando possível */}
             <div className="flex flex-wrap gap-3 items-end">
-              {(aulaDetalhe.materias?.length ?? 0) > 0 && (
-                <div className="flex-1 min-w-[140px]">
-                  <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
-                  <select
-                    value={materiaDetalheId}
-                    onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
-                    className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    {(aulaDetalhe.materias?.length ?? 0) > 1 && (
-                      <option value="">Todas da aula</option>
+              {(() => {
+                // Usa matérias da aula (N:N); fallback para matérias do aluno se aula não tiver nenhuma vinculada
+                const materiasOpcoes = (aulaDetalhe.materias?.length ?? 0) > 0
+                  ? aulaDetalhe.materias.map((m) => m.materia)
+                  : (aulaDetalhe.aluno.materias ?? []).map((m) => m.materia);
+                if (materiasOpcoes.length === 0) return null;
+                return (
+                  <div className="flex-1 min-w-[140px]">
+                    <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
+                    <select
+                      value={materiaDetalheId}
+                      onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
+                      className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    >
+                      {materiasOpcoes.length > 1 && <option value="">Todas da aula</option>}
+                      {materiasOpcoes.map((m) => (
+                        <option key={m.id} value={m.id}>{m.nome}</option>
+                      ))}
+                    </select>
+                    {materiaSalva && (
+                      <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>
                     )}
-                    {aulaDetalhe.materias.map((m) => (
-                      <option key={m.materia.id} value={m.materia.id}>{m.materia.nome}</option>
-                    ))}
-                  </select>
-                  {materiaSalva && (
-                    <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>
-                  )}
-                </div>
-              )}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Status */}
