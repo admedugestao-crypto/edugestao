@@ -673,8 +673,8 @@ export default function AgendaClient({
                 item.tipo === "aula" ? (() => {
                   const a = item.aula;
                   const cores = STATUS_COR[a.status];
-                  const materiasCard = a.materias?.length > 0
-                    ? a.materias.map((m) => m.materia)
+                  const materiasCard = a.aluno.materias?.length > 0
+                    ? a.aluno.materias.map((m) => m.materia)
                     : (a.materia ? [a.materia] : []);
                   return (
                     <div key={a.id}
@@ -923,8 +923,8 @@ export default function AgendaClient({
                     <div className="flex-1 py-4 pr-2">
                       <p className="text-sm font-bold text-slate-800">{aula.aluno.nome}</p>
                       <p className="text-xs mt-0.5 font-semibold" style={{ color: cor }}>
-                        {aula.materias?.length > 0
-                          ? aula.materias.map((m) => m.materia.nome).join(", ")
+                        {aula.aluno.materias?.length > 0
+                          ? aula.aluno.materias.map((m) => m.materia.nome).join(", ")
                           : (aula.materia?.nome ?? "Sem matéria")}
                       </p>
                       <p className="text-xs text-slate-400 mt-0.5">
@@ -1350,8 +1350,8 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
 }) {
   const cfg    = STATUS_CONFIG[aula.status];
   const cores  = STATUS_COR[aula.status];
-  const materiasCard = aula.materias?.length > 0
-    ? aula.materias.map((m) => m.materia)
+  const materiasCard = aula.aluno.materias?.length > 0
+    ? aula.aluno.materias.map((m) => m.materia)
     : (aula.materia ? [aula.materia] : []);
   const todasMaterias = materiasCard.filter((m) => !filtroMateriaId || m.id === filtroMateriaId);
   return (
