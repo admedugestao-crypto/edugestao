@@ -493,10 +493,16 @@ export default function AgendaClient({
     }
     // "Realizada" → abre tela de Conteúdos pré-preenchida com dados da aula
     if (status === "REALIZADA" && aulaDetalhe) {
+      // Usa matéria selecionada no detalhe; se "Todas", usa a primária da aula; senão a primeira N:N
+      const materiaParaConteudo =
+        materiaDetalheId ||
+        aulaDetalhe.materiaId ||
+        aulaDetalhe.materias?.[0]?.materia?.id ||
+        "";
       const params = new URLSearchParams({
         aulaId:    aulaDetalhe.id,
         alunoId:   aulaDetalhe.aluno.id,
-        materiaId: materiaDetalheId,
+        materiaId: materiaParaConteudo,
         data:      aulaDetalhe.data.split("T")[0],
       });
       router.push(`/dashboard/conteudos?${params.toString()}`);
