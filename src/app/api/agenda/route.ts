@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
   const conteudoMap = new Map(
     conteudos.map((c) => [
       `${c.alunoId}|${c.data.toISOString().split("T")[0]}`,
-      { planejado: c.planejado },
+      { planejado: c.planejado, topico: c.topico, descricao: c.descricao, arquivoUrl: c.arquivoUrl },
     ])
   );
 
