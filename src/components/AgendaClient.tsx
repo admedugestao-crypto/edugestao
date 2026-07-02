@@ -144,7 +144,7 @@ export default function AgendaClient({
   });
   const [salvando, setSalvando]   = useState(false);
   const [erroModal, setErroModal] = useState<string | null>(null);
-  const [avisoAgendamento, setAvisoAgendamento] = useState<string | null>(null); // aviso de regra não satisfeita
+  const [avisoAgendamento, setAvisoAgendamento] = useState<{ msg: string; tipo: "disp" | "geral" } | null>(null);
 
   // Alunos filtrados pela professora selecionada no modal (só para não-professores)
   const alunosFiltradosModal = !isProfessor && professoraIdModal
@@ -343,8 +343,38 @@ export default function AgendaClient({
     setModalAberto(true);
   }
 
-  /** Verifica regras de agendamento manual — retorna aviso (confirmável) ou erro (bloqueante).
-   *  { tipo: "aviso" } → pede confirmação; { tipo: "erro" } → bloqueia. */
+  /** Verifica disponibilidade do professor — sempre rodada, mesmo ao forçar outros avisos. */
+  function verificarDisponibilidade(): { msg: string } | null {
+    if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
+
+    const profId = isProfessor ? professoraIdSessao : professoraIdModal;
+    if (!profId) return null;
+
+    const [y, m, d] = novaAula.data.split("-").map(Number);
+    const dataAula  = new Date(y, m - 1, d);
+    const nomeDia   = DIAS_SEMANA_FULL[dataAula.getDay()];
+    const disp      = disponibilidades.find((dp) => dp.professoraId === profId);
+    const slots     = disp?.slots ?? [];
+
+    if (slots.length === 0)
+      return { msg: `Professor(a) não tem disponibilidade cadastrada. Deseja incluir mesmo assim?` };
+
+    const horariosDia = slots.filter((s) => s.dia === nomeDia);
+    if (horariosDia.length === 0)
+      return { msg: `Professor(a) não tem disponibilidade para ${nomeDia}. Deseja incluir mesmo assim?` };
+
+    const inicioMin = toMin(novaAula.horaInicio);
+    const fimMin    = toMin(novaAula.horaFim);
+    const dentro    = horariosDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
+    if (!dentro) {
+      const faixas = horariosDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
+      return { msg: `Horário ${novaAula.horaInicio}–${novaAula.horaFim} fora da disponibilidade de ${nomeDia} (${faixas}). Deseja incluir mesmo assim?` };
+    }
+    return null;
+  }
+
+  /** Verifica demais regras (data, horário, duração, conflito) — retorna aviso ou erro. */
   function verificarRegraAgendamento(): { tipo: "aviso" | "erro"; msg: string } | null {
     if (!novaAula.data) return null;
     const agora = new Date();
@@ -367,31 +397,6 @@ export default function AgendaClient({
     if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60)
       return { tipo: "erro", msg: "A duração mínima da aula é de 1 hora." };
 
-    const profId = isProfessor ? professoraIdSessao : professoraIdModal;
-
-    // Verificar disponibilidade do professor
-    if (profId) {
-      const disp  = disponibilidades.find((dp) => dp.professoraId === profId);
-      const slots = disp?.slots ?? [];
-      const nomeDia = DIAS_SEMANA_FULL[dataAula.getDay()];
-
-      if (slots.length === 0) {
-        return { tipo: "aviso", msg: `Professor(a) não tem disponibilidade cadastrada. Deseja incluir mesmo assim?` };
-      }
-
-      const horariosDia = slots.filter((s) => s.dia === nomeDia);
-      if (horariosDia.length === 0)
-        return { tipo: "aviso", msg: `Professor(a) não tem disponibilidade cadastrada para ${nomeDia}. Deseja incluir mesmo assim?` };
-
-      const inicioMin = toMin(novaAula.horaInicio);
-      const fimMin    = toMin(novaAula.horaFim);
-      const dentro = horariosDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
-      if (!dentro) {
-        const faixas = horariosDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
-        return { tipo: "aviso", msg: `Horário ${novaAula.horaInicio}–${novaAula.horaFim} está fora da disponibilidade de ${nomeDia} (${faixas}). Deseja incluir mesmo assim?` };
-      }
-    }
-
     // Verificar conflito com aulas já existentes
     const aulasNaData = aulas.filter(
       (a) => a.data.startsWith(novaAula.data) &&
@@ -409,23 +414,31 @@ export default function AgendaClient({
     return null;
   }
 
-  async function salvarNovaAula(forcar = false) {
+  async function salvarNovaAula(forcar = false, forcarDisp = false) {
     if (!isProfessor && !professoraIdModal) {
       setErroModal("Selecione o(a) professor(a) antes de salvar.");
       return;
     }
     if (!novaAula.alunoId || !novaAula.data) return;
 
-    // Verifica regras de agendamento
+    // Disponibilidade: verificada SEMPRE (independente de forcar outras regras)
+    if (!forcarDisp) {
+      const dispCheck = verificarDisponibilidade();
+      if (dispCheck) {
+        setAvisoAgendamento({ msg: dispCheck.msg, tipo: "disp" });
+        return;
+      }
+    }
+
+    // Verifica demais regras de agendamento
     if (!forcar) {
       const check = verificarRegraAgendamento();
       if (check) {
         if (check.tipo === "erro") {
           setErroModal(check.msg);
-          return; // bloqueia — não permite forçar
+          return;
         }
-        // aviso — pede confirmação
-        setAvisoAgendamento(check.msg);
+        setAvisoAgendamento({ msg: check.msg, tipo: "geral" });
         return;
       }
     }
@@ -1062,10 +1075,15 @@ export default function AgendaClient({
             {/* Aviso de regra de agendamento — pede confirmação */}
             {avisoAgendamento && (
               <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-3 text-xs text-amber-800 space-y-2">
-                <p>⚠️ <strong>Atenção:</strong> {avisoAgendamento}</p>
+                <p>⚠️ <strong>Atenção:</strong> {avisoAgendamento.msg}</p>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => salvarNovaAula(true)}
+                    onClick={() => {
+                      const tipoAtual = avisoAgendamento.tipo;
+                      setAvisoAgendamento(null);
+                      if (tipoAtual === "disp") salvarNovaAula(false, true);
+                      else salvarNovaAula(true, true);
+                    }}
                     disabled={salvando}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors disabled:opacity-50">
                     {salvando && <RefreshCw size={11} className="animate-spin"/>}
