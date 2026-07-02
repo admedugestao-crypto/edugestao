@@ -18,6 +18,14 @@ type Aluno = {
 
 type Professora = { id: string; nome: string };
 
+type AgendaInfo = {
+  id: string;
+  horaInicio: string | null;
+  horaFim: string | null;
+  status: string;
+  materia: { nome: string; cor: string } | null;
+};
+
 type Conteudo = {
   id: string;
   alunoId: string;
@@ -29,6 +37,7 @@ type Conteudo = {
   planejado: boolean;
   aluno: { nome: string; professora: string | null };
   materia: Materia | null;
+  agenda: AgendaInfo | null;
 };
 
 type FormC = {
@@ -591,6 +600,27 @@ export default function ConteudosClient({
                     <span className="text-slate-400"> · {c.aluno.professora}</span>
                   )}
                 </p>
+
+                {/* Aula agendada vinculada */}
+                {c.agenda && (() => {
+                  const statusLabel: Record<string, { label: string; color: string }> = {
+                    AGENDADA:         { label: "Agendada",          color: "bg-blue-100 text-blue-700" },
+                    REALIZADA:        { label: "Realizada",         color: "bg-emerald-100 text-emerald-700" },
+                    CANCELADA:        { label: "Cancelada",         color: "bg-red-100 text-red-600" },
+                    FALTA_ALUNO:      { label: "Falta do Aluno",    color: "bg-orange-100 text-orange-700" },
+                    FALTA_PROFESSOR:  { label: "Falta do Prof.",    color: "bg-purple-100 text-purple-700" },
+                  };
+                  const s = statusLabel[c.agenda!.status] ?? { label: c.agenda!.status, color: "bg-slate-100 text-slate-600" };
+                  return (
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                      <span>📅</span>
+                      {c.agenda!.horaInicio && c.agenda!.horaFim && (
+                        <span className="font-medium text-slate-600">{c.agenda!.horaInicio}–{c.agenda!.horaFim}</span>
+                      )}
+                      <span className={`px-1.5 py-0.5 rounded font-medium ${s.color}`}>{s.label}</span>
+                    </div>
+                  );
+                })()}
 
                 {c.descricao && (
                   <p className="text-sm text-slate-600 mt-1">{c.descricao}</p>
