@@ -1273,16 +1273,32 @@ export default function AgendaClient({
                 const dataAula = parseLocal(aulaDetalhe.data);
                 const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
                 const isFutura = dataAula > hoje;
+                const isHoje   = dataAula.getTime() === hoje.getTime();
+
+                // Realizada só habilitada quando a aula já terminou (data passada ou hoje após horaFim)
+                const aulaTerminou = (() => {
+                  if (isFutura) return false;
+                  if (!isHoje)  return true;
+                  if (!aulaDetalhe.horaFim) return true;
+                  const agora = new Date();
+                  const horaAtual = `${String(agora.getHours()).padStart(2,"0")}:${String(agora.getMinutes()).padStart(2,"0")}`;
+                  return horaAtual >= aulaDetalhe.horaFim;
+                })();
+
                 return (
                   <>
-                    {isFutura && (
+                    {(isFutura || !aulaTerminou) && (
                       <p className="mb-1.5 text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-md px-2.5 py-1.5">
-                        🔒 Aula futura: somente <strong>Cancelar</strong> disponível{aulaDetalhe.conteudo ? " — ou marcar como Realizada se houver conteúdo planejado" : ""}. Matéria e observação podem ser editadas normalmente.
+                        🔒 {isFutura ? "Aula futura" : `Aula em andamento (até ${aulaDetalhe.horaFim})`}: somente <strong>Cancelar</strong> disponível. Matéria e observação podem ser editadas normalmente.
                       </p>
                     )}
                     <div className="flex flex-wrap gap-1.5">
                       {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => {
-                        const bloqueado = atualizando || (isFutura && s !== "CANCELADA" && !(s === "REALIZADA" && aulaDetalhe.conteudo));
+                        const bloqueado = atualizando || (
+                          s === "CANCELADA" ? false :
+                          s === "REALIZADA" ? !aulaTerminou :
+                          isFutura
+                        );
                         return (
                           <button key={s} disabled={bloqueado}
                             onClick={() => atualizarStatus(aulaDetalhe.id, s)}
