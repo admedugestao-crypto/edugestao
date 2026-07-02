@@ -170,9 +170,25 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Já existe aula deste aluno neste dia neste horário
-        const jaExiste = aulasNoDia.some((a) => a.alunoId === aluno.id && a.horaInicio === horaInicio);
-        if (jaExiste) { ignoradas++; dataAula.setDate(dataAula.getDate() + 7); continue; }
+        // Já existe aula deste aluno neste dia neste horário — sincroniza N:N de matérias
+        const aulaExistente = aulasNoDia.find((a) => a.alunoId === aluno.id && a.horaInicio === horaInicio);
+        if (aulaExistente) {
+          const materiaIds = aluno.materias.map((m) => m.materiaId);
+          if (materiaIds.length > 0) {
+            await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: aulaExistente.id } });
+            await prisma.agendaAulaMateria.createMany({
+              data: materiaIds.map((mid) => ({ agendaAulaId: aulaExistente.id, materiaId: mid })),
+              skipDuplicates: true,
+            });
+            await prisma.agendaAula.update({
+              where: { id: aulaExistente.id },
+              data: { materiaId: materiaIds[0] },
+            });
+          }
+          ignoradas++;
+          dataAula.setDate(dataAula.getDate() + 7);
+          continue;
+        }
 
         // Uma única aula, vinculada a todas as matérias parametrizadas no cadastro do aluno
         const materiaIds = aluno.materias.map((m) => m.materiaId);
