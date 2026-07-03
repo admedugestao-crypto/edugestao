@@ -147,38 +147,13 @@ async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<
   }
 }
 
-// ── Envia via Z-API ──────────────────────────────────────────────────────────
-async function enviarViaZAPI(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const instanceId = limparEnv(process.env.ZAPI_INSTANCE_ID);
-  const token = limparEnv(process.env.ZAPI_TOKEN);
-  const clientToken = limparEnv(process.env.ZAPI_CLIENT_TOKEN);
-  if (!instanceId || !token) return { ok: false, provedor: "z-api", erro: "não configurado" };
-  try {
-    const res = await fetch(
-      `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(clientToken ? { "Client-Token": clientToken } : {}),
-        },
-        body: JSON.stringify({ phone: numero, message: mensagem }),
-      }
-    );
-    if (res.ok) return { ok: true, provedor: "z-api" };
-    return { ok: false, provedor: "z-api", erro: await corpoErro(res) };
-  } catch (err) {
-    return { ok: false, provedor: "z-api", erro: String(err) };
-  }
-}
-
-// ── Tenta, em cascata, todos os provedores de WhatsApp configurados ─────────
-// Z-API primeiro (provedor com configuração mais recente / ativo), depois
-// Fonnte e Evolution como fallback — para no primeiro que funcionar, e
+// ── Tenta, em cascata, os provedores de WhatsApp configurados ───────────────
+// Fonnte, depois Evolution como fallback — para no primeiro que funcionar, e
 // reporta o motivo real de cada falha (visível nos logs da função e na
-// resposta da API).
+// resposta da API). Z-API foi removido da cascata (assinatura da instância
+// expirada — ver histórico de commits).
 export async function enviarWhatsapp(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const tentativas = [enviarViaZAPI, enviarViaFonnte, enviarViaEvolutionAPI];
+  const tentativas = [enviarViaFonnte, enviarViaEvolutionAPI];
   const erros: string[] = [];
 
   for (const tentativa of tentativas) {
@@ -338,10 +313,9 @@ export async function processarNotificacoesAula(): Promise<{
 }> {
   const resultado = { enviadas: 0, erros: [] as string[] };
   const fonnteConfigurada = !!process.env.FONNTE_TOKEN;
-  const zapiConfigurada = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);
   const evolutionConfigurada = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
 
-  if (!fonnteConfigurada && !zapiConfigurada && !evolutionConfigurada) return resultado;
+  if (!fonnteConfigurada && !evolutionConfigurada) return resultado;
 
   const amanha = new Date();
   amanha.setDate(amanha.getDate() + 1);
