@@ -337,9 +337,17 @@ export default function ConteudosClient({
       // Pré-seleciona o professor do aluno (admin)
       const aluno = alunos.find((a) => a.id === alunoId);
       if (aluno?.professoraId) setFiltroProfId(aluno.professoraId);
-      setAulaIdPendente(aulaId);
-      setNovo({ ...formVazio(), alunoId, materiaId, data, descricao, planejado: false });
-      setModal(true);
+
+      // Se já existe um conteúdo vinculado a esta aula, edita o existente em
+      // vez de abrir um formulário em branco (evita duplicar o registro).
+      const existente = conteudos.find((c) => c.agenda?.id === aulaId);
+      if (existente) {
+        abrirEdit(existente);
+      } else {
+        setAulaIdPendente(aulaId);
+        setNovo({ ...formVazio(), alunoId, materiaId, data, descricao, planejado: false });
+        setModal(true);
+      }
       window.history.replaceState(null, "", "/dashboard/conteudos");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
