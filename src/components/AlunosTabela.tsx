@@ -29,7 +29,7 @@ type Aluno = {
   valorCobranca?: number | null;
   diaPagamento?: number | null;
   diaPagamento2?: number | null;
-  diaSemana?: number | null;
+  diaSemanaCobranca?: number | null;
   pagamentos?: { parcela: number; pago: boolean; mes: number; ano: number }[];
 };
 
@@ -58,9 +58,10 @@ function StatusPagamento({
     const diasNoMes = new Date(ano, mes, 0).getDate();
     let count = 0;
     for (let d = 1; d <= diasNoMes; d++) {
-      if (new Date(ano, mes - 1, d).getDay() === (aluno.diaSemana ?? 0)) count++;
+      if (new Date(ano, mes - 1, d).getDay() === (aluno.diaSemanaCobranca ?? 0)) count++;
     }
-    totalParcelas = count;
+    // Parcelas futuras ainda não geradas não devem contar como pendência
+    totalParcelas = pgs.length > 0 ? Math.min(count, pgs.length) : count;
   }
 
   const pagas = pgs.filter((p) => p.pago).length;
@@ -71,11 +72,11 @@ function StatusPagamento({
     venc = new Date(ano, mes - 1, aluno.diaPagamento);
   } else if (aluno.tipoCobranca === "QUINZENAL" && aluno.diaPagamento) {
     venc = new Date(ano, mes - 1, aluno.diaPagamento);
-  } else if (aluno.tipoCobranca === "SEMANAL" && aluno.diaSemana !== null && aluno.diaSemana !== undefined) {
+  } else if (aluno.tipoCobranca === "SEMANAL" && aluno.diaSemanaCobranca !== null && aluno.diaSemanaCobranca !== undefined) {
     const diasNoMes = new Date(ano, mes, 0).getDate();
     for (let d = 1; d <= diasNoMes; d++) {
       const dt = new Date(ano, mes - 1, d);
-      if (dt.getDay() === aluno.diaSemana) { venc = dt; break; }
+      if (dt.getDay() === aluno.diaSemanaCobranca) { venc = dt; break; }
     }
   } else if (aluno.tipoCobranca === "POR_AULA") {
     venc = new Date(ano, mes - 1, new Date(ano, mes, 0).getDate());

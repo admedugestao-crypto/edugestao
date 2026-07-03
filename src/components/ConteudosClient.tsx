@@ -516,6 +516,8 @@ export default function ConteudosClient({
   }
 
   function abrirEdit(c: Conteudo) {
+    const profId = alunos.find((a) => a.id === c.alunoId)?.professoraId;
+    if (profId) setFiltroProfId(profId);
     setEditConteudo({
       id: c.id,
       alunoId: c.alunoId,
