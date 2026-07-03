@@ -90,28 +90,59 @@ async function buscarProfessores(unidadeId: string, serie: string) {
   });
 }
 
+// ── Resultado de uma tentativa de envio, com motivo real da falha ───────────
+export type EnvioResultado = { ok: boolean; provedor: string; erro?: string };
+
+async function corpoErro(res: Response): Promise<string> {
+  const texto = await res.text().catch(() => "");
+  return `HTTP ${res.status}${texto ? `: ${texto.slice(0, 300)}` : ""}`;
+}
+
+// ── Envia via Fonnte ──────────────────────────────────────────────────────────
+async function enviarViaFonnte(numero: string, mensagem: string): Promise<EnvioResultado> {
+  const token = process.env.FONNTE_TOKEN;
+  if (!token) return { ok: false, provedor: "fonnte", erro: "não configurado" };
+  try {
+    const res = await fetch("https://api.fonnte.com/send", {
+      method: "POST",
+      headers: { Authorization: token, "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ target: numero, message: mensagem, countryCode: "55" }).toString(),
+    });
+    const texto = await res.text();
+    let data: any = null;
+    try { data = JSON.parse(texto); } catch { /* resposta não-JSON */ }
+    if (res.ok && data?.status === true) return { ok: true, provedor: "fonnte" };
+    return { ok: false, provedor: "fonnte", erro: `HTTP ${res.status}: ${texto.slice(0, 300)}` };
+  } catch (err) {
+    return { ok: false, provedor: "fonnte", erro: String(err) };
+  }
+}
+
 // ── Envia via Evolution API ──────────────────────────────────────────────────
-async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<boolean> {
+async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<EnvioResultado> {
   const url = process.env.EVOLUTION_API_URL;
   const apiKey = process.env.EVOLUTION_API_KEY;
   const instance = process.env.EVOLUTION_INSTANCE;
-  if (!url || !apiKey || !instance) return false;
+  if (!url || !apiKey || !instance) return { ok: false, provedor: "evolution", erro: "não configurado" };
   try {
     const res = await fetch(`${url}/message/sendText/${instance}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", apikey: apiKey },
       body: JSON.stringify({ number: numero, text: mensagem }),
     });
-    return res.ok;
-  } catch { return false; }
+    if (res.ok) return { ok: true, provedor: "evolution" };
+    return { ok: false, provedor: "evolution", erro: await corpoErro(res) };
+  } catch (err) {
+    return { ok: false, provedor: "evolution", erro: String(err) };
+  }
 }
 
 // ── Envia via Z-API ──────────────────────────────────────────────────────────
-async function enviarViaZAPI(numero: string, mensagem: string): Promise<boolean> {
+async function enviarViaZAPI(numero: string, mensagem: string): Promise<EnvioResultado> {
   const instanceId = process.env.ZAPI_INSTANCE_ID;
   const token = process.env.ZAPI_TOKEN;
   const clientToken = process.env.ZAPI_CLIENT_TOKEN;
-  if (!instanceId || !token) return false;
+  if (!instanceId || !token) return { ok: false, provedor: "z-api", erro: "não configurado" };
   try {
     const res = await fetch(
       `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`,
@@ -124,21 +155,41 @@ async function enviarViaZAPI(numero: string, mensagem: string): Promise<boolean>
         body: JSON.stringify({ phone: numero, message: mensagem }),
       }
     );
-    return res.ok;
-  } catch { return false; }
+    if (res.ok) return { ok: true, provedor: "z-api" };
+    return { ok: false, provedor: "z-api", erro: await corpoErro(res) };
+  } catch (err) {
+    return { ok: false, provedor: "z-api", erro: String(err) };
+  }
+}
+
+// ── Tenta, em cascata, todos os provedores de WhatsApp configurados ─────────
+// (Fonnte → Z-API → Evolution) — para no primeiro que funcionar, e reporta o
+// motivo real de cada falha (visível nos logs da função e na resposta da API).
+export async function enviarWhatsapp(numero: string, mensagem: string): Promise<EnvioResultado> {
+  const tentativas = [enviarViaFonnte, enviarViaZAPI, enviarViaEvolutionAPI];
+  const erros: string[] = [];
+
+  for (const tentativa of tentativas) {
+    const resultado = await tentativa(numero, mensagem);
+    if (resultado.ok) return resultado;
+    if (resultado.erro !== "não configurado") {
+      console.error(`[WhatsApp] Falha via ${resultado.provedor} para ${numero}: ${resultado.erro}`);
+    }
+    erros.push(`${resultado.provedor}: ${resultado.erro}`);
+  }
+
+  return { ok: false, provedor: "nenhum", erro: erros.join(" | ") };
 }
 
 // ── PROCESSO 1: WhatsApp ─────────────────────────────────────────────────────
 export async function processarNotificacoes(): Promise<{
   enviadas: number;
-  pendentes: { numero: string; mensagem: string; professorNome: string; avaliacaoNome: string }[];
+  pendentes: { numero: string; mensagem: string; professorNome: string; avaliacaoNome: string; erro?: string }[];
   erros: string[];
 }> {
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const avaliacoes = await buscarAvaliacoes();
   const resultado = { enviadas: 0, pendentes: [] as any[], erros: [] as string[] };
-  const evolutionConfigurada = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
-  const zapiConfigurada = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);
 
   for (const av of avaliacoes) {
     const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);
@@ -173,23 +224,19 @@ export async function processarNotificacoes(): Promise<{
           nomesAlunos,
         });
 
-        let enviada = false;
-        if (zapiConfigurada) {
-          enviada = await enviarViaZAPI(numero, mensagem);
-        } else if (evolutionConfigurada) {
-          enviada = await enviarViaEvolutionAPI(numero, mensagem);
-        }
+        const envio = await enviarWhatsapp(numero, mensagem);
 
         await prisma.notificacaoProva.upsert({
           where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
-          update: { enviada, whatsapp: numero },
-          create: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes, whatsapp: numero, enviada },
+          update: { enviada: envio.ok, whatsapp: numero },
+          create: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes, whatsapp: numero, enviada: envio.ok },
         });
 
-        if (enviada) {
+        if (envio.ok) {
           resultado.enviadas++;
         } else {
-          resultado.pendentes.push({ numero, mensagem, professorNome: prof.usuario.nome, avaliacaoNome: av.nome });
+          resultado.pendentes.push({ numero, mensagem, professorNome: prof.usuario.nome, avaliacaoNome: av.nome, erro: envio.erro });
+          resultado.erros.push(`WhatsApp – ${prof.usuario.nome}: ${envio.erro}`);
         }
       } catch (err) {
         resultado.erros.push(`WhatsApp – ${prof.usuario.nome}: ${String(err)}`);
@@ -278,10 +325,11 @@ export async function processarNotificacoesAula(): Promise<{
   erros: string[];
 }> {
   const resultado = { enviadas: 0, erros: [] as string[] };
+  const fonnteConfigurada = !!process.env.FONNTE_TOKEN;
   const zapiConfigurada = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);
   const evolutionConfigurada = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
 
-  if (!zapiConfigurada && !evolutionConfigurada) return resultado;
+  if (!fonnteConfigurada && !zapiConfigurada && !evolutionConfigurada) return resultado;
 
   const amanha = new Date();
   amanha.setDate(amanha.getDate() + 1);
@@ -332,18 +380,16 @@ export async function processarNotificacoesAula(): Promise<{
     ].join("\n");
 
     try {
-      let enviada = false;
-      if (zapiConfigurada) enviada = await enviarViaZAPI(numero, mensagem);
-      else if (evolutionConfigurada) enviada = await enviarViaEvolutionAPI(numero, mensagem);
+      const envio = await enviarWhatsapp(numero, mensagem);
 
       await prisma.notificacaoAula.upsert({
         where: { agendaAulaId: aula.id },
-        update: { enviada, whatsapp: numero },
-        create: { agendaAulaId: aula.id, enviada, whatsapp: numero },
+        update: { enviada: envio.ok, whatsapp: numero },
+        create: { agendaAulaId: aula.id, enviada: envio.ok, whatsapp: numero },
       });
 
-      if (enviada) resultado.enviadas++;
-      else resultado.erros.push(`${aula.aluno.nome} (${numero}): envio falhou`);
+      if (envio.ok) resultado.enviadas++;
+      else resultado.erros.push(`${aula.aluno.nome} (${numero}): ${envio.erro}`);
     } catch (err) {
       resultado.erros.push(`${aula.aluno.nome}: ${String(err)}`);
     }
