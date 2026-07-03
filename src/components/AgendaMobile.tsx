@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
-         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2 } from "lucide-react";
+         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -331,9 +331,14 @@ export default function AgendaMobile({
 
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
-        <div>
-          <p className="text-xs opacity-75">EduGestão</p>
-          <p className="text-sm font-bold leading-tight truncate max-w-[200px]">{nomeUsuario}</p>
+        <div className="flex items-center gap-3">
+          <button onClick={() => router.push("/m")} className="opacity-75 hover:opacity-100">
+            <Home size={18}/>
+          </button>
+          <div>
+            <p className="text-xs opacity-75">EduGestão</p>
+            <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {loading && <RefreshCw size={15} className="animate-spin opacity-75"/>}

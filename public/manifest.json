@@ -1,8 +1,8 @@
 {
-  "name": "EduGestão — Agenda",
-  "short_name": "EduAgenda",
-  "description": "Agenda de aulas EduGestão",
-  "start_url": "/m/agenda",
+  "name": "EduGestão",
+  "short_name": "EduGestão",
+  "description": "Agenda e conteúdos EduGestão",
+  "start_url": "/m",
   "display": "standalone",
   "background_color": "#f1f5f9",
   "theme_color": "#4f46e5",

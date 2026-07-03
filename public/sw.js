@@ -1,6 +1,6 @@
 // Service Worker básico — cache de assets estáticos
 const CACHE = "edugestao-v1";
-const STATIC = ["/m/agenda", "/manifest.json"];
+const STATIC = ["/m", "/m/agenda", "/m/conteudos", "/manifest.json"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
