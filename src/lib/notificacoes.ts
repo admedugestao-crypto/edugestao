@@ -98,9 +98,19 @@ async function corpoErro(res: Response): Promise<string> {
   return `HTTP ${res.status}${texto ? `: ${texto.slice(0, 300)}` : ""}`;
 }
 
+// Remove BOM (U+FEFF) e espaços que às vezes vêm junto ao colar a variável de
+// ambiente no painel da Vercel — sem isso, fetch() lança TypeError ao usar o
+// valor como header HTTP.
+const BOM = String.fromCharCode(65279);
+function limparEnv(v: string | undefined): string | undefined {
+  if (!v) return v;
+  const limpo = (v.startsWith(BOM) ? v.slice(BOM.length) : v).trim();
+  return limpo || undefined;
+}
+
 // ── Envia via Fonnte ──────────────────────────────────────────────────────────
 async function enviarViaFonnte(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const token = process.env.FONNTE_TOKEN;
+  const token = limparEnv(process.env.FONNTE_TOKEN);
   if (!token) return { ok: false, provedor: "fonnte", erro: "não configurado" };
   try {
     const res = await fetch("https://api.fonnte.com/send", {
@@ -120,9 +130,9 @@ async function enviarViaFonnte(numero: string, mensagem: string): Promise<EnvioR
 
 // ── Envia via Evolution API ──────────────────────────────────────────────────
 async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const url = process.env.EVOLUTION_API_URL;
-  const apiKey = process.env.EVOLUTION_API_KEY;
-  const instance = process.env.EVOLUTION_INSTANCE;
+  const url = limparEnv(process.env.EVOLUTION_API_URL);
+  const apiKey = limparEnv(process.env.EVOLUTION_API_KEY);
+  const instance = limparEnv(process.env.EVOLUTION_INSTANCE);
   if (!url || !apiKey || !instance) return { ok: false, provedor: "evolution", erro: "não configurado" };
   try {
     const res = await fetch(`${url}/message/sendText/${instance}`, {
@@ -139,9 +149,9 @@ async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<
 
 // ── Envia via Z-API ──────────────────────────────────────────────────────────
 async function enviarViaZAPI(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const instanceId = process.env.ZAPI_INSTANCE_ID;
-  const token = process.env.ZAPI_TOKEN;
-  const clientToken = process.env.ZAPI_CLIENT_TOKEN;
+  const instanceId = limparEnv(process.env.ZAPI_INSTANCE_ID);
+  const token = limparEnv(process.env.ZAPI_TOKEN);
+  const clientToken = limparEnv(process.env.ZAPI_CLIENT_TOKEN);
   if (!instanceId || !token) return { ok: false, provedor: "z-api", erro: "não configurado" };
   try {
     const res = await fetch(
