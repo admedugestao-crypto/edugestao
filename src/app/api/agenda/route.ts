@@ -171,6 +171,9 @@ export async function POST(req: NextRequest) {
   if (!alunoId || !data)
     return NextResponse.json({ erro: "alunoId e data são obrigatórios" }, { status: 400 });
 
+  if (!horaInicio || !horaFim)
+    return NextResponse.json({ erro: "Início e fim são obrigatórios" }, { status: 400 });
+
   // Grava como UTC midnight — padrão único em todo o sistema
   const dataObj = utcDia(data as string); // "YYYY-MM-DD" → T00:00:00Z
 

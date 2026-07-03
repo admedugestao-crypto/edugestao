@@ -4,16 +4,6 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-function diaUTC(data: Date) {
-  const dY = data.getUTCFullYear();
-  const dM = data.getUTCMonth();
-  const dD = data.getUTCDate();
-  return {
-    gte: new Date(Date.UTC(dY, dM, dD)),
-    lt:  new Date(Date.UTC(dY, dM, dD + 1)),
-  };
-}
-
 // PATCH /api/agenda/[id] — atualizar status, horário, observação
 export async function PATCH(
   req: NextRequest,
@@ -25,6 +15,10 @@ export async function PATCH(
   const { id } = await params;
   const body   = await req.json();
   const { status, horaInicio, horaFim, observacao, materiaId, todasMaterias, data } = body;
+
+  if ((horaInicio !== undefined && !horaInicio) || (horaFim !== undefined && !horaFim)) {
+    return NextResponse.json({ erro: "Início e fim são obrigatórios" }, { status: 400 });
+  }
 
   // Troca para "Todas as matérias": restaura N:N com todas as matérias do aluno
   if (todasMaterias) {
@@ -58,9 +52,11 @@ export async function PATCH(
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
   // Bloqueia mudar para REALIZADA sem conteúdo registrado; se conteúdo for planejado, converte para ministrado
+  // Busca pelo vínculo exato (aulaId) — evita pegar o conteúdo de outra aula do
+  // mesmo aluno no mesmo dia, quando há mais de uma.
   if (status === "REALIZADA") {
-    const conteudo = await prisma.conteudo.findFirst({
-      where: { alunoId: aula.alunoId, data: diaUTC(aula.data) },
+    const conteudo = await prisma.conteudo.findUnique({
+      where: { aulaId: id },
       select: { id: true, planejado: true },
     });
     if (!conteudo) {
@@ -77,7 +73,7 @@ export async function PATCH(
   // Se sair de REALIZADA para outro status → exclui o conteúdo vinculado
   if (status !== undefined && status !== "REALIZADA" && aula.status === "REALIZADA") {
     await prisma.conteudo.deleteMany({
-      where: { alunoId: aula.alunoId, data: diaUTC(aula.data) },
+      where: { aulaId: id },
     });
   }
 
@@ -148,7 +144,7 @@ export async function DELETE(
   // Se a aula estava REALIZADA, exclui o conteúdo vinculado
   if (aula.status === "REALIZADA") {
     await prisma.conteudo.deleteMany({
-      where: { alunoId: aula.alunoId, data: diaUTC(aula.data) },
+      where: { aulaId: id },
     });
   }
 

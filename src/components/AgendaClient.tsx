@@ -420,6 +420,10 @@ export default function AgendaClient({
       return;
     }
     if (!novaAula.alunoId || !novaAula.data) return;
+    if (!novaAula.horaInicio || !novaAula.horaFim) {
+      setErroModal("Início e fim são obrigatórios.");
+      return;
+    }
 
     // Disponibilidade: verificada SEMPRE (independente de forcar outras regras)
     if (!forcarDisp) {
@@ -1055,13 +1059,13 @@ export default function AgendaClient({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-600">Início</label>
-                <input type="time" value={novaAula.horaInicio} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
+                <label className="text-xs font-medium text-slate-600">Início *</label>
+                <input type="time" required value={novaAula.horaInicio} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-600">Fim</label>
-                <input type="time" value={novaAula.horaFim} onChange={(e) => setNovaAula((p) => ({ ...p, horaFim: e.target.value }))}
+                <label className="text-xs font-medium text-slate-600">Fim *</label>
+                <input type="time" required value={novaAula.horaFim} onChange={(e) => setNovaAula((p) => ({ ...p, horaFim: e.target.value }))}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
             </div>
@@ -1115,7 +1119,7 @@ export default function AgendaClient({
               <button onClick={() => setModalAberto(false)} className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50">
                 Cancelar
               </button>
-              <button onClick={() => salvarNovaAula()} disabled={salvando || !novaAula.alunoId || !novaAula.data || (!isProfessor && !professoraIdModal)}
+              <button onClick={() => salvarNovaAula()} disabled={salvando || !novaAula.alunoId || !novaAula.data || !novaAula.horaInicio || !novaAula.horaFim || (!isProfessor && !professoraIdModal)}
                 className="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg transition-colors">
                 {salvando && <RefreshCw size={13} className="animate-spin"/>}
                 Salvar
