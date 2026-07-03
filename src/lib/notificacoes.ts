@@ -163,10 +163,12 @@ async function enviarViaZAPI(numero: string, mensagem: string): Promise<EnvioRes
 }
 
 // ── Tenta, em cascata, todos os provedores de WhatsApp configurados ─────────
-// (Fonnte → Z-API → Evolution) — para no primeiro que funcionar, e reporta o
-// motivo real de cada falha (visível nos logs da função e na resposta da API).
+// Z-API primeiro (provedor com configuração mais recente / ativo), depois
+// Fonnte e Evolution como fallback — para no primeiro que funcionar, e
+// reporta o motivo real de cada falha (visível nos logs da função e na
+// resposta da API).
 export async function enviarWhatsapp(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const tentativas = [enviarViaFonnte, enviarViaZAPI, enviarViaEvolutionAPI];
+  const tentativas = [enviarViaZAPI, enviarViaFonnte, enviarViaEvolutionAPI];
   const erros: string[] = [];
 
   for (const tentativa of tentativas) {
