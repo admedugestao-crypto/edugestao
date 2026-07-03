@@ -3,7 +3,9 @@ import { enviarEmailProva, emailConfigurado } from "./email";
 
 // ── Formata número WhatsApp para o padrão internacional ─────────────────────
 export function formatarWhatsapp(num: string): string {
-  const digits = num.replace(/\D/g, "");
+  // Remove zero(s) de tronco à esquerda (ex: "031999999999" → "31999999999") —
+  // nenhum DDD real começa com 0, então sobra sempre indica erro de digitação.
+  const digits = num.replace(/\D/g, "").replace(/^0+/, "");
   if (digits.startsWith("55")) return digits;
   return `55${digits}`;
 }
