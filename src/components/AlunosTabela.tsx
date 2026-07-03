@@ -48,6 +48,17 @@ function StatusPagamento({
 
   // Determina se alguma parcela deste mês está em aberto/atrasada/paga
   const pgs = aluno.pagamentos?.filter((p) => p.mes === mes && p.ano === ano) ?? [];
+
+  // Nenhum título foi gerado ainda para este mês (ex: aluno sem aula realizada) —
+  // não há cobrança em aberto para marcar como pendente/atrasada.
+  if (pgs.length === 0) {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+        <Ban size={11} /> Sem título
+      </span>
+    );
+  }
+
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
 
   // Calcula parcelas esperadas para o mês
@@ -61,7 +72,7 @@ function StatusPagamento({
       if (new Date(ano, mes - 1, d).getDay() === (aluno.diaSemanaCobranca ?? 0)) count++;
     }
     // Parcelas futuras ainda não geradas não devem contar como pendência
-    totalParcelas = pgs.length > 0 ? Math.min(count, pgs.length) : count;
+    totalParcelas = Math.min(count, pgs.length);
   }
 
   const pagas = pgs.filter((p) => p.pago).length;
