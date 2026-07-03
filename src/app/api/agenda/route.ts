@@ -56,30 +56,14 @@ export async function GET(req: NextRequest) {
       materia:    { select: { id: true, nome: true, cor: true } },
       materias:   { select: { materia: { select: { id: true, nome: true, cor: true } } } },
       professora: { select: { usuario: { select: { nome: true } } } },
+      // Vínculo exato — evita mostrar o conteúdo de outra aula do mesmo
+      // aluno no mesmo dia, quando há mais de uma.
+      conteudo: { select: { planejado: true, topico: true, descricao: true, arquivoUrl: true } },
     },
     orderBy: [{ data: "asc" }, { horaInicio: "asc" }],
   });
 
-  // Busca conteúdos do período para enriquecer cada aula com indicador
-  const alunoIds = [...new Set(aulas.map((a) => a.alunoId))];
-  const conteudos = alunoIds.length > 0
-    ? await prisma.conteudo.findMany({
-        where: { alunoId: { in: alunoIds }, data: { gte: dataInicio, lt: dataFim } },
-        select: { alunoId: true, data: true, planejado: true, topico: true, descricao: true, arquivoUrl: true },
-      })
-    : [];
-
-  const conteudoMap = new Map(
-    conteudos.map((c) => [
-      `${c.alunoId}|${c.data.toISOString().split("T")[0]}`,
-      { planejado: c.planejado, topico: c.topico, descricao: c.descricao, arquivoUrl: c.arquivoUrl },
-    ])
-  );
-
-  const aulasComConteudo = aulas.map((a) => ({
-    ...a,
-    conteudo: conteudoMap.get(`${a.alunoId}|${a.data.toISOString().split("T")[0]}`) ?? null,
-  }));
+  const aulasComConteudo = aulas.map(({ conteudo, ...a }) => ({ ...a, conteudo: conteudo ?? null }));
 
   return NextResponse.json(aulasComConteudo);
 }
