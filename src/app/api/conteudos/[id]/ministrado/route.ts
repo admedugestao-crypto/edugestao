@@ -15,7 +15,7 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, alunoId: true, data: true, planejado: true, materiaId: true, materia: { select: { nome: true } } },
+    select: { id: true, alunoId: true, data: true, planejado: true, materiaId: true, aulaId: true, materia: { select: { nome: true } } },
   });
 
   if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
@@ -25,16 +25,22 @@ export async function POST(
   const dM = conteudo.data.getUTCMonth();
   const dD = conteudo.data.getUTCDate();
 
-  const aula = await prisma.agendaAula.findFirst({
-    where: {
-      alunoId: conteudo.alunoId,
-      data: {
-        gte: new Date(Date.UTC(dY, dM, dD)),
-        lt: new Date(Date.UTC(dY, dM, dD + 1)),
-      },
-    },
-    select: { id: true, status: true, horaFim: true, materiaId: true, materia: { select: { nome: true } } },
-  });
+  const selectAula = { id: true, status: true, horaFim: true, materiaId: true, materia: { select: { nome: true } } } as const;
+
+  // Prioriza o vínculo exato (aulaId) — só cai para busca por aluno+data
+  // (ambígua quando há +1 aula no mesmo dia) para conteúdos antigos sem vínculo.
+  const aula = conteudo.aulaId
+    ? await prisma.agendaAula.findUnique({ where: { id: conteudo.aulaId }, select: selectAula })
+    : await prisma.agendaAula.findFirst({
+        where: {
+          alunoId: conteudo.alunoId,
+          data: {
+            gte: new Date(Date.UTC(dY, dM, dD)),
+            lt: new Date(Date.UTC(dY, dM, dD + 1)),
+          },
+        },
+        select: selectAula,
+      });
 
   if (!aula) {
     return NextResponse.json(
@@ -89,7 +95,7 @@ export async function POST(
     );
   }
 
-  // Mark the agenda as REALIZADA and the conteúdo as Ministrado
+  // Marca a agenda como REALIZADA, o conteúdo como Ministrado, e grava o vínculo exato
   await prisma.$transaction([
     prisma.agendaAula.update({
       where: { id: aula.id },
@@ -97,7 +103,7 @@ export async function POST(
     }),
     prisma.conteudo.update({
       where: { id: conteudo.id },
-      data: { planejado: false },
+      data: { planejado: false, aulaId: aula.id },
     }),
   ]);
 

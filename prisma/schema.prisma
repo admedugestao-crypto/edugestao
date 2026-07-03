@@ -313,6 +313,7 @@ model Conteudo {
   id        String   @id @default(cuid())
   alunoId   String
   materiaId String?
+  aulaId    String?  @unique // vínculo exato com a Aula Agendada (evita ambiguidade quando há +1 aula no mesmo dia)
   data      DateTime
   topico     String
   descricao  String?
@@ -320,8 +321,9 @@ model Conteudo {
   planejado  Boolean  @default(false)
   criadoEm  DateTime @default(now())
 
-  aluno   Aluno    @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  materia Materia? @relation(fields: [materiaId], references: [id])
+  aluno   Aluno       @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia Materia?    @relation(fields: [materiaId], references: [id])
+  aula    AgendaAula? @relation(fields: [aulaId], references: [id], onDelete: SetNull)
 
   @@map("conteudos")
 }
@@ -346,6 +348,7 @@ model AgendaAula {
   materias      AgendaAulaMateria[]
   pagamentos    PagamentoAula[]
   notificacao   NotificacaoAula?
+  conteudo      Conteudo?
 
   @@map("agenda_aulas")
 }

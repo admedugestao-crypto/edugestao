@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { buscarAulaVinculada } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
 
@@ -16,32 +17,19 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, alunoId: true, data: true, planejado: true },
+    select: { id: true, alunoId: true, data: true, planejado: true, aulaId: true },
   });
 
   if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   if (conteudo.planejado) return NextResponse.json({ erro: "Conteúdo já está Planejado." }, { status: 422 });
 
-  const dY = conteudo.data.getUTCFullYear();
-  const dM = conteudo.data.getUTCMonth();
-  const dD = conteudo.data.getUTCDate();
-
-  const aula = await prisma.agendaAula.findFirst({
-    where: {
-      alunoId: conteudo.alunoId,
-      status: "REALIZADA",
-      data: {
-        gte: new Date(Date.UTC(dY, dM, dD)),
-        lt: new Date(Date.UTC(dY, dM, dD + 1)),
-      },
-    },
-    select: { id: true },
-  });
+  const aula = await buscarAulaVinculada(conteudo);
+  const aulaRealizada = aula?.status === "REALIZADA" ? aula : null;
 
   await prisma.$transaction(async (tx) => {
     await tx.conteudo.update({ where: { id }, data: { planejado: true } });
-    if (aula) {
-      await tx.agendaAula.update({ where: { id: aula.id }, data: { status: "AGENDADA" } });
+    if (aulaRealizada) {
+      await tx.agendaAula.update({ where: { id: aulaRealizada.id }, data: { status: "AGENDADA" } });
     }
   });
 

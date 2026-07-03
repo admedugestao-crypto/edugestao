@@ -193,14 +193,15 @@ export default function AgendaMobile({
   }
 
   // ── Marcar Realizada: exige registrar o conteúdo ministrado ─────────────────
-  // Busca se já existe um conteúdo para este aluno/data — se existir, edita;
-  // senão, abre formulário em branco. Só ao salvar é que a aula vira Realizada.
+  // Busca se já existe um conteúdo vinculado a esta aula exata — se existir,
+  // edita; senão, abre formulário em branco. Só ao salvar é que a aula vira
+  // Realizada.
   async function abrirConteudoParaRealizada(aula: Aula) {
     setErroConteudo(null);
     setCarregandoConteudo(true);
     try {
       const dataStr = aula.data.split("T")[0];
-      const res = await fetch(`/api/conteudos?alunoId=${aula.alunoId}&data=${dataStr}`);
+      const res = await fetch(`/api/conteudos?aulaId=${aula.id}`);
       const existente = res.ok ? await res.json() : null;
 
       setConteudoModal({

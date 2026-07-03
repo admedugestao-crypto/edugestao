@@ -1,46 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { validarAgenda, buscarAulaVinculada } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
-
-// ── Validação de agenda (mesma lógica do POST) ────────────────────────────────
-async function validarAgenda(
-  alunoId:  string,
-  data:     Date,
-  planejado: boolean,
-): Promise<{ ok: true } | { ok: false; erro: string }> {
-  const dY = data.getUTCFullYear();
-  const dM = data.getUTCMonth();
-  const dD = data.getUTCDate();
-
-  const aula = await prisma.agendaAula.findFirst({
-    where: {
-      alunoId,
-      data: {
-        gte: new Date(Date.UTC(dY, dM, dD)),
-        lt:  new Date(Date.UTC(dY, dM, dD + 1)),
-      },
-    },
-    select: { status: true },
-  });
-
-  if (!aula) {
-    return { ok: false, erro: "Não existe Aula Agendada para este aluno nesta data." };
-  }
-
-  const statusEsperado = planejado ? "AGENDADA" : "REALIZADA";
-  if (aula.status !== statusEsperado) {
-    return {
-      ok: false,
-      erro: planejado
-        ? `Conteúdo planejado requer aula com status Agendada (atual: ${aula.status}).`
-        : `Conteúdo ministrado requer aula com status Realizada (atual: ${aula.status}).`,
-    };
-  }
-
-  return { ok: true };
-}
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -51,7 +14,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const dataAula  = new Date(body.data);
   const planejado = body.planejado ?? false;
 
-  const validacao = await validarAgenda(body.alunoId, dataAula, planejado);
+  const existente = await prisma.conteudo.findUnique({ where: { id }, select: { aulaId: true } });
+  if (!existente) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+
+  const validacao = await validarAgenda(body.alunoId, dataAula, planejado, existente.aulaId);
   if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
 
   const conteudo = await prisma.conteudo.update({
@@ -79,27 +45,14 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
 
   const { id } = await params;
 
-  // Bloqueia exclusão se houver aula com status REALIZADA na mesma data/aluno
+  // Bloqueia exclusão se houver aula com status REALIZADA vinculada a este conteúdo
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { alunoId: true, data: true },
+    select: { alunoId: true, data: true, aulaId: true },
   });
   if (conteudo) {
-    const dY = conteudo.data.getUTCFullYear();
-    const dM = conteudo.data.getUTCMonth();
-    const dD = conteudo.data.getUTCDate();
-    const aula = await prisma.agendaAula.findFirst({
-      where: {
-        alunoId: conteudo.alunoId,
-        status:  "REALIZADA",
-        data: {
-          gte: new Date(Date.UTC(dY, dM, dD)),
-          lt:  new Date(Date.UTC(dY, dM, dD + 1)),
-        },
-      },
-      select: { id: true },
-    });
-    if (aula) {
+    const aula = await buscarAulaVinculada(conteudo);
+    if (aula?.status === "REALIZADA") {
       return NextResponse.json(
         { erro: "Não é possível excluir: existe uma agenda com status Realizada vinculada a este conteúdo." },
         { status: 422 },

@@ -29,6 +29,9 @@ export default async function ConteudosPage() {
           },
         },
         materia: true,
+        aula: {
+          select: { id: true, horaInicio: true, horaFim: true, status: true, materia: { select: { nome: true, cor: true } } },
+        },
       },
       orderBy: { data: "desc" },
       take: 50,
@@ -40,27 +43,6 @@ export default async function ConteudosPage() {
     }),
     prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } }),
   ]);
-
-  // Busca aulas agendadas vinculadas a cada conteúdo (por alunoId + data)
-  const alunoIds = [...new Set(conteudos.map((c) => c.alunoId))];
-  const datas = conteudos.map((c) => c.data);
-  const dataMin = datas.length > 0 ? new Date(Math.min(...datas.map((d) => d.getTime()))) : new Date();
-  const dataMax = datas.length > 0 ? new Date(Math.max(...datas.map((d) => d.getTime())) + 86400000) : new Date();
-
-  const aulasAgendadas = alunoIds.length > 0
-    ? await prisma.agendaAula.findMany({
-        where: { alunoId: { in: alunoIds }, data: { gte: dataMin, lt: dataMax } },
-        select: { id: true, alunoId: true, data: true, horaInicio: true, horaFim: true, status: true, materia: { select: { nome: true, cor: true } } },
-      })
-    : [];
-
-  // Mapa: "alunoId|YYYY-MM-DD" → aula
-  const aulaMap = new Map(
-    aulasAgendadas.map((a) => [
-      `${a.alunoId}|${a.data.toISOString().split("T")[0]}`,
-      { id: a.id, horaInicio: a.horaInicio, horaFim: a.horaFim, status: a.status as string, materia: a.materia },
-    ])
-  );
 
   return (
     <div className="space-y-5">
@@ -90,7 +72,7 @@ export default async function ConteudosPage() {
             nome:      c.aluno.nome,
             professora: c.aluno.professora?.usuario?.nome ?? null,
           },
-          agenda: aulaMap.get(`${c.alunoId}|${c.data.toISOString().split("T")[0]}`) ?? null,
+          agenda: c.aula ? { id: c.aula.id, horaInicio: c.aula.horaInicio, horaFim: c.aula.horaFim, status: c.aula.status, materia: c.aula.materia } : null,
         }))}
       />
       </Suspense>
