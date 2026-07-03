@@ -334,12 +334,12 @@ export default function AgendaClient({
   }
 
   // ── Nova aula ──────────────────────────────────────────────────────────────
-  function abrirModal(data?: string) {
+  function abrirModal(data?: string, horaInicio?: string, horaFim?: string) {
     setDataModal(data ?? "");
     setProfessoraIdModal("");
     setErroModal(null);
     setAvisoAgendamento(null);
-    setNovaAula({ alunoId: "", materiaId: "", data: data ?? "", horaInicio: "", horaFim: "", observacao: "" });
+    setNovaAula({ alunoId: "", materiaId: "", data: data ?? "", horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
     setModalAberto(true);
   }
 
@@ -904,7 +904,7 @@ export default function AgendaClient({
                       <div key={`livre-${j}`}
                         className="flex items-center gap-1 px-1.5 py-1 rounded-md bg-emerald-50 border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-colors"
                         title="Horário livre — clique para agendar"
-                        onClick={() => abrirModal(ds)}
+                        onClick={() => abrirModal(ds, item.inicio, item.fim)}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"/>
                         <span className="text-[10px] text-emerald-700 font-medium leading-none">
