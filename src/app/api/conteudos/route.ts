@@ -44,6 +44,34 @@ async function validarAgenda(
   return { ok: true };
 }
 
+// GET /api/conteudos?alunoId=...&data=YYYY-MM-DD
+// Busca o conteúdo já cadastrado para este aluno nesta data (se houver) —
+// usado pela agenda mobile para decidir entre editar ou criar ao marcar
+// uma aula como Realizada.
+export async function GET(req: NextRequest) {
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const alunoId = searchParams.get("alunoId");
+  const dataStr = searchParams.get("data");
+  if (!alunoId || !dataStr) {
+    return NextResponse.json({ erro: "alunoId e data são obrigatórios" }, { status: 400 });
+  }
+
+  const [y, m, d] = dataStr.split("-").map(Number);
+  const conteudo = await prisma.conteudo.findFirst({
+    where: {
+      alunoId,
+      data: { gte: new Date(Date.UTC(y, m - 1, d)), lt: new Date(Date.UTC(y, m - 1, d + 1)) },
+    },
+    include: { materia: true },
+    orderBy: { criadoEm: "desc" },
+  });
+
+  return NextResponse.json(conteudo);
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });

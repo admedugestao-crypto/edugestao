@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
-         CheckCircle2, XCircle, UserX, UserCheck, X } from "lucide-react";
+         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2 } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -23,6 +23,20 @@ type Aula = {
   materia:   Materia | null;
   professora: { usuario: { nome: string } };
 };
+
+// Conteúdo vinculado a uma aula marcada como Realizada
+type ConteudoForm = {
+  id?: string;
+  alunoId: string;
+  materiaId: string | null;
+  topico: string;
+  descricao: string;
+  arquivoUrl: string;
+  arquivoNome: string;
+  data: string;
+  planejadoOriginal: boolean;
+};
+type ConteudoModalState = { aulaId: string; existente: boolean; form: ConteudoForm };
 
 const DIAS_PT   = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 const DIAS_FULL = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
@@ -83,6 +97,13 @@ export default function AgendaMobile({
 
   // Modal detalhe
   const [detalhe, setDetalhe] = useState<Aula | null>(null);
+
+  // Modal conteúdo (ao marcar aula como Realizada)
+  const [conteudoModal, setConteudoModal]     = useState<ConteudoModalState | null>(null);
+  const [carregandoConteudo, setCarregandoConteudo] = useState(false);
+  const [salvandoConteudo, setSalvandoConteudo]     = useState(false);
+  const [enviandoArquivo, setEnviandoArquivo]       = useState(false);
+  const [erroConteudo, setErroConteudo]             = useState<string | null>(null);
 
   const diasSemana = Array.from({ length: 7 }, (_, i) => addDays(semana, i));
 
@@ -171,6 +192,132 @@ export default function AgendaMobile({
     setDetalhe((p) => p && p.id === id ? { ...p, status } : p);
   }
 
+  // ── Marcar Realizada: exige registrar o conteúdo ministrado ─────────────────
+  // Busca se já existe um conteúdo para este aluno/data — se existir, edita;
+  // senão, abre formulário em branco. Só ao salvar é que a aula vira Realizada.
+  async function abrirConteudoParaRealizada(aula: Aula) {
+    setErroConteudo(null);
+    setCarregandoConteudo(true);
+    try {
+      const dataStr = aula.data.split("T")[0];
+      const res = await fetch(`/api/conteudos?alunoId=${aula.alunoId}&data=${dataStr}`);
+      const existente = res.ok ? await res.json() : null;
+
+      setConteudoModal({
+        aulaId: aula.id,
+        existente: !!existente,
+        form: existente ? {
+          id: existente.id,
+          alunoId: existente.alunoId,
+          materiaId: existente.materiaId,
+          topico: existente.topico,
+          descricao: existente.descricao ?? "",
+          arquivoUrl: existente.arquivoUrl ?? "",
+          arquivoNome: existente.arquivoUrl ? existente.arquivoUrl.split("/").pop() ?? "" : "",
+          data: dataStr,
+          planejadoOriginal: existente.planejado,
+        } : {
+          alunoId: aula.alunoId,
+          materiaId: aula.materiaId,
+          topico: "",
+          descricao: "",
+          arquivoUrl: "",
+          arquivoNome: "",
+          data: dataStr,
+          planejadoOriginal: true,
+        },
+      });
+      setDetalhe(null);
+    } catch {
+      setErroConteudo("Erro ao verificar conteúdo existente.");
+    } finally {
+      setCarregandoConteudo(false);
+    }
+  }
+
+  async function salvarConteudoRealizada() {
+    if (!conteudoModal) return;
+    const { aulaId, existente, form } = conteudoModal;
+    setSalvandoConteudo(true);
+    setErroConteudo(null);
+    try {
+      if (existente && form.id) {
+        const resPut = await fetch(`/api/conteudos/${form.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...form, planejado: form.planejadoOriginal, arquivoUrl: form.arquivoUrl || null }),
+        });
+        if (!resPut.ok) {
+          const d = await resPut.json();
+          setErroConteudo(d.erro ?? "Erro ao salvar conteúdo.");
+          return;
+        }
+        if (form.planejadoOriginal) {
+          // ainda estava Planejado — marcar Ministrado já atualiza a agenda para Realizada
+          const resMin = await fetch(`/api/conteudos/${form.id}/ministrado`, { method: "POST" });
+          const dMin = await resMin.json();
+          if (!resMin.ok) {
+            setErroConteudo(dMin.erro ?? "Erro ao marcar como Ministrado.");
+            return;
+          }
+        } else {
+          // já estava Ministrado — só garante o status da agenda
+          await fetch(`/api/agenda/${aulaId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "REALIZADA" }),
+          });
+        }
+      } else {
+        const resPost = await fetch("/api/conteudos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...form, aulaId, planejado: false, arquivoUrl: form.arquivoUrl || null }),
+        });
+        if (!resPost.ok) {
+          const d = await resPost.json();
+          setErroConteudo(d.erro ?? "Erro ao registrar conteúdo.");
+          return;
+        }
+        const resPatch = await fetch(`/api/agenda/${aulaId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "REALIZADA" }),
+        });
+        if (!resPatch.ok) {
+          setErroConteudo("Conteúdo salvo, mas não foi possível atualizar a agenda.");
+          return;
+        }
+      }
+
+      setAulas((prev) => prev.map((a) => a.id === aulaId ? { ...a, status: "REALIZADA" } : a));
+      setConteudoModal(null);
+    } catch {
+      setErroConteudo("Erro de comunicação com o servidor.");
+    } finally {
+      setSalvandoConteudo(false);
+    }
+  }
+
+  async function uploadArquivoConteudo(file: File) {
+    setEnviandoArquivo(true);
+    try {
+      const fd = new FormData();
+      fd.append("arquivo", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        setErroConteudo(data.erro ?? "Erro ao enviar arquivo.");
+        return;
+      }
+      setConteudoModal((p) => p && { ...p, form: { ...p.form, arquivoUrl: data.url, arquivoNome: data.nome } });
+    } catch {
+      setErroConteudo("Erro ao enviar arquivo.");
+    } finally {
+      setEnviandoArquivo(false);
+    }
+  }
+
   const alunosFiltrados = !isProfessor && profModal
     ? alunos.filter((a) => a.professoraId === profModal)
     : alunos;
@@ -257,7 +404,7 @@ export default function AgendaMobile({
             const cor = a.materia?.cor ?? "#6366f1";
             const cfg = STATUS_CFG[a.status];
             return (
-              <button key={a.id} onClick={() => setDetalhe(a)}
+              <button key={a.id} onClick={() => { setDetalhe(a); setErroConteudo(null); }}
                 className="w-full text-left bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden active:scale-[0.98] transition-transform">
                 <div className="flex items-stretch">
                   <div className="w-1.5 shrink-0" style={{ backgroundColor: cor }}/>
@@ -403,15 +550,15 @@ export default function AgendaMobile({
                     {(Object.keys(STATUS_CFG) as StatusAula[]).map((s) => {
                       const bloqueado = isFutura && s !== "CANCELADA";
                       return (
-                        <button key={s} disabled={bloqueado}
-                          onClick={() => atualizarStatus(detalhe.id, s)}
+                        <button key={s} disabled={bloqueado || carregandoConteudo}
+                          onClick={() => s === "REALIZADA" ? abrirConteudoParaRealizada(detalhe) : atualizarStatus(detalhe.id, s)}
                           className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${
                             bloqueado ? "opacity-30 cursor-not-allowed bg-white border-slate-200 text-slate-400"
                             : detalhe.status === s
                               ? `${STATUS_CFG[s].bg} ${STATUS_CFG[s].cor} border-current`
                               : "bg-white border-slate-200 text-slate-500"
                           }`}>
-                          {STATUS_CFG[s].icon} {STATUS_CFG[s].label}
+                          {s === "REALIZADA" && carregandoConteudo ? <Loader2 size={13} className="animate-spin"/> : STATUS_CFG[s].icon} {STATUS_CFG[s].label}
                         </button>
                       );
                     })}
@@ -420,9 +567,86 @@ export default function AgendaMobile({
               })()}
             </div>
 
+            {!conteudoModal && erroConteudo && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroConteudo}</p>
+            )}
+
             <button onClick={() => setDetalhe(null)}
               className="w-full border border-slate-200 rounded-xl py-3 text-sm text-slate-600">
               Fechar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal conteúdo (ao marcar Realizada) ───────────────────────────── */}
+      {conteudoModal && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setConteudoModal(null)}>
+          <div className="bg-white rounded-t-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-slate-800">
+                {conteudoModal.existente ? "Editar Conteúdo" : "Registrar Conteúdo"}
+              </h2>
+              <button onClick={() => setConteudoModal(null)}><X size={20} className="text-slate-400"/></button>
+            </div>
+            <p className="text-xs text-slate-500 -mt-2">
+              Marcar a aula como Realizada exige registrar o conteúdo ministrado.
+            </p>
+
+            <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
+              <select value={conteudoModal.form.materiaId ?? ""}
+                onChange={(e) => setConteudoModal((p) => p && ({ ...p, form: { ...p.form, materiaId: e.target.value || null } }))}
+                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
+                <option value="">Todas as matérias</option>
+                {(alunos.find((a) => a.id === conteudoModal.form.alunoId)?.materias ?? []).map((m) => (
+                  <option key={m.id} value={m.id}>{m.nome}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1">Tópico *</label>
+              <input value={conteudoModal.form.topico}
+                onChange={(e) => setConteudoModal((p) => p && ({ ...p, form: { ...p.form, topico: e.target.value } }))}
+                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1">Descrição</label>
+              <textarea rows={3} value={conteudoModal.form.descricao}
+                onChange={(e) => setConteudoModal((p) => p && ({ ...p, form: { ...p.form, descricao: e.target.value } }))}
+                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm resize-none"/>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1">Anexo</label>
+              {conteudoModal.form.arquivoUrl ? (
+                <div className="flex items-center justify-between gap-2 border border-slate-200 rounded-xl px-3 py-2.5">
+                  <span className="text-sm text-slate-600 truncate flex items-center gap-1.5">
+                    <Paperclip size={14} className="shrink-0"/> {conteudoModal.form.arquivoNome || "arquivo"}
+                  </span>
+                  <button onClick={() => setConteudoModal((p) => p && ({ ...p, form: { ...p.form, arquivoUrl: "", arquivoNome: "" } }))}>
+                    <X size={16} className="text-slate-400"/>
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
+                  {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
+                  {enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
+                  <input type="file" className="hidden" disabled={enviandoArquivo}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadArquivoConteudo(f); }}/>
+                </label>
+              )}
+            </div>
+
+            {erroConteudo && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroConteudo}</p>
+            )}
+
+            <button onClick={salvarConteudoRealizada} disabled={salvandoConteudo || !conteudoModal.form.topico}
+              className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+              {salvandoConteudo ? "Salvando..." : "Salvar e marcar Realizada"}
             </button>
           </div>
         </div>
