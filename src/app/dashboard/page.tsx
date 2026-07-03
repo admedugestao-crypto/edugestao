@@ -1,5 +1,8 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { isMobileUserAgent } from "@/lib/device";
 import { Users, School, DollarSign, ClipboardList, AlertCircle, CalendarClock } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -14,6 +17,10 @@ function parseDataLocal(iso: Date | string) {
 }
 
 export default async function DashboardPage() {
+  // Acesso direto a /dashboard (favorito/link antigo) num celular → versão mobile
+  const ua = (await headers()).get("user-agent");
+  if (isMobileUserAgent(ua)) redirect("/m");
+
   const session = await auth();
   const professoraId = (session?.user as any)?.professoraId as string | null;
   const perfil       = (session?.user as any)?.perfil as string | null;

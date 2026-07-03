@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { isMobileUserAgent } from "@/lib/device";
 
 function LoginForm() {
   const router = useRouter();
@@ -32,7 +33,7 @@ function LoginForm() {
     if (res?.error) {
       setErro("E-mail ou senha incorretos.");
     } else {
-      router.push("/dashboard");
+      router.push(isMobileUserAgent(navigator.userAgent) ? "/m" : "/dashboard");
     }
   }
 
