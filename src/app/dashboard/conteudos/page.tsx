@@ -30,7 +30,11 @@ export default async function ConteudosPage() {
         },
         materia: true,
         aula: {
-          select: { id: true, horaInicio: true, horaFim: true, status: true, materia: { select: { nome: true, cor: true } } },
+          select: {
+            id: true, horaInicio: true, horaFim: true, status: true,
+            materia: { select: { nome: true, cor: true } },
+            aluno: { select: { nome: true } },
+          },
         },
       },
       orderBy: { data: "desc" },
@@ -72,7 +76,7 @@ export default async function ConteudosPage() {
             nome:      c.aluno.nome,
             professora: c.aluno.professora?.usuario?.nome ?? null,
           },
-          agenda: c.aula ? { id: c.aula.id, horaInicio: c.aula.horaInicio, horaFim: c.aula.horaFim, status: c.aula.status, materia: c.aula.materia } : null,
+          agenda: c.aula ? { id: c.aula.id, horaInicio: c.aula.horaInicio, horaFim: c.aula.horaFim, status: c.aula.status, materia: c.aula.materia, aluno: c.aula.aluno } : null,
         }))}
       />
       </Suspense>

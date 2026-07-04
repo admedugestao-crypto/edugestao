@@ -22,6 +22,7 @@ type AgendaInfo = {
   horaFim: string | null;
   status: string;
   materia: { nome: string; cor: string } | null;
+  aluno: { nome: string } | null;
 };
 type Conteudo = {
   id: string;
@@ -447,7 +448,7 @@ export default function ConteudosMobile({
                   </p>
 
                   {c.agenda && (
-                    <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 flex-wrap">
                       <span>📅</span>
                       {c.agenda.horaInicio && c.agenda.horaFim && (
                         <span className="font-medium text-slate-600">{c.agenda.horaInicio}–{c.agenda.horaFim}</span>
@@ -455,6 +456,8 @@ export default function ConteudosMobile({
                       <span className={`px-1.5 py-0.5 rounded font-medium ${(STATUS_AGENDA[c.agenda.status] ?? { label: c.agenda.status, color: "bg-slate-100 text-slate-600" }).color}`}>
                         {(STATUS_AGENDA[c.agenda.status] ?? { label: c.agenda.status }).label}
                       </span>
+                      {c.agenda.aluno && <span>· {c.agenda.aluno.nome}</span>}
+                      {c.agenda.materia && <span>· {c.agenda.materia.nome}</span>}
                     </div>
                   )}
 

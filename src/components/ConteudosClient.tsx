@@ -24,6 +24,7 @@ type AgendaInfo = {
   horaFim: string | null;
   status: string;
   materia: { nome: string; cor: string } | null;
+  aluno: { nome: string } | null;
 };
 
 type Conteudo = {
@@ -622,12 +623,18 @@ export default function ConteudosClient({
                   };
                   const s = statusLabel[c.agenda!.status] ?? { label: c.agenda!.status, color: "bg-slate-100 text-slate-600" };
                   return (
-                    <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500 flex-wrap">
                       <span>📅</span>
                       {c.agenda!.horaInicio && c.agenda!.horaFim && (
                         <span className="font-medium text-slate-600">{c.agenda!.horaInicio}–{c.agenda!.horaFim}</span>
                       )}
                       <span className={`px-1.5 py-0.5 rounded font-medium ${s.color}`}>{s.label}</span>
+                      {c.agenda!.aluno && (
+                        <span className="text-slate-500">· {c.agenda!.aluno.nome}</span>
+                      )}
+                      {c.agenda!.materia && (
+                        <span className="text-slate-500">· {c.agenda!.materia.nome}</span>
+                      )}
                     </div>
                   );
                 })()}
