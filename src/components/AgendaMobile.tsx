@@ -95,6 +95,7 @@ export default function AgendaMobile({
   const [profModal, setProfModal] = useState("");
   const [salvando, setSalvando]   = useState(false);
   const [erroModal, setErroModal] = useState<string | null>(null);
+  const [avisoDisp, setAvisoDisp] = useState<string | null>(null);
 
   // Modal detalhe
   const [detalhe, setDetalhe] = useState<Aula | null>(null);
@@ -156,8 +157,39 @@ export default function AgendaMobile({
     return items.sort((a, b) => a.ini - b.ini);
   }
 
+  // ── Disponibilidade do professor ─────────────────────────────────────────────
+  function verificarDisponibilidade(): string | null {
+    if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
+
+    const profId = isProfessor ? professoraIdSessao : profModal;
+    if (!profId) return null;
+
+    const [y, m, d] = novaAula.data.split("-").map(Number);
+    const dataAula  = new Date(y, m - 1, d);
+    const nomeDia   = DIAS_FULL[dataAula.getDay()];
+    const disp      = disponibilidades.find((dp) => dp.professoraId === profId);
+    const slots     = disp?.slots ?? [];
+
+    if (slots.length === 0)
+      return "Professor(a) não tem disponibilidade cadastrada. Deseja incluir mesmo assim?";
+
+    const horariosDia = slots.filter((s) => s.dia === nomeDia);
+    if (horariosDia.length === 0)
+      return `Professor(a) não tem disponibilidade para ${nomeDia}. Deseja incluir mesmo assim?`;
+
+    const inicioMin = toMin(novaAula.horaInicio);
+    const fimMin    = toMin(novaAula.horaFim);
+    const dentro    = horariosDia.some((s) => inicioMin >= toMin(s.inicio) && fimMin <= toMin(s.fim));
+    if (!dentro) {
+      const faixas = horariosDia.map((s) => `${s.inicio}–${s.fim}`).join(", ");
+      return `Horário ${novaAula.horaInicio}–${novaAula.horaFim} fora da disponibilidade de ${nomeDia} (${faixas}). Deseja incluir mesmo assim?`;
+    }
+    return null;
+  }
+
   // ── Salvar nova aula ────────────────────────────────────────────────────────
-  async function salvar() {
+  async function salvar(forcarDisp = false) {
     if (!isProfessor && !profModal) { setErroModal("Selecione o(a) professor(a)."); return; }
     if (!novaAula.alunoId || !novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) {
       setErroModal("Preencha aluno, data e horário."); return;
@@ -165,6 +197,11 @@ export default function AgendaMobile({
     if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) {
       setErroModal("Duração mínima de 1 hora."); return;
     }
+    if (!forcarDisp) {
+      const aviso = verificarDisponibilidade();
+      if (aviso) { setAvisoDisp(aviso); return; }
+    }
+    setAvisoDisp(null);
     setSalvando(true); setErroModal(null);
     try {
       const res = await fetch("/api/agenda", {
@@ -445,6 +482,7 @@ export default function AgendaMobile({
                 setNovaAula({ alunoId: "", materiaId: "", data: dsAtivo, horaInicio: item.inicio, horaFim: item.fim, observacao: "" });
                 setProfModal(filtroProfId);
                 setErroModal(null);
+                setAvisoDisp(null);
                 setModalAberto(true);
               }}
               className="w-full flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 active:scale-[0.98] transition-transform">
@@ -462,6 +500,7 @@ export default function AgendaMobile({
           setNovaAula({ alunoId: "", materiaId: "", data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
           setProfModal(isAdmin ? filtroProfId : "");
           setErroModal(null);
+          setAvisoDisp(null);
           setModalAberto(true);
         }}
         className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40">
@@ -543,10 +582,26 @@ export default function AgendaMobile({
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroModal}</p>
             )}
 
-            <button onClick={salvar} disabled={salvando}
-              className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
-              {salvando ? "Salvando..." : "Salvar aula"}
-            </button>
+            {avisoDisp ? (
+              <div className="space-y-2">
+                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">⚠️ {avisoDisp}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => salvar(true)} disabled={salvando}
+                    className="flex-1 bg-amber-500 text-white rounded-xl py-3 font-semibold text-sm disabled:opacity-50">
+                    {salvando ? "Salvando..." : "Incluir mesmo assim"}
+                  </button>
+                  <button onClick={() => setAvisoDisp(null)}
+                    className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 font-semibold text-sm">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => salvar()} disabled={salvando}
+                className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+                {salvando ? "Salvando..." : "Salvar aula"}
+              </button>
+            )}
           </div>
         </div>
       )}
