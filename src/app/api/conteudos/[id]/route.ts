@@ -17,7 +17,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const existente = await prisma.conteudo.findUnique({ where: { id }, select: { aulaId: true } });
   if (!existente) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
 
-  const validacao = await validarAgenda(body.alunoId, dataAula, planejado, existente.aulaId);
+  const validacao = await validarAgenda(body.alunoId, dataAula, planejado, existente.aulaId, body.materiaId || null);
   if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
 
   const conteudo = await prisma.conteudo.update({
@@ -48,7 +48,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   // Bloqueia exclusão se houver aula com status REALIZADA vinculada a este conteúdo
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { alunoId: true, data: true, aulaId: true },
+    select: { alunoId: true, data: true, aulaId: true, materiaId: true },
   });
   if (conteudo) {
     const aula = await buscarAulaVinculada(conteudo);

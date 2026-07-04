@@ -17,7 +17,7 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, alunoId: true, data: true, planejado: true, aulaId: true },
+    select: { id: true, alunoId: true, data: true, planejado: true, aulaId: true, materiaId: true },
   });
 
   if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });

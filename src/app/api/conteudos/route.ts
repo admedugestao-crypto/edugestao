@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após
   // Ministrado avulso: exige aula com status REALIZADA
   if (!planejado && !aulaId) {
-    const validacao = await validarAgenda(body.alunoId, dataAula, planejado);
+    const validacao = await validarAgenda(body.alunoId, dataAula, planejado, null, body.materiaId || null);
     if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
   }
 
