@@ -174,9 +174,11 @@ function CamposForm({
   somentePlanejado?: boolean;
   onCampoChave?: () => void;
 }) {
-  const alunosFiltrados = filtroProfId
-    ? alunos.filter((a) => a.professoraId === filtroProfId)
-    : [];
+  // Professora: a lista de alunos já vem restrita à dela pelo servidor, não
+  // precisa (nem deve) depender de filtroProfId estar setado.
+  const alunosFiltrados = isProfessor
+    ? alunos
+    : (filtroProfId ? alunos.filter((a) => a.professoraId === filtroProfId) : []);
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
 
