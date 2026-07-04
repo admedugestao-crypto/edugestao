@@ -21,6 +21,7 @@ type Aula = {
   status: StatusAula; observacao: string | null;
   aluno:     { id: string; nome: string; serie: string; turma: string | null; materias: { materia: Materia }[] };
   materia:   Materia | null;
+  materias:  { materia: Materia }[];
   professora: { usuario: { nome: string } };
   conteudo: { planejado: boolean; topico: string; descricao: string | null; arquivoUrl: string | null } | null;
 };
@@ -100,6 +101,10 @@ export default function AgendaMobile({
   // Modal detalhe
   const [detalhe, setDetalhe] = useState<Aula | null>(null);
   const [verConteudo, setVerConteudo] = useState(false);
+  const [materiaDetalheId, setMateriaDetalheId] = useState("");
+  const [materiaSalva, setMateriaSalva] = useState(false);
+  const [obsEdit, setObsEdit] = useState("");
+  const [salvandoObs, setSalvandoObs] = useState(false);
 
   // Modal conteúdo (ao marcar aula como Realizada)
   const [conteudoModal, setConteudoModal]     = useState<ConteudoModalState | null>(null);
@@ -229,6 +234,49 @@ export default function AgendaMobile({
     });
     setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
     setDetalhe((p) => p && p.id === id ? { ...p, status } : p);
+  }
+
+  // ── Matéria da aula (detalhe) ────────────────────────────────────────────────
+  async function salvarMateria(materiaId: string) {
+    if (!detalhe) return;
+    const todas = !materiaId; // "" = todas as matérias do aluno
+    await fetch(`/api/agenda/${detalhe.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(todas ? { todasMaterias: true } : { materiaId }),
+    });
+    if (todas) {
+      const novasMaterias = detalhe.aluno.materias.map((m) => ({ materia: m.materia }));
+      const primeiraMateria = detalhe.aluno.materias[0]?.materia ?? null;
+      setAulas((prev) => prev.map((a) => a.id === detalhe.id
+        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
+      setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
+    } else {
+      const materiaEscolhida = detalhe.aluno.materias.find((m) => m.materia.id === materiaId)?.materia
+        ?? detalhe.materias.find((m) => m.materia.id === materiaId)?.materia ?? null;
+      setAulas((prev) => prev.map((a) => a.id === detalhe.id
+        ? { ...a, materia: materiaEscolhida, materiaId, materias: [{ materia: materiaEscolhida! }] } : a));
+      setDetalhe((p) => p ? { ...p, materia: materiaEscolhida, materiaId, materias: [{ materia: materiaEscolhida! }] } : p);
+    }
+    setMateriaSalva(true);
+    setTimeout(() => setMateriaSalva(false), 2000);
+  }
+
+  // ── Observação da aula (detalhe) ─────────────────────────────────────────────
+  async function salvarObservacao() {
+    if (!detalhe) return;
+    setSalvandoObs(true);
+    try {
+      await fetch(`/api/agenda/${detalhe.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ observacao: obsEdit }),
+      });
+      setAulas((prev) => prev.map((a) => a.id === detalhe.id ? { ...a, observacao: obsEdit } : a));
+      setDetalhe((p) => p ? { ...p, observacao: obsEdit } : p);
+    } finally {
+      setSalvandoObs(false);
+    }
   }
 
   // ── Marcar Realizada: exige registrar o conteúdo ministrado ─────────────────
@@ -449,7 +497,13 @@ export default function AgendaMobile({
             const cor = a.materia?.cor ?? "#6366f1";
             const cfg = STATUS_CFG[a.status];
             return (
-              <button key={a.id} onClick={() => { setDetalhe(a); setErroConteudo(null); setVerConteudo(false); }}
+              <button key={a.id} onClick={() => {
+                setDetalhe(a);
+                setErroConteudo(null);
+                setVerConteudo(false);
+                setObsEdit(a.observacao ?? "");
+                setMateriaDetalheId(a.materias?.length === 1 ? a.materias[0].materia.id : (a.materias?.length === 0 ? (a.materiaId ?? "") : ""));
+              }}
                 className="w-full text-left bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden active:scale-[0.98] transition-transform">
                 <div className="flex items-stretch">
                   <div className="w-1.5 shrink-0" style={{ backgroundColor: cor }}/>
@@ -621,6 +675,26 @@ export default function AgendaMobile({
               <button onClick={() => setDetalhe(null)}><X size={20} className="text-slate-400"/></button>
             </div>
 
+            {/* Matéria */}
+            {(() => {
+              const materiasOpcoes = detalhe.materias.length > 0
+                ? detalhe.materias.map((m) => m.materia)
+                : detalhe.aluno.materias.map((m) => m.materia);
+              if (materiasOpcoes.length === 0) return null;
+              return (
+                <div>
+                  <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
+                  <select value={materiaDetalheId}
+                    onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
+                    {materiasOpcoes.length > 1 && <option value="">Todas da aula</option>}
+                    {materiasOpcoes.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+                  </select>
+                  {materiaSalva && <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>}
+                </div>
+              );
+            })()}
+
             <div>
               <p className="text-xs font-medium text-slate-500 mb-2">Status</p>
               {(() => {
@@ -684,6 +758,18 @@ export default function AgendaMobile({
                 )}
               </div>
             )}
+
+            {/* Observação */}
+            <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1">Observação / conteúdo da aula</label>
+              <textarea value={obsEdit} onChange={(e) => setObsEdit(e.target.value)} rows={2}
+                placeholder="O que foi trabalhado na aula..."
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
+              <button onClick={salvarObservacao} disabled={salvandoObs || obsEdit === (detalhe.observacao ?? "")}
+                className="mt-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg disabled:opacity-40">
+                {salvandoObs ? "Salvando..." : "Salvar observação"}
+              </button>
+            </div>
 
             {!conteudoModal && erroConteudo && (
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroConteudo}</p>
