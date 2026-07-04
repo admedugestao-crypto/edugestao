@@ -196,6 +196,7 @@ export default function ConteudosMobile({
   const [salvando, setSalvando]           = useState(false);
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
   const [erroNovo, setErroNovo]     = useState("");
+  const [avisoDuplicado, setAvisoDuplicado] = useState<string | null>(null);
   const [erroEdit, setErroEdit]     = useState("");
   const [erroDelete, setErroDelete] = useState("");
   const [marcandoMinistrado, setMarcandoMinistrado] = useState<string | null>(null);
@@ -238,20 +239,25 @@ export default function ConteudosMobile({
     }
   }
 
-  async function criarConteudo() {
+  async function criarConteudo(forcar = false) {
     setSalvando(true);
     setErroNovo("");
     try {
       const res = await fetch("/api/conteudos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null }),
+        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, forcar }),
       });
       const data = await res.json();
+      if (res.status === 409 && data.aviso) {
+        setAvisoDuplicado(data.aviso);
+        return;
+      }
       if (!res.ok) {
         setErroNovo(data.erro ?? "Erro ao registrar conteúdo.");
         return;
       }
+      setAvisoDuplicado(null);
       const conteudoNovo = {
         ...data,
         aluno: { nome: data.aluno.nome, professora: data.aluno.professora?.usuario?.nome ?? null },
@@ -488,7 +494,7 @@ export default function ConteudosMobile({
       </div>
 
       {/* ── Botão flutuante novo conteúdo ──────────────────────────────────── */}
-      <button onClick={() => { setNovo(formVazio()); setErroNovo(""); setModal(true); }}
+      <button onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setModal(true); }}
         className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40">
         <Plus size={24}/>
       </button>
@@ -508,17 +514,33 @@ export default function ConteudosMobile({
               filtroProfId={filtroProfId} setFiltroProfId={setFiltroProfId}
               enviandoArquivo={enviandoArquivo}
               onUpload={(f) => uploadArquivo(f, "novo")}
-              onCampoChave={() => setErroNovo("")}
+              onCampoChave={() => { setErroNovo(""); setAvisoDuplicado(null); }}
             />
 
             {erroNovo && (
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroNovo}</p>
             )}
+            {avisoDuplicado && (
+              <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">⚠️ {avisoDuplicado}</p>
+            )}
 
-            <button onClick={criarConteudo} disabled={!podeSalvarNovo || salvando}
-              className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
-              {salvando ? "Salvando..." : "Registrar"}
-            </button>
+            {avisoDuplicado ? (
+              <div className="flex gap-3">
+                <button onClick={() => criarConteudo(true)} disabled={salvando}
+                  className="flex-1 bg-amber-500 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50">
+                  {salvando ? "Salvando..." : "Criar mesmo assim"}
+                </button>
+                <button onClick={() => setAvisoDuplicado(null)}
+                  className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3.5 font-semibold text-sm">
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => criarConteudo()} disabled={!podeSalvarNovo || salvando}
+                className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+                {salvando ? "Salvando..." : "Registrar"}
+              </button>
+            )}
           </div>
         </div>
       )}

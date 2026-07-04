@@ -360,6 +360,7 @@ export default function ConteudosClient({
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; topico: string } | null>(null);
   const [erroDelete, setErroDelete] = useState("");
   const [erroNovo, setErroNovo]   = useState("");
+  const [avisoDuplicado, setAvisoDuplicado] = useState<string | null>(null);
   const [erroEdit, setErroEdit]   = useState("");
   const [marcandoMinistrado, setMarcandoMinistrado] = useState<string | null>(null);
   const [erroMinistrado, setErroMinistrado] = useState<{ id: string; msg: string } | null>(null);
@@ -385,20 +386,25 @@ export default function ConteudosClient({
     }
   }
 
-  async function criarConteudo() {
+  async function criarConteudo(forcar = false) {
     setSalvando(true);
     setErroNovo("");
     try {
       const res = await fetch("/api/conteudos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, aulaId: aulaIdPendente || undefined }),
+        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, aulaId: aulaIdPendente || undefined, forcar }),
       });
       const data = await res.json();
+      if (res.status === 409 && data.aviso) {
+        setAvisoDuplicado(data.aviso);
+        return;
+      }
       if (!res.ok) {
         setErroNovo(data.erro ?? "Erro ao registrar conteúdo.");
         return;
       }
+      setAvisoDuplicado(null);
       const conteudoNovo = {
         ...data,
         aluno: {
@@ -551,7 +557,7 @@ export default function ConteudosClient({
   return (
     <div className="space-y-4">
       <button
-        onClick={() => setModal(true)}
+        onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setModal(true); }}
         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
       >
         <Plus size={15} />
@@ -704,7 +710,7 @@ export default function ConteudosClient({
                 filtroProfId={filtroProfId}
                 setFiltroProfId={setFiltroProfId}
                 somentePlanejado={!aulaIdPendente}
-                onCampoChave={() => setErroNovo("")}
+                onCampoChave={() => { setErroNovo(""); setAvisoDuplicado(null); }}
               />
             </div>
 
@@ -716,21 +722,45 @@ export default function ConteudosClient({
                   <p className="text-xs text-amber-800">{erroNovo}</p>
                 </div>
               )}
-              <div className="flex gap-3">
-                <button
-                  onClick={criarConteudo}
-                  disabled={!podeSalvarNovo || salvando}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
-                >
-                  {salvando ? "Salvando..." : "Registrar"}
-                </button>
-                <button
-                  onClick={() => { setModal(false); setNovo(formVazio()); setErroNovo(""); }}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition-colors"
-                >
-                  Cancelar
-                </button>
-              </div>
+              {avisoDuplicado && (
+                <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
+                  <AlertCircle size={15} className="text-amber-600 mt-0.5 shrink-0" />
+                  <p className="text-xs text-amber-800">{avisoDuplicado}</p>
+                </div>
+              )}
+              {avisoDuplicado ? (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => criarConteudo(true)}
+                    disabled={salvando}
+                    className="flex-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+                  >
+                    {salvando ? "Salvando..." : "Criar mesmo assim"}
+                  </button>
+                  <button
+                    onClick={() => setAvisoDuplicado(null)}
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => criarConteudo()}
+                    disabled={!podeSalvarNovo || salvando}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+                  >
+                    {salvando ? "Salvando..." : "Registrar"}
+                  </button>
+                  <button
+                    onClick={() => { setModal(false); setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); }}
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -35,20 +35,41 @@ export async function POST(req: NextRequest) {
   const dataAula = new Date(body.data);
   const planejado = body.planejado ?? false;
   const aulaId: string | null = body.aulaId || null;
+  const materiaId: string | null = body.materiaId || null;
+  const forcar   = body.forcar === true;
 
   // Planejado: sem validação de agenda
   // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após
   // Ministrado avulso: exige aula com status REALIZADA
   if (!planejado && !aulaId) {
-    const validacao = await validarAgenda(body.alunoId, dataAula, planejado, null, body.materiaId || null);
+    const validacao = await validarAgenda(body.alunoId, dataAula, planejado, null, materiaId);
     if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
+  }
+
+  // Aviso (não bloqueio): data não-futura e já existe conteúdo Ministrado
+  // para o mesmo aluno/matéria/dia — provavelmente duplicado por engano.
+  // Pede confirmação (forcar=true) antes de criar mesmo assim.
+  if (!forcar && !aulaId) {
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    if (dataAula <= hoje) {
+      const existente = await prisma.conteudo.findFirst({
+        where: { alunoId: body.alunoId, materiaId, data: dataAula, planejado: false },
+        select: { topico: true },
+      });
+      if (existente) {
+        return NextResponse.json(
+          { aviso: `Já existe conteúdo Ministrado para este aluno/matéria nesta data (tópico: "${existente.topico}"). Deseja criar mesmo assim?` },
+          { status: 409 },
+        );
+      }
+    }
   }
 
   try {
     const conteudo = await prisma.conteudo.create({
       data: {
         alunoId:    body.alunoId,
-        materiaId:  body.materiaId || null,
+        materiaId,
         aulaId,
         topico:     body.topico,
         descricao:  body.descricao  || null,
