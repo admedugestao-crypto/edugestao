@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
-         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home } from "lucide-react";
+         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home, BookOpen } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -22,6 +22,7 @@ type Aula = {
   aluno:     { id: string; nome: string; serie: string; turma: string | null; materias: { materia: Materia }[] };
   materia:   Materia | null;
   professora: { usuario: { nome: string } };
+  conteudo: { planejado: boolean; topico: string; descricao: string | null; arquivoUrl: string | null } | null;
 };
 
 // Conteúdo vinculado a uma aula marcada como Realizada
@@ -97,6 +98,7 @@ export default function AgendaMobile({
 
   // Modal detalhe
   const [detalhe, setDetalhe] = useState<Aula | null>(null);
+  const [verConteudo, setVerConteudo] = useState(false);
 
   // Modal conteúdo (ao marcar aula como Realizada)
   const [conteudoModal, setConteudoModal]     = useState<ConteudoModalState | null>(null);
@@ -410,7 +412,7 @@ export default function AgendaMobile({
             const cor = a.materia?.cor ?? "#6366f1";
             const cfg = STATUS_CFG[a.status];
             return (
-              <button key={a.id} onClick={() => { setDetalhe(a); setErroConteudo(null); }}
+              <button key={a.id} onClick={() => { setDetalhe(a); setErroConteudo(null); setVerConteudo(false); }}
                 className="w-full text-left bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden active:scale-[0.98] transition-transform">
                 <div className="flex items-stretch">
                   <div className="w-1.5 shrink-0" style={{ backgroundColor: cor }}/>
@@ -572,6 +574,42 @@ export default function AgendaMobile({
                 );
               })()}
             </div>
+
+            {/* Conteúdo vinculado */}
+            {detalhe.conteudo && (
+              <div>
+                <button onClick={() => setVerConteudo((v) => !v)}
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-colors ${
+                    detalhe.conteudo.planejado
+                      ? "bg-blue-50 border-blue-200 text-blue-700"
+                      : "bg-emerald-50 border-emerald-200 text-emerald-700"
+                  }`}>
+                  <span className="flex items-center gap-1.5 text-left">
+                    <BookOpen size={13}/>
+                    {detalhe.conteudo.planejado ? "Conteúdo planejado" : "Conteúdo ministrado"} — {detalhe.conteudo.topico}
+                  </span>
+                  <ChevronRight size={13} className={`shrink-0 transition-transform ${verConteudo ? "rotate-90" : ""}`}/>
+                </button>
+                {verConteudo && (
+                  <div className={`mt-1 p-3 rounded-xl border text-xs space-y-2 ${
+                    detalhe.conteudo.planejado
+                      ? "bg-blue-50 border-blue-100 text-blue-900"
+                      : "bg-emerald-50 border-emerald-100 text-emerald-900"
+                  }`}>
+                    <p><span className="font-semibold">Tópico:</span> {detalhe.conteudo.topico}</p>
+                    {detalhe.conteudo.descricao && (
+                      <p><span className="font-semibold">Descrição:</span> {detalhe.conteudo.descricao}</p>
+                    )}
+                    {detalhe.conteudo.arquivoUrl && (
+                      <a href={detalhe.conteudo.arquivoUrl} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white border border-current font-medium">
+                        <Paperclip size={11}/> Ver documento anexo
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {!conteudoModal && erroConteudo && (
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroConteudo}</p>
