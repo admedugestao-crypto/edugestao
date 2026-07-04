@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { buscarAulaVinculada } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +16,17 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, alunoId: true, data: true, planejado: true, aulaId: true, materiaId: true },
+    select: { id: true, planejado: true, aulaId: true },
   });
 
   if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   if (conteudo.planejado) return NextResponse.json({ erro: "Conteúdo já está Planejado." }, { status: 422 });
 
-  const aula = await buscarAulaVinculada(conteudo);
+  // Só considera vínculo real (aulaId gravado) — nunca por inferência de
+  // aluno+data, que pode "achar" a aula de OUTRO conteúdo do mesmo dia.
+  const aula = conteudo.aulaId
+    ? await prisma.agendaAula.findUnique({ where: { id: conteudo.aulaId }, select: { id: true, status: true } })
+    : null;
   const aulaRealizada = aula?.status === "REALIZADA" ? aula : null;
 
   await prisma.$transaction(async (tx) => {

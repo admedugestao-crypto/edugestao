@@ -95,6 +95,16 @@ export async function POST(
     );
   }
 
+  // Essa Aula Agendada já tem outro conteúdo vinculado (ex: dois conteúdos
+  // criados para o mesmo aluno/matéria/dia) — não deixa vincular de novo.
+  const outroVinculado = await prisma.conteudo.findUnique({ where: { aulaId: aula.id }, select: { id: true, topico: true } });
+  if (outroVinculado && outroVinculado.id !== conteudo.id) {
+    return NextResponse.json(
+      { erro: `Esta Aula Agendada já está vinculada a outro conteúdo ("${outroVinculado.topico}").` },
+      { status: 422 },
+    );
+  }
+
   // Marca a agenda como REALIZADA, o conteúdo como Ministrado, e grava o vínculo exato
   await prisma.$transaction([
     prisma.agendaAula.update({

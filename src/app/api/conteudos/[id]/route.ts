@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { validarAgenda, buscarAulaVinculada } from "@/lib/conteudoAgenda";
+import { validarAgenda } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
 
@@ -45,13 +45,15 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
 
   const { id } = await params;
 
-  // Bloqueia exclusão se houver aula com status REALIZADA vinculada a este conteúdo
+  // Bloqueia exclusão se houver aula com status REALIZADA vinculada a este conteúdo.
+  // Só considera vínculo real (aulaId gravado) — nunca por inferência de
+  // aluno+data+matéria, que pode "achar" a aula de OUTRO conteúdo do mesmo dia.
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { alunoId: true, data: true, aulaId: true, materiaId: true },
+    select: { aulaId: true },
   });
-  if (conteudo) {
-    const aula = await buscarAulaVinculada(conteudo);
+  if (conteudo?.aulaId) {
+    const aula = await prisma.agendaAula.findUnique({ where: { id: conteudo.aulaId }, select: { status: true } });
     if (aula?.status === "REALIZADA") {
       return NextResponse.json(
         { erro: "Não é possível excluir: existe uma agenda com status Realizada vinculada a este conteúdo." },
