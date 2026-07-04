@@ -502,6 +502,18 @@ export default function AgendaMobile({
             </div>
 
             <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
+              <select value={novaAula.materiaId} disabled={!novaAula.alunoId}
+                onChange={(e) => setNovaAula((p) => ({ ...p, materiaId: e.target.value }))}
+                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white disabled:opacity-50">
+                <option value="">Todas as matérias</option>
+                {(alunosFiltrados.find((a) => a.id === novaAula.alunoId)?.materias ?? []).map((m) => (
+                  <option key={m.id} value={m.id}>{m.nome}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">Data *</label>
               <input type="date" value={novaAula.data} onChange={(e) => setNovaAula((p) => ({ ...p, data: e.target.value }))}
                 className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
@@ -518,6 +530,13 @@ export default function AgendaMobile({
                 <input type="time" value={novaAula.horaFim} onChange={(e) => setNovaAula((p) => ({ ...p, horaFim: e.target.value }))}
                   className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
               </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1">Observação</label>
+              <input value={novaAula.observacao} onChange={(e) => setNovaAula((p) => ({ ...p, observacao: e.target.value }))}
+                placeholder="Opcional..."
+                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
             </div>
 
             {erroModal && (
