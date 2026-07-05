@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, CheckCircle2, Home, LogOut,
+  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, Home, LogOut,
 } from "lucide-react";
 
 type Materia = { id: string; nome: string; cor: string };
@@ -199,8 +199,6 @@ export default function ConteudosMobile({
   const [avisoDuplicado, setAvisoDuplicado] = useState<string | null>(null);
   const [erroEdit, setErroEdit]     = useState("");
   const [erroDelete, setErroDelete] = useState("");
-  const [marcandoMinistrado, setMarcandoMinistrado] = useState<string | null>(null);
-  const [erroMinistrado, setErroMinistrado]         = useState<{ id: string; msg: string } | null>(null);
 
   async function uploadArquivo(file: File, alvo: "novo" | "edit") {
     setEnviandoArquivo(true);
@@ -218,24 +216,6 @@ export default function ConteudosMobile({
       else setEditConteudo((p) => p && ({ ...p, arquivoUrl: data.url, arquivoNome: data.nome }));
     } finally {
       setEnviandoArquivo(false);
-    }
-  }
-
-  async function marcarMinistrado(c: Conteudo) {
-    setErroMinistrado(null);
-    setMarcandoMinistrado(c.id);
-    try {
-      const res  = await fetch(`/api/conteudos/${c.id}/ministrado`, { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) {
-        setErroMinistrado({ id: c.id, msg: data.erro ?? "Erro ao atualizar." });
-        return;
-      }
-      setConteudos((prev) => prev.map((x) => x.id === c.id ? { ...x, planejado: false } : x));
-    } catch {
-      setErroMinistrado({ id: c.id, msg: "Erro de comunicação." });
-    } finally {
-      setMarcandoMinistrado(null);
     }
   }
 
@@ -468,15 +448,8 @@ export default function ConteudosMobile({
                   )}
 
                   {c.descricao && <p className="text-xs text-slate-600 mt-1">{c.descricao}</p>}
-                  {erroMinistrado?.id === c.id && <p className="text-xs text-red-600 mt-1">{erroMinistrado.msg}</p>}
 
                   <div className="flex items-center gap-1.5 mt-2">
-                    {c.planejado && (
-                      <button onClick={() => marcarMinistrado(c)} disabled={marcandoMinistrado === c.id}
-                        className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 rounded-lg px-2 py-1 disabled:opacity-50">
-                        {marcandoMinistrado === c.id ? <Loader2 size={12} className="animate-spin"/> : <CheckCircle2 size={12}/>} Ministrado
-                      </button>
-                    )}
                     <button onClick={() => abrirEdit(c)}
                       className="flex items-center gap-1 text-[11px] font-medium text-indigo-600 bg-indigo-50 rounded-lg px-2 py-1">
                       <Pencil size={12}/> Editar

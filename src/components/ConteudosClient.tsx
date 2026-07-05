@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -362,29 +362,6 @@ export default function ConteudosClient({
   const [erroNovo, setErroNovo]   = useState("");
   const [avisoDuplicado, setAvisoDuplicado] = useState<string | null>(null);
   const [erroEdit, setErroEdit]   = useState("");
-  const [marcandoMinistrado, setMarcandoMinistrado] = useState<string | null>(null);
-  const [erroMinistrado, setErroMinistrado] = useState<{ id: string; msg: string } | null>(null);
-
-  async function marcarMinistrado(c: Conteudo) {
-    setErroMinistrado(null);
-    setMarcandoMinistrado(c.id);
-    try {
-      const res = await fetch(`/api/conteudos/${c.id}/ministrado`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setErroMinistrado({ id: c.id, msg: data.erro ?? "Erro ao atualizar." });
-        return;
-      }
-      setConteudos((prev) => prev.map((x) => x.id === c.id ? { ...x, planejado: false } : x));
-    } catch {
-      setErroMinistrado({ id: c.id, msg: "Erro de comunicação." });
-    } finally {
-      setMarcandoMinistrado(null);
-    }
-  }
 
   async function criarConteudo(forcar = false) {
     setSalvando(true);
@@ -585,14 +562,9 @@ export default function ConteudosClient({
 
                   {/* Status: Planejado / Ministrado */}
                   {c.planejado ? (
-                    <>
-                      <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs px-1.5 py-0.5 rounded font-medium">
-                        📋 Planejado
-                      </span>
-                      {erroMinistrado?.id === c.id && (
-                        <span className="text-xs text-red-600">{erroMinistrado.msg}</span>
-                      )}
-                    </>
+                    <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs px-1.5 py-0.5 rounded font-medium">
+                      📋 Planejado
+                    </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs px-1.5 py-0.5 rounded font-medium">
                       ✅ Ministrado
@@ -656,18 +628,6 @@ export default function ConteudosClient({
                   {format(parseDataLocal(c.data), "dd/MM/yyyy", { locale: ptBR })}
                 </span>
                 <div className="flex gap-1">
-                  {c.planejado && (
-                    <button
-                      onClick={() => marcarMinistrado(c)}
-                      disabled={marcandoMinistrado === c.id}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-50"
-                      title="Marcar como Ministrado"
-                    >
-                      {marcandoMinistrado === c.id
-                        ? <Loader2 size={14} className="animate-spin" />
-                        : <CheckCircle2 size={14} />}
-                    </button>
-                  )}
                   <button
                     onClick={() => abrirEdit(c)}
                     className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
