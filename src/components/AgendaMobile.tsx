@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
-         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home, BookOpen } from "lucide-react";
+         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home, BookOpen, Trash2 } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -105,6 +105,9 @@ export default function AgendaMobile({
   const [materiaSalva, setMateriaSalva] = useState(false);
   const [obsEdit, setObsEdit] = useState("");
   const [salvandoObs, setSalvandoObs] = useState(false);
+  const [confirmExcluirAula, setConfirmExcluirAula] = useState(false);
+  const [excluindoAula, setExcluindoAula] = useState(false);
+  const [erroExcluirAula, setErroExcluirAula] = useState<string | null>(null);
 
   // Modal conteúdo (ao marcar aula como Realizada)
   const [conteudoModal, setConteudoModal]     = useState<ConteudoModalState | null>(null);
@@ -234,6 +237,25 @@ export default function AgendaMobile({
     });
     setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
     setDetalhe((p) => p && p.id === id ? { ...p, status } : p);
+  }
+
+  // ── Excluir aula ──────────────────────────────────────────────────────────
+  async function excluirAula(id: string) {
+    setErroExcluirAula(null);
+    setExcluindoAula(true);
+    try {
+      const res = await fetch(`/api/agenda/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setErroExcluirAula(data.erro ?? "Erro ao excluir a aula.");
+        return;
+      }
+      setAulas((prev) => prev.filter((a) => a.id !== id));
+      setDetalhe(null);
+      setConfirmExcluirAula(false);
+    } finally {
+      setExcluindoAula(false);
+    }
   }
 
   // ── Matéria da aula (detalhe) ────────────────────────────────────────────────
@@ -503,6 +525,8 @@ export default function AgendaMobile({
                 setVerConteudo(false);
                 setObsEdit(a.observacao ?? "");
                 setMateriaDetalheId(a.materias?.length === 1 ? a.materias[0].materia.id : (a.materias?.length === 0 ? (a.materiaId ?? "") : ""));
+                setConfirmExcluirAula(false);
+                setErroExcluirAula(null);
               }}
                 className="w-full text-left bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden active:scale-[0.98] transition-transform">
                 <div className="flex items-stretch">
@@ -775,10 +799,36 @@ export default function AgendaMobile({
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroConteudo}</p>
             )}
 
-            <button onClick={() => setDetalhe(null)}
-              className="w-full border border-slate-200 rounded-xl py-3 text-sm text-slate-600">
-              Fechar
-            </button>
+            {erroExcluirAula && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroExcluirAula}</p>
+            )}
+
+            {confirmExcluirAula ? (
+              <div className="space-y-2">
+                <p className="text-sm text-slate-600">Tem certeza que deseja excluir esta aula?</p>
+                <div className="flex gap-2">
+                  <button onClick={() => excluirAula(detalhe.id)} disabled={excluindoAula}
+                    className="flex-1 bg-red-600 text-white rounded-xl py-3 font-semibold text-sm disabled:opacity-50">
+                    {excluindoAula ? "Excluindo..." : "Excluir"}
+                  </button>
+                  <button onClick={() => setConfirmExcluirAula(false)}
+                    className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 font-semibold text-sm">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <button onClick={() => setConfirmExcluirAula(true)}
+                  className="shrink-0 flex items-center justify-center gap-1.5 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm font-medium">
+                  <Trash2 size={15}/>
+                </button>
+                <button onClick={() => setDetalhe(null)}
+                  className="flex-1 border border-slate-200 rounded-xl py-3 text-sm text-slate-600">
+                  Fechar
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
