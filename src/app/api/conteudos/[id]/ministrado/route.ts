@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { buscarAulaVinculada } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
+  const body = await req.json().catch(() => ({}));
+  // aulaId: usuário resolveu manualmente uma ambiguidade (aluno com +1 aula
+  // candidata no dia) escolhendo qual aula vincular.
+  const aulaIdEscolhido: string | null = body?.aulaId || null;
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
@@ -25,26 +30,24 @@ export async function POST(
   const dM = conteudo.data.getUTCMonth();
   const dD = conteudo.data.getUTCDate();
 
-  const selectAula = { id: true, status: true, horaFim: true, materiaId: true, materia: { select: { nome: true } } } as const;
-
-  // Prioriza o vínculo exato (aulaId) — só cai para busca por aluno+data
-  // (ambígua quando há +1 aula no mesmo dia) para conteúdos antigos sem vínculo.
-  const aula = conteudo.aulaId
-    ? await prisma.agendaAula.findUnique({ where: { id: conteudo.aulaId }, select: selectAula })
-    : await prisma.agendaAula.findFirst({
-        where: {
-          alunoId: conteudo.alunoId,
-          data: {
-            gte: new Date(Date.UTC(dY, dM, dD)),
-            lt: new Date(Date.UTC(dY, dM, dD + 1)),
-          },
-        },
-        select: selectAula,
-      });
+  // Prioriza o vínculo exato (aulaId gravado, ou escolhido manualmente pelo
+  // usuário) — só cai para a busca por aluno+data (materia-aware, segura
+  // contra ambiguidade) quando nenhum dos dois está disponível.
+  const { aula, ambigua, candidatas } = await buscarAulaVinculada({
+    aulaId: conteudo.aulaId || aulaIdEscolhido,
+    alunoId: conteudo.alunoId,
+    data: conteudo.data,
+    materiaId: conteudo.materiaId,
+  });
 
   if (!aula) {
     return NextResponse.json(
-      { erro: "Nenhuma Aula Agendada encontrada para este aluno nesta data." },
+      {
+        erro: ambigua
+          ? "Este aluno tem mais de uma Aula Agendada nesta data/matéria — escolha qual delas vincular."
+          : "Nenhuma Aula Agendada encontrada para este aluno nesta data.",
+        candidatas: ambigua ? candidatas : undefined,
+      },
       { status: 422 },
     );
   }

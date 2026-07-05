@@ -17,8 +17,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const existente = await prisma.conteudo.findUnique({ where: { id }, select: { aulaId: true } });
   if (!existente) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
 
-  const validacao = await validarAgenda(body.alunoId, dataAula, planejado, existente.aulaId, body.materiaId || null);
-  if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
+  // aulaIdEscolhido: quando o usuário resolveu manualmente uma ambiguidade
+  // (aluno com +1 aula candidata) escolhendo qual aula vincular.
+  const aulaIdParaValidar = existente.aulaId || body.aulaIdEscolhido || null;
+  const validacao = await validarAgenda(body.alunoId, dataAula, planejado, aulaIdParaValidar, body.materiaId || null);
+  if (!validacao.ok) {
+    return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
+  }
 
   const conteudo = await prisma.conteudo.update({
     where: { id },

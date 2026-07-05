@@ -24,6 +24,13 @@ type AgendaInfo = {
   materia: { nome: string; cor: string } | null;
   aluno: { nome: string } | null;
 };
+type Candidata = {
+  id: string;
+  horaInicio: string | null;
+  horaFim: string | null;
+  status: string;
+  materia: { nome: string; cor: string } | null;
+};
 type Conteudo = {
   id: string;
   alunoId: string;
@@ -197,7 +204,9 @@ export default function ConteudosMobile({
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
   const [erroNovo, setErroNovo]     = useState("");
   const [avisoDuplicado, setAvisoDuplicado] = useState<string | null>(null);
+  const [candidatasNovo, setCandidatasNovo] = useState<Candidata[] | null>(null);
   const [erroEdit, setErroEdit]     = useState("");
+  const [candidatasEdit, setCandidatasEdit] = useState<Candidata[] | null>(null);
   const [erroDelete, setErroDelete] = useState("");
 
   async function uploadArquivo(file: File, alvo: "novo" | "edit") {
@@ -219,14 +228,15 @@ export default function ConteudosMobile({
     }
   }
 
-  async function criarConteudo(forcar = false) {
+  async function criarConteudo(forcar = false, aulaIdEscolhido?: string) {
     setSalvando(true);
     setErroNovo("");
+    setCandidatasNovo(null);
     try {
       const res = await fetch("/api/conteudos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, forcar }),
+        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, forcar, aulaIdEscolhido }),
       });
       const data = await res.json();
       if (res.status === 409 && data.aviso) {
@@ -234,6 +244,10 @@ export default function ConteudosMobile({
         return;
       }
       if (!res.ok) {
+        if (data.candidatas?.length > 0) {
+          setCandidatasNovo(data.candidatas);
+          return;
+        }
         setErroNovo(data.erro ?? "Erro ao registrar conteúdo.");
         return;
       }
@@ -252,10 +266,11 @@ export default function ConteudosMobile({
     }
   }
 
-  async function salvarConteudo() {
+  async function salvarConteudo(aulaIdEscolhido?: string) {
     if (!editConteudo) return;
     setSalvando(true);
     setErroEdit("");
+    setCandidatasEdit(null);
 
     const original = conteudos.find((c) => c.id === editConteudo.id);
     const mudandoParaMinistrado = original?.planejado === true && editConteudo.planejado === false;
@@ -288,19 +303,32 @@ export default function ConteudosMobile({
         const resPut = await fetch(`/api/conteudos/${editConteudo.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...editConteudo, planejado: true, arquivoUrl: editConteudo.arquivoUrl || null }),
+          body: JSON.stringify({ ...editConteudo, planejado: true, arquivoUrl: editConteudo.arquivoUrl || null, aulaIdEscolhido: aulaIdEscolhido || undefined }),
         });
         if (!resPut.ok) {
           const d = await resPut.json();
+          if (d.candidatas?.length > 0) {
+            setCandidatasEdit(d.candidatas);
+            return;
+          }
           setErroEdit(d.erro ?? "Erro ao salvar conteúdo.");
           return;
         }
-        const resMin = await fetch(`/api/conteudos/${editConteudo.id}/ministrado`, { method: "POST" });
+        const resMin = await fetch(`/api/conteudos/${editConteudo.id}/ministrado`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ aulaId: aulaIdEscolhido || undefined }),
+        });
         const dMin = await resMin.json();
         if (!resMin.ok) {
+          if (dMin.candidatas?.length > 0) {
+            setCandidatasEdit(dMin.candidatas);
+            return;
+          }
           setErroEdit(dMin.erro ?? "Erro ao marcar como Ministrado.");
           return;
         }
+        setCandidatasEdit(null);
         setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? { ...c, ...editConteudo, planejado: false } : c));
         setEditConteudo(null);
         return;
@@ -345,6 +373,7 @@ export default function ConteudosMobile({
     const profId = alunos.find((a) => a.id === c.alunoId)?.professoraId;
     if (profId) setFiltroProfId(profId);
     setErroEdit("");
+    setCandidatasEdit(null);
     setEditConteudo({
       id: c.id,
       alunoId: c.alunoId,
@@ -467,7 +496,7 @@ export default function ConteudosMobile({
       </div>
 
       {/* ── Botão flutuante novo conteúdo ──────────────────────────────────── */}
-      <button onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setModal(true); }}
+      <button onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setCandidatasNovo(null); setModal(true); }}
         className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40">
         <Plus size={24}/>
       </button>
@@ -497,7 +526,29 @@ export default function ConteudosMobile({
               <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">⚠️ {avisoDuplicado}</p>
             )}
 
-            {avisoDuplicado ? (
+            {candidatasNovo ? (
+              <div className="space-y-2">
+                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                  Este aluno tem mais de uma Aula Agendada nesta data/matéria — escolha qual delas vincular:
+                </p>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {candidatasNovo.map((cand) => (
+                    <button key={cand.id} onClick={() => criarConteudo(false, cand.id)} disabled={salvando}
+                      className="w-full flex items-center justify-between gap-2 border border-slate-200 rounded-xl px-3 py-2.5 text-left disabled:opacity-50">
+                      <span className="text-sm text-slate-700">
+                        {cand.horaInicio && cand.horaFim ? `${cand.horaInicio}–${cand.horaFim}` : "Sem horário"}
+                        {cand.materia ? ` · ${cand.materia.nome}` : ""}
+                      </span>
+                      <span className="text-xs text-slate-400">{cand.status}</span>
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => setCandidatasNovo(null)}
+                  className="w-full border border-slate-200 text-slate-600 rounded-xl py-3 font-semibold text-sm">
+                  Cancelar
+                </button>
+              </div>
+            ) : avisoDuplicado ? (
               <div className="flex gap-3">
                 <button onClick={() => criarConteudo(true)} disabled={salvando}
                   className="flex-1 bg-amber-500 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50">
@@ -533,7 +584,7 @@ export default function ConteudosMobile({
               filtroProfId={filtroProfId} setFiltroProfId={setFiltroProfId}
               enviandoArquivo={enviandoArquivo}
               onUpload={(f) => uploadArquivo(f, "edit")}
-              onCampoChave={() => setErroEdit("")}
+              onCampoChave={() => { setErroEdit(""); setCandidatasEdit(null); }}
             />
 
             <div>
@@ -565,10 +616,34 @@ export default function ConteudosMobile({
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroEdit}</p>
             )}
 
-            <button onClick={salvarConteudo} disabled={!podeSalvarEdit || salvando}
-              className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
-              {salvando ? "Salvando..." : "Salvar"}
-            </button>
+            {candidatasEdit ? (
+              <div className="space-y-2">
+                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                  Este aluno tem mais de uma Aula Agendada nesta data/matéria — escolha qual delas vincular:
+                </p>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {candidatasEdit.map((cand) => (
+                    <button key={cand.id} onClick={() => salvarConteudo(cand.id)} disabled={salvando}
+                      className="w-full flex items-center justify-between gap-2 border border-slate-200 rounded-xl px-3 py-2.5 text-left disabled:opacity-50">
+                      <span className="text-sm text-slate-700">
+                        {cand.horaInicio && cand.horaFim ? `${cand.horaInicio}–${cand.horaFim}` : "Sem horário"}
+                        {cand.materia ? ` · ${cand.materia.nome}` : ""}
+                      </span>
+                      <span className="text-xs text-slate-400">{cand.status}</span>
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => setCandidatasEdit(null)}
+                  className="w-full border border-slate-200 text-slate-600 rounded-xl py-3 font-semibold text-sm">
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => salvarConteudo()} disabled={!podeSalvarEdit || salvando}
+                className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+                {salvando ? "Salvando..." : "Salvar"}
+              </button>
+            )}
           </div>
         </div>
       )}

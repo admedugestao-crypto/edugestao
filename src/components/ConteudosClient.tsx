@@ -27,6 +27,14 @@ type AgendaInfo = {
   aluno: { nome: string } | null;
 };
 
+type Candidata = {
+  id: string;
+  horaInicio: string | null;
+  horaFim: string | null;
+  status: string;
+  materia: { nome: string; cor: string } | null;
+};
+
 type Conteudo = {
   id: string;
   alunoId: string;
@@ -361,16 +369,19 @@ export default function ConteudosClient({
   const [erroDelete, setErroDelete] = useState("");
   const [erroNovo, setErroNovo]   = useState("");
   const [avisoDuplicado, setAvisoDuplicado] = useState<string | null>(null);
+  const [candidatasNovo, setCandidatasNovo] = useState<Candidata[] | null>(null);
   const [erroEdit, setErroEdit]   = useState("");
+  const [candidatasEdit, setCandidatasEdit] = useState<Candidata[] | null>(null);
 
-  async function criarConteudo(forcar = false) {
+  async function criarConteudo(forcar = false, aulaIdEscolhido?: string) {
     setSalvando(true);
     setErroNovo("");
+    setCandidatasNovo(null);
     try {
       const res = await fetch("/api/conteudos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, aulaId: aulaIdPendente || undefined, forcar }),
+        body: JSON.stringify({ ...novo, arquivoUrl: novo.arquivoUrl || null, aulaId: aulaIdPendente || undefined, forcar, aulaIdEscolhido }),
       });
       const data = await res.json();
       if (res.status === 409 && data.aviso) {
@@ -378,6 +389,10 @@ export default function ConteudosClient({
         return;
       }
       if (!res.ok) {
+        if (data.candidatas?.length > 0) {
+          setCandidatasNovo(data.candidatas);
+          return;
+        }
         setErroNovo(data.erro ?? "Erro ao registrar conteúdo.");
         return;
       }
@@ -418,10 +433,11 @@ export default function ConteudosClient({
     }
   }
 
-  async function salvarConteudo() {
+  async function salvarConteudo(aulaIdEscolhido?: string) {
     if (!editConteudo) return;
     setSalvando(true);
     setErroEdit("");
+    setCandidatasEdit(null);
 
     const original = conteudos.find((c) => c.id === editConteudo.id);
     const mudandoParaMinistrado = original?.planejado === true && editConteudo.planejado === false;
@@ -455,20 +471,33 @@ export default function ConteudosClient({
         const resPut = await fetch(`/api/conteudos/${editConteudo.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...editConteudo, planejado: true, arquivoUrl: editConteudo.arquivoUrl || null }),
+          body: JSON.stringify({ ...editConteudo, planejado: true, arquivoUrl: editConteudo.arquivoUrl || null, aulaIdEscolhido: aulaIdEscolhido || undefined }),
         });
         if (!resPut.ok) {
           const d = await resPut.json();
+          if (d.candidatas?.length > 0) {
+            setCandidatasEdit(d.candidatas);
+            return;
+          }
           setErroEdit(d.erro ?? "Erro ao salvar conteúdo.");
           return;
         }
         // Depois chama a rota de ministrado que valida e vincula a agenda
-        const resMin = await fetch(`/api/conteudos/${editConteudo.id}/ministrado`, { method: "POST" });
+        const resMin = await fetch(`/api/conteudos/${editConteudo.id}/ministrado`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ aulaId: aulaIdEscolhido || undefined }),
+        });
         const dMin = await resMin.json();
         if (!resMin.ok) {
+          if (dMin.candidatas?.length > 0) {
+            setCandidatasEdit(dMin.candidatas);
+            return;
+          }
           setErroEdit(dMin.erro ?? "Erro ao marcar como Ministrado.");
           return;
         }
+        setCandidatasEdit(null);
         setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? { ...c, ...editConteudo, planejado: false } : c));
         setEditConteudo(null);
         return;
@@ -512,6 +541,8 @@ export default function ConteudosClient({
   function abrirEdit(c: Conteudo) {
     const profId = alunos.find((a) => a.id === c.alunoId)?.professoraId;
     if (profId) setFiltroProfId(profId);
+    setErroEdit("");
+    setCandidatasEdit(null);
     setEditConteudo({
       id: c.id,
       alunoId: c.alunoId,
@@ -534,7 +565,7 @@ export default function ConteudosClient({
   return (
     <div className="space-y-4">
       <button
-        onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setModal(true); }}
+        onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setCandidatasNovo(null); setModal(true); }}
         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
       >
         <Plus size={15} />
@@ -688,7 +719,35 @@ export default function ConteudosClient({
                   <p className="text-xs text-amber-800">{avisoDuplicado}</p>
                 </div>
               )}
-              {avisoDuplicado ? (
+              {candidatasNovo ? (
+                <div className="space-y-2">
+                  <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    Este aluno tem mais de uma Aula Agendada nesta data/matéria — escolha qual delas vincular:
+                  </p>
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                    {candidatasNovo.map((cand) => (
+                      <button
+                        key={cand.id}
+                        onClick={() => criarConteudo(false, cand.id)}
+                        disabled={salvando}
+                        className="w-full flex items-center justify-between gap-2 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 rounded-lg px-3 py-2 text-left transition-colors disabled:opacity-50"
+                      >
+                        <span className="text-sm text-slate-700">
+                          {cand.horaInicio && cand.horaFim ? `${cand.horaInicio}–${cand.horaFim}` : "Sem horário"}
+                          {cand.materia ? ` · ${cand.materia.nome}` : ""}
+                        </span>
+                        <span className="text-xs text-slate-400">{cand.status}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setCandidatasNovo(null)}
+                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              ) : avisoDuplicado ? (
                 <div className="flex gap-3">
                   <button
                     onClick={() => criarConteudo(true)}
@@ -714,7 +773,7 @@ export default function ConteudosClient({
                     {salvando ? "Salvando..." : "Registrar"}
                   </button>
                   <button
-                    onClick={() => { setModal(false); setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); }}
+                    onClick={() => { setModal(false); setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setCandidatasNovo(null); }}
                     className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition-colors"
                   >
                     Cancelar
@@ -800,21 +859,52 @@ export default function ConteudosClient({
                   <p className="text-xs text-amber-800">{erroEdit}</p>
                 </div>
               )}
-              <div className="flex gap-3">
-                <button
-                  onClick={salvarConteudo}
-                  disabled={!podeSalvarEdit || salvando}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
-                >
-                  {salvando ? "Salvando..." : "Salvar"}
-                </button>
-                <button
-                  onClick={() => { setEditConteudo(null); setErroEdit(""); }}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition-colors"
-                >
-                  Cancelar
-                </button>
-              </div>
+
+              {candidatasEdit ? (
+                <div className="space-y-2">
+                  <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    Este aluno tem mais de uma Aula Agendada nesta data/matéria — escolha qual delas vincular:
+                  </p>
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                    {candidatasEdit.map((cand) => (
+                      <button
+                        key={cand.id}
+                        onClick={() => salvarConteudo(cand.id)}
+                        disabled={salvando}
+                        className="w-full flex items-center justify-between gap-2 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 rounded-lg px-3 py-2 text-left transition-colors disabled:opacity-50"
+                      >
+                        <span className="text-sm text-slate-700">
+                          {cand.horaInicio && cand.horaFim ? `${cand.horaInicio}–${cand.horaFim}` : "Sem horário"}
+                          {cand.materia ? ` · ${cand.materia.nome}` : ""}
+                        </span>
+                        <span className="text-xs text-slate-400">{cand.status}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setCandidatasEdit(null)}
+                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => salvarConteudo()}
+                    disabled={!podeSalvarEdit || salvando}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+                  >
+                    {salvando ? "Salvando..." : "Salvar"}
+                  </button>
+                  <button
+                    onClick={() => { setEditConteudo(null); setErroEdit(""); setCandidatasEdit(null); }}
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

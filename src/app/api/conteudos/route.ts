@@ -37,13 +37,16 @@ export async function POST(req: NextRequest) {
   const aulaId: string | null = body.aulaId || null;
   const materiaId: string | null = body.materiaId || null;
   const forcar   = body.forcar === true;
+  // aulaIdEscolhido: usuário resolveu manualmente uma ambiguidade (aluno com
+  // +1 aula candidata) escolhendo qual aula vincular.
+  const aulaIdEscolhido: string | null = body.aulaIdEscolhido || null;
 
   // Planejado: sem validação de agenda
   // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após
   // Ministrado avulso: exige aula com status REALIZADA
   if (!planejado && !aulaId) {
-    const validacao = await validarAgenda(body.alunoId, dataAula, planejado, null, materiaId);
-    if (!validacao.ok) return NextResponse.json({ erro: validacao.erro }, { status: 422 });
+    const validacao = await validarAgenda(body.alunoId, dataAula, planejado, aulaIdEscolhido, materiaId);
+    if (!validacao.ok) return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
   }
 
   // Aviso (não bloqueio): data não-futura e já existe conteúdo Ministrado
@@ -70,7 +73,7 @@ export async function POST(req: NextRequest) {
       data: {
         alunoId:    body.alunoId,
         materiaId,
-        aulaId,
+        aulaId: aulaId || (!planejado ? aulaIdEscolhido : null),
         topico:     body.topico,
         descricao:  body.descricao  || null,
         arquivoUrl: body.arquivoUrl || null,
