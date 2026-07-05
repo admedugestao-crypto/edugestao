@@ -5,6 +5,36 @@ import { validarAgenda } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
 
+const includeCompleto = {
+  aluno: {
+    select: {
+      nome: true,
+      professora: { select: { usuario: { select: { nome: true } } } },
+    },
+  },
+  materia: true,
+  aula: {
+    select: {
+      id: true, horaInicio: true, horaFim: true, status: true,
+      materia: { select: { nome: true, cor: true } },
+      aluno: { select: { nome: true } },
+    },
+  },
+} as const;
+
+// GET /api/conteudos/[id] — busca o conteúdo com o vínculo de agenda
+// atualizado (usado pelo client para refrescar a linha do grid após
+// marcar Ministrado / reverter para Planejado, sem precisar de F5).
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+
+  const { id } = await params;
+  const conteudo = await prisma.conteudo.findUnique({ where: { id }, include: includeCompleto });
+  if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+  return NextResponse.json(conteudo);
+}
+
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
@@ -36,10 +66,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       data:       dataAula,
       planejado,
     },
-    include: {
-      aluno:   { select: { nome: true } },
-      materia: true,
-    },
+    include: includeCompleto,
   });
   return NextResponse.json(conteudo);
 }

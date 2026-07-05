@@ -88,6 +88,13 @@ export async function POST(req: NextRequest) {
           },
         },
         materia: true,
+        aula: {
+          select: {
+            id: true, horaInicio: true, horaFim: true, status: true,
+            materia: { select: { nome: true, cor: true } },
+            aluno: { select: { nome: true } },
+          },
+        },
       },
     });
     return NextResponse.json(conteudo, { status: 201 });

@@ -183,6 +183,26 @@ function CamposFormMobile({
   );
 }
 
+// Formato cru retornado pela API (aluno.professora aninhado, aula em vez de agenda)
+type RawConteudo = Omit<Conteudo, "aluno" | "agenda"> & {
+  aluno: { nome: string; professora: { usuario: { nome: string } } | null };
+  aula: AgendaInfo | null;
+};
+
+// Converte a resposta crua da API para o formato usado na lista (aluno.professora
+// como string, agenda) — usado ao criar/editar conteúdo para manter a lista
+// atualizada sem precisar de F5.
+function mapConteudo(raw: RawConteudo): Conteudo {
+  return {
+    ...raw,
+    aluno: {
+      nome: raw.aluno.nome,
+      professora: raw.aluno.professora?.usuario?.nome ?? null,
+    },
+    agenda: raw.aula ?? null,
+  };
+}
+
 export default function ConteudosMobile({
   alunos, professoras = [], conteudosIniciais, isProfessor, nomeUsuario,
 }: {
@@ -252,11 +272,7 @@ export default function ConteudosMobile({
         return;
       }
       setAvisoDuplicado(null);
-      const conteudoNovo = {
-        ...data,
-        aluno: { nome: data.aluno.nome, professora: data.aluno.professora?.usuario?.nome ?? null },
-      };
-      setConteudos((prev) => [conteudoNovo, ...prev]);
+      setConteudos((prev) => [mapConteudo(data), ...prev]);
       setModal(false);
       setNovo(formVazio());
     } catch {
@@ -294,7 +310,9 @@ export default function ConteudosMobile({
           setErroEdit(dRev.erro ?? "Erro ao reverter para Planejado.");
           return;
         }
-        setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? { ...c, ...editConteudo, planejado: true } : c));
+        const resFresh = await fetch(`/api/conteudos/${editConteudo.id}`);
+        const dFresh = await resFresh.json();
+        setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? mapConteudo(dFresh) : c));
         setEditConteudo(null);
         return;
       }
@@ -329,7 +347,9 @@ export default function ConteudosMobile({
           return;
         }
         setCandidatasEdit(null);
-        setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? { ...c, ...editConteudo, planejado: false } : c));
+        const resFresh = await fetch(`/api/conteudos/${editConteudo.id}`);
+        const dFresh = await resFresh.json();
+        setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? mapConteudo(dFresh) : c));
         setEditConteudo(null);
         return;
       }
@@ -344,7 +364,7 @@ export default function ConteudosMobile({
         setErroEdit(data.erro ?? "Erro ao salvar conteúdo.");
         return;
       }
-      setConteudos((prev) => prev.map((c) => (c.id === data.id ? data : c)));
+      setConteudos((prev) => prev.map((c) => (c.id === data.id ? mapConteudo(data) : c)));
       setEditConteudo(null);
     } catch {
       setErroEdit("Erro de comunicação com o servidor.");
