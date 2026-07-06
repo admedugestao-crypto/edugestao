@@ -1532,7 +1532,7 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
       <div className="flex items-start justify-between gap-1">
         <p className="text-xs font-bold leading-tight truncate text-slate-800">{aula.aluno.nome}</p>
         <span className={`shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${cfg.bg} ${cfg.cor}`}>
-          {cfg.icon}
+          {cfg.icon}{cfg.label}
         </span>
       </div>
       {aula.horaInicio && (
