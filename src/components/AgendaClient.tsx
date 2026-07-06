@@ -1552,14 +1552,11 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
           ))}
         </div>
       )}
-      {aula.conteudo && (
-        <span className={`inline-flex items-center gap-0.5 mt-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold leading-none ${
-          aula.conteudo.planejado
-            ? "bg-blue-100 text-blue-700"
-            : "bg-emerald-100 text-emerald-700"
-        }`}>
+      {/* Ministrado não é mostrado aqui: é redundante com o status Realizada da própria aula */}
+      {aula.conteudo?.planejado && (
+        <span className="inline-flex items-center gap-0.5 mt-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold leading-none bg-blue-100 text-blue-700">
           <BookOpen size={8}/>
-          {aula.conteudo.planejado ? "Planejado" : "Ministrado"}
+          Planejado
         </span>
       )}
       {mostrarProfessora && (
