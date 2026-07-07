@@ -5,7 +5,11 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const publicPaths = ["/login", "/cadastro", "/api/auth", "/api/cadastro", "/api/dev-fix", "/api/cron"];
+  const publicPaths = [
+    "/login", "/cadastro", "/plataforma/login",
+    "/api/auth", "/api/cadastro", "/api/empresas/validar-slug",
+    "/api/dev-fix", "/api/cron",
+  ];
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
   if (isPublic) return NextResponse.next();
 

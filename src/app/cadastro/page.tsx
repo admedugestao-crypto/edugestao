@@ -1,26 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function CadastroPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ nome: "", email: "", senha: "", confirmar: "" });
+  const [form, setForm] = useState({ empresaNome: "", nome: "", email: "", senha: "", confirmar: "" });
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
-  const [verificando, setVerificando] = useState(true);
-  const [jaConfigurado, setJaConfigurado] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/cadastro")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.configurado) setJaConfigurado(true);
-      })
-      .catch(() => {})
-      .finally(() => setVerificando(false));
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +23,12 @@ export default function CadastroPage() {
     const res = await fetch("/api/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome: form.nome, email: form.email, senha: form.senha }),
+      body: JSON.stringify({
+        empresaNome: form.empresaNome,
+        nome: form.nome,
+        email: form.email,
+        senha: form.senha,
+      }),
     });
 
     const data = await res.json();
@@ -49,36 +42,6 @@ export default function CadastroPage() {
     router.push("/login?cadastro=ok");
   }
 
-  if (verificando) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <p className="text-slate-500 text-sm">Verificando...</p>
-      </div>
-    );
-  }
-
-  if (jaConfigurado) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-600 text-white text-2xl font-bold mb-4">
-            E
-          </div>
-          <h1 className="text-xl font-bold text-slate-800 mb-2">Sistema já configurado</h1>
-          <p className="text-slate-500 text-sm mb-6">
-            O administrador do sistema já foi criado. Entre com sua conta ou fale com o administrador para obter acesso.
-          </p>
-          <Link
-            href="/login"
-            className="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
-          >
-            Ir para o login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
@@ -86,13 +49,25 @@ export default function CadastroPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-600 text-white text-2xl font-bold mb-3">
             E
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">Configuração inicial</h1>
-          <p className="text-slate-500 text-sm mt-1">Crie a conta de administrador do sistema</p>
+          <h1 className="text-2xl font-bold text-slate-800">Criar conta</h1>
+          <p className="text-slate-500 text-sm mt-1">Cadastre sua empresa no EduGestão</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Nome da empresa</label>
+            <input
+              type="text"
+              value={form.empresaNome}
+              onChange={(e) => setForm({ ...form, empresaNome: e.target.value })}
+              required
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Ex: Escola da Karin"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Seu nome</label>
             <input
               type="text"
               value={form.nome}
