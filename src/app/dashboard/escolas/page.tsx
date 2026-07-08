@@ -1,11 +1,17 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { School, Plus, MapPin } from "lucide-react";
 import EscolasClient from "@/components/EscolasClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function EscolasPage() {
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+
   const escolas = await prisma.escola.findMany({
+    where: { empresaId: scope.empresaId },
     include: { unidades: { orderBy: { nome: "asc" } } },
     orderBy: { nome: "asc" },
   });

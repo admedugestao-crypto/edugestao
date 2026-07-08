@@ -1,15 +1,21 @@
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { UserCog } from "lucide-react";
 import UsuariosClient from "@/components/UsuariosClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function UsuariosPage() {
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+
   const session = await auth();
   const sessionUserId = (session?.user as any)?.id as string;
 
   const usuarios = await prisma.usuario.findMany({
+    where: { empresaId: scope.empresaId },
     select: {
       id: true,
       nome: true,
