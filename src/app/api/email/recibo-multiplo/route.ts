@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { enviarEmailReciboMultiplo, emailConfigurado } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
@@ -8,8 +9,9 @@ export const dynamic = "force-dynamic";
 // POST /api/email/recibo-multiplo
 // Body: { ids: string[] }
 export async function POST(req: NextRequest) {
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
   const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   if (!emailConfigurado()) {
     return NextResponse.json(
@@ -23,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Nenhum ID informado." }, { status: 400 });
 
   const pagamentos = await prisma.pagamento.findMany({
-    where: { id: { in: ids }, pago: true },
+    where: { id: { in: ids }, empresaId: scope.empresaId, pago: true },
     include: {
       aluno: {
         include: {
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
 
   const nomeProfessora =
     pagamentos[0].aluno.professora?.usuario?.nome ??
-    (session.user as any)?.name ?? "Professor(a)";
+    (session?.user as any)?.name ?? "Professor(a)";
 
   const erros: string[] = [];
   let enviados = 0;
