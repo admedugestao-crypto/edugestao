@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
-  const professoraId = (session.user as any).professoraId as string | null;
-  const perfil       = (session.user as any).perfil       as string;
-  const isAdmin      = perfil === "SUPERADMIN";
   const alunos = await prisma.aluno.findMany({
-    where: (!isAdmin && professoraId) ? { professoraId } : {},
+    where: scopeWhere(scope),
     include: {
       unidade:   { include: { escola: true } },
       materias:  { include: { materia: true } },
@@ -27,22 +24,30 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
-
-  const perfil = (session.user as any).perfil as string;
-  const sessionProfessoraId = (session.user as any).professoraId as string | null;
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const form = await req.formData();
 
   // Admin pode escolher qualquer professora via form (ou deixar sem professor)
   // Professora usa sempre a própria
-  const professoraId: string | null = perfil === "SUPERADMIN"
+  const professoraId: string | null = scope.isAdmin
     ? (form.get("professoraId") as string | null) || null
-    : sessionProfessoraId;
+    : scope.professoraId;
 
-  if (perfil !== "SUPERADMIN" && !professoraId)
+  if (!scope.isAdmin && !professoraId)
     return NextResponse.json({ erro: "Sem perfil de professora vinculado." }, { status: 403 });
+
+  const unidadeId = form.get("unidadeId") as string;
+  const [unidadeOk, professoraOk] = await Promise.all([
+    prisma.unidade.findFirst({ where: { id: unidadeId, empresaId: scope.empresaId }, select: { id: true } }),
+    professoraId
+      ? prisma.professora.findFirst({ where: { id: professoraId, empresaId: scope.empresaId }, select: { id: true } })
+      : Promise.resolve(true),
+  ]);
+  if (!unidadeOk || !professoraOk) {
+    return NextResponse.json({ erro: "Unidade ou professora não encontrada." }, { status: 404 });
+  }
 
   let fotoUrl: string | null = null;
   const foto = form.get("foto") as File | null;
@@ -61,8 +66,9 @@ export async function POST(req: NextRequest) {
   try {
     const aluno = await prisma.aluno.create({
       data: {
+        empresaId: scope.empresaId,
         ...(professoraId ? { professoraId } : {}),
-        unidadeId: form.get("unidadeId") as string,
+        unidadeId,
         nome: form.get("nome") as string,
         dataNascimento: dataNasc ? new Date(dataNasc) : null,
         fotoUrl,
