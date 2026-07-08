@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { validarAgenda } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
@@ -26,31 +26,35 @@ const includeCompleto = {
 // atualizado (usado pelo client para refrescar a linha do grid após
 // marcar Ministrado / reverter para Planejado, sem precisar de F5).
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
   const conteudo = await prisma.conteudo.findUnique({ where: { id }, include: includeCompleto });
-  if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+  if (!conteudo || conteudo.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+  }
   return NextResponse.json(conteudo);
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id }    = await params;
   const body      = await req.json();
   const dataAula  = new Date(body.data);
   const planejado = body.planejado ?? false;
 
-  const existente = await prisma.conteudo.findUnique({ where: { id }, select: { aulaId: true } });
-  if (!existente) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+  const existente = await prisma.conteudo.findUnique({ where: { id }, select: { aulaId: true, empresaId: true } });
+  if (!existente || existente.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+  }
 
   // aulaIdEscolhido: quando o usuário resolveu manualmente uma ambiguidade
   // (aluno com +1 aula candidata) escolhendo qual aula vincular.
   const aulaIdParaValidar = existente.aulaId || body.aulaIdEscolhido || null;
-  const validacao = await validarAgenda(body.alunoId, dataAula, planejado, aulaIdParaValidar, body.materiaId || null);
+  const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdParaValidar, body.materiaId || null);
   if (!validacao.ok) {
     return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
   }
@@ -72,8 +76,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
 
@@ -82,8 +86,11 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   // aluno+data+matéria, que pode "achar" a aula de OUTRO conteúdo do mesmo dia.
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { aulaId: true },
+    select: { aulaId: true, empresaId: true },
   });
+  if (!conteudo || conteudo.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+  }
   if (conteudo?.aulaId) {
     const aula = await prisma.agendaAula.findUnique({ where: { id: conteudo.aulaId }, select: { status: true } });
     if (aula?.status === "REALIZADA") {

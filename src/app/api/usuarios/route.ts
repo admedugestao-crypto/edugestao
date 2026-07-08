@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const usuarios = await prisma.usuario.findMany({
+    where: { empresaId: scope.empresaId },
     select: {
       id: true,
       nome: true,
@@ -27,8 +28,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
   const { nome, email, senha, perfil, ativo, foto, whatsapp } = body;
@@ -40,7 +41,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "A senha deve ter pelo menos 6 caracteres." }, { status: 400 });
   }
 
-  const existente = await prisma.usuario.findUnique({ where: { email } });
+  const existente = await prisma.usuario.findUnique({
+    where: { empresaId_email: { empresaId: scope.empresaId, email } },
+  });
   if (existente) {
     return NextResponse.json({ erro: "Este e-mail já está cadastrado." }, { status: 409 });
   }
@@ -50,6 +53,7 @@ export async function POST(req: NextRequest) {
 
   const usuario = await prisma.usuario.create({
     data: {
+      empresaId: scope.empresaId,
       nome,
       email,
       senhaHash,
@@ -57,7 +61,7 @@ export async function POST(req: NextRequest) {
       ativo: ativo !== false,
       foto: foto || null,
       whatsapp: whatsapp || null,
-      ...(perfilFinal === "PROFESSORA" ? { professora: { create: {} } } : {}),
+      ...(perfilFinal === "PROFESSORA" ? { professora: { create: { empresaId: scope.empresaId } } } : {}),
     },
     select: {
       id: true,

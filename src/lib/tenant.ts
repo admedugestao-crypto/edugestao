@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 
 export type SessionScope = {
+  userId: string;
   empresaId: string;
   professoraId: string | null;
   perfil: "SUPERADMIN" | "PROFESSORA" | "AUXILIAR" | "PLATAFORMA";
@@ -16,6 +17,7 @@ export async function getSessionScope(): Promise<SessionScope | null> {
   const u = session.user as any;
   if (!u.empresaId) return null;
   return {
+    userId: u.id,
     empresaId: u.empresaId,
     professoraId: u.professoraId ?? null,
     perfil: u.perfil,

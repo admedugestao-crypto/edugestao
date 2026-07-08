@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
   const body = await req.json();
@@ -17,21 +17,25 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Nome e e-mail são obrigatórios." }, { status: 400 });
   }
 
-  // Verifica se e-mail já pertence a outro usuário
+  // Busca o perfil atual para gerenciar o registro de professora — também
+  // confirma que o usuário pertence à empresa da sessão.
+  const usuarioAtual = await prisma.usuario.findUnique({
+    where: { id },
+    include: { professora: true },
+  });
+  if (!usuarioAtual || usuarioAtual.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Usuário não encontrado." }, { status: 404 });
+  }
+
+  // Verifica se e-mail já pertence a outro usuário da mesma empresa
   const existente = await prisma.usuario.findFirst({
-    where: { email, NOT: { id } },
+    where: { email, empresaId: scope.empresaId, NOT: { id } },
   });
   if (existente) {
     return NextResponse.json({ erro: "Este e-mail já está em uso." }, { status: 409 });
   }
 
   const perfilFinal = perfil === "SUPERADMIN" ? "SUPERADMIN" : "PROFESSORA";
-
-  // Busca o perfil atual para gerenciar o registro de professora
-  const usuarioAtual = await prisma.usuario.findUnique({
-    where: { id },
-    include: { professora: true },
-  });
 
   const dataUpdate: any = {
     nome,
@@ -65,7 +69,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   // Atualiza disponibilidade se for professora
   if (perfilFinal === "PROFESSORA") {
     if (!usuarioAtual?.professora) {
-      await prisma.professora.create({ data: { usuarioId: id, disponibilidade: disponibilidade ?? [] } });
+      await prisma.professora.create({
+        data: { empresaId: scope.empresaId, usuarioId: id, disponibilidade: disponibilidade ?? [] },
+      });
     } else if (disponibilidade !== undefined) {
       await prisma.professora.update({ where: { usuarioId: id }, data: { disponibilidade } });
     }
@@ -75,18 +81,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const sessionUserId = (session.user as any).id;
 
   // Não permite excluir o próprio usuário logado
-  if (id === sessionUserId) {
+  if (id === scope.userId) {
     return NextResponse.json(
       { erro: "Não é possível excluir o próprio usuário." },
       { status: 409 }
     );
+  }
+
+  const existente = await prisma.usuario.findUnique({ where: { id }, select: { empresaId: true } });
+  if (!existente || existente.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Usuário não encontrado." }, { status: 404 });
   }
 
   await prisma.usuario.delete({ where: { id } });
