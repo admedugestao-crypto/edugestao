@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { Bell } from "lucide-react";
 import NotificacoesUnificadas from "@/components/NotificacoesUnificadas";
 import { emailConfigurado } from "@/lib/email";
@@ -7,9 +8,9 @@ import { emailConfigurado } from "@/lib/email";
 export const dynamic = "force-dynamic";
 
 export default async function NotificacoesPage() {
-  const session = await auth();
-  const perfil = (session?.user as any)?.perfil as string;
-  if (perfil !== "SUPERADMIN") {
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+  if (!scope.isAdmin) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
         Acesso restrito a administradores.
@@ -25,7 +26,7 @@ export default async function NotificacoesPage() {
 
   // ── Dados WhatsApp ──────────────────────────────────────────────────────────
   const avaliacoes = await prisma.avaliacao.findMany({
-    where: { data: { gte: hoje, lte: em7dias } },
+    where: { empresaId: scope.empresaId, data: { gte: hoje, lte: em7dias } },
     include: {
       unidade: { include: { escola: true } },
       materia: true,
@@ -35,6 +36,7 @@ export default async function NotificacoesPage() {
   });
 
   const historicoWhatsapp = await prisma.notificacaoProva.findMany({
+    where: { empresaId: scope.empresaId },
     include: {
       professora: { include: { usuario: { select: { nome: true } } } },
       avaliacao: {
@@ -47,7 +49,7 @@ export default async function NotificacoesPage() {
 
   // ── Dados E-mail ────────────────────────────────────────────────────────────
   const historicoEmail = await prisma.notificacaoProva.findMany({
-    where: { email: { not: null } },
+    where: { empresaId: scope.empresaId, email: { not: null } },
     include: {
       professora: { include: { usuario: { select: { nome: true, email: true } } } },
       avaliacao: {
@@ -61,6 +63,7 @@ export default async function NotificacoesPage() {
   // ── Aulas nos próximos 7 dias com responsável cadastrado ───────────────────
   const aulasProximas = await prisma.agendaAula.findMany({
     where: {
+      empresaId: scope.empresaId,
       data: { gte: hoje, lte: em7dias },
       status: "AGENDADA",
       aluno: { telefoneResponsavel: { not: null } },
@@ -76,6 +79,7 @@ export default async function NotificacoesPage() {
 
   // ── Dados Notificações de Aula ──────────────────────────────────────────────
   const historicoAulas = await prisma.notificacaoAula.findMany({
+    where: { empresaId: scope.empresaId },
     include: {
       agendaAula: {
         include: {

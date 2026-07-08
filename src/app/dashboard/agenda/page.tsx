@@ -1,20 +1,21 @@
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import { CalendarDays } from "lucide-react";
 import AgendaClient from "@/components/AgendaClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function AgendaPage() {
-  const session      = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
-  const perfil       = (session?.user as any)?.perfil as string;
-  const isAdmin      = perfil === "SUPERADMIN";
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+  const professoraId = scope.professoraId;
+  const isAdmin      = scope.isAdmin;
   const isProfessor  = !isAdmin && !!professoraId;
 
   // Busca alunos ativos (filtrado por professor se for professora, admin vê todos)
   const alunos = await prisma.aluno.findMany({
-    where: { status: "ATIVO", ...(!isAdmin && professoraId ? { professoraId } : {}) },
+    where: { ...scopeWhere(scope), status: "ATIVO" },
     select: {
       id: true, nome: true, serie: true, turma: true, diaSemana: true,
       professoraId: true,
@@ -26,15 +27,19 @@ export default async function AgendaPage() {
   // Busca matérias
   const materias = isProfessor
     ? await prisma.materia.findMany({
-        where: { professoras: { some: { professoraId: professoraId! } } },
+        where: { empresaId: scope.empresaId, professoras: { some: { professoraId: professoraId! } } },
         select: { id: true, nome: true, cor: true },
         orderBy: { nome: "asc" },
       })
-    : await prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } });
+    : await prisma.materia.findMany({
+        where: { empresaId: scope.empresaId },
+        select: { id: true, nome: true, cor: true },
+        orderBy: { nome: "asc" },
+      });
 
   // Professoras com disponibilidade (excluir admins)
   const professorasRaw = await prisma.professora.findMany({
-    where: { usuario: { perfil: "PROFESSORA" } },
+    where: { empresaId: scope.empresaId, usuario: { perfil: "PROFESSORA" } },
     select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
     orderBy: { usuario: { nome: "asc" } },
   });

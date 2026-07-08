@@ -1,30 +1,33 @@
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import AlunoForm from "@/components/AlunoForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function NovoAlunoPage() {
-  const session = await auth();
-  const perfil = (session?.user as any)?.perfil as string;
-  const sessionUserId = (session?.user as any)?.id as string;
-  const isAdmin = perfil === "SUPERADMIN";
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+  const perfil = scope.perfil;
+  const isAdmin = scope.isAdmin;
 
   const [escolas, materias, professorasComDisp, professoraSession] = await Promise.all([
     prisma.escola.findMany({
+      where: { empresaId: scope.empresaId },
       include: { unidades: { orderBy: { nome: "asc" } } },
       orderBy: { nome: "asc" },
     }),
-    prisma.materia.findMany({ orderBy: { nome: "asc" } }),
+    prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
     isAdmin
       ? (prisma.professora.findMany({
+          where: { empresaId: scope.empresaId },
           select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
           orderBy: { usuario: { nome: "asc" } },
         }) as unknown as Promise<any[]>)
       : Promise.resolve([] as any[]),
     !isAdmin
       ? prisma.professora.findUnique({
-          where: { usuarioId: sessionUserId },
+          where: { usuarioId: scope.userId },
           select: { disponibilidade: true },
         })
       : Promise.resolve(null),
