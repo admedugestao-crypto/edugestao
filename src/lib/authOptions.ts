@@ -44,6 +44,7 @@ export const authOptions: NextAuthOptions = {
           perfil: usuario.perfil,
           professoraId: usuario.professora?.id ?? null,
           empresaId: usuario.empresaId,
+          senhaTemporaria: usuario.senhaTemporaria,
         } as any;
       },
     }),
@@ -92,6 +93,7 @@ export const authOptions: NextAuthOptions = {
         token.perfil = (user as any).perfil;
         token.professoraId = (user as any).professoraId;
         token.empresaId = (user as any).empresaId;
+        token.senhaTemporaria = (user as any).senhaTemporaria ?? false;
       }
       return token;
     },
@@ -101,6 +103,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).perfil = token.perfil;
         (session.user as any).professoraId = token.professoraId;
         (session.user as any).empresaId = token.empresaId;
+        (session.user as any).senhaTemporaria = token.senhaTemporaria ?? false;
       }
       return session;
     },

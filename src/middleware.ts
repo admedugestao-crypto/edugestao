@@ -34,6 +34,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/plataforma", request.url));
   }
 
+  // Senha temporária (criada pela plataforma) — obriga trocar antes de
+  // acessar qualquer outra tela, exceto a própria página/rota de troca.
+  const isTrocarSenha = pathname.startsWith("/trocar-senha") || pathname.startsWith("/api/trocar-senha");
+  if (token.senhaTemporaria && !isTrocarSenha) {
+    return NextResponse.redirect(new URL("/trocar-senha", request.url));
+  }
+
   return NextResponse.next();
 }
 

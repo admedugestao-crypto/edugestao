@@ -50,17 +50,18 @@ model Empresa {
 // ─── Usuários e Autenticação ──────────────────────────────────────────────────
 
 model Usuario {
-  id           String   @id @default(cuid())
-  empresaId    String?
-  nome         String
-  email        String
-  senhaHash    String
-  perfil       Perfil   @default(PROFESSORA)
-  ativo        Boolean  @default(true)
-  foto         String?
-  whatsapp     String?
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  id              String   @id @default(cuid())
+  empresaId       String?
+  nome            String
+  email           String
+  senhaHash       String
+  senhaTemporaria Boolean  @default(false)
+  perfil          Perfil   @default(PROFESSORA)
+  ativo           Boolean  @default(true)
+  foto            String?
+  whatsapp        String?
+  criadoEm        DateTime @default(now())
+  atualizadoEm    DateTime @updatedAt
 
   empresa    Empresa?    @relation(fields: [empresaId], references: [id])
   professora Professora?

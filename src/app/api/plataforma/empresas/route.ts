@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
   const usuario = await prisma.$transaction(async (tx) => {
     const empresa = await tx.empresa.create({ data: { nome: empresaNome, slug } });
     return tx.usuario.create({
-      data: { nome, email, senhaHash, perfil: "SUPERADMIN", empresaId: empresa.id },
+      data: { nome, email, senhaHash, perfil: "SUPERADMIN", empresaId: empresa.id, senhaTemporaria: true },
     });
   });
 
