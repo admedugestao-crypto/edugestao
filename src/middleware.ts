@@ -6,8 +6,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const publicPaths = [
-    "/login", "/cadastro", "/plataforma/login",
-    "/api/auth", "/api/cadastro", "/api/empresas/validar-slug",
+    "/login", "/plataforma/login",
+    "/api/auth", "/api/empresas/validar-slug",
     "/api/dev-fix", "/api/cron",
   ];
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
@@ -18,9 +18,20 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  const isPlataforma = pathname.startsWith("/plataforma") || pathname.startsWith("/api/plataforma");
+
   if (!token) {
-    const loginUrl = new URL("/login", request.url);
+    const loginUrl = new URL(isPlataforma ? "/plataforma/login" : "/login", request.url);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Área da plataforma é exclusiva do papel PLATAFORMA; o inverso também
+  // vale — um usuário PLATAFORMA (sem empresaId) não acessa telas operacionais.
+  if (isPlataforma && token.perfil !== "PLATAFORMA") {
+    return NextResponse.redirect(new URL("/plataforma/login", request.url));
+  }
+  if (!isPlataforma && token.perfil === "PLATAFORMA") {
+    return NextResponse.redirect(new URL("/plataforma", request.url));
   }
 
   return NextResponse.next();

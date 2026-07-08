@@ -3,7 +3,6 @@
 import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { isMobileUserAgent } from "@/lib/device";
 
@@ -168,12 +167,6 @@ function LoginForm() {
         </form>
       )}
 
-      <p className="text-center text-sm text-slate-500 mt-6">
-        Não tem uma conta?{" "}
-        <Link href="/cadastro" className="text-indigo-600 hover:underline font-medium">
-          Criar conta
-        </Link>
-      </p>
     </div>
   );
 }
