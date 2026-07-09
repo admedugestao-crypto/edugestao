@@ -406,7 +406,7 @@ export default function UsuariosClient({
               <h2 className="text-lg font-bold text-slate-800 mb-4">
                 {editId ? "Editar usuário" : "Novo usuário"}
               </h2>
-              {editId && (
+              {(editId || form.perfil === "PROFESSORA") && (
                 <div className="flex border-b border-slate-200 mb-5">
                   {(["dados", "disponibilidade"] as const).map((aba) => (
                     <button
@@ -546,14 +546,23 @@ export default function UsuariosClient({
                   </p>
                 )}
                 <div className="flex gap-3">
-                  <button onClick={salvarDisponibilidade} disabled={salvandoDisp}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors">
-                    {salvandoDisp ? "Salvando..." : "Salvar disponibilidade"}
-                  </button>
-                  <button onClick={() => { setModal(false); setErroDisp(""); }}
-                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
-                    Fechar
-                  </button>
+                  {editId ? (
+                    <>
+                      <button onClick={salvarDisponibilidade} disabled={salvandoDisp}
+                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+                        {salvandoDisp ? "Salvando..." : "Salvar disponibilidade"}
+                      </button>
+                      <button onClick={() => { setModal(false); setErroDisp(""); }}
+                        className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
+                        Fechar
+                      </button>
+                    </>
+                  ) : (
+                    <button onClick={() => setAbaModal("dados")}
+                      className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
+                      Voltar para Dados
+                    </button>
+                  )}
                 </div>
               </>
             )}

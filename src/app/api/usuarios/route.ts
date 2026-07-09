@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
-  const { nome, email, senha, perfil, ativo, foto, whatsapp } = body;
+  const { nome, email, senha, perfil, ativo, foto, whatsapp, disponibilidade } = body;
 
   if (!nome || !email || !senha) {
     return NextResponse.json({ erro: "Nome, e-mail e senha são obrigatórios." }, { status: 400 });
@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
       ativo: ativo !== false,
       foto: foto || null,
       whatsapp: whatsapp || null,
-      ...(perfilFinal === "PROFESSORA" ? { professora: { create: { empresaId: scope.empresaId } } } : {}),
+      ...(perfilFinal === "PROFESSORA"
+        ? { professora: { create: { empresaId: scope.empresaId, disponibilidade: disponibilidade ?? [] } } }
+        : {}),
     },
     select: {
       id: true,
