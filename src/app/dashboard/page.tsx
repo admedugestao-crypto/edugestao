@@ -166,21 +166,6 @@ export default async function DashboardPage() {
           </div>
         </div>
       )}
-
-      <div className="flex gap-3">
-        <Link
-          href="/dashboard/alunos/novo"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          + Cadastrar aluno
-        </Link>
-        <Link
-          href="/dashboard/notas"
-          className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          Lançar notas
-        </Link>
-      </div>
     </div>
   );
 }
