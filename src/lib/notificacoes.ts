@@ -12,6 +12,7 @@ export function formatarWhatsapp(num: string): string {
 
 // ── Monta a mensagem de notificação ─────────────────────────────────────────
 export function montarMensagem(params: {
+  nomeEmpresa: string;
   nomeProfessor: string;
   nomeAvaliacao: string;
   nomeMateria: string | null;
@@ -22,7 +23,7 @@ export function montarMensagem(params: {
   diasRestantes: number;
   nomesAlunos: string[];
 }): string {
-  const { nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola, nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos } = params;
+  const { nomeEmpresa, nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola, nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos } = params;
 
   const dataFormatada = dataProva.toLocaleDateString("pt-BR", {
     weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
@@ -44,7 +45,7 @@ export function montarMensagem(params: {
     : [];
 
   return [
-    `📚 *EduGestão – Lembrete de Prova*`,
+    `📚 *${nomeEmpresa} – Lembrete de Prova*`,
     ``,
     `Olá, prof. *${nomeProfessor}*!`,
     ``,
@@ -57,7 +58,7 @@ export function montarMensagem(params: {
     `📆 *Data:* ${dataFormatada}`,
     ...(linhasAlunos.length > 0 ? [``, ...linhasAlunos] : []),
     ``,
-    `_Mensagem automática do EduGestão_`,
+    `_Mensagem automática de ${nomeEmpresa} via EduGestão_`,
   ].join("\n");
 }
 
@@ -172,9 +173,9 @@ export async function enviarWhatsapp(numero: string, mensagem: string): Promise<
 }
 
 // ── PROCESSO 1: WhatsApp ─────────────────────────────────────────────────────
-// Itera por empresa — cada empresa é processada de forma isolada (necessário
-// desde já para a Fase 3, quando cada uma passa a ter suas próprias
-// credenciais de WhatsApp em vez do env var global atual).
+// Itera por empresa — cada empresa é processada de forma isolada (mesmo
+// usando as mesmas credenciais globais de WhatsApp para todas, o nome da
+// empresa é embutido no texto da mensagem, ver montarMensagem()).
 export async function processarNotificacoes(): Promise<{
   enviadas: number;
   pendentes: { numero: string; mensagem: string; professorNome: string; avaliacaoNome: string; erro?: string }[];
@@ -182,7 +183,7 @@ export async function processarNotificacoes(): Promise<{
 }> {
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const resultado = { enviadas: 0, pendentes: [] as any[], erros: [] as string[] };
-  const empresas = await prisma.empresa.findMany({ where: { ativo: true }, select: { id: true } });
+  const empresas = await prisma.empresa.findMany({ where: { ativo: true }, select: { id: true, nome: true } });
 
   for (const empresa of empresas) {
     const avaliacoes = await buscarAvaliacoes(empresa.id);
@@ -209,6 +210,7 @@ export async function processarNotificacoes(): Promise<{
           const numero = formatarWhatsapp(prof.usuario.whatsapp);
           const nomesAlunos = prof.alunos.map((a) => a.nome);
           const mensagem = montarMensagem({
+            nomeEmpresa: empresa.nome,
             nomeProfessor: prof.usuario.nome,
             nomeAvaliacao: av.nome,
             nomeMateria: av.materia?.nome ?? null,
@@ -350,6 +352,7 @@ export async function processarNotificacoesAula(): Promise<{
       professora: { include: { usuario: { select: { nome: true } } } },
       materia: true,
       notificacao: true,
+      empresa: { select: { nome: true } },
     },
   });
 
@@ -367,7 +370,7 @@ export async function processarNotificacoesAula(): Promise<{
       : "horário a confirmar";
 
     const mensagem = [
-      `📚 *EduGestão – Lembrete de Aula*`,
+      `📚 *${aula.empresa.nome} – Lembrete de Aula*`,
       ``,
       `Olá${aula.aluno.responsavel ? `, *${aula.aluno.responsavel}*` : ""}!`,
       ``,
@@ -378,7 +381,7 @@ export async function processarNotificacoesAula(): Promise<{
       `🕐 *Horário:* ${horario}`,
       `👩‍🏫 *Professor(a):* ${aula.professora.usuario.nome}`,
       ``,
-      `_Mensagem automática do EduGestão_`,
+      `_Mensagem automática de ${aula.empresa.nome} via EduGestão_`,
     ].join("\n");
 
     try {

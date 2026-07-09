@@ -23,12 +23,6 @@ model Empresa {
   ativo    Boolean  @default(true)
   criadoEm DateTime @default(now())
 
-  // WhatsApp — credenciais próprias por empresa (Fonnte ou Evolution API)
-  fonnteToken       String?
-  evolutionApiUrl   String?
-  evolutionApiKey   String?
-  evolutionInstance String?
-
   usuarios          Usuario[]
   professoras       Professora[]
   materias          Materia[]

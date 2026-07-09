@@ -28,6 +28,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Registro não encontrado" }, { status: 404 });
   }
 
+  const empresa = await prisma.empresa.findUniqueOrThrow({ where: { id: scope.empresaId }, select: { nome: true } });
+
   const av   = registro.avaliacao;
   const prof = registro.professora;
   const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);
@@ -48,6 +50,7 @@ export async function POST(req: NextRequest) {
 
     const numero   = formatarWhatsapp(whatsapp);
     const mensagem = montarMensagem({
+      nomeEmpresa:   empresa.nome,
       nomeProfessor: prof.usuario.nome,
       nomeAvaliacao: av.nome,
       nomeMateria:   av.materia?.nome ?? null,
