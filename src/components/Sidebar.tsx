@@ -108,6 +108,13 @@ export default function Sidebar({ usuario }: { usuario: any }) {
               {usuario?.name}
             </p>
             <p className="text-xs text-slate-500 truncate">{usuario?.email}</p>
+            <span
+              className={`inline-flex mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                isAdmin ? "bg-indigo-100 text-indigo-700" : "bg-emerald-100 text-emerald-700"
+              }`}
+            >
+              {isAdmin ? "Administrador" : "Professor"}
+            </span>
           </div>
         </div>
       </div>
