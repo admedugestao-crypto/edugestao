@@ -406,7 +406,7 @@ export default function UsuariosClient({
               <h2 className="text-lg font-bold text-slate-800 mb-4">
                 {editId ? "Editar usuário" : "Novo usuário"}
               </h2>
-              {editId && form.perfil === "PROFESSORA" && (
+              {editId && (
                 <div className="flex border-b border-slate-200 mb-5">
                   {(["dados", "disponibilidade"] as const).map((aba) => (
                     <button

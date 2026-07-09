@@ -66,15 +66,21 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     },
   });
 
-  // Atualiza disponibilidade se for professora
-  if (perfilFinal === "PROFESSORA") {
+  // Atualiza disponibilidade sempre que enviada, independente do perfil —
+  // o SUPERADMIN (dono da empresa) também pode dar aulas e precisa registrar
+  // horários sem que isso altere seu perfil de acesso.
+  if (disponibilidade !== undefined) {
     if (!usuarioAtual?.professora) {
       await prisma.professora.create({
-        data: { empresaId: scope.empresaId, usuarioId: id, disponibilidade: disponibilidade ?? [] },
+        data: { empresaId: scope.empresaId, usuarioId: id, disponibilidade },
       });
-    } else if (disponibilidade !== undefined) {
+    } else {
       await prisma.professora.update({ where: { usuarioId: id }, data: { disponibilidade } });
     }
+  } else if (perfilFinal === "PROFESSORA" && !usuarioAtual?.professora) {
+    await prisma.professora.create({
+      data: { empresaId: scope.empresaId, usuarioId: id, disponibilidade: [] },
+    });
   }
 
   return NextResponse.json(usuario);
