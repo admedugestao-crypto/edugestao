@@ -4,7 +4,7 @@ import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { isMobileUserAgent } from "@/lib/device";
-import { Users, School, DollarSign, ClipboardList, AlertCircle, CalendarClock } from "lucide-react";
+import { Users, School, DollarSign, ClipboardList, AlertCircle, CalendarClock, UserCog } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
   const mesAtual = agora.getUTCMonth() + 1;
   const anoAtual = agora.getUTCFullYear();
 
-  const [totalAlunos, todasNotas, proximasProvas, pagamentosMes] =
+  const [totalAlunos, todasNotas, proximasProvas, pagamentosMes, totalUsuarios] =
     await Promise.all([
       prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
       isAdmin ? Promise.resolve([]) : prisma.nota.findMany({
@@ -63,6 +63,7 @@ export default async function DashboardPage() {
         },
         select: { valorCobrado: true, pago: true },
       }),
+      isAdmin ? prisma.usuario.count({ where: { empresaId: scope.empresaId } }) : Promise.resolve(0),
     ]);
 
   const alunosBaixoDesempenho = todasNotas
@@ -83,6 +84,7 @@ export default async function DashboardPage() {
     { label: "Escolas cadastradas", valor: totalEscolas,           icon: School,        cor: "bg-emerald-50 text-emerald-600", link: "/dashboard/escolas" },
     { label: `A receber (${String(mesAtual).padStart(2,"0")}/${anoAtual})`, valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600", link: "/dashboard/pagamentos" },
     ...(!isAdmin ? [{ label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600", link: "/dashboard/notas" } as const] : []),
+    ...(isAdmin ? [{ label: "Usuários cadastrados", valor: totalUsuarios, icon: UserCog, cor: "bg-violet-50 text-violet-600", link: "/dashboard/usuarios" } as const] : []),
   ];
 
   return (
