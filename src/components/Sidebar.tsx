@@ -60,13 +60,14 @@ export default function Sidebar({ usuario }: { usuario: any }) {
   return (
     <aside className="w-60 bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0 shrink-0">
       <div className="p-5 border-b border-slate-100">
-        <div className="flex items-center justify-center h-10">
+        <div className="flex flex-col items-center justify-center gap-1.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/icone-edugestao.jpg"
             alt="EduGestão"
             className="max-h-10 max-w-full object-contain"
           />
+          <span className="font-bold text-slate-800 text-sm tracking-wide">EduGestão</span>
         </div>
       </div>
 
