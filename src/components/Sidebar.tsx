@@ -14,7 +14,6 @@ import {
   UserCog,
   Bell,
   DollarSign,
-  Menu,
 } from "lucide-react";
 
 const nav = [
@@ -54,34 +53,21 @@ function Avatar({ foto, nome }: { foto?: string | null; nome?: string }) {
   );
 }
 
-export default function Sidebar({
-  usuario,
-  empresaLogoUrl,
-}: {
-  usuario: any;
-  empresaLogoUrl?: string | null;
-}) {
+export default function Sidebar({ usuario }: { usuario: any }) {
   const pathname = usePathname();
   const isAdmin = usuario?.perfil === "SUPERADMIN";
 
   return (
     <aside className="w-60 bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0 shrink-0">
       <div className="p-5 border-b border-slate-100">
-        {empresaLogoUrl ? (
-          <div className="flex items-center justify-center h-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={empresaLogoUrl}
-              alt="Logo da empresa"
-              className="max-h-10 max-w-full object-contain"
-            />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center gap-2">
-            <Menu size={20} className="text-indigo-600" />
-            <span className="font-bold text-slate-800 text-lg tracking-wide">Menu</span>
-          </div>
-        )}
+        <div className="flex items-center justify-center h-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/icone-edugestao.jpg"
+            alt="EduGestão"
+            className="max-h-10 max-w-full object-contain"
+          />
+        </div>
       </div>
 
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">

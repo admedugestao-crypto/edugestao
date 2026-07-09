@@ -25,11 +25,11 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="print:hidden">
-        <Sidebar usuario={usuario} empresaLogoUrl={empresa?.logoUrl ?? null} />
+        <Sidebar usuario={usuario} />
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="print:hidden">
-          <TopBar usuario={usuario} />
+          <TopBar usuario={usuario} empresaLogoUrl={empresa?.logoUrl ?? null} />
         </div>
         <main className="flex-1 overflow-y-auto p-6 bg-slate-100 print:p-0 print:overflow-visible">{children}</main>
       </div>
