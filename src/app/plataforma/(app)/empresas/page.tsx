@@ -12,6 +12,7 @@ type Empresa = {
 };
 
 const formVazio = { empresaNome: "", nome: "", email: "", senha: "" };
+const formEdicaoVazio = { nome: "", slug: "" };
 
 export default function PlataformaEmpresasPage() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -20,6 +21,11 @@ export default function PlataformaEmpresasPage() {
   const [form, setForm] = useState(formVazio);
   const [erro, setErro] = useState("");
   const [salvando, setSalvando] = useState(false);
+
+  const [empresaEditando, setEmpresaEditando] = useState<Empresa | null>(null);
+  const [formEdicao, setFormEdicao] = useState(formEdicaoVazio);
+  const [erroEdicao, setErroEdicao] = useState("");
+  const [salvandoEdicao, setSalvandoEdicao] = useState(false);
 
   async function carregar() {
     setCarregandoLista(true);
@@ -57,6 +63,32 @@ export default function PlataformaEmpresasPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ativo: !ativo }),
     });
+    carregar();
+  }
+
+  function abrirEdicao(empresa: Empresa) {
+    setEmpresaEditando(empresa);
+    setFormEdicao({ nome: empresa.nome, slug: empresa.slug });
+    setErroEdicao("");
+  }
+
+  async function salvarEdicao(e: React.FormEvent) {
+    e.preventDefault();
+    if (!empresaEditando) return;
+    setErroEdicao("");
+    setSalvandoEdicao(true);
+    const res = await fetch(`/api/plataforma/empresas/${empresaEditando.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formEdicao),
+    });
+    const data = await res.json();
+    setSalvandoEdicao(false);
+    if (!res.ok) {
+      setErroEdicao(data.erro ?? "Erro ao salvar alterações.");
+      return;
+    }
+    setEmpresaEditando(null);
     carregar();
   }
 
@@ -99,7 +131,13 @@ export default function PlataformaEmpresasPage() {
                       {e.ativo ? "Ativa" : "Inativa"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right space-x-3">
+                    <button
+                      onClick={() => abrirEdicao(e)}
+                      className="text-xs text-indigo-600 hover:underline font-medium"
+                    >
+                      Editar
+                    </button>
                     <button
                       onClick={() => alternarAtivo(e.id, e.ativo)}
                       className="text-xs text-indigo-600 hover:underline font-medium"
@@ -179,6 +217,60 @@ export default function PlataformaEmpresasPage() {
                   className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors"
                 >
                   {salvando ? "Criando..." : "Criar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {empresaEditando && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
+            <h2 className="text-lg font-bold text-slate-800 mb-4">Editar empresa</h2>
+            <form onSubmit={salvarEdicao} className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Nome da empresa</label>
+                <input
+                  type="text"
+                  value={formEdicao.nome}
+                  onChange={(e) => setFormEdicao({ ...formEdicao, nome: e.target.value })}
+                  required
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Código (usado no login)</label>
+                <input
+                  type="text"
+                  value={formEdicao.slug}
+                  onChange={(e) => setFormEdicao({ ...formEdicao, slug: e.target.value })}
+                  required
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <p className="text-xs text-slate-400 mt-1">
+                  Alterar o código muda o link de login usado pela empresa.
+                </p>
+              </div>
+
+              {erroEdicao && (
+                <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroEdicao}</p>
+              )}
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setEmpresaEditando(null); setErroEdicao(""); }}
+                  className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={salvandoEdicao}
+                  className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors"
+                >
+                  {salvandoEdicao ? "Salvando..." : "Salvar"}
                 </button>
               </div>
             </form>
