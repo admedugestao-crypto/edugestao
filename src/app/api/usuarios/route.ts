@@ -20,11 +20,14 @@ export async function GET() {
       foto: true,
       whatsapp: true,
       criadoEm: true,
+      professora: { select: { disponibilidade: true } },
     },
     orderBy: { nome: "asc" },
   });
 
-  return NextResponse.json(usuarios);
+  return NextResponse.json(
+    usuarios.map(({ professora, ...u }) => ({ ...u, disponibilidade: professora?.disponibilidade ?? [] }))
+  );
 }
 
 export async function POST(req: NextRequest) {

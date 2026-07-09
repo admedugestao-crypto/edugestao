@@ -181,6 +181,11 @@ export default function UsuariosClient({
   const [salvando, setSalvando] = useState(false);
   const [salvandoDisp, setSalvandoDisp] = useState(false);
 
+  async function carregar() {
+    const res = await fetch("/api/usuarios");
+    if (res.ok) setUsuarios(await res.json());
+  }
+
   function abrirNovo() {
     setForm(formVazio);
     setEditId(null);
@@ -237,6 +242,7 @@ export default function UsuariosClient({
         setErroDisp(data.erro ?? "Erro ao salvar.");
         return;
       }
+      await carregar();
       setErroDisp("✓ Disponibilidade salva com sucesso!");
       setTimeout(() => setErroDisp(""), 3000);
     } finally {
@@ -278,11 +284,7 @@ export default function UsuariosClient({
         setErro(data.erro ?? "Erro ao salvar.");
         return;
       }
-      if (editId) {
-        setUsuarios((prev) => prev.map((u) => (u.id === editId ? data : u)));
-      } else {
-        setUsuarios((prev) => [...prev, data]);
-      }
+      await carregar();
       setModal(false);
     } finally {
       setSalvando(false);
