@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
+import { requirePlataforma } from "@/lib/plataforma";
 
 export const dynamic = "force-dynamic";
-
-async function requirePlataforma() {
-  const session = await auth();
-  if ((session?.user as any)?.perfil !== "PLATAFORMA") return null;
-  return session;
-}
 
 // Lista todas as empresas — só o papel PLATAFORMA enxerga isso.
 export async function GET() {
@@ -19,7 +13,7 @@ export async function GET() {
   }
   const empresas = await prisma.empresa.findMany({
     orderBy: { criadoEm: "desc" },
-    select: { id: true, nome: true, slug: true, ativo: true, criadoEm: true, _count: { select: { usuarios: true } } },
+    select: { id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true, _count: { select: { usuarios: true } } },
   });
   return NextResponse.json(empresas);
 }
@@ -31,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { empresaNome, nome, email, senha } = body;
+  const { empresaNome, nome, email, senha, logoUrl } = body;
 
   if (!empresaNome || !nome || !email || !senha) {
     return NextResponse.json({ erro: "Preencha todos os campos." }, { status: 400 });
@@ -55,7 +49,9 @@ export async function POST(req: NextRequest) {
   const senhaHash = await bcrypt.hash(senha, 10);
 
   const usuario = await prisma.$transaction(async (tx) => {
-    const empresa = await tx.empresa.create({ data: { nome: empresaNome, slug } });
+    const empresa = await tx.empresa.create({
+      data: { nome: empresaNome, slug, logoUrl: typeof logoUrl === "string" ? logoUrl : null },
+    });
     return tx.usuario.create({
       data: { nome, email, senhaHash, perfil: "SUPERADMIN", empresaId: empresa.id, senhaTemporaria: true },
     });

@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
+import { requirePlataforma } from "@/lib/plataforma";
 
 export const dynamic = "force-dynamic";
 
-async function requirePlataforma() {
-  const session = await auth();
-  if ((session?.user as any)?.perfil !== "PLATAFORMA") return null;
-  return session;
-}
-
 // Atualiza dados de uma empresa: ativa/desativa (empresa inativa não consegue
-// mais logar) e/ou edita nome/código (slug usado na 1ª etapa do login).
+// mais logar) e/ou edita nome/código/logo (slug usado na 1ª etapa do login).
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await requirePlataforma())) {
     return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
@@ -20,7 +14,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   const body = await req.json();
 
-  const data: { ativo?: boolean; nome?: string; slug?: string } = {};
+  const data: { ativo?: boolean; nome?: string; slug?: string; logoUrl?: string | null } = {};
 
   if (typeof body.ativo === "boolean") data.ativo = body.ativo;
 
@@ -37,6 +31,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ erro: "Este código já está em uso por outra empresa." }, { status: 409 });
     }
     data.slug = slug;
+  }
+
+  if (typeof body.logoUrl === "string" || body.logoUrl === null) {
+    data.logoUrl = body.logoUrl;
   }
 
   if (Object.keys(data).length === 0) {

@@ -20,6 +20,7 @@ model Empresa {
   id       String   @id @default(cuid())
   nome     String
   slug     String   @unique
+  logoUrl  String?
   ativo    Boolean  @default(true)
   criadoEm DateTime @default(now())
 

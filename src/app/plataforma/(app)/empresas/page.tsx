@@ -6,6 +6,7 @@ type Empresa = {
   id: string;
   nome: string;
   slug: string;
+  logoUrl: string | null;
   ativo: boolean;
   criadoEm: string;
   _count: { usuarios: number };
@@ -19,13 +20,24 @@ export default function PlataformaEmpresasPage() {
   const [carregandoLista, setCarregandoLista] = useState(true);
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(formVazio);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [erro, setErro] = useState("");
   const [salvando, setSalvando] = useState(false);
 
   const [empresaEditando, setEmpresaEditando] = useState<Empresa | null>(null);
   const [formEdicao, setFormEdicao] = useState(formEdicaoVazio);
+  const [logoFileEdicao, setLogoFileEdicao] = useState<File | null>(null);
   const [erroEdicao, setErroEdicao] = useState("");
   const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+
+  async function enviarLogo(file: File): Promise<string> {
+    const fd = new FormData();
+    fd.append("arquivo", file);
+    const res = await fetch("/api/plataforma/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erro ?? "Erro ao enviar logo.");
+    return data.url as string;
+  }
 
   async function carregar() {
     setCarregandoLista(true);
@@ -41,20 +53,27 @@ export default function PlataformaEmpresasPage() {
     e.preventDefault();
     setErro("");
     setSalvando(true);
-    const res = await fetch("/api/plataforma/empresas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    const data = await res.json();
-    setSalvando(false);
-    if (!res.ok) {
-      setErro(data.erro ?? "Erro ao criar empresa.");
-      return;
+    try {
+      const logoUrl = logoFile ? await enviarLogo(logoFile) : undefined;
+      const res = await fetch("/api/plataforma/empresas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, logoUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErro(data.erro ?? "Erro ao criar empresa.");
+        return;
+      }
+      setModal(false);
+      setForm(formVazio);
+      setLogoFile(null);
+      carregar();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro ao criar empresa.");
+    } finally {
+      setSalvando(false);
     }
-    setModal(false);
-    setForm(formVazio);
-    carregar();
   }
 
   async function alternarAtivo(id: string, ativo: boolean) {
@@ -69,6 +88,7 @@ export default function PlataformaEmpresasPage() {
   function abrirEdicao(empresa: Empresa) {
     setEmpresaEditando(empresa);
     setFormEdicao({ nome: empresa.nome, slug: empresa.slug });
+    setLogoFileEdicao(null);
     setErroEdicao("");
   }
 
@@ -77,19 +97,25 @@ export default function PlataformaEmpresasPage() {
     if (!empresaEditando) return;
     setErroEdicao("");
     setSalvandoEdicao(true);
-    const res = await fetch(`/api/plataforma/empresas/${empresaEditando.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formEdicao),
-    });
-    const data = await res.json();
-    setSalvandoEdicao(false);
-    if (!res.ok) {
-      setErroEdicao(data.erro ?? "Erro ao salvar alterações.");
-      return;
+    try {
+      const logoUrl = logoFileEdicao ? await enviarLogo(logoFileEdicao) : undefined;
+      const res = await fetch(`/api/plataforma/empresas/${empresaEditando.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formEdicao, logoUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErroEdicao(data.erro ?? "Erro ao salvar alterações.");
+        return;
+      }
+      setEmpresaEditando(null);
+      carregar();
+    } catch (err) {
+      setErroEdicao(err instanceof Error ? err.message : "Erro ao salvar alterações.");
+    } finally {
+      setSalvandoEdicao(false);
     }
-    setEmpresaEditando(null);
-    carregar();
   }
 
   return (
@@ -123,7 +149,17 @@ export default function PlataformaEmpresasPage() {
             <tbody className="divide-y divide-slate-100">
               {empresas.map((e) => (
                 <tr key={e.id}>
-                  <td className="px-4 py-3 font-medium text-slate-800">{e.nome}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800">
+                    <div className="flex items-center gap-2">
+                      {e.logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={e.logoUrl} alt="" className="h-6 w-6 rounded object-contain border border-slate-200" />
+                      ) : (
+                        <span className="h-6 w-6 rounded bg-slate-100 flex-shrink-0" />
+                      )}
+                      {e.nome}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-slate-500">{e.slug}</td>
                   <td className="px-4 py-3 text-slate-500">{e._count.usuarios}</td>
                   <td className="px-4 py-3">
@@ -198,6 +234,15 @@ export default function PlataformaEmpresasPage() {
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Logo (opcional)</label>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
+                  className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-slate-100 file:text-slate-700 file:text-sm hover:file:bg-slate-200"
+                />
+              </div>
 
               {erro && (
                 <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erro}</p>
@@ -251,6 +296,19 @@ export default function PlataformaEmpresasPage() {
                 <p className="text-xs text-slate-400 mt-1">
                   Alterar o código muda o link de login usado pela empresa.
                 </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Logo</label>
+                {empresaEditando.logoUrl && !logoFileEdicao && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={empresaEditando.logoUrl} alt="" className="h-10 w-10 rounded object-contain border border-slate-200 mb-2" />
+                )}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  onChange={(e) => setLogoFileEdicao(e.target.files?.[0] ?? null)}
+                  className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-slate-100 file:text-slate-700 file:text-sm hover:file:bg-slate-200"
+                />
               </div>
 
               {erroEdicao && (
