@@ -67,7 +67,10 @@ export default function Sidebar({ usuario }: { usuario: any }) {
             alt="EduGestão"
             className="max-h-10 max-w-full object-contain"
           />
-          <span className="font-bold text-slate-800 text-sm tracking-wide">EduGestão</span>
+          <div className="text-center leading-tight">
+            <p className="font-bold text-slate-800 text-sm tracking-wide">Gestão Educacional</p>
+            <p className="text-xs text-slate-400">EduGestão</p>
+          </div>
         </div>
       </div>
 
