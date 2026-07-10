@@ -41,8 +41,7 @@ export default function PlataformaUsuariosPage() {
 
   useEffect(() => { carregar(); }, []);
 
-  async function criar(e: React.FormEvent) {
-    e.preventDefault();
+  async function criar() {
     setErro("");
     setSalvando(true);
     try {
@@ -80,8 +79,7 @@ export default function PlataformaUsuariosPage() {
     setMostrarSenhaEdicao(false);
   }
 
-  async function salvarEdicao(e: React.FormEvent) {
-    e.preventDefault();
+  async function salvarEdicao() {
     if (!usuarioEditando) return;
     setErroEdicao("");
     setSalvandoEdicao(true);
@@ -182,7 +180,7 @@ export default function PlataformaUsuariosPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Novo usuário</h2>
-            <form onSubmit={criar} className="space-y-3">
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
                 <input
@@ -238,7 +236,8 @@ export default function PlataformaUsuariosPage() {
                   Cancelar
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={criar}
                   disabled={salvando}
                   className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors"
                 >
@@ -259,7 +258,7 @@ export default function PlataformaUsuariosPage() {
                 ? <>Administrador da empresa <strong>{usuarioEditando.empresa.nome}</strong> ({usuarioEditando.empresa.slug}).</>
                 : "Usuário interno da plataforma (sem empresa vinculada)."}
             </p>
-            <form onSubmit={salvarEdicao} className="space-y-3">
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
                 <input
@@ -314,7 +313,8 @@ export default function PlataformaUsuariosPage() {
                   Cancelar
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={salvarEdicao}
                   disabled={salvandoEdicao}
                   className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors"
                 >
