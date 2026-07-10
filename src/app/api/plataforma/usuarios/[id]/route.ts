@@ -5,7 +5,8 @@ import { requirePlataforma } from "@/lib/plataforma";
 
 export const dynamic = "force-dynamic";
 
-// Edita nome/status/senha de um usuário interno da plataforma.
+// Edita nome/status/senha de um usuário PLATAFORMA ou de um admin (SUPERADMIN)
+// de alguma empresa.
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await requirePlataforma();
   if (!session) {
@@ -14,7 +15,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
 
   const existente = await prisma.usuario.findUnique({ where: { id } });
-  if (!existente || existente.perfil !== "PLATAFORMA") {
+  if (!existente || (existente.perfil !== "PLATAFORMA" && existente.perfil !== "SUPERADMIN")) {
     return NextResponse.json({ erro: "Usuário não encontrado." }, { status: 404 });
   }
 

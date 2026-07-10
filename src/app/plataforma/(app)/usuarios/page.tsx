@@ -9,6 +9,8 @@ type Usuario = {
   email: string;
   ativo: boolean;
   criadoEm: string;
+  perfil: "PLATAFORMA" | "SUPERADMIN";
+  empresa: { nome: string; slug: string } | null;
 };
 
 const formVazio = { nome: "", email: "", senha: "" };
@@ -106,12 +108,17 @@ export default function PlataformaUsuariosPage() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-slate-800">Usuários da Plataforma</h1>
+        <div>
+          <h1 className="text-xl font-bold text-slate-800">Usuários</h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Usuários internos da plataforma e administradores de cada empresa.
+          </p>
+        </div>
         <button
           onClick={() => setModal(true)}
           className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
-          + Novo usuário
+          + Novo usuário interno
         </button>
       </div>
 
@@ -126,6 +133,7 @@ export default function PlataformaUsuariosPage() {
               <tr>
                 <th className="text-left px-4 py-2.5">Nome</th>
                 <th className="text-left px-4 py-2.5">E-mail</th>
+                <th className="text-left px-4 py-2.5">Empresa</th>
                 <th className="text-left px-4 py-2.5">Status</th>
                 <th className="text-right px-4 py-2.5">Ação</th>
               </tr>
@@ -135,6 +143,15 @@ export default function PlataformaUsuariosPage() {
                 <tr key={u.id}>
                   <td className="px-4 py-3 font-medium text-slate-800">{u.nome}</td>
                   <td className="px-4 py-3 text-slate-500">{u.email}</td>
+                  <td className="px-4 py-3">
+                    {u.empresa ? (
+                      <span className="text-slate-700">{u.empresa.nome}</span>
+                    ) : (
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                        Plataforma
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${u.ativo ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
                       {u.ativo ? "Ativo" : "Inativo"}
@@ -236,7 +253,12 @@ export default function PlataformaUsuariosPage() {
       {usuarioEditando && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Editar usuário</h2>
+            <h2 className="text-lg font-bold text-slate-800 mb-1">Editar usuário</h2>
+            <p className="text-xs text-slate-500 mb-4">
+              {usuarioEditando.empresa
+                ? <>Administrador da empresa <strong>{usuarioEditando.empresa.nome}</strong> ({usuarioEditando.empresa.slug}).</>
+                : "Usuário interno da plataforma (sem empresa vinculada)."}
+            </p>
             <form onSubmit={salvarEdicao} className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>

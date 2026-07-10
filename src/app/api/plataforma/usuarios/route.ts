@@ -5,15 +5,19 @@ import { requirePlataforma } from "@/lib/plataforma";
 
 export const dynamic = "force-dynamic";
 
-// Lista os usuários internos da plataforma (perfil PLATAFORMA, sem empresa).
+// Lista os usuários internos da plataforma (PLATAFORMA) e os administradores
+// de cada empresa (SUPERADMIN) — tela única de manutenção de acessos.
 export async function GET() {
   if (!(await requirePlataforma())) {
     return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
   }
   const usuarios = await prisma.usuario.findMany({
-    where: { perfil: "PLATAFORMA" },
-    select: { id: true, nome: true, email: true, ativo: true, criadoEm: true },
-    orderBy: { nome: "asc" },
+    where: { perfil: { in: ["PLATAFORMA", "SUPERADMIN"] } },
+    select: {
+      id: true, nome: true, email: true, ativo: true, criadoEm: true, perfil: true,
+      empresa: { select: { nome: true, slug: true } },
+    },
+    orderBy: [{ perfil: "asc" }, { nome: "asc" }],
   });
   return NextResponse.json(usuarios);
 }
