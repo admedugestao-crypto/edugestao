@@ -113,7 +113,7 @@ export default function PlataformaUsuariosPage() {
           </p>
         </div>
         <button
-          onClick={() => setModal(true)}
+          onClick={() => { setForm(formVazio); setErro(""); setMostrarSenha(false); setModal(true); }}
           className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
           + Novo usuário interno
@@ -180,7 +180,7 @@ export default function PlataformaUsuariosPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Novo usuário</h2>
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-3">
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-3" autoComplete="off">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
                 <input
@@ -188,6 +188,7 @@ export default function PlataformaUsuariosPage() {
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   required
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -198,6 +199,7 @@ export default function PlataformaUsuariosPage() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -210,6 +212,7 @@ export default function PlataformaUsuariosPage() {
                     onChange={(e) => setForm({ ...form, senha: e.target.value })}
                     required
                     minLength={6}
+                    autoComplete="new-password"
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   <button
