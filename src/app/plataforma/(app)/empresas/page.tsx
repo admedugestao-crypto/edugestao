@@ -14,6 +14,7 @@ type Empresa = {
 
 const formVazio = { empresaNome: "", nome: "", email: "", senha: "" };
 const formEdicaoVazio = { nome: "", slug: "" };
+const formAdminVazio = { nome: "", email: "", senha: "" };
 
 export default function PlataformaEmpresasPage() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -29,6 +30,11 @@ export default function PlataformaEmpresasPage() {
   const [logoFileEdicao, setLogoFileEdicao] = useState<File | null>(null);
   const [erroEdicao, setErroEdicao] = useState("");
   const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+
+  const [empresaNovoAdmin, setEmpresaNovoAdmin] = useState<Empresa | null>(null);
+  const [formAdmin, setFormAdmin] = useState(formAdminVazio);
+  const [erroAdmin, setErroAdmin] = useState("");
+  const [salvandoAdmin, setSalvandoAdmin] = useState(false);
 
   async function enviarLogo(file: File): Promise<string> {
     const fd = new FormData();
@@ -118,6 +124,35 @@ export default function PlataformaEmpresasPage() {
     }
   }
 
+  function abrirNovoAdmin(empresa: Empresa) {
+    setEmpresaNovoAdmin(empresa);
+    setFormAdmin(formAdminVazio);
+    setErroAdmin("");
+  }
+
+  async function salvarNovoAdmin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!empresaNovoAdmin) return;
+    setErroAdmin("");
+    setSalvandoAdmin(true);
+    try {
+      const res = await fetch(`/api/plataforma/empresas/${empresaNovoAdmin.id}/admin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formAdmin),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErroAdmin(data.erro ?? "Erro ao criar admin.");
+        return;
+      }
+      setEmpresaNovoAdmin(null);
+      carregar();
+    } finally {
+      setSalvandoAdmin(false);
+    }
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -179,6 +214,12 @@ export default function PlataformaEmpresasPage() {
                       className="text-xs text-indigo-600 hover:underline font-medium"
                     >
                       {e.ativo ? "Desativar" : "Ativar"}
+                    </button>
+                    <button
+                      onClick={() => abrirNovoAdmin(e)}
+                      className="text-xs text-indigo-600 hover:underline font-medium"
+                    >
+                      + Admin
                     </button>
                   </td>
                 </tr>
@@ -329,6 +370,71 @@ export default function PlataformaEmpresasPage() {
                   className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors"
                 >
                   {salvandoEdicao ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {empresaNovoAdmin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
+            <h2 className="text-lg font-bold text-slate-800 mb-1">Novo admin</h2>
+            <p className="text-xs text-slate-500 mb-4">
+              Vinculado à empresa <strong>{empresaNovoAdmin.nome}</strong> ({empresaNovoAdmin.slug}).
+            </p>
+            <form onSubmit={salvarNovoAdmin} className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
+                <input
+                  type="text"
+                  value={formAdmin.nome}
+                  onChange={(e) => setFormAdmin({ ...formAdmin, nome: e.target.value })}
+                  required
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
+                <input
+                  type="email"
+                  value={formAdmin.email}
+                  onChange={(e) => setFormAdmin({ ...formAdmin, email: e.target.value })}
+                  required
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Senha inicial</label>
+                <input
+                  type="password"
+                  value={formAdmin.senha}
+                  onChange={(e) => setFormAdmin({ ...formAdmin, senha: e.target.value })}
+                  required
+                  minLength={6}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              {erroAdmin && (
+                <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroAdmin}</p>
+              )}
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setEmpresaNovoAdmin(null); setErroAdmin(""); }}
+                  className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={salvandoAdmin}
+                  className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors"
+                >
+                  {salvandoAdmin ? "Criando..." : "Criar"}
                 </button>
               </div>
             </form>
