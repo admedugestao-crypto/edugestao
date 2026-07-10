@@ -20,6 +20,9 @@ export default async function PlataformaLayout({ children }: { children: React.R
           <Link href="/plataforma/empresas" className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
             Empresas
           </Link>
+          <Link href="/plataforma/usuarios" className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+            Usuários
+          </Link>
         </nav>
         <div className="px-3 py-4 border-t border-slate-800">
           <SairButton />
