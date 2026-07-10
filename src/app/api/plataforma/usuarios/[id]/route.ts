@@ -48,23 +48,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   return NextResponse.json(usuario);
 }
 
-// Remove um usuário interno da plataforma (não permite autoexclusão).
-export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await requirePlataforma();
-  if (!session) {
-    return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
-  }
-  const { id } = await params;
-
-  if (id === (session.user as any).id) {
-    return NextResponse.json({ erro: "Não é possível excluir o próprio usuário." }, { status: 409 });
-  }
-
-  const existente = await prisma.usuario.findUnique({ where: { id } });
-  if (!existente || existente.perfil !== "PLATAFORMA") {
-    return NextResponse.json({ erro: "Usuário não encontrado." }, { status: 404 });
-  }
-
-  await prisma.usuario.delete({ where: { id } });
-  return NextResponse.json({ ok: true });
+// Usuários da plataforma nunca podem ser excluídos, só editados/desativados
+// (perda de acesso interno é revertida ativando de novo, não recriando).
+export async function DELETE() {
+  return NextResponse.json(
+    { erro: "Usuários da plataforma não podem ser excluídos. Desative o acesso em vez disso." },
+    { status: 405 }
+  );
 }
