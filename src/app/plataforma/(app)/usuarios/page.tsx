@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 type Usuario = {
   id: string;
@@ -20,11 +21,13 @@ export default function PlataformaUsuariosPage() {
   const [form, setForm] = useState(formVazio);
   const [erro, setErro] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const [usuarioEditando, setUsuarioEditando] = useState<Usuario | null>(null);
   const [formEdicao, setFormEdicao] = useState(formEdicaoVazio);
   const [erroEdicao, setErroEdicao] = useState("");
   const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+  const [mostrarSenhaEdicao, setMostrarSenhaEdicao] = useState(false);
 
   async function carregar() {
     setCarregandoLista(true);
@@ -72,6 +75,7 @@ export default function PlataformaUsuariosPage() {
     setUsuarioEditando(usuario);
     setFormEdicao({ nome: usuario.nome, senha: "" });
     setErroEdicao("");
+    setMostrarSenhaEdicao(false);
   }
 
   async function salvarEdicao(e: React.FormEvent) {
@@ -184,14 +188,24 @@ export default function PlataformaUsuariosPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Senha</label>
-                <input
-                  type="password"
-                  value={form.senha}
-                  onChange={(e) => setForm({ ...form, senha: e.target.value })}
-                  required
-                  minLength={6}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                <div className="relative">
+                  <input
+                    type={mostrarSenha ? "text" : "password"}
+                    value={form.senha}
+                    onChange={(e) => setForm({ ...form, senha: e.target.value })}
+                    required
+                    minLength={6}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarSenha((v) => !v)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               {erro && (
@@ -245,14 +259,24 @@ export default function PlataformaUsuariosPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nova senha (opcional)</label>
-                <input
-                  type="password"
-                  value={formEdicao.senha}
-                  onChange={(e) => setFormEdicao({ ...formEdicao, senha: e.target.value })}
-                  minLength={6}
-                  placeholder="Deixe em branco para não alterar"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                <div className="relative">
+                  <input
+                    type={mostrarSenhaEdicao ? "text" : "password"}
+                    value={formEdicao.senha}
+                    onChange={(e) => setFormEdicao({ ...formEdicao, senha: e.target.value })}
+                    minLength={6}
+                    placeholder="Deixe em branco para não alterar"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarSenhaEdicao((v) => !v)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {mostrarSenhaEdicao ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               {erroEdicao && (
