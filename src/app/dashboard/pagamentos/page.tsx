@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { DollarSign } from "lucide-react";
 import PagamentosClient from "@/components/PagamentosClient";
 
@@ -7,12 +8,13 @@ export const dynamic = "force-dynamic";
 
 /** Busca registros reais de pagamento do mês */
 async function buscarPagamentos(
+  empresaId: string,
   mes: number, ano: number,
   professoraId: string | null,
   alunoFiltro: string | null,
   isAdmin: boolean,
 ) {
-  const where: any = { mes, ano };
+  const where: any = { empresaId, mes, ano };
   if (alunoFiltro)              where.alunoId = alunoFiltro;
   if (!isAdmin && professoraId) where.aluno   = { ...(where.aluno ?? {}), professoraId };
 
@@ -76,9 +78,9 @@ export default async function PagamentosPage({
 }: {
   searchParams: Promise<{ aluno?: string }>;
 }) {
-  const session      = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
-  const perfil       = (session?.user as any)?.perfil as string;
+  const scope        = await getSessionScope();
+  if (!scope) redirect("/login");
+  const professoraId = scope.professoraId;
   const params       = await searchParams;
   const alunoFiltro  = params.aluno ?? null;
 
@@ -86,8 +88,8 @@ export default async function PagamentosPage({
   const mes  = hoje.getMonth() + 1;
   const ano  = hoje.getFullYear();
 
-  const isAdmin    = perfil === "SUPERADMIN";
-  const pagamentos = await buscarPagamentos(mes, ano, professoraId, alunoFiltro, isAdmin);
+  const isAdmin    = scope.isAdmin;
+  const pagamentos = await buscarPagamentos(scope.empresaId, mes, ano, professoraId, alunoFiltro, isAdmin);
 
   return (
     <div className="space-y-5">
@@ -99,7 +101,7 @@ export default async function PagamentosPage({
         pagamentosIniciais={serializarPagamentos(pagamentos)}
         mesInicial={mes}
         anoInicial={ano}
-        isAdmin={perfil === "SUPERADMIN"}
+        isAdmin={isAdmin}
         podeNovo={true}
         alunoFiltro={alunoFiltro}
       />

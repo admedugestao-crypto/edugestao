@@ -1,26 +1,28 @@
 import { Suspense } from "react";
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { GraduationCap } from "lucide-react";
 import ConteudosClient from "@/components/ConteudosClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function ConteudosPage() {
-  const session     = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
-  const perfil       = (session?.user as any)?.perfil as string | null;
-  const isAdmin      = perfil !== "PROFESSORA";
-  const filtroProf  = (!isAdmin && professoraId) ? { professoraId } : {};
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+  // Nesta página, "admin" inclui SUPERADMIN e AUXILIAR — só PROFESSORA é
+  // restrita aos próprios alunos (comportamento pré-existente preservado).
+  const isAdmin = scope.perfil !== "PROFESSORA";
+  const filtroProf = (!isAdmin && scope.professoraId) ? { professoraId: scope.professoraId } : {};
 
   const [alunos, conteudos, professoras, materias] = await Promise.all([
     prisma.aluno.findMany({
-      where: { ...filtroProf },
+      where: { empresaId: scope.empresaId, ...filtroProf },
       include: { materias: { include: { materia: true } }, professora: { select: { id: true } } },
       orderBy: { nome: "asc" },
     }),
     prisma.conteudo.findMany({
-      where: { aluno: filtroProf },
+      where: { empresaId: scope.empresaId, aluno: filtroProf },
       include: {
         aluno: {
           select: {
@@ -41,11 +43,11 @@ export default async function ConteudosPage() {
       take: 50,
     }),
     prisma.professora.findMany({
-      where: { usuario: { perfil: "PROFESSORA" } },
+      where: { empresaId: scope.empresaId, usuario: { perfil: "PROFESSORA" } },
       include: { usuario: { select: { nome: true } } },
       orderBy: { usuario: { nome: "asc" } },
     }),
-    prisma.materia.findMany({ select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } }),
+    prisma.materia.findMany({ where: { empresaId: scope.empresaId }, select: { id: true, nome: true, cor: true }, orderBy: { nome: "asc" } }),
   ]);
 
   return (

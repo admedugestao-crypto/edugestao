@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { validarAgenda } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +10,8 @@ export const dynamic = "force-dynamic";
 // agenda (mobile e desktop) para decidir entre editar ou criar ao marcar
 // uma aula como Realizada.
 export async function GET(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const aulaId = searchParams.get("aulaId");
@@ -24,12 +24,16 @@ export async function GET(req: NextRequest) {
     include: { materia: true },
   });
 
+  if (conteudo && conteudo.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
+  }
+
   return NextResponse.json(conteudo);
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body     = await req.json();
   const dataAula = new Date(body.data);
@@ -41,11 +45,17 @@ export async function POST(req: NextRequest) {
   // +1 aula candidata) escolhendo qual aula vincular.
   const aulaIdEscolhido: string | null = body.aulaIdEscolhido || null;
 
+  const alunoOk = await prisma.aluno.findFirst({
+    where: { id: body.alunoId, empresaId: scope.empresaId },
+    select: { id: true },
+  });
+  if (!alunoOk) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
+
   // Planejado: sem validação de agenda
   // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após
   // Ministrado avulso: exige aula com status REALIZADA
   if (!planejado && !aulaId) {
-    const validacao = await validarAgenda(body.alunoId, dataAula, planejado, aulaIdEscolhido, materiaId);
+    const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdEscolhido, materiaId);
     if (!validacao.ok) return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
   }
 
@@ -71,6 +81,7 @@ export async function POST(req: NextRequest) {
   try {
     const conteudo = await prisma.conteudo.create({
       data: {
+        empresaId:  scope.empresaId,
         alunoId:    body.alunoId,
         materiaId,
         aulaId: aulaId || (!planejado ? aulaIdEscolhido : null),

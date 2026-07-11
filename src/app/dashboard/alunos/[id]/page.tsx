@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
+import { getSessionScope } from "@/lib/tenant";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -15,6 +15,9 @@ export default async function VisualizarAlunoPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+
   const { id } = await params;
 
   const aluno = await prisma.aluno.findUnique({
@@ -30,7 +33,7 @@ export default async function VisualizarAlunoPage({
     },
   });
 
-  if (!aluno) notFound();
+  if (!aluno || aluno.empresaId !== scope.empresaId) notFound();
 
   const statusLabel: Record<string, string> = {
     ATIVO: "Ativo",

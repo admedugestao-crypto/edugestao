@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
   const body = await req.json();
+
+  const existente = await prisma.escola.findUnique({ where: { id }, select: { empresaId: true } });
+  if (!existente || existente.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Escola não encontrada." }, { status: 404 });
+  }
 
   const escola = await prisma.escola.update({
     where: { id },
@@ -20,10 +25,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
+
+  const existente = await prisma.escola.findUnique({ where: { id }, select: { empresaId: true } });
+  if (!existente || existente.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Escola não encontrada." }, { status: 404 });
+  }
 
   const [unidades, alunos, avaliacoes] = await Promise.all([
     prisma.unidade.count({ where: { escolaId: id } }),

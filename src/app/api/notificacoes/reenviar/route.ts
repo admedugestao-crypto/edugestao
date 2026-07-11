@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { montarMensagem, formatarWhatsapp, enviarWhatsapp } from "@/lib/notificacoes";
 import { enviarEmailProva, emailConfigurado } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id, canal } = await req.json() as { id: string; canal: "whatsapp" | "email" };
   if (!id || !canal) return NextResponse.json({ erro: "id e canal são obrigatórios" }, { status: 400 });
@@ -24,7 +24,11 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  if (!registro) return NextResponse.json({ erro: "Registro não encontrado" }, { status: 404 });
+  if (!registro || registro.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Registro não encontrado" }, { status: 404 });
+  }
+
+  const empresa = await prisma.empresa.findUniqueOrThrow({ where: { id: scope.empresaId }, select: { nome: true } });
 
   const av   = registro.avaliacao;
   const prof = registro.professora;
@@ -46,6 +50,7 @@ export async function POST(req: NextRequest) {
 
     const numero   = formatarWhatsapp(whatsapp);
     const mensagem = montarMensagem({
+      nomeEmpresa:   empresa.nome,
       nomeProfessor: prof.usuario.nome,
       nomeAvaliacao: av.nome,
       nomeMateria:   av.materia?.nome ?? null,

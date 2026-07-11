@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/pagamentos?mes=5&ano=2026
 // Retorna registros reais de pagamento serializados (sem objetos Prisma brutos)
 export async function GET(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const mes         = parseInt(searchParams.get("mes")   ?? "0");
@@ -17,14 +17,10 @@ export async function GET(req: NextRequest) {
 
   if (!mes || !ano) return NextResponse.json({ erro: "mes e ano obrigatórios" }, { status: 400 });
 
-  const professoraId = (session.user as any).professoraId as string | null;
-  const perfil       = (session.user as any).perfil       as string;
-  const isAdmin      = perfil === "SUPERADMIN";
-
-  const where: any = { mes, ano };
+  const where: any = { empresaId: scope.empresaId, mes, ano };
   if (alunoFiltro) where.alunoId = alunoFiltro;
   // Admin vê pagamentos de todos os professores; professora vê só os próprios alunos
-  if (!isAdmin && professoraId) where.aluno = { ...(where.aluno ?? {}), professoraId };
+  if (!scope.isAdmin && scope.professoraId) where.aluno = { ...(where.aluno ?? {}), professoraId: scope.professoraId };
 
   const pagamentos = await prisma.pagamento.findMany({
     where,
@@ -84,13 +80,16 @@ export async function GET(req: NextRequest) {
 
 // POST /api/pagamentos — criar registro avulso (compatibilidade)
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
   const { alunoId, mes, ano, parcela = 1, pago, valorCobrado, dataVencimento, quantidadeAulas, observacao } = body;
 
   const { aulaIds } = body; // array opcional de AgendaAula ids para vincular
+
+  const alunoOk = await prisma.aluno.findFirst({ where: { id: alunoId, empresaId: scope.empresaId }, select: { id: true } });
+  if (!alunoOk) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
 
   const pagamento = await prisma.pagamento.upsert({
     where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } },
@@ -102,6 +101,7 @@ export async function POST(req: NextRequest) {
       valorCobrado:    valorCobrado    ?? undefined,
     },
     create: {
+      empresaId: scope.empresaId,
       alunoId, mes, ano, parcela,
       dataVencimento:  new Date(dataVencimento),
       valorCobrado,

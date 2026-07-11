@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -31,11 +31,9 @@ function ocorrenciasDiaSemana(diaSemana: number, mes: number, ano: number): Date
 //   SEMANAL         → N parcelas = ocorrências do diaSemanaCobranca no mês
 // Não sobrescreve registros já pagos.
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
-
-  const professoraId = (session.user as any)?.professoraId as string | null;
-  const perfil       = (session.user as any)?.perfil as string;
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const empresaId = scope.empresaId;
 
   const { mes, ano } = await req.json() as { mes: number; ano: number };
   if (!mes || !ano)
@@ -45,17 +43,16 @@ export async function POST(req: NextRequest) {
   const inicioMes = new Date(Date.UTC(ano, mes - 1, 1));
   const fimMes    = new Date(Date.UTC(ano, mes, 0, 23, 59, 59, 999));
 
-  const isAdmin = perfil === "SUPERADMIN";
-
-  if (!isAdmin && !professoraId)
+  if (!scope.isAdmin && !scope.professoraId)
     return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
 
   // ── Busca apenas aulas REALIZADA do mês ────────────────────────────────────
   const whereAula: any = {
+    empresaId: scope.empresaId,
     status: { in: ["REALIZADA", "FALTA_ALUNO"] },
     data:   { gte: inicioMes, lte: fimMes },
   };
-  if (!isAdmin && professoraId) whereAula.professoraId = professoraId;
+  if (!scope.isAdmin && scope.professoraId) whereAula.professoraId = scope.professoraId;
 
   const aulas = await prisma.agendaAula.findMany({
     where: whereAula,
@@ -136,6 +133,7 @@ export async function POST(req: NextRequest) {
       where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } },
       update: { quantidadeAulas, valorCobrado },
       create: {
+        empresaId,
         alunoId, mes, ano, parcela,
         dataVencimento,
         valorCobrado,

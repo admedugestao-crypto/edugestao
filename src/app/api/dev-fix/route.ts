@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const usuario = await prisma.usuario.findUnique({
+    const usuario = await prisma.usuario.findFirst({
       where: { email: "isaacdefigueiredo@gmail.com" },
     });
 

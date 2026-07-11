@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 // PATCH /api/pagamentos/[id]
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
   const body   = await req.json();
+
+  const existente = await prisma.pagamento.findUnique({ where: { id }, select: { empresaId: true } });
+  if (!existente || existente.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Pagamento não encontrado." }, { status: 404 });
+  }
 
   // ── Bloqueia baixa se houver aulas VINCULADAS ainda com status Agendada ──────
   // Usa a tabela PagamentoAula para verificar apenas as aulas que geraram este pagamento.
@@ -62,13 +67,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 // Pagamentos gerados automaticamente só podem ser excluídos se todas as
 // aulas do mês estiverem com status CANCELADA ou FALTA_PROFESSOR.
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
 
   const pagamento = await prisma.pagamento.findUnique({ where: { id } });
-  if (!pagamento) return NextResponse.json({ erro: "Pagamento não encontrado." }, { status: 404 });
+  if (!pagamento || pagamento.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Pagamento não encontrado." }, { status: 404 });
+  }
 
   // Pagamentos criados manualmente pelo admin podem sempre ser excluídos
   if (!pagamento.origemManual) {

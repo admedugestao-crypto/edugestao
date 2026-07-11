@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { isMobileUserAgent } from "@/lib/device";
@@ -21,12 +22,11 @@ export default async function DashboardPage() {
   const ua = (await headers()).get("user-agent");
   if (isMobileUserAgent(ua)) redirect("/m");
 
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
   const session = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
-  const perfil       = (session?.user as any)?.perfil as string | null;
-  const isAdmin      = perfil === "SUPERADMIN";
-
-  const filtroAluno = (!isAdmin && professoraId) ? { professoraId } : {};
+  const professoraId = scope.professoraId;
+  const isAdmin      = scope.isAdmin;
 
   const agora    = new Date();
   const mesAtual = agora.getUTCMonth() + 1;
@@ -34,9 +34,9 @@ export default async function DashboardPage() {
 
   const [totalAlunos, todasNotas, proximasProvas, pagamentosMes] =
     await Promise.all([
-      prisma.aluno.count({ where: { ...filtroAluno, status: "ATIVO" } }),
+      prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
       isAdmin ? Promise.resolve([]) : prisma.nota.findMany({
-        where: { aluno: filtroAluno },
+        where: { empresaId: scope.empresaId, aluno: { professoraId } },
         include: {
           aluno: { select: { nome: true } },
           materia: true,
@@ -46,6 +46,7 @@ export default async function DashboardPage() {
       }),
       isAdmin ? Promise.resolve([]) : prisma.avaliacao.findMany({
         where: {
+          empresaId: scope.empresaId,
           data: { gte: new Date() },
           ...(professoraId ? { unidade: { alunos: { some: { professoraId, status: "ATIVO" } } } } : {}),
         },
@@ -55,6 +56,7 @@ export default async function DashboardPage() {
       }),
       prisma.pagamento.findMany({
         where: {
+          empresaId: scope.empresaId,
           mes: mesAtual,
           ano: anoAtual,
           ...(professoraId ? { aluno: { professoraId } } : {}),
@@ -67,7 +69,7 @@ export default async function DashboardPage() {
     .filter((n) => n.valor < n.avaliacao.notaMax / 2)
     .slice(0, 5);
 
-  const totalEscolas  = await prisma.escola.count();
+  const totalEscolas  = await prisma.escola.count({ where: { empresaId: scope.empresaId } });
   const totalEsperado = pagamentosMes.reduce((s, p) => s + p.valorCobrado, 0);
   const totalRecebido = pagamentosMes.filter((p) => p.pago).reduce((s, p) => s + p.valorCobrado, 0);
   const totalPendente = totalEsperado - totalRecebido;
@@ -162,21 +164,6 @@ export default async function DashboardPage() {
           </div>
         </div>
       )}
-
-      <div className="flex gap-3">
-        <Link
-          href="/dashboard/alunos/novo"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          + Cadastrar aluno
-        </Link>
-        <Link
-          href="/dashboard/notas"
-          className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          Lançar notas
-        </Link>
-      </div>
     </div>
   );
 }

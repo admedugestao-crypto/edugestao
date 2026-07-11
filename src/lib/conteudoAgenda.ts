@@ -25,13 +25,17 @@ const selectCandidata = {
 // caso NÃO escolhe nenhuma (evita vincular errado); quem chama pode exibir
 // as candidatas para o usuário escolher manualmente.
 export async function buscarAulaVinculada(params: {
+  empresaId: string;
   aulaId?: string | null;
   alunoId: string;
   data: Date;
   materiaId?: string | null;
 }): Promise<{ aula: AulaCandidata | null; ambigua: boolean; candidatas: AulaCandidata[] }> {
   if (params.aulaId) {
-    const aula = await prisma.agendaAula.findUnique({ where: { id: params.aulaId }, select: selectCandidata });
+    const aula = await prisma.agendaAula.findUnique({
+      where: { id: params.aulaId, empresaId: params.empresaId },
+      select: selectCandidata,
+    });
     return { aula, ambigua: false, candidatas: [] };
   }
   const dY = params.data.getUTCFullYear();
@@ -39,6 +43,7 @@ export async function buscarAulaVinculada(params: {
   const dD = params.data.getUTCDate();
   const candidatas = await prisma.agendaAula.findMany({
     where: {
+      empresaId: params.empresaId,
       alunoId: params.alunoId,
       data: {
         gte: new Date(Date.UTC(dY, dM, dD)),
@@ -62,13 +67,14 @@ export async function buscarAulaVinculada(params: {
 // Planejado  → agenda deve estar com status AGENDADA
 // Ministrado → agenda deve estar com status REALIZADA
 export async function validarAgenda(
+  empresaId: string,
   alunoId:   string,
   data:      Date,
   planejado: boolean,
   aulaId?:   string | null,
   materiaId?: string | null,
 ): Promise<{ ok: true } | { ok: false; erro: string; candidatas?: AulaCandidata[] }> {
-  const { aula, ambigua, candidatas } = await buscarAulaVinculada({ aulaId, alunoId, data, materiaId });
+  const { aula, ambigua, candidatas } = await buscarAulaVinculada({ empresaId, aulaId, alunoId, data, materiaId });
 
   if (!aula) {
     return {

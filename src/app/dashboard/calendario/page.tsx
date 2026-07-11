@@ -1,21 +1,36 @@
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
 import { Calendar } from "lucide-react";
 import CalendarioClient from "@/components/CalendarioClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function CalendarioPage() {
-  const session = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+  const professoraId = scope.professoraId;
 
   const [avaliacoes, escolas, materias] = await Promise.all([
     prisma.avaliacao.findMany({
+      where: {
+        empresaId: scope.empresaId,
+        ...(professoraId ? { unidade: { alunos: { some: { professoraId, status: "ATIVO" } } } } : {}),
+      },
       include: { unidade: { include: { escola: true } }, materia: true },
       orderBy: { data: "asc" },
     }),
     prisma.escola.findMany({
-      include: { unidades: { orderBy: { nome: "asc" } } },
+      where: {
+        empresaId: scope.empresaId,
+        ...(professoraId ? { unidades: { some: { alunos: { some: { professoraId, status: "ATIVO" } } } } } : {}),
+      },
+      include: {
+        unidades: {
+          where: professoraId ? { alunos: { some: { professoraId, status: "ATIVO" } } } : undefined,
+          orderBy: { nome: "asc" },
+        },
+      },
       orderBy: { nome: "asc" },
     }),
     // Se for professor, traz só as disciplinas vinculadas aos seus alunos
@@ -23,13 +38,14 @@ export default async function CalendarioPage() {
     professoraId
       ? prisma.materia.findMany({
           where: {
+            empresaId: scope.empresaId,
             alunoMaterias: {
               some: { aluno: { professoraId } },
             },
           },
           orderBy: { nome: "asc" },
         })
-      : prisma.materia.findMany({ orderBy: { nome: "asc" } }),
+      : prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
   ]);
 
   const avaliacoesSerial = avaliacoes.map((a) => ({

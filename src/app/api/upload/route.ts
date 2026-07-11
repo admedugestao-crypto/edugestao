@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionScope } from "@/lib/tenant";
 import { put } from "@vercel/blob";
 import { randomUUID } from "crypto";
 
@@ -17,8 +17,8 @@ const TIPOS_PERMITIDOS = [
 const MAX_TAMANHO = 10 * 1024 * 1024; // 10 MB
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const formData = await req.formData();
   const file = formData.get("arquivo") as File | null;
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Arquivo muito grande. Máximo 10 MB." }, { status: 400 });
 
   const ext = file.name.split(".").pop() ?? "bin";
-  const nomeArquivo = `conteudos/${randomUUID()}.${ext}`;
+  const nomeArquivo = `conteudos/${scope.empresaId}/${randomUUID()}.${ext}`;
 
   const blob = await put(nomeArquivo, file, { access: "public" });
 

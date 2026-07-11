@@ -26,18 +26,21 @@ export type AggregateMateria = {
 
 export type MateriaMinAggregateOutputType = {
   id: string | null
+  empresaId: string | null
   nome: string | null
   cor: string | null
 }
 
 export type MateriaMaxAggregateOutputType = {
   id: string | null
+  empresaId: string | null
   nome: string | null
   cor: string | null
 }
 
 export type MateriaCountAggregateOutputType = {
   id: number
+  empresaId: number
   nome: number
   cor: number
   _all: number
@@ -46,18 +49,21 @@ export type MateriaCountAggregateOutputType = {
 
 export type MateriaMinAggregateInputType = {
   id?: true
+  empresaId?: true
   nome?: true
   cor?: true
 }
 
 export type MateriaMaxAggregateInputType = {
   id?: true
+  empresaId?: true
   nome?: true
   cor?: true
 }
 
 export type MateriaCountAggregateInputType = {
   id?: true
+  empresaId?: true
   nome?: true
   cor?: true
   _all?: true
@@ -137,6 +143,7 @@ export type MateriaGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type MateriaGroupByOutputType = {
   id: string
+  empresaId: string
   nome: string
   cor: string
   _count: MateriaCountAggregateOutputType | null
@@ -164,8 +171,10 @@ export type MateriaWhereInput = {
   OR?: Prisma.MateriaWhereInput[]
   NOT?: Prisma.MateriaWhereInput | Prisma.MateriaWhereInput[]
   id?: Prisma.StringFilter<"Materia"> | string
+  empresaId?: Prisma.StringFilter<"Materia"> | string
   nome?: Prisma.StringFilter<"Materia"> | string
   cor?: Prisma.StringFilter<"Materia"> | string
+  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   professoras?: Prisma.ProfessoraMateriaListRelationFilter
   alunoMaterias?: Prisma.AlunoMateriaListRelationFilter
   avaliacoes?: Prisma.AvaliacaoListRelationFilter
@@ -177,8 +186,10 @@ export type MateriaWhereInput = {
 
 export type MateriaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   cor?: Prisma.SortOrder
+  empresa?: Prisma.EmpresaOrderByWithRelationInput
   professoras?: Prisma.ProfessoraMateriaOrderByRelationAggregateInput
   alunoMaterias?: Prisma.AlunoMateriaOrderByRelationAggregateInput
   avaliacoes?: Prisma.AvaliacaoOrderByRelationAggregateInput
@@ -190,11 +201,14 @@ export type MateriaOrderByWithRelationInput = {
 
 export type MateriaWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  nome?: string
+  empresaId_nome?: Prisma.MateriaEmpresaIdNomeCompoundUniqueInput
   AND?: Prisma.MateriaWhereInput | Prisma.MateriaWhereInput[]
   OR?: Prisma.MateriaWhereInput[]
   NOT?: Prisma.MateriaWhereInput | Prisma.MateriaWhereInput[]
+  empresaId?: Prisma.StringFilter<"Materia"> | string
+  nome?: Prisma.StringFilter<"Materia"> | string
   cor?: Prisma.StringFilter<"Materia"> | string
+  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   professoras?: Prisma.ProfessoraMateriaListRelationFilter
   alunoMaterias?: Prisma.AlunoMateriaListRelationFilter
   avaliacoes?: Prisma.AvaliacaoListRelationFilter
@@ -202,10 +216,11 @@ export type MateriaWhereUniqueInput = Prisma.AtLeast<{
   conteudos?: Prisma.ConteudoListRelationFilter
   aulas?: Prisma.AgendaAulaListRelationFilter
   aulasMaterias?: Prisma.AgendaAulaMateriaListRelationFilter
-}, "id" | "nome">
+}, "id" | "empresaId_nome">
 
 export type MateriaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   cor?: Prisma.SortOrder
   _count?: Prisma.MateriaCountOrderByAggregateInput
@@ -218,6 +233,7 @@ export type MateriaScalarWhereWithAggregatesInput = {
   OR?: Prisma.MateriaScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MateriaScalarWhereWithAggregatesInput | Prisma.MateriaScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Materia"> | string
+  empresaId?: Prisma.StringWithAggregatesFilter<"Materia"> | string
   nome?: Prisma.StringWithAggregatesFilter<"Materia"> | string
   cor?: Prisma.StringWithAggregatesFilter<"Materia"> | string
 }
@@ -226,6 +242,7 @@ export type MateriaCreateInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
   alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
@@ -237,6 +254,7 @@ export type MateriaCreateInput = {
 
 export type MateriaUncheckedCreateInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -252,6 +270,7 @@ export type MateriaUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
   alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
@@ -263,6 +282,7 @@ export type MateriaUpdateInput = {
 
 export type MateriaUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -276,6 +296,7 @@ export type MateriaUncheckedUpdateInput = {
 
 export type MateriaCreateManyInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
 }
@@ -288,24 +309,43 @@ export type MateriaUpdateManyMutationInput = {
 
 export type MateriaUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
+export type MateriaListRelationFilter = {
+  every?: Prisma.MateriaWhereInput
+  some?: Prisma.MateriaWhereInput
+  none?: Prisma.MateriaWhereInput
+}
+
+export type MateriaOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type MateriaEmpresaIdNomeCompoundUniqueInput = {
+  empresaId: string
+  nome: string
+}
+
 export type MateriaCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   cor?: Prisma.SortOrder
 }
 
 export type MateriaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   cor?: Prisma.SortOrder
 }
 
 export type MateriaMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   cor?: Prisma.SortOrder
 }
@@ -318,6 +358,48 @@ export type MateriaScalarRelationFilter = {
 export type MateriaNullableScalarRelationFilter = {
   is?: Prisma.MateriaWhereInput | null
   isNot?: Prisma.MateriaWhereInput | null
+}
+
+export type MateriaCreateNestedManyWithoutEmpresaInput = {
+  create?: Prisma.XOR<Prisma.MateriaCreateWithoutEmpresaInput, Prisma.MateriaUncheckedCreateWithoutEmpresaInput> | Prisma.MateriaCreateWithoutEmpresaInput[] | Prisma.MateriaUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutEmpresaInput | Prisma.MateriaCreateOrConnectWithoutEmpresaInput[]
+  createMany?: Prisma.MateriaCreateManyEmpresaInputEnvelope
+  connect?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+}
+
+export type MateriaUncheckedCreateNestedManyWithoutEmpresaInput = {
+  create?: Prisma.XOR<Prisma.MateriaCreateWithoutEmpresaInput, Prisma.MateriaUncheckedCreateWithoutEmpresaInput> | Prisma.MateriaCreateWithoutEmpresaInput[] | Prisma.MateriaUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutEmpresaInput | Prisma.MateriaCreateOrConnectWithoutEmpresaInput[]
+  createMany?: Prisma.MateriaCreateManyEmpresaInputEnvelope
+  connect?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+}
+
+export type MateriaUpdateManyWithoutEmpresaNestedInput = {
+  create?: Prisma.XOR<Prisma.MateriaCreateWithoutEmpresaInput, Prisma.MateriaUncheckedCreateWithoutEmpresaInput> | Prisma.MateriaCreateWithoutEmpresaInput[] | Prisma.MateriaUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutEmpresaInput | Prisma.MateriaCreateOrConnectWithoutEmpresaInput[]
+  upsert?: Prisma.MateriaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.MateriaUpsertWithWhereUniqueWithoutEmpresaInput[]
+  createMany?: Prisma.MateriaCreateManyEmpresaInputEnvelope
+  set?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  disconnect?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  delete?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  connect?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  update?: Prisma.MateriaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.MateriaUpdateWithWhereUniqueWithoutEmpresaInput[]
+  updateMany?: Prisma.MateriaUpdateManyWithWhereWithoutEmpresaInput | Prisma.MateriaUpdateManyWithWhereWithoutEmpresaInput[]
+  deleteMany?: Prisma.MateriaScalarWhereInput | Prisma.MateriaScalarWhereInput[]
+}
+
+export type MateriaUncheckedUpdateManyWithoutEmpresaNestedInput = {
+  create?: Prisma.XOR<Prisma.MateriaCreateWithoutEmpresaInput, Prisma.MateriaUncheckedCreateWithoutEmpresaInput> | Prisma.MateriaCreateWithoutEmpresaInput[] | Prisma.MateriaUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutEmpresaInput | Prisma.MateriaCreateOrConnectWithoutEmpresaInput[]
+  upsert?: Prisma.MateriaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.MateriaUpsertWithWhereUniqueWithoutEmpresaInput[]
+  createMany?: Prisma.MateriaCreateManyEmpresaInputEnvelope
+  set?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  disconnect?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  delete?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  connect?: Prisma.MateriaWhereUniqueInput | Prisma.MateriaWhereUniqueInput[]
+  update?: Prisma.MateriaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.MateriaUpdateWithWhereUniqueWithoutEmpresaInput[]
+  updateMany?: Prisma.MateriaUpdateManyWithWhereWithoutEmpresaInput | Prisma.MateriaUpdateManyWithWhereWithoutEmpresaInput[]
+  deleteMany?: Prisma.MateriaScalarWhereInput | Prisma.MateriaScalarWhereInput[]
 }
 
 export type MateriaCreateNestedOneWithoutProfessorasInput = {
@@ -424,10 +506,73 @@ export type MateriaUpdateOneRequiredWithoutAulasMateriasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MateriaUpdateToOneWithWhereWithoutAulasMateriasInput, Prisma.MateriaUpdateWithoutAulasMateriasInput>, Prisma.MateriaUncheckedUpdateWithoutAulasMateriasInput>
 }
 
+export type MateriaCreateWithoutEmpresaInput = {
+  id?: string
+  nome: string
+  cor?: string
+  professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
+  alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
+  avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
+  notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
+  conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
+  aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+}
+
+export type MateriaUncheckedCreateWithoutEmpresaInput = {
+  id?: string
+  nome: string
+  cor?: string
+  professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  alunoMaterias?: Prisma.AlunoMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedCreateNestedManyWithoutMateriaInput
+  notas?: Prisma.NotaUncheckedCreateNestedManyWithoutMateriaInput
+  conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
+  aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+}
+
+export type MateriaCreateOrConnectWithoutEmpresaInput = {
+  where: Prisma.MateriaWhereUniqueInput
+  create: Prisma.XOR<Prisma.MateriaCreateWithoutEmpresaInput, Prisma.MateriaUncheckedCreateWithoutEmpresaInput>
+}
+
+export type MateriaCreateManyEmpresaInputEnvelope = {
+  data: Prisma.MateriaCreateManyEmpresaInput | Prisma.MateriaCreateManyEmpresaInput[]
+  skipDuplicates?: boolean
+}
+
+export type MateriaUpsertWithWhereUniqueWithoutEmpresaInput = {
+  where: Prisma.MateriaWhereUniqueInput
+  update: Prisma.XOR<Prisma.MateriaUpdateWithoutEmpresaInput, Prisma.MateriaUncheckedUpdateWithoutEmpresaInput>
+  create: Prisma.XOR<Prisma.MateriaCreateWithoutEmpresaInput, Prisma.MateriaUncheckedCreateWithoutEmpresaInput>
+}
+
+export type MateriaUpdateWithWhereUniqueWithoutEmpresaInput = {
+  where: Prisma.MateriaWhereUniqueInput
+  data: Prisma.XOR<Prisma.MateriaUpdateWithoutEmpresaInput, Prisma.MateriaUncheckedUpdateWithoutEmpresaInput>
+}
+
+export type MateriaUpdateManyWithWhereWithoutEmpresaInput = {
+  where: Prisma.MateriaScalarWhereInput
+  data: Prisma.XOR<Prisma.MateriaUpdateManyMutationInput, Prisma.MateriaUncheckedUpdateManyWithoutEmpresaInput>
+}
+
+export type MateriaScalarWhereInput = {
+  AND?: Prisma.MateriaScalarWhereInput | Prisma.MateriaScalarWhereInput[]
+  OR?: Prisma.MateriaScalarWhereInput[]
+  NOT?: Prisma.MateriaScalarWhereInput | Prisma.MateriaScalarWhereInput[]
+  id?: Prisma.StringFilter<"Materia"> | string
+  empresaId?: Prisma.StringFilter<"Materia"> | string
+  nome?: Prisma.StringFilter<"Materia"> | string
+  cor?: Prisma.StringFilter<"Materia"> | string
+}
+
 export type MateriaCreateWithoutProfessorasInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
   notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
@@ -438,6 +583,7 @@ export type MateriaCreateWithoutProfessorasInput = {
 
 export type MateriaUncheckedCreateWithoutProfessorasInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   alunoMaterias?: Prisma.AlunoMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -468,6 +614,7 @@ export type MateriaUpdateWithoutProfessorasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
   notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
@@ -478,6 +625,7 @@ export type MateriaUpdateWithoutProfessorasInput = {
 
 export type MateriaUncheckedUpdateWithoutProfessorasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   alunoMaterias?: Prisma.AlunoMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -492,6 +640,7 @@ export type MateriaCreateWithoutAvaliacoesInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
   alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
   notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
@@ -502,6 +651,7 @@ export type MateriaCreateWithoutAvaliacoesInput = {
 
 export type MateriaUncheckedCreateWithoutAvaliacoesInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -532,6 +682,7 @@ export type MateriaUpdateWithoutAvaliacoesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
   alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
   notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
@@ -542,6 +693,7 @@ export type MateriaUpdateWithoutAvaliacoesInput = {
 
 export type MateriaUncheckedUpdateWithoutAvaliacoesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -556,6 +708,7 @@ export type MateriaCreateWithoutAlunoMateriasInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
   notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
@@ -566,6 +719,7 @@ export type MateriaCreateWithoutAlunoMateriasInput = {
 
 export type MateriaUncheckedCreateWithoutAlunoMateriasInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -596,6 +750,7 @@ export type MateriaUpdateWithoutAlunoMateriasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
   notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
@@ -606,6 +761,7 @@ export type MateriaUpdateWithoutAlunoMateriasInput = {
 
 export type MateriaUncheckedUpdateWithoutAlunoMateriasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -620,6 +776,7 @@ export type MateriaCreateWithoutNotasInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
   alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
@@ -630,6 +787,7 @@ export type MateriaCreateWithoutNotasInput = {
 
 export type MateriaUncheckedCreateWithoutNotasInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -660,6 +818,7 @@ export type MateriaUpdateWithoutNotasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
   alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
@@ -670,6 +829,7 @@ export type MateriaUpdateWithoutNotasInput = {
 
 export type MateriaUncheckedUpdateWithoutNotasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -684,6 +844,7 @@ export type MateriaCreateWithoutConteudosInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
   alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
@@ -694,6 +855,7 @@ export type MateriaCreateWithoutConteudosInput = {
 
 export type MateriaUncheckedCreateWithoutConteudosInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -724,6 +886,7 @@ export type MateriaUpdateWithoutConteudosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
   alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
@@ -734,6 +897,7 @@ export type MateriaUpdateWithoutConteudosInput = {
 
 export type MateriaUncheckedUpdateWithoutConteudosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -748,6 +912,7 @@ export type MateriaCreateWithoutAulasInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
   alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
@@ -758,6 +923,7 @@ export type MateriaCreateWithoutAulasInput = {
 
 export type MateriaUncheckedCreateWithoutAulasInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -788,6 +954,7 @@ export type MateriaUpdateWithoutAulasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
   alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
@@ -798,6 +965,7 @@ export type MateriaUpdateWithoutAulasInput = {
 
 export type MateriaUncheckedUpdateWithoutAulasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -812,6 +980,7 @@ export type MateriaCreateWithoutAulasMateriasInput = {
   id?: string
   nome: string
   cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
   professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
   alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
@@ -822,6 +991,7 @@ export type MateriaCreateWithoutAulasMateriasInput = {
 
 export type MateriaUncheckedCreateWithoutAulasMateriasInput = {
   id?: string
+  empresaId: string
   nome: string
   cor?: string
   professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
@@ -852,6 +1022,7 @@ export type MateriaUpdateWithoutAulasMateriasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
   professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
   alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
@@ -862,6 +1033,7 @@ export type MateriaUpdateWithoutAulasMateriasInput = {
 
 export type MateriaUncheckedUpdateWithoutAulasMateriasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   cor?: Prisma.StringFieldUpdateOperationsInput | string
   professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
@@ -870,6 +1042,44 @@ export type MateriaUncheckedUpdateWithoutAulasMateriasInput = {
   notas?: Prisma.NotaUncheckedUpdateManyWithoutMateriaNestedInput
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
+}
+
+export type MateriaCreateManyEmpresaInput = {
+  id?: string
+  nome: string
+  cor?: string
+}
+
+export type MateriaUpdateWithoutEmpresaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  cor?: Prisma.StringFieldUpdateOperationsInput | string
+  professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
+  alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
+  notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
+  conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
+  aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+}
+
+export type MateriaUncheckedUpdateWithoutEmpresaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  cor?: Prisma.StringFieldUpdateOperationsInput | string
+  professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  alunoMaterias?: Prisma.AlunoMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutMateriaNestedInput
+  notas?: Prisma.NotaUncheckedUpdateManyWithoutMateriaNestedInput
+  conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
+  aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+}
+
+export type MateriaUncheckedUpdateManyWithoutEmpresaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  cor?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -959,8 +1169,10 @@ export type MateriaCountOutputTypeCountAulasMateriasArgs<ExtArgs extends runtime
 
 export type MateriaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  empresaId?: boolean
   nome?: boolean
   cor?: boolean
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professoras?: boolean | Prisma.Materia$professorasArgs<ExtArgs>
   alunoMaterias?: boolean | Prisma.Materia$alunoMateriasArgs<ExtArgs>
   avaliacoes?: boolean | Prisma.Materia$avaliacoesArgs<ExtArgs>
@@ -973,24 +1185,30 @@ export type MateriaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type MateriaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  empresaId?: boolean
   nome?: boolean
   cor?: boolean
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["materia"]>
 
 export type MateriaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  empresaId?: boolean
   nome?: boolean
   cor?: boolean
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["materia"]>
 
 export type MateriaSelectScalar = {
   id?: boolean
+  empresaId?: boolean
   nome?: boolean
   cor?: boolean
 }
 
-export type MateriaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "cor", ExtArgs["result"]["materia"]>
+export type MateriaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "nome" | "cor", ExtArgs["result"]["materia"]>
 export type MateriaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professoras?: boolean | Prisma.Materia$professorasArgs<ExtArgs>
   alunoMaterias?: boolean | Prisma.Materia$alunoMateriasArgs<ExtArgs>
   avaliacoes?: boolean | Prisma.Materia$avaliacoesArgs<ExtArgs>
@@ -1000,12 +1218,17 @@ export type MateriaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   aulasMaterias?: boolean | Prisma.Materia$aulasMateriasArgs<ExtArgs>
   _count?: boolean | Prisma.MateriaCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type MateriaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type MateriaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type MateriaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
+}
+export type MateriaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
+}
 
 export type $MateriaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Materia"
   objects: {
+    empresa: Prisma.$EmpresaPayload<ExtArgs>
     professoras: Prisma.$ProfessoraMateriaPayload<ExtArgs>[]
     alunoMaterias: Prisma.$AlunoMateriaPayload<ExtArgs>[]
     avaliacoes: Prisma.$AvaliacaoPayload<ExtArgs>[]
@@ -1016,6 +1239,7 @@ export type $MateriaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    empresaId: string
     nome: string
     cor: string
   }, ExtArgs["result"]["materia"]>
@@ -1412,6 +1636,7 @@ readonly fields: MateriaFieldRefs;
  */
 export interface Prisma__MateriaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   professoras<T extends Prisma.Materia$professorasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Materia$professorasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProfessoraMateriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   alunoMaterias<T extends Prisma.Materia$alunoMateriasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Materia$alunoMateriasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlunoMateriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   avaliacoes<T extends Prisma.Materia$avaliacoesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Materia$avaliacoesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvaliacaoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1449,6 +1674,7 @@ export interface Prisma__MateriaClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface MateriaFieldRefs {
   readonly id: Prisma.FieldRef<"Materia", 'String'>
+  readonly empresaId: Prisma.FieldRef<"Materia", 'String'>
   readonly nome: Prisma.FieldRef<"Materia", 'String'>
   readonly cor: Prisma.FieldRef<"Materia", 'String'>
 }
@@ -1705,6 +1931,10 @@ export type MateriaCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    */
   data: Prisma.MateriaCreateManyInput | Prisma.MateriaCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MateriaIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1775,6 +2005,10 @@ export type MateriaUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many Materias to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MateriaIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

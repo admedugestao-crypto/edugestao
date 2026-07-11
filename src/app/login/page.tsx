@@ -3,7 +3,6 @@
 import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { isMobileUserAgent } from "@/lib/device";
 
@@ -11,6 +10,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const cadastroOk = searchParams.get("cadastro") === "ok";
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
@@ -47,14 +47,23 @@ function LoginForm() {
         <p className="text-slate-500 text-sm mt-1">Gestão de alunos</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} method="post" action="#" className="space-y-4" autoComplete="off">
+        {/* Campos-isca: absorvem o autofill do navegador antes dos campos reais
+            (Chrome/Edge ignoram autoComplete="off" em formulários de login). */}
+        <div className="hidden" aria-hidden="true">
+          <input type="text" name="username" tabIndex={-1} />
+          <input type="password" name="password" tabIndex={-1} />
+        </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
           <input
             type="email"
+            name="user_email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            autoFocus
+            autoComplete="off"
             className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="seu@email.com"
           />
@@ -65,9 +74,11 @@ function LoginForm() {
           <div className="relative">
             <input
               type={mostrarSenha ? "text" : "password"}
+              name="user_senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               required
+              autoComplete="off"
               className="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="••••••••"
             />
@@ -102,13 +113,6 @@ function LoginForm() {
           {carregando ? "Entrando..." : "Entrar"}
         </button>
       </form>
-
-      <p className="text-center text-sm text-slate-500 mt-6">
-        Não tem uma conta?{" "}
-        <Link href="/cadastro" className="text-indigo-600 hover:underline font-medium">
-          Criar conta
-        </Link>
-      </p>
     </div>
   );
 }
