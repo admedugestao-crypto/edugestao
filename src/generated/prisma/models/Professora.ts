@@ -26,7 +26,6 @@ export type AggregateProfessora = {
 
 export type ProfessoraMinAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   usuarioId: string | null
   telefone: string | null
   criadoEm: Date | null
@@ -34,7 +33,6 @@ export type ProfessoraMinAggregateOutputType = {
 
 export type ProfessoraMaxAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   usuarioId: string | null
   telefone: string | null
   criadoEm: Date | null
@@ -42,7 +40,6 @@ export type ProfessoraMaxAggregateOutputType = {
 
 export type ProfessoraCountAggregateOutputType = {
   id: number
-  empresaId: number
   usuarioId: number
   telefone: number
   disponibilidade: number
@@ -53,7 +50,6 @@ export type ProfessoraCountAggregateOutputType = {
 
 export type ProfessoraMinAggregateInputType = {
   id?: true
-  empresaId?: true
   usuarioId?: true
   telefone?: true
   criadoEm?: true
@@ -61,7 +57,6 @@ export type ProfessoraMinAggregateInputType = {
 
 export type ProfessoraMaxAggregateInputType = {
   id?: true
-  empresaId?: true
   usuarioId?: true
   telefone?: true
   criadoEm?: true
@@ -69,7 +64,6 @@ export type ProfessoraMaxAggregateInputType = {
 
 export type ProfessoraCountAggregateInputType = {
   id?: true
-  empresaId?: true
   usuarioId?: true
   telefone?: true
   disponibilidade?: true
@@ -151,7 +145,6 @@ export type ProfessoraGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type ProfessoraGroupByOutputType = {
   id: string
-  empresaId: string
   usuarioId: string
   telefone: string | null
   disponibilidade: runtime.JsonValue | null
@@ -181,12 +174,10 @@ export type ProfessoraWhereInput = {
   OR?: Prisma.ProfessoraWhereInput[]
   NOT?: Prisma.ProfessoraWhereInput | Prisma.ProfessoraWhereInput[]
   id?: Prisma.StringFilter<"Professora"> | string
-  empresaId?: Prisma.StringFilter<"Professora"> | string
   usuarioId?: Prisma.StringFilter<"Professora"> | string
   telefone?: Prisma.StringNullableFilter<"Professora"> | string | null
   disponibilidade?: Prisma.JsonNullableFilter<"Professora">
   criadoEm?: Prisma.DateTimeFilter<"Professora"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   usuario?: Prisma.XOR<Prisma.UsuarioScalarRelationFilter, Prisma.UsuarioWhereInput>
   materias?: Prisma.ProfessoraMateriaListRelationFilter
   alunos?: Prisma.AlunoListRelationFilter
@@ -196,12 +187,10 @@ export type ProfessoraWhereInput = {
 
 export type ProfessoraOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrderInput | Prisma.SortOrder
   disponibilidade?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
-  empresa?: Prisma.EmpresaOrderByWithRelationInput
   usuario?: Prisma.UsuarioOrderByWithRelationInput
   materias?: Prisma.ProfessoraMateriaOrderByRelationAggregateInput
   alunos?: Prisma.AlunoOrderByRelationAggregateInput
@@ -215,11 +204,9 @@ export type ProfessoraWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProfessoraWhereInput | Prisma.ProfessoraWhereInput[]
   OR?: Prisma.ProfessoraWhereInput[]
   NOT?: Prisma.ProfessoraWhereInput | Prisma.ProfessoraWhereInput[]
-  empresaId?: Prisma.StringFilter<"Professora"> | string
   telefone?: Prisma.StringNullableFilter<"Professora"> | string | null
   disponibilidade?: Prisma.JsonNullableFilter<"Professora">
   criadoEm?: Prisma.DateTimeFilter<"Professora"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   usuario?: Prisma.XOR<Prisma.UsuarioScalarRelationFilter, Prisma.UsuarioWhereInput>
   materias?: Prisma.ProfessoraMateriaListRelationFilter
   alunos?: Prisma.AlunoListRelationFilter
@@ -229,7 +216,6 @@ export type ProfessoraWhereUniqueInput = Prisma.AtLeast<{
 
 export type ProfessoraOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrderInput | Prisma.SortOrder
   disponibilidade?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -244,7 +230,6 @@ export type ProfessoraScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProfessoraScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProfessoraScalarWhereWithAggregatesInput | Prisma.ProfessoraScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Professora"> | string
-  empresaId?: Prisma.StringWithAggregatesFilter<"Professora"> | string
   usuarioId?: Prisma.StringWithAggregatesFilter<"Professora"> | string
   telefone?: Prisma.StringNullableWithAggregatesFilter<"Professora"> | string | null
   disponibilidade?: Prisma.JsonNullableWithAggregatesFilter<"Professora">
@@ -256,7 +241,6 @@ export type ProfessoraCreateInput = {
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutProfessorasInput
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
@@ -266,7 +250,6 @@ export type ProfessoraCreateInput = {
 
 export type ProfessoraUncheckedCreateInput = {
   id?: string
-  empresaId: string
   usuarioId: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -282,7 +265,6 @@ export type ProfessoraUpdateInput = {
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutProfessorasNestedInput
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
@@ -292,7 +274,6 @@ export type ProfessoraUpdateInput = {
 
 export type ProfessoraUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -305,7 +286,6 @@ export type ProfessoraUncheckedUpdateInput = {
 
 export type ProfessoraCreateManyInput = {
   id?: string
-  empresaId: string
   usuarioId: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -321,21 +301,10 @@ export type ProfessoraUpdateManyMutationInput = {
 
 export type ProfessoraUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type ProfessoraListRelationFilter = {
-  every?: Prisma.ProfessoraWhereInput
-  some?: Prisma.ProfessoraWhereInput
-  none?: Prisma.ProfessoraWhereInput
-}
-
-export type ProfessoraOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
 }
 
 export type ProfessoraNullableScalarRelationFilter = {
@@ -345,7 +314,6 @@ export type ProfessoraNullableScalarRelationFilter = {
 
 export type ProfessoraCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrder
   disponibilidade?: Prisma.SortOrder
@@ -354,7 +322,6 @@ export type ProfessoraCountOrderByAggregateInput = {
 
 export type ProfessoraMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
@@ -362,7 +329,6 @@ export type ProfessoraMaxOrderByAggregateInput = {
 
 export type ProfessoraMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   telefone?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
@@ -371,48 +337,6 @@ export type ProfessoraMinOrderByAggregateInput = {
 export type ProfessoraScalarRelationFilter = {
   is?: Prisma.ProfessoraWhereInput
   isNot?: Prisma.ProfessoraWhereInput
-}
-
-export type ProfessoraCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.ProfessoraCreateWithoutEmpresaInput, Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput> | Prisma.ProfessoraCreateWithoutEmpresaInput[] | Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput | Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.ProfessoraCreateManyEmpresaInputEnvelope
-  connect?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-}
-
-export type ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.ProfessoraCreateWithoutEmpresaInput, Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput> | Prisma.ProfessoraCreateWithoutEmpresaInput[] | Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput | Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.ProfessoraCreateManyEmpresaInputEnvelope
-  connect?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-}
-
-export type ProfessoraUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.ProfessoraCreateWithoutEmpresaInput, Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput> | Prisma.ProfessoraCreateWithoutEmpresaInput[] | Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput | Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.ProfessoraUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.ProfessoraUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.ProfessoraCreateManyEmpresaInputEnvelope
-  set?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  disconnect?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  delete?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  connect?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  update?: Prisma.ProfessoraUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.ProfessoraUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.ProfessoraUpdateManyWithWhereWithoutEmpresaInput | Prisma.ProfessoraUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.ProfessoraScalarWhereInput | Prisma.ProfessoraScalarWhereInput[]
-}
-
-export type ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.ProfessoraCreateWithoutEmpresaInput, Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput> | Prisma.ProfessoraCreateWithoutEmpresaInput[] | Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput | Prisma.ProfessoraCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.ProfessoraUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.ProfessoraUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.ProfessoraCreateManyEmpresaInputEnvelope
-  set?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  disconnect?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  delete?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  connect?: Prisma.ProfessoraWhereUniqueInput | Prisma.ProfessoraWhereUniqueInput[]
-  update?: Prisma.ProfessoraUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.ProfessoraUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.ProfessoraUpdateManyWithWhereWithoutEmpresaInput | Prisma.ProfessoraUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.ProfessoraScalarWhereInput | Prisma.ProfessoraScalarWhereInput[]
 }
 
 export type ProfessoraCreateNestedOneWithoutUsuarioInput = {
@@ -505,74 +429,11 @@ export type ProfessoraUpdateOneRequiredWithoutAulasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfessoraUpdateToOneWithWhereWithoutAulasInput, Prisma.ProfessoraUpdateWithoutAulasInput>, Prisma.ProfessoraUncheckedUpdateWithoutAulasInput>
 }
 
-export type ProfessoraCreateWithoutEmpresaInput = {
-  id?: string
-  telefone?: string | null
-  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  criadoEm?: Date | string
-  usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
-  materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
-  alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
-  notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutProfessoraInput
-  aulas?: Prisma.AgendaAulaCreateNestedManyWithoutProfessoraInput
-}
-
-export type ProfessoraUncheckedCreateWithoutEmpresaInput = {
-  id?: string
-  usuarioId: string
-  telefone?: string | null
-  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  criadoEm?: Date | string
-  materias?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutProfessoraInput
-  alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutProfessoraInput
-  notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutProfessoraInput
-  aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutProfessoraInput
-}
-
-export type ProfessoraCreateOrConnectWithoutEmpresaInput = {
-  where: Prisma.ProfessoraWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProfessoraCreateWithoutEmpresaInput, Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput>
-}
-
-export type ProfessoraCreateManyEmpresaInputEnvelope = {
-  data: Prisma.ProfessoraCreateManyEmpresaInput | Prisma.ProfessoraCreateManyEmpresaInput[]
-  skipDuplicates?: boolean
-}
-
-export type ProfessoraUpsertWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.ProfessoraWhereUniqueInput
-  update: Prisma.XOR<Prisma.ProfessoraUpdateWithoutEmpresaInput, Prisma.ProfessoraUncheckedUpdateWithoutEmpresaInput>
-  create: Prisma.XOR<Prisma.ProfessoraCreateWithoutEmpresaInput, Prisma.ProfessoraUncheckedCreateWithoutEmpresaInput>
-}
-
-export type ProfessoraUpdateWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.ProfessoraWhereUniqueInput
-  data: Prisma.XOR<Prisma.ProfessoraUpdateWithoutEmpresaInput, Prisma.ProfessoraUncheckedUpdateWithoutEmpresaInput>
-}
-
-export type ProfessoraUpdateManyWithWhereWithoutEmpresaInput = {
-  where: Prisma.ProfessoraScalarWhereInput
-  data: Prisma.XOR<Prisma.ProfessoraUpdateManyMutationInput, Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaInput>
-}
-
-export type ProfessoraScalarWhereInput = {
-  AND?: Prisma.ProfessoraScalarWhereInput | Prisma.ProfessoraScalarWhereInput[]
-  OR?: Prisma.ProfessoraScalarWhereInput[]
-  NOT?: Prisma.ProfessoraScalarWhereInput | Prisma.ProfessoraScalarWhereInput[]
-  id?: Prisma.StringFilter<"Professora"> | string
-  empresaId?: Prisma.StringFilter<"Professora"> | string
-  usuarioId?: Prisma.StringFilter<"Professora"> | string
-  telefone?: Prisma.StringNullableFilter<"Professora"> | string | null
-  disponibilidade?: Prisma.JsonNullableFilter<"Professora">
-  criadoEm?: Prisma.DateTimeFilter<"Professora"> | Date | string
-}
-
 export type ProfessoraCreateWithoutUsuarioInput = {
   id?: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutProfessorasInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
   notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutProfessoraInput
@@ -581,7 +442,6 @@ export type ProfessoraCreateWithoutUsuarioInput = {
 
 export type ProfessoraUncheckedCreateWithoutUsuarioInput = {
   id?: string
-  empresaId: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
@@ -612,7 +472,6 @@ export type ProfessoraUpdateWithoutUsuarioInput = {
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutProfessorasNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
   notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutProfessoraNestedInput
@@ -621,7 +480,6 @@ export type ProfessoraUpdateWithoutUsuarioInput = {
 
 export type ProfessoraUncheckedUpdateWithoutUsuarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -636,7 +494,6 @@ export type ProfessoraCreateWithoutMateriasInput = {
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutProfessorasInput
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
   notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutProfessoraInput
@@ -645,7 +502,6 @@ export type ProfessoraCreateWithoutMateriasInput = {
 
 export type ProfessoraUncheckedCreateWithoutMateriasInput = {
   id?: string
-  empresaId: string
   usuarioId: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -676,7 +532,6 @@ export type ProfessoraUpdateWithoutMateriasInput = {
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutProfessorasNestedInput
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
   notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutProfessoraNestedInput
@@ -685,7 +540,6 @@ export type ProfessoraUpdateWithoutMateriasInput = {
 
 export type ProfessoraUncheckedUpdateWithoutMateriasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -700,7 +554,6 @@ export type ProfessoraCreateWithoutNotificacoesInput = {
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutProfessorasInput
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
@@ -709,7 +562,6 @@ export type ProfessoraCreateWithoutNotificacoesInput = {
 
 export type ProfessoraUncheckedCreateWithoutNotificacoesInput = {
   id?: string
-  empresaId: string
   usuarioId: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -740,7 +592,6 @@ export type ProfessoraUpdateWithoutNotificacoesInput = {
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutProfessorasNestedInput
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
@@ -749,7 +600,6 @@ export type ProfessoraUpdateWithoutNotificacoesInput = {
 
 export type ProfessoraUncheckedUpdateWithoutNotificacoesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -764,7 +614,6 @@ export type ProfessoraCreateWithoutAlunosInput = {
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutProfessorasInput
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
   notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutProfessoraInput
@@ -773,7 +622,6 @@ export type ProfessoraCreateWithoutAlunosInput = {
 
 export type ProfessoraUncheckedCreateWithoutAlunosInput = {
   id?: string
-  empresaId: string
   usuarioId: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -804,7 +652,6 @@ export type ProfessoraUpdateWithoutAlunosInput = {
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutProfessorasNestedInput
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
   notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutProfessoraNestedInput
@@ -813,7 +660,6 @@ export type ProfessoraUpdateWithoutAlunosInput = {
 
 export type ProfessoraUncheckedUpdateWithoutAlunosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -828,7 +674,6 @@ export type ProfessoraCreateWithoutAulasInput = {
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutProfessorasInput
   usuario: Prisma.UsuarioCreateNestedOneWithoutProfessoraInput
   materias?: Prisma.ProfessoraMateriaCreateNestedManyWithoutProfessoraInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutProfessoraInput
@@ -837,7 +682,6 @@ export type ProfessoraCreateWithoutAulasInput = {
 
 export type ProfessoraUncheckedCreateWithoutAulasInput = {
   id?: string
-  empresaId: string
   usuarioId: string
   telefone?: string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -868,7 +712,6 @@ export type ProfessoraUpdateWithoutAulasInput = {
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutProfessorasNestedInput
   usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
   materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
@@ -877,7 +720,6 @@ export type ProfessoraUpdateWithoutAulasInput = {
 
 export type ProfessoraUncheckedUpdateWithoutAulasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
   telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -885,46 +727,6 @@ export type ProfessoraUncheckedUpdateWithoutAulasInput = {
   materias?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutProfessoraNestedInput
   alunos?: Prisma.AlunoUncheckedUpdateManyWithoutProfessoraNestedInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutProfessoraNestedInput
-}
-
-export type ProfessoraCreateManyEmpresaInput = {
-  id?: string
-  usuarioId: string
-  telefone?: string | null
-  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  criadoEm?: Date | string
-}
-
-export type ProfessoraUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  usuario?: Prisma.UsuarioUpdateOneRequiredWithoutProfessoraNestedInput
-  materias?: Prisma.ProfessoraMateriaUpdateManyWithoutProfessoraNestedInput
-  alunos?: Prisma.AlunoUpdateManyWithoutProfessoraNestedInput
-  notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutProfessoraNestedInput
-  aulas?: Prisma.AgendaAulaUpdateManyWithoutProfessoraNestedInput
-}
-
-export type ProfessoraUncheckedUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
-  telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  materias?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutProfessoraNestedInput
-  alunos?: Prisma.AlunoUncheckedUpdateManyWithoutProfessoraNestedInput
-  notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutProfessoraNestedInput
-  aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutProfessoraNestedInput
-}
-
-export type ProfessoraUncheckedUpdateManyWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  usuarioId?: Prisma.StringFieldUpdateOperationsInput | string
-  telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  disponibilidade?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -987,12 +789,10 @@ export type ProfessoraCountOutputTypeCountAulasArgs<ExtArgs extends runtime.Type
 
 export type ProfessoraSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   usuarioId?: boolean
   telefone?: boolean
   disponibilidade?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
   materias?: boolean | Prisma.Professora$materiasArgs<ExtArgs>
   alunos?: boolean | Prisma.Professora$alunosArgs<ExtArgs>
@@ -1003,38 +803,32 @@ export type ProfessoraSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type ProfessoraSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   usuarioId?: boolean
   telefone?: boolean
   disponibilidade?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["professora"]>
 
 export type ProfessoraSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   usuarioId?: boolean
   telefone?: boolean
   disponibilidade?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["professora"]>
 
 export type ProfessoraSelectScalar = {
   id?: boolean
-  empresaId?: boolean
   usuarioId?: boolean
   telefone?: boolean
   disponibilidade?: boolean
   criadoEm?: boolean
 }
 
-export type ProfessoraOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "usuarioId" | "telefone" | "disponibilidade" | "criadoEm", ExtArgs["result"]["professora"]>
+export type ProfessoraOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "usuarioId" | "telefone" | "disponibilidade" | "criadoEm", ExtArgs["result"]["professora"]>
 export type ProfessoraInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
   materias?: boolean | Prisma.Professora$materiasArgs<ExtArgs>
   alunos?: boolean | Prisma.Professora$alunosArgs<ExtArgs>
@@ -1043,18 +837,15 @@ export type ProfessoraInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   _count?: boolean | Prisma.ProfessoraCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProfessoraIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
 }
 export type ProfessoraIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   usuario?: boolean | Prisma.UsuarioDefaultArgs<ExtArgs>
 }
 
 export type $ProfessoraPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Professora"
   objects: {
-    empresa: Prisma.$EmpresaPayload<ExtArgs>
     usuario: Prisma.$UsuarioPayload<ExtArgs>
     materias: Prisma.$ProfessoraMateriaPayload<ExtArgs>[]
     alunos: Prisma.$AlunoPayload<ExtArgs>[]
@@ -1063,7 +854,6 @@ export type $ProfessoraPayload<ExtArgs extends runtime.Types.Extensions.Internal
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    empresaId: string
     usuarioId: string
     telefone: string | null
     disponibilidade: runtime.JsonValue | null
@@ -1462,7 +1252,6 @@ readonly fields: ProfessoraFieldRefs;
  */
 export interface Prisma__ProfessoraClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   usuario<T extends Prisma.UsuarioDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsuarioDefaultArgs<ExtArgs>>): Prisma.Prisma__UsuarioClient<runtime.Types.Result.GetResult<Prisma.$UsuarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   materias<T extends Prisma.Professora$materiasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Professora$materiasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProfessoraMateriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   alunos<T extends Prisma.Professora$alunosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Professora$alunosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlunoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1498,7 +1287,6 @@ export interface Prisma__ProfessoraClient<T, Null = never, ExtArgs extends runti
  */
 export interface ProfessoraFieldRefs {
   readonly id: Prisma.FieldRef<"Professora", 'String'>
-  readonly empresaId: Prisma.FieldRef<"Professora", 'String'>
   readonly usuarioId: Prisma.FieldRef<"Professora", 'String'>
   readonly telefone: Prisma.FieldRef<"Professora", 'String'>
   readonly disponibilidade: Prisma.FieldRef<"Professora", 'Json'>

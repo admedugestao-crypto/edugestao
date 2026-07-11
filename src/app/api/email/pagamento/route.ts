@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 import {
   enviarEmailAtraso,
   enviarEmailLembrete,
@@ -14,9 +13,8 @@ export const dynamic = "force-dynamic";
 // POST /api/email/pagamento
 // Body: { pagamentoId, tipo: "atraso" | "lembrete" | "recibo" }
 export async function POST(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
   const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   if (!emailConfigurado()) {
     return NextResponse.json(
@@ -44,7 +42,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  if (!pagamento || pagamento.empresaId !== scope.empresaId)
+  if (!pagamento)
     return NextResponse.json({ erro: "Pagamento não encontrado" }, { status: 404 });
 
   const aluno = pagamento.aluno;
@@ -53,7 +51,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Responsável não possui e-mail cadastrado." }, { status: 422 });
 
   const nomeProfessora =
-    aluno.professora?.usuario?.nome ?? (session?.user as any)?.name ?? "Professor(a)";
+    aluno.professora?.usuario?.nome ?? (session.user as any)?.name ?? "Professor(a)";
 
   const base = {
     emailResponsavel: aluno.emailResponsavel,

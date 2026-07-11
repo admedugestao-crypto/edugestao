@@ -12,8 +12,7 @@
 export const Perfil = {
   SUPERADMIN: 'SUPERADMIN',
   PROFESSORA: 'PROFESSORA',
-  AUXILIAR: 'AUXILIAR',
-  PLATAFORMA: 'PLATAFORMA'
+  AUXILIAR: 'AUXILIAR'
 } as const
 
 export type Perfil = (typeof Perfil)[keyof typeof Perfil]

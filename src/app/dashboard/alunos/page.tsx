@@ -1,7 +1,6 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import Link from "next/link";
 import { Users, Plus, Search } from "lucide-react";
 import AlunosTabela from "@/components/AlunosTabela";
@@ -39,9 +38,10 @@ export default async function AlunosPage({
 }) {
   noStore(); // desabilita completamente qualquer cache Next.js
 
-  const scope = await getSessionScope();
-  if (!scope) redirect("/login");
-  const isAdmin = scope.isAdmin;
+  const session = await auth();
+  const professoraId = (session?.user as any)?.professoraId as string | null;
+  const perfil = (session?.user as any)?.perfil as string | undefined;
+  const isAdmin = perfil === "SUPERADMIN";
   const params = await searchParams;
   const q = params.q ?? "";
   const status = params.status ?? "ATIVO";
@@ -55,7 +55,7 @@ export default async function AlunosPage({
   try {
     alunos = await prisma.aluno.findMany({
       where: {
-        ...scopeWhere(scope),
+        ...(!isAdmin && professoraId ? { professoraId } : {}),
         status: status as any,
         ...filtroWhere(campo, q),
       },

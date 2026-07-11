@@ -36,7 +36,6 @@ export type NotaSumAggregateOutputType = {
 
 export type NotaMinAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   alunoId: string | null
   avaliacaoId: string | null
   materiaId: string | null
@@ -47,7 +46,6 @@ export type NotaMinAggregateOutputType = {
 
 export type NotaMaxAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   alunoId: string | null
   avaliacaoId: string | null
   materiaId: string | null
@@ -58,7 +56,6 @@ export type NotaMaxAggregateOutputType = {
 
 export type NotaCountAggregateOutputType = {
   id: number
-  empresaId: number
   alunoId: number
   avaliacaoId: number
   materiaId: number
@@ -79,7 +76,6 @@ export type NotaSumAggregateInputType = {
 
 export type NotaMinAggregateInputType = {
   id?: true
-  empresaId?: true
   alunoId?: true
   avaliacaoId?: true
   materiaId?: true
@@ -90,7 +86,6 @@ export type NotaMinAggregateInputType = {
 
 export type NotaMaxAggregateInputType = {
   id?: true
-  empresaId?: true
   alunoId?: true
   avaliacaoId?: true
   materiaId?: true
@@ -101,7 +96,6 @@ export type NotaMaxAggregateInputType = {
 
 export type NotaCountAggregateInputType = {
   id?: true
-  empresaId?: true
   alunoId?: true
   avaliacaoId?: true
   materiaId?: true
@@ -199,7 +193,6 @@ export type NotaGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type NotaGroupByOutputType = {
   id: string
-  empresaId: string
   alunoId: string
   avaliacaoId: string
   materiaId: string
@@ -233,14 +226,12 @@ export type NotaWhereInput = {
   OR?: Prisma.NotaWhereInput[]
   NOT?: Prisma.NotaWhereInput | Prisma.NotaWhereInput[]
   id?: Prisma.StringFilter<"Nota"> | string
-  empresaId?: Prisma.StringFilter<"Nota"> | string
   alunoId?: Prisma.StringFilter<"Nota"> | string
   avaliacaoId?: Prisma.StringFilter<"Nota"> | string
   materiaId?: Prisma.StringFilter<"Nota"> | string
   valor?: Prisma.FloatFilter<"Nota"> | number
   observacao?: Prisma.StringNullableFilter<"Nota"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Nota"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   avaliacao?: Prisma.XOR<Prisma.AvaliacaoScalarRelationFilter, Prisma.AvaliacaoWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaScalarRelationFilter, Prisma.MateriaWhereInput>
@@ -248,14 +239,12 @@ export type NotaWhereInput = {
 
 export type NotaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
   valor?: Prisma.SortOrder
   observacao?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
-  empresa?: Prisma.EmpresaOrderByWithRelationInput
   aluno?: Prisma.AlunoOrderByWithRelationInput
   avaliacao?: Prisma.AvaliacaoOrderByWithRelationInput
   materia?: Prisma.MateriaOrderByWithRelationInput
@@ -267,14 +256,12 @@ export type NotaWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.NotaWhereInput | Prisma.NotaWhereInput[]
   OR?: Prisma.NotaWhereInput[]
   NOT?: Prisma.NotaWhereInput | Prisma.NotaWhereInput[]
-  empresaId?: Prisma.StringFilter<"Nota"> | string
   alunoId?: Prisma.StringFilter<"Nota"> | string
   avaliacaoId?: Prisma.StringFilter<"Nota"> | string
   materiaId?: Prisma.StringFilter<"Nota"> | string
   valor?: Prisma.FloatFilter<"Nota"> | number
   observacao?: Prisma.StringNullableFilter<"Nota"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Nota"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   avaliacao?: Prisma.XOR<Prisma.AvaliacaoScalarRelationFilter, Prisma.AvaliacaoWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaScalarRelationFilter, Prisma.MateriaWhereInput>
@@ -282,7 +269,6 @@ export type NotaWhereUniqueInput = Prisma.AtLeast<{
 
 export type NotaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
@@ -301,7 +287,6 @@ export type NotaScalarWhereWithAggregatesInput = {
   OR?: Prisma.NotaScalarWhereWithAggregatesInput[]
   NOT?: Prisma.NotaScalarWhereWithAggregatesInput | Prisma.NotaScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Nota"> | string
-  empresaId?: Prisma.StringWithAggregatesFilter<"Nota"> | string
   alunoId?: Prisma.StringWithAggregatesFilter<"Nota"> | string
   avaliacaoId?: Prisma.StringWithAggregatesFilter<"Nota"> | string
   materiaId?: Prisma.StringWithAggregatesFilter<"Nota"> | string
@@ -315,7 +300,6 @@ export type NotaCreateInput = {
   valor: number
   observacao?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutNotasInput
   aluno: Prisma.AlunoCreateNestedOneWithoutNotasInput
   avaliacao: Prisma.AvaliacaoCreateNestedOneWithoutNotasInput
   materia: Prisma.MateriaCreateNestedOneWithoutNotasInput
@@ -323,7 +307,6 @@ export type NotaCreateInput = {
 
 export type NotaUncheckedCreateInput = {
   id?: string
-  empresaId: string
   alunoId: string
   avaliacaoId: string
   materiaId: string
@@ -337,7 +320,6 @@ export type NotaUpdateInput = {
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotasNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutNotasNestedInput
   avaliacao?: Prisma.AvaliacaoUpdateOneRequiredWithoutNotasNestedInput
   materia?: Prisma.MateriaUpdateOneRequiredWithoutNotasNestedInput
@@ -345,7 +327,6 @@ export type NotaUpdateInput = {
 
 export type NotaUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -356,7 +337,6 @@ export type NotaUncheckedUpdateInput = {
 
 export type NotaCreateManyInput = {
   id?: string
-  empresaId: string
   alunoId: string
   avaliacaoId: string
   materiaId: string
@@ -374,7 +354,6 @@ export type NotaUpdateManyMutationInput = {
 
 export type NotaUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -401,7 +380,6 @@ export type NotaAlunoIdAvaliacaoIdMateriaIdCompoundUniqueInput = {
 
 export type NotaCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
@@ -416,7 +394,6 @@ export type NotaAvgOrderByAggregateInput = {
 
 export type NotaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
@@ -427,7 +404,6 @@ export type NotaMaxOrderByAggregateInput = {
 
 export type NotaMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
@@ -438,48 +414,6 @@ export type NotaMinOrderByAggregateInput = {
 
 export type NotaSumOrderByAggregateInput = {
   valor?: Prisma.SortOrder
-}
-
-export type NotaCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.NotaCreateWithoutEmpresaInput, Prisma.NotaUncheckedCreateWithoutEmpresaInput> | Prisma.NotaCreateWithoutEmpresaInput[] | Prisma.NotaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutEmpresaInput | Prisma.NotaCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.NotaCreateManyEmpresaInputEnvelope
-  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-}
-
-export type NotaUncheckedCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.NotaCreateWithoutEmpresaInput, Prisma.NotaUncheckedCreateWithoutEmpresaInput> | Prisma.NotaCreateWithoutEmpresaInput[] | Prisma.NotaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutEmpresaInput | Prisma.NotaCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.NotaCreateManyEmpresaInputEnvelope
-  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-}
-
-export type NotaUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.NotaCreateWithoutEmpresaInput, Prisma.NotaUncheckedCreateWithoutEmpresaInput> | Prisma.NotaCreateWithoutEmpresaInput[] | Prisma.NotaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutEmpresaInput | Prisma.NotaCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.NotaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.NotaUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.NotaCreateManyEmpresaInputEnvelope
-  set?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  disconnect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  delete?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  update?: Prisma.NotaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.NotaUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.NotaUpdateManyWithWhereWithoutEmpresaInput | Prisma.NotaUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
-}
-
-export type NotaUncheckedUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.NotaCreateWithoutEmpresaInput, Prisma.NotaUncheckedCreateWithoutEmpresaInput> | Prisma.NotaCreateWithoutEmpresaInput[] | Prisma.NotaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutEmpresaInput | Prisma.NotaCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.NotaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.NotaUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.NotaCreateManyEmpresaInputEnvelope
-  set?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  disconnect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  delete?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
-  update?: Prisma.NotaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.NotaUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.NotaUpdateManyWithWhereWithoutEmpresaInput | Prisma.NotaUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
 }
 
 export type NotaCreateNestedManyWithoutMateriaInput = {
@@ -608,79 +542,17 @@ export type NotaUncheckedUpdateManyWithoutAlunoNestedInput = {
   deleteMany?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
 }
 
-export type NotaCreateWithoutEmpresaInput = {
-  id?: string
-  valor: number
-  observacao?: string | null
-  criadoEm?: Date | string
-  aluno: Prisma.AlunoCreateNestedOneWithoutNotasInput
-  avaliacao: Prisma.AvaliacaoCreateNestedOneWithoutNotasInput
-  materia: Prisma.MateriaCreateNestedOneWithoutNotasInput
-}
-
-export type NotaUncheckedCreateWithoutEmpresaInput = {
-  id?: string
-  alunoId: string
-  avaliacaoId: string
-  materiaId: string
-  valor: number
-  observacao?: string | null
-  criadoEm?: Date | string
-}
-
-export type NotaCreateOrConnectWithoutEmpresaInput = {
-  where: Prisma.NotaWhereUniqueInput
-  create: Prisma.XOR<Prisma.NotaCreateWithoutEmpresaInput, Prisma.NotaUncheckedCreateWithoutEmpresaInput>
-}
-
-export type NotaCreateManyEmpresaInputEnvelope = {
-  data: Prisma.NotaCreateManyEmpresaInput | Prisma.NotaCreateManyEmpresaInput[]
-  skipDuplicates?: boolean
-}
-
-export type NotaUpsertWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.NotaWhereUniqueInput
-  update: Prisma.XOR<Prisma.NotaUpdateWithoutEmpresaInput, Prisma.NotaUncheckedUpdateWithoutEmpresaInput>
-  create: Prisma.XOR<Prisma.NotaCreateWithoutEmpresaInput, Prisma.NotaUncheckedCreateWithoutEmpresaInput>
-}
-
-export type NotaUpdateWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.NotaWhereUniqueInput
-  data: Prisma.XOR<Prisma.NotaUpdateWithoutEmpresaInput, Prisma.NotaUncheckedUpdateWithoutEmpresaInput>
-}
-
-export type NotaUpdateManyWithWhereWithoutEmpresaInput = {
-  where: Prisma.NotaScalarWhereInput
-  data: Prisma.XOR<Prisma.NotaUpdateManyMutationInput, Prisma.NotaUncheckedUpdateManyWithoutEmpresaInput>
-}
-
-export type NotaScalarWhereInput = {
-  AND?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
-  OR?: Prisma.NotaScalarWhereInput[]
-  NOT?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
-  id?: Prisma.StringFilter<"Nota"> | string
-  empresaId?: Prisma.StringFilter<"Nota"> | string
-  alunoId?: Prisma.StringFilter<"Nota"> | string
-  avaliacaoId?: Prisma.StringFilter<"Nota"> | string
-  materiaId?: Prisma.StringFilter<"Nota"> | string
-  valor?: Prisma.FloatFilter<"Nota"> | number
-  observacao?: Prisma.StringNullableFilter<"Nota"> | string | null
-  criadoEm?: Prisma.DateTimeFilter<"Nota"> | Date | string
-}
-
 export type NotaCreateWithoutMateriaInput = {
   id?: string
   valor: number
   observacao?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutNotasInput
   aluno: Prisma.AlunoCreateNestedOneWithoutNotasInput
   avaliacao: Prisma.AvaliacaoCreateNestedOneWithoutNotasInput
 }
 
 export type NotaUncheckedCreateWithoutMateriaInput = {
   id?: string
-  empresaId: string
   alunoId: string
   avaliacaoId: string
   valor: number
@@ -714,19 +586,30 @@ export type NotaUpdateManyWithWhereWithoutMateriaInput = {
   data: Prisma.XOR<Prisma.NotaUpdateManyMutationInput, Prisma.NotaUncheckedUpdateManyWithoutMateriaInput>
 }
 
+export type NotaScalarWhereInput = {
+  AND?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
+  OR?: Prisma.NotaScalarWhereInput[]
+  NOT?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
+  id?: Prisma.StringFilter<"Nota"> | string
+  alunoId?: Prisma.StringFilter<"Nota"> | string
+  avaliacaoId?: Prisma.StringFilter<"Nota"> | string
+  materiaId?: Prisma.StringFilter<"Nota"> | string
+  valor?: Prisma.FloatFilter<"Nota"> | number
+  observacao?: Prisma.StringNullableFilter<"Nota"> | string | null
+  criadoEm?: Prisma.DateTimeFilter<"Nota"> | Date | string
+}
+
 export type NotaCreateWithoutAvaliacaoInput = {
   id?: string
   valor: number
   observacao?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutNotasInput
   aluno: Prisma.AlunoCreateNestedOneWithoutNotasInput
   materia: Prisma.MateriaCreateNestedOneWithoutNotasInput
 }
 
 export type NotaUncheckedCreateWithoutAvaliacaoInput = {
   id?: string
-  empresaId: string
   alunoId: string
   materiaId: string
   valor: number
@@ -765,14 +648,12 @@ export type NotaCreateWithoutAlunoInput = {
   valor: number
   observacao?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutNotasInput
   avaliacao: Prisma.AvaliacaoCreateNestedOneWithoutNotasInput
   materia: Prisma.MateriaCreateNestedOneWithoutNotasInput
 }
 
 export type NotaUncheckedCreateWithoutAlunoInput = {
   id?: string
-  empresaId: string
   avaliacaoId: string
   materiaId: string
   valor: number
@@ -806,49 +687,8 @@ export type NotaUpdateManyWithWhereWithoutAlunoInput = {
   data: Prisma.XOR<Prisma.NotaUpdateManyMutationInput, Prisma.NotaUncheckedUpdateManyWithoutAlunoInput>
 }
 
-export type NotaCreateManyEmpresaInput = {
-  id?: string
-  alunoId: string
-  avaliacaoId: string
-  materiaId: string
-  valor: number
-  observacao?: string | null
-  criadoEm?: Date | string
-}
-
-export type NotaUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  valor?: Prisma.FloatFieldUpdateOperationsInput | number
-  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  aluno?: Prisma.AlunoUpdateOneRequiredWithoutNotasNestedInput
-  avaliacao?: Prisma.AvaliacaoUpdateOneRequiredWithoutNotasNestedInput
-  materia?: Prisma.MateriaUpdateOneRequiredWithoutNotasNestedInput
-}
-
-export type NotaUncheckedUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  alunoId?: Prisma.StringFieldUpdateOperationsInput | string
-  avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
-  materiaId?: Prisma.StringFieldUpdateOperationsInput | string
-  valor?: Prisma.FloatFieldUpdateOperationsInput | number
-  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type NotaUncheckedUpdateManyWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  alunoId?: Prisma.StringFieldUpdateOperationsInput | string
-  avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
-  materiaId?: Prisma.StringFieldUpdateOperationsInput | string
-  valor?: Prisma.FloatFieldUpdateOperationsInput | number
-  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 export type NotaCreateManyMateriaInput = {
   id?: string
-  empresaId: string
   alunoId: string
   avaliacaoId: string
   valor: number
@@ -861,14 +701,12 @@ export type NotaUpdateWithoutMateriaInput = {
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotasNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutNotasNestedInput
   avaliacao?: Prisma.AvaliacaoUpdateOneRequiredWithoutNotasNestedInput
 }
 
 export type NotaUncheckedUpdateWithoutMateriaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -878,7 +716,6 @@ export type NotaUncheckedUpdateWithoutMateriaInput = {
 
 export type NotaUncheckedUpdateManyWithoutMateriaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -888,7 +725,6 @@ export type NotaUncheckedUpdateManyWithoutMateriaInput = {
 
 export type NotaCreateManyAvaliacaoInput = {
   id?: string
-  empresaId: string
   alunoId: string
   materiaId: string
   valor: number
@@ -901,14 +737,12 @@ export type NotaUpdateWithoutAvaliacaoInput = {
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotasNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutNotasNestedInput
   materia?: Prisma.MateriaUpdateOneRequiredWithoutNotasNestedInput
 }
 
 export type NotaUncheckedUpdateWithoutAvaliacaoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.StringFieldUpdateOperationsInput | string
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -918,7 +752,6 @@ export type NotaUncheckedUpdateWithoutAvaliacaoInput = {
 
 export type NotaUncheckedUpdateManyWithoutAvaliacaoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.StringFieldUpdateOperationsInput | string
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -928,7 +761,6 @@ export type NotaUncheckedUpdateManyWithoutAvaliacaoInput = {
 
 export type NotaCreateManyAlunoInput = {
   id?: string
-  empresaId: string
   avaliacaoId: string
   materiaId: string
   valor: number
@@ -941,14 +773,12 @@ export type NotaUpdateWithoutAlunoInput = {
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotasNestedInput
   avaliacao?: Prisma.AvaliacaoUpdateOneRequiredWithoutNotasNestedInput
   materia?: Prisma.MateriaUpdateOneRequiredWithoutNotasNestedInput
 }
 
 export type NotaUncheckedUpdateWithoutAlunoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.StringFieldUpdateOperationsInput | string
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -958,7 +788,6 @@ export type NotaUncheckedUpdateWithoutAlunoInput = {
 
 export type NotaUncheckedUpdateManyWithoutAlunoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.StringFieldUpdateOperationsInput | string
   valor?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -970,14 +799,12 @@ export type NotaUncheckedUpdateManyWithoutAlunoInput = {
 
 export type NotaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   avaliacaoId?: boolean
   materiaId?: boolean
   valor?: boolean
   observacao?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MateriaDefaultArgs<ExtArgs>
@@ -985,14 +812,12 @@ export type NotaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type NotaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   avaliacaoId?: boolean
   materiaId?: boolean
   valor?: boolean
   observacao?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MateriaDefaultArgs<ExtArgs>
@@ -1000,14 +825,12 @@ export type NotaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type NotaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   avaliacaoId?: boolean
   materiaId?: boolean
   valor?: boolean
   observacao?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MateriaDefaultArgs<ExtArgs>
@@ -1015,7 +838,6 @@ export type NotaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type NotaSelectScalar = {
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   avaliacaoId?: boolean
   materiaId?: boolean
@@ -1024,21 +846,18 @@ export type NotaSelectScalar = {
   criadoEm?: boolean
 }
 
-export type NotaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "alunoId" | "avaliacaoId" | "materiaId" | "valor" | "observacao" | "criadoEm", ExtArgs["result"]["nota"]>
+export type NotaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "alunoId" | "avaliacaoId" | "materiaId" | "valor" | "observacao" | "criadoEm", ExtArgs["result"]["nota"]>
 export type NotaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MateriaDefaultArgs<ExtArgs>
 }
 export type NotaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MateriaDefaultArgs<ExtArgs>
 }
 export type NotaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MateriaDefaultArgs<ExtArgs>
@@ -1047,14 +866,12 @@ export type NotaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $NotaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Nota"
   objects: {
-    empresa: Prisma.$EmpresaPayload<ExtArgs>
     aluno: Prisma.$AlunoPayload<ExtArgs>
     avaliacao: Prisma.$AvaliacaoPayload<ExtArgs>
     materia: Prisma.$MateriaPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    empresaId: string
     alunoId: string
     avaliacaoId: string
     materiaId: string
@@ -1455,7 +1272,6 @@ readonly fields: NotaFieldRefs;
  */
 export interface Prisma__NotaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   aluno<T extends Prisma.AlunoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlunoDefaultArgs<ExtArgs>>): Prisma.Prisma__AlunoClient<runtime.Types.Result.GetResult<Prisma.$AlunoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   avaliacao<T extends Prisma.AvaliacaoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AvaliacaoDefaultArgs<ExtArgs>>): Prisma.Prisma__AvaliacaoClient<runtime.Types.Result.GetResult<Prisma.$AvaliacaoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   materia<T extends Prisma.MateriaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MateriaDefaultArgs<ExtArgs>>): Prisma.Prisma__MateriaClient<runtime.Types.Result.GetResult<Prisma.$MateriaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -1489,7 +1305,6 @@ export interface Prisma__NotaClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface NotaFieldRefs {
   readonly id: Prisma.FieldRef<"Nota", 'String'>
-  readonly empresaId: Prisma.FieldRef<"Nota", 'String'>
   readonly alunoId: Prisma.FieldRef<"Nota", 'String'>
   readonly avaliacaoId: Prisma.FieldRef<"Nota", 'String'>
   readonly materiaId: Prisma.FieldRef<"Nota", 'String'>

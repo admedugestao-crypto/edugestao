@@ -1,18 +1,16 @@
-import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 import { BookOpen } from "lucide-react";
 import DisciplinasClient from "@/components/DisciplinasClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function DisciplinasPage() {
-  const scope = await getSessionScope();
-  if (!scope) redirect("/login");
-  const professoraId = scope.professoraId;
+  const session = await auth();
+  const professoraId = (session?.user as any)?.professoraId as string | null;
 
   const [todasMaterias, minhasMaterias] = await Promise.all([
-    prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
+    prisma.materia.findMany({ orderBy: { nome: "asc" } }),
     professoraId
       ? prisma.professoraMateria.findMany({ where: { professoraId }, select: { materiaId: true } })
       : Promise.resolve([]),

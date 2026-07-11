@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
@@ -10,8 +10,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
 
@@ -24,9 +24,7 @@ export async function GET(
     },
   });
 
-  if (!aluno || aluno.empresaId !== scope.empresaId) {
-    return NextResponse.json({ erro: "Não encontrado" }, { status: 404 });
-  }
+  if (!aluno) return NextResponse.json({ erro: "Não encontrado" }, { status: 404 });
 
   return NextResponse.json(aluno);
 }
@@ -35,16 +33,11 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
+  const perfil = (session.user as any).perfil as string;
   const { id } = await params;
-
-  const existente = await prisma.aluno.findUnique({ where: { id }, select: { empresaId: true } });
-  if (!existente || existente.empresaId !== scope.empresaId) {
-    return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
-  }
-
   const form = await req.formData();
 
   // Foto (opcional — só atualiza se enviar novo arquivo)
@@ -100,7 +93,7 @@ export async function PUT(
 
 
     // Admin pode reatribuir professor; outros não alteram
-    const professoraIdNovo = scope.isAdmin && form.get("professoraId")
+    const professoraIdNovo = perfil === "SUPERADMIN" && form.get("professoraId")
       ? (form.get("professoraId") as string)
       : undefined;
 
@@ -149,20 +142,18 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
 
   // ── Bloqueia exclusão de aluno ativo ou com pendências ───────────────────
   const aluno = await prisma.aluno.findUnique({
     where: { id },
-    select: { status: true, empresaId: true },
+    select: { status: true },
   });
 
-  if (!aluno || aluno.empresaId !== scope.empresaId) {
-    return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
-  }
+  if (!aluno) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
 
   if (aluno.status === "ATIVO") {
     return NextResponse.json(

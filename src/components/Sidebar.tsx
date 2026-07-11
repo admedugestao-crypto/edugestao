@@ -11,8 +11,10 @@ import {
   Calendar,
   CalendarDays,
   GraduationCap,
+  UserCog,
   Bell,
   DollarSign,
+  Menu,
 } from "lucide-react";
 
 const nav = [
@@ -26,6 +28,7 @@ const nav = [
   { href: "/dashboard/conteudos",        label: "Conteúdos",      icon: GraduationCap,   adminOnly: false },
   { href: "/dashboard/pagamentos",       label: "Pagamentos",     icon: DollarSign,      adminOnly: false },
   { href: "/dashboard/notificacoes",     label: "Notificações",   icon: Bell,            adminOnly: true  },
+  { href: "/dashboard/usuarios",         label: "Usuários",       icon: UserCog,         adminOnly: true  },
 ];
 
 function Avatar({ foto, nome }: { foto?: string | null; nome?: string }) {
@@ -58,17 +61,9 @@ export default function Sidebar({ usuario }: { usuario: any }) {
   return (
     <aside className="w-60 bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0 shrink-0">
       <div className="p-5 border-b border-slate-100">
-        <div className="flex flex-col items-center justify-center gap-1.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/icone-edugestao.jpg"
-            alt="EduGestão"
-            className="max-h-10 max-w-full object-contain"
-          />
-          <div className="text-center leading-tight">
-            <p className="font-bold text-slate-800 text-sm tracking-wide">Gestão Educacional</p>
-            <p className="text-xs text-slate-400">EduGestão</p>
-          </div>
+        <div className="flex items-center justify-center gap-2">
+          <Menu size={20} className="text-indigo-600" />
+          <span className="font-bold text-slate-800 text-lg tracking-wide">Menu</span>
         </div>
       </div>
 
@@ -106,13 +101,6 @@ export default function Sidebar({ usuario }: { usuario: any }) {
               {usuario?.name}
             </p>
             <p className="text-xs text-slate-500 truncate">{usuario?.email}</p>
-            <span
-              className={`inline-flex mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                isAdmin ? "bg-indigo-100 text-indigo-700" : "bg-emerald-100 text-emerald-700"
-              }`}
-            >
-              {isAdmin ? "Administrador" : "Professor"}
-            </span>
           </div>
         </div>
       </div>

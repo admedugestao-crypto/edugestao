@@ -44,7 +44,6 @@ export type PagamentoSumAggregateOutputType = {
 
 export type PagamentoMinAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   alunoId: string | null
   mes: number | null
   ano: number | null
@@ -64,7 +63,6 @@ export type PagamentoMinAggregateOutputType = {
 
 export type PagamentoMaxAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   alunoId: string | null
   mes: number | null
   ano: number | null
@@ -84,7 +82,6 @@ export type PagamentoMaxAggregateOutputType = {
 
 export type PagamentoCountAggregateOutputType = {
   id: number
-  empresaId: number
   alunoId: number
   mes: number
   ano: number
@@ -122,7 +119,6 @@ export type PagamentoSumAggregateInputType = {
 
 export type PagamentoMinAggregateInputType = {
   id?: true
-  empresaId?: true
   alunoId?: true
   mes?: true
   ano?: true
@@ -142,7 +138,6 @@ export type PagamentoMinAggregateInputType = {
 
 export type PagamentoMaxAggregateInputType = {
   id?: true
-  empresaId?: true
   alunoId?: true
   mes?: true
   ano?: true
@@ -162,7 +157,6 @@ export type PagamentoMaxAggregateInputType = {
 
 export type PagamentoCountAggregateInputType = {
   id?: true
-  empresaId?: true
   alunoId?: true
   mes?: true
   ano?: true
@@ -269,7 +263,6 @@ export type PagamentoGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type PagamentoGroupByOutputType = {
   id: string
-  empresaId: string
   alunoId: string
   mes: number
   ano: number
@@ -312,7 +305,6 @@ export type PagamentoWhereInput = {
   OR?: Prisma.PagamentoWhereInput[]
   NOT?: Prisma.PagamentoWhereInput | Prisma.PagamentoWhereInput[]
   id?: Prisma.StringFilter<"Pagamento"> | string
-  empresaId?: Prisma.StringFilter<"Pagamento"> | string
   alunoId?: Prisma.StringFilter<"Pagamento"> | string
   mes?: Prisma.IntFilter<"Pagamento"> | number
   ano?: Prisma.IntFilter<"Pagamento"> | number
@@ -328,14 +320,12 @@ export type PagamentoWhereInput = {
   origemManual?: Prisma.BoolFilter<"Pagamento"> | boolean
   criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   aulas?: Prisma.PagamentoAulaListRelationFilter
 }
 
 export type PagamentoOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   mes?: Prisma.SortOrder
   ano?: Prisma.SortOrder
@@ -351,7 +341,6 @@ export type PagamentoOrderByWithRelationInput = {
   origemManual?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   atualizadoEm?: Prisma.SortOrder
-  empresa?: Prisma.EmpresaOrderByWithRelationInput
   aluno?: Prisma.AlunoOrderByWithRelationInput
   aulas?: Prisma.PagamentoAulaOrderByRelationAggregateInput
 }
@@ -362,7 +351,6 @@ export type PagamentoWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PagamentoWhereInput | Prisma.PagamentoWhereInput[]
   OR?: Prisma.PagamentoWhereInput[]
   NOT?: Prisma.PagamentoWhereInput | Prisma.PagamentoWhereInput[]
-  empresaId?: Prisma.StringFilter<"Pagamento"> | string
   alunoId?: Prisma.StringFilter<"Pagamento"> | string
   mes?: Prisma.IntFilter<"Pagamento"> | number
   ano?: Prisma.IntFilter<"Pagamento"> | number
@@ -378,14 +366,12 @@ export type PagamentoWhereUniqueInput = Prisma.AtLeast<{
   origemManual?: Prisma.BoolFilter<"Pagamento"> | boolean
   criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   aulas?: Prisma.PagamentoAulaListRelationFilter
 }, "id" | "alunoId_mes_ano_parcela">
 
 export type PagamentoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   mes?: Prisma.SortOrder
   ano?: Prisma.SortOrder
@@ -413,7 +399,6 @@ export type PagamentoScalarWhereWithAggregatesInput = {
   OR?: Prisma.PagamentoScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PagamentoScalarWhereWithAggregatesInput | Prisma.PagamentoScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Pagamento"> | string
-  empresaId?: Prisma.StringWithAggregatesFilter<"Pagamento"> | string
   alunoId?: Prisma.StringWithAggregatesFilter<"Pagamento"> | string
   mes?: Prisma.IntWithAggregatesFilter<"Pagamento"> | number
   ano?: Prisma.IntWithAggregatesFilter<"Pagamento"> | number
@@ -447,14 +432,12 @@ export type PagamentoCreateInput = {
   origemManual?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutPagamentosInput
   aluno: Prisma.AlunoCreateNestedOneWithoutPagamentosInput
   aulas?: Prisma.PagamentoAulaCreateNestedManyWithoutPagamentoInput
 }
 
 export type PagamentoUncheckedCreateInput = {
   id?: string
-  empresaId: string
   alunoId: string
   mes: number
   ano: number
@@ -489,14 +472,12 @@ export type PagamentoUpdateInput = {
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutPagamentosNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutPagamentosNestedInput
   aulas?: Prisma.PagamentoAulaUpdateManyWithoutPagamentoNestedInput
 }
 
 export type PagamentoUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   mes?: Prisma.IntFieldUpdateOperationsInput | number
   ano?: Prisma.IntFieldUpdateOperationsInput | number
@@ -517,7 +498,6 @@ export type PagamentoUncheckedUpdateInput = {
 
 export type PagamentoCreateManyInput = {
   id?: string
-  empresaId: string
   alunoId: string
   mes: number
   ano: number
@@ -555,7 +535,6 @@ export type PagamentoUpdateManyMutationInput = {
 
 export type PagamentoUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   mes?: Prisma.IntFieldUpdateOperationsInput | number
   ano?: Prisma.IntFieldUpdateOperationsInput | number
@@ -592,7 +571,6 @@ export type PagamentoAlunoIdMesAnoParcelaCompoundUniqueInput = {
 
 export type PagamentoCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   mes?: Prisma.SortOrder
   ano?: Prisma.SortOrder
@@ -620,7 +598,6 @@ export type PagamentoAvgOrderByAggregateInput = {
 
 export type PagamentoMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   mes?: Prisma.SortOrder
   ano?: Prisma.SortOrder
@@ -640,7 +617,6 @@ export type PagamentoMaxOrderByAggregateInput = {
 
 export type PagamentoMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   alunoId?: Prisma.SortOrder
   mes?: Prisma.SortOrder
   ano?: Prisma.SortOrder
@@ -669,48 +645,6 @@ export type PagamentoSumOrderByAggregateInput = {
 export type PagamentoScalarRelationFilter = {
   is?: Prisma.PagamentoWhereInput
   isNot?: Prisma.PagamentoWhereInput
-}
-
-export type PagamentoCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.PagamentoCreateWithoutEmpresaInput, Prisma.PagamentoUncheckedCreateWithoutEmpresaInput> | Prisma.PagamentoCreateWithoutEmpresaInput[] | Prisma.PagamentoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutEmpresaInput | Prisma.PagamentoCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.PagamentoCreateManyEmpresaInputEnvelope
-  connect?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-}
-
-export type PagamentoUncheckedCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.PagamentoCreateWithoutEmpresaInput, Prisma.PagamentoUncheckedCreateWithoutEmpresaInput> | Prisma.PagamentoCreateWithoutEmpresaInput[] | Prisma.PagamentoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutEmpresaInput | Prisma.PagamentoCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.PagamentoCreateManyEmpresaInputEnvelope
-  connect?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-}
-
-export type PagamentoUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.PagamentoCreateWithoutEmpresaInput, Prisma.PagamentoUncheckedCreateWithoutEmpresaInput> | Prisma.PagamentoCreateWithoutEmpresaInput[] | Prisma.PagamentoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutEmpresaInput | Prisma.PagamentoCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.PagamentoUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.PagamentoUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.PagamentoCreateManyEmpresaInputEnvelope
-  set?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  disconnect?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  delete?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  connect?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  update?: Prisma.PagamentoUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.PagamentoUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.PagamentoUpdateManyWithWhereWithoutEmpresaInput | Prisma.PagamentoUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
-}
-
-export type PagamentoUncheckedUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.PagamentoCreateWithoutEmpresaInput, Prisma.PagamentoUncheckedCreateWithoutEmpresaInput> | Prisma.PagamentoCreateWithoutEmpresaInput[] | Prisma.PagamentoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutEmpresaInput | Prisma.PagamentoCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.PagamentoUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.PagamentoUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.PagamentoCreateManyEmpresaInputEnvelope
-  set?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  disconnect?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  delete?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  connect?: Prisma.PagamentoWhereUniqueInput | Prisma.PagamentoWhereUniqueInput[]
-  update?: Prisma.PagamentoUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.PagamentoUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.PagamentoUpdateManyWithWhereWithoutEmpresaInput | Prisma.PagamentoUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
 }
 
 export type PagamentoCreateNestedManyWithoutAlunoInput = {
@@ -769,95 +703,6 @@ export type PagamentoUpdateOneRequiredWithoutAulasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PagamentoUpdateToOneWithWhereWithoutAulasInput, Prisma.PagamentoUpdateWithoutAulasInput>, Prisma.PagamentoUncheckedUpdateWithoutAulasInput>
 }
 
-export type PagamentoCreateWithoutEmpresaInput = {
-  id?: string
-  mes: number
-  ano: number
-  parcela?: number
-  dataVencimento: Date | string
-  valorCobrado: number
-  quantidadeAulas?: number | null
-  pago?: boolean
-  dataPagamento?: Date | string | null
-  observacao?: string | null
-  emailTipo?: string | null
-  emailEnviadoEm?: Date | string | null
-  origemManual?: boolean
-  criadoEm?: Date | string
-  atualizadoEm?: Date | string
-  aluno: Prisma.AlunoCreateNestedOneWithoutPagamentosInput
-  aulas?: Prisma.PagamentoAulaCreateNestedManyWithoutPagamentoInput
-}
-
-export type PagamentoUncheckedCreateWithoutEmpresaInput = {
-  id?: string
-  alunoId: string
-  mes: number
-  ano: number
-  parcela?: number
-  dataVencimento: Date | string
-  valorCobrado: number
-  quantidadeAulas?: number | null
-  pago?: boolean
-  dataPagamento?: Date | string | null
-  observacao?: string | null
-  emailTipo?: string | null
-  emailEnviadoEm?: Date | string | null
-  origemManual?: boolean
-  criadoEm?: Date | string
-  atualizadoEm?: Date | string
-  aulas?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutPagamentoInput
-}
-
-export type PagamentoCreateOrConnectWithoutEmpresaInput = {
-  where: Prisma.PagamentoWhereUniqueInput
-  create: Prisma.XOR<Prisma.PagamentoCreateWithoutEmpresaInput, Prisma.PagamentoUncheckedCreateWithoutEmpresaInput>
-}
-
-export type PagamentoCreateManyEmpresaInputEnvelope = {
-  data: Prisma.PagamentoCreateManyEmpresaInput | Prisma.PagamentoCreateManyEmpresaInput[]
-  skipDuplicates?: boolean
-}
-
-export type PagamentoUpsertWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.PagamentoWhereUniqueInput
-  update: Prisma.XOR<Prisma.PagamentoUpdateWithoutEmpresaInput, Prisma.PagamentoUncheckedUpdateWithoutEmpresaInput>
-  create: Prisma.XOR<Prisma.PagamentoCreateWithoutEmpresaInput, Prisma.PagamentoUncheckedCreateWithoutEmpresaInput>
-}
-
-export type PagamentoUpdateWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.PagamentoWhereUniqueInput
-  data: Prisma.XOR<Prisma.PagamentoUpdateWithoutEmpresaInput, Prisma.PagamentoUncheckedUpdateWithoutEmpresaInput>
-}
-
-export type PagamentoUpdateManyWithWhereWithoutEmpresaInput = {
-  where: Prisma.PagamentoScalarWhereInput
-  data: Prisma.XOR<Prisma.PagamentoUpdateManyMutationInput, Prisma.PagamentoUncheckedUpdateManyWithoutEmpresaInput>
-}
-
-export type PagamentoScalarWhereInput = {
-  AND?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
-  OR?: Prisma.PagamentoScalarWhereInput[]
-  NOT?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
-  id?: Prisma.StringFilter<"Pagamento"> | string
-  empresaId?: Prisma.StringFilter<"Pagamento"> | string
-  alunoId?: Prisma.StringFilter<"Pagamento"> | string
-  mes?: Prisma.IntFilter<"Pagamento"> | number
-  ano?: Prisma.IntFilter<"Pagamento"> | number
-  parcela?: Prisma.IntFilter<"Pagamento"> | number
-  dataVencimento?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-  valorCobrado?: Prisma.FloatFilter<"Pagamento"> | number
-  quantidadeAulas?: Prisma.IntNullableFilter<"Pagamento"> | number | null
-  pago?: Prisma.BoolFilter<"Pagamento"> | boolean
-  dataPagamento?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
-  observacao?: Prisma.StringNullableFilter<"Pagamento"> | string | null
-  emailTipo?: Prisma.StringNullableFilter<"Pagamento"> | string | null
-  emailEnviadoEm?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
-  origemManual?: Prisma.BoolFilter<"Pagamento"> | boolean
-  criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-  atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-}
-
 export type PagamentoCreateWithoutAlunoInput = {
   id?: string
   mes: number
@@ -874,13 +719,11 @@ export type PagamentoCreateWithoutAlunoInput = {
   origemManual?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutPagamentosInput
   aulas?: Prisma.PagamentoAulaCreateNestedManyWithoutPagamentoInput
 }
 
 export type PagamentoUncheckedCreateWithoutAlunoInput = {
   id?: string
-  empresaId: string
   mes: number
   ano: number
   parcela?: number
@@ -924,6 +767,28 @@ export type PagamentoUpdateManyWithWhereWithoutAlunoInput = {
   data: Prisma.XOR<Prisma.PagamentoUpdateManyMutationInput, Prisma.PagamentoUncheckedUpdateManyWithoutAlunoInput>
 }
 
+export type PagamentoScalarWhereInput = {
+  AND?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
+  OR?: Prisma.PagamentoScalarWhereInput[]
+  NOT?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
+  id?: Prisma.StringFilter<"Pagamento"> | string
+  alunoId?: Prisma.StringFilter<"Pagamento"> | string
+  mes?: Prisma.IntFilter<"Pagamento"> | number
+  ano?: Prisma.IntFilter<"Pagamento"> | number
+  parcela?: Prisma.IntFilter<"Pagamento"> | number
+  dataVencimento?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
+  valorCobrado?: Prisma.FloatFilter<"Pagamento"> | number
+  quantidadeAulas?: Prisma.IntNullableFilter<"Pagamento"> | number | null
+  pago?: Prisma.BoolFilter<"Pagamento"> | boolean
+  dataPagamento?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
+  observacao?: Prisma.StringNullableFilter<"Pagamento"> | string | null
+  emailTipo?: Prisma.StringNullableFilter<"Pagamento"> | string | null
+  emailEnviadoEm?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
+  origemManual?: Prisma.BoolFilter<"Pagamento"> | boolean
+  criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
+  atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
+}
+
 export type PagamentoCreateWithoutAulasInput = {
   id?: string
   mes: number
@@ -940,13 +805,11 @@ export type PagamentoCreateWithoutAulasInput = {
   origemManual?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutPagamentosInput
   aluno: Prisma.AlunoCreateNestedOneWithoutPagamentosInput
 }
 
 export type PagamentoUncheckedCreateWithoutAulasInput = {
   id?: string
-  empresaId: string
   alunoId: string
   mes: number
   ano: number
@@ -996,90 +859,10 @@ export type PagamentoUpdateWithoutAulasInput = {
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutPagamentosNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutPagamentosNestedInput
 }
 
 export type PagamentoUncheckedUpdateWithoutAulasInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
-  alunoId?: Prisma.StringFieldUpdateOperationsInput | string
-  mes?: Prisma.IntFieldUpdateOperationsInput | number
-  ano?: Prisma.IntFieldUpdateOperationsInput | number
-  parcela?: Prisma.IntFieldUpdateOperationsInput | number
-  dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
-  quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type PagamentoCreateManyEmpresaInput = {
-  id?: string
-  alunoId: string
-  mes: number
-  ano: number
-  parcela?: number
-  dataVencimento: Date | string
-  valorCobrado: number
-  quantidadeAulas?: number | null
-  pago?: boolean
-  dataPagamento?: Date | string | null
-  observacao?: string | null
-  emailTipo?: string | null
-  emailEnviadoEm?: Date | string | null
-  origemManual?: boolean
-  criadoEm?: Date | string
-  atualizadoEm?: Date | string
-}
-
-export type PagamentoUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  mes?: Prisma.IntFieldUpdateOperationsInput | number
-  ano?: Prisma.IntFieldUpdateOperationsInput | number
-  parcela?: Prisma.IntFieldUpdateOperationsInput | number
-  dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
-  quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  aluno?: Prisma.AlunoUpdateOneRequiredWithoutPagamentosNestedInput
-  aulas?: Prisma.PagamentoAulaUpdateManyWithoutPagamentoNestedInput
-}
-
-export type PagamentoUncheckedUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  alunoId?: Prisma.StringFieldUpdateOperationsInput | string
-  mes?: Prisma.IntFieldUpdateOperationsInput | number
-  ano?: Prisma.IntFieldUpdateOperationsInput | number
-  parcela?: Prisma.IntFieldUpdateOperationsInput | number
-  dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
-  quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  aulas?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutPagamentoNestedInput
-}
-
-export type PagamentoUncheckedUpdateManyWithoutEmpresaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   alunoId?: Prisma.StringFieldUpdateOperationsInput | string
   mes?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1100,7 +883,6 @@ export type PagamentoUncheckedUpdateManyWithoutEmpresaInput = {
 
 export type PagamentoCreateManyAlunoInput = {
   id?: string
-  empresaId: string
   mes: number
   ano: number
   parcela?: number
@@ -1133,13 +915,11 @@ export type PagamentoUpdateWithoutAlunoInput = {
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutPagamentosNestedInput
   aulas?: Prisma.PagamentoAulaUpdateManyWithoutPagamentoNestedInput
 }
 
 export type PagamentoUncheckedUpdateWithoutAlunoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   mes?: Prisma.IntFieldUpdateOperationsInput | number
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1159,7 +939,6 @@ export type PagamentoUncheckedUpdateWithoutAlunoInput = {
 
 export type PagamentoUncheckedUpdateManyWithoutAlunoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   mes?: Prisma.IntFieldUpdateOperationsInput | number
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1209,7 +988,6 @@ export type PagamentoCountOutputTypeCountAulasArgs<ExtArgs extends runtime.Types
 
 export type PagamentoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   mes?: boolean
   ano?: boolean
@@ -1225,7 +1003,6 @@ export type PagamentoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   origemManual?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   aulas?: boolean | Prisma.Pagamento$aulasArgs<ExtArgs>
   _count?: boolean | Prisma.PagamentoCountOutputTypeDefaultArgs<ExtArgs>
@@ -1233,7 +1010,6 @@ export type PagamentoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type PagamentoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   mes?: boolean
   ano?: boolean
@@ -1249,13 +1025,11 @@ export type PagamentoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   origemManual?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pagamento"]>
 
 export type PagamentoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   mes?: boolean
   ano?: boolean
@@ -1271,13 +1045,11 @@ export type PagamentoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   origemManual?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pagamento"]>
 
 export type PagamentoSelectScalar = {
   id?: boolean
-  empresaId?: boolean
   alunoId?: boolean
   mes?: boolean
   ano?: boolean
@@ -1295,32 +1067,27 @@ export type PagamentoSelectScalar = {
   atualizadoEm?: boolean
 }
 
-export type PagamentoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "alunoId" | "mes" | "ano" | "parcela" | "dataVencimento" | "valorCobrado" | "quantidadeAulas" | "pago" | "dataPagamento" | "observacao" | "emailTipo" | "emailEnviadoEm" | "origemManual" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["pagamento"]>
+export type PagamentoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "alunoId" | "mes" | "ano" | "parcela" | "dataVencimento" | "valorCobrado" | "quantidadeAulas" | "pago" | "dataPagamento" | "observacao" | "emailTipo" | "emailEnviadoEm" | "origemManual" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["pagamento"]>
 export type PagamentoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   aulas?: boolean | Prisma.Pagamento$aulasArgs<ExtArgs>
   _count?: boolean | Prisma.PagamentoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PagamentoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
 }
 export type PagamentoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
 }
 
 export type $PagamentoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Pagamento"
   objects: {
-    empresa: Prisma.$EmpresaPayload<ExtArgs>
     aluno: Prisma.$AlunoPayload<ExtArgs>
     aulas: Prisma.$PagamentoAulaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    empresaId: string
     alunoId: string
     mes: number
     ano: number
@@ -1730,7 +1497,6 @@ readonly fields: PagamentoFieldRefs;
  */
 export interface Prisma__PagamentoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   aluno<T extends Prisma.AlunoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlunoDefaultArgs<ExtArgs>>): Prisma.Prisma__AlunoClient<runtime.Types.Result.GetResult<Prisma.$AlunoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   aulas<T extends Prisma.Pagamento$aulasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pagamento$aulasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PagamentoAulaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1763,7 +1529,6 @@ export interface Prisma__PagamentoClient<T, Null = never, ExtArgs extends runtim
  */
 export interface PagamentoFieldRefs {
   readonly id: Prisma.FieldRef<"Pagamento", 'String'>
-  readonly empresaId: Prisma.FieldRef<"Pagamento", 'String'>
   readonly alunoId: Prisma.FieldRef<"Pagamento", 'String'>
   readonly mes: Prisma.FieldRef<"Pagamento", 'Int'>
   readonly ano: Prisma.FieldRef<"Pagamento", 'Int'>

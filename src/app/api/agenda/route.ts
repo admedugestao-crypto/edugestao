@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,11 @@ function utcDiaNum(y: number, m0: number, d: number): Date {
 
 // GET /api/agenda?inicio=YYYY-MM-DD&fim=YYYY-MM-DD
 export async function GET(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+
+  const professoraId = (session.user as any)?.professoraId as string | null;
+  const perfil       = (session.user as any)?.perfil as string;
 
   const { searchParams } = new URL(req.url);
   const inicio          = searchParams.get("inicio");
@@ -33,12 +36,12 @@ export async function GET(req: NextRequest) {
   const dataInicio = utcDia(inicio);
   const dataFim    = utcDiaNum(fy, fm - 1, fd + 1); // exclusive: < próximo dia
 
-  const where: any = { empresaId: scope.empresaId, data: { gte: dataInicio, lt: dataFim } };
-  if (scope.isAdmin) {
+  const where: any = { data: { gte: dataInicio, lt: dataFim } };
+  if (perfil === "SUPERADMIN") {
     // Admin pode filtrar por professora específica via query param
     if (filtroProfId) where.professoraId = filtroProfId;
-  } else if (scope.professoraId) {
-    where.professoraId = scope.professoraId;
+  } else if (professoraId) {
+    where.professoraId = professoraId;
   }
 
   const aulas = await prisma.agendaAula.findMany({
@@ -68,27 +71,31 @@ export async function GET(req: NextRequest) {
 // DELETE /api/agenda  — excluir aulas em lote por aluno + período
 // Body: { alunoId, inicio?: "YYYY-MM-DD", fim?: "YYYY-MM-DD" }
 export async function DELETE(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+
+  const sessProfId = (session.user as any)?.professoraId as string | null;
+  const perfil     = (session.user as any)?.perfil as string;
+  const isAdmin    = perfil === "SUPERADMIN";
 
   const { alunoId, inicio, fim, professoraId: bodyProfId } = await req.json() as {
     alunoId?: string; inicio?: string; fim?: string; professoraId?: string;
   };
 
   // Admin pode excluir sem filtrar por aluno; professora exige alunoId
-  if (!scope.isAdmin && !alunoId)
+  if (!isAdmin && !alunoId)
     return NextResponse.json({ erro: "alunoId é obrigatório" }, { status: 400 });
 
-  if (!scope.isAdmin && !scope.professoraId)
+  if (!isAdmin && !sessProfId)
     return NextResponse.json({ erro: "Sem permissão" }, { status: 403 });
 
-  const where: any = { empresaId: scope.empresaId };
+  const where: any = {};
   if (alunoId) where.alunoId = alunoId;
 
-  if (scope.isAdmin) {
+  if (isAdmin) {
     if (bodyProfId) where.professoraId = bodyProfId;
   } else {
-    where.professoraId = scope.professoraId;
+    where.professoraId = sessProfId;
   }
 
   if (inicio || fim) {
@@ -130,14 +137,17 @@ export async function DELETE(req: NextRequest) {
 
 // POST /api/agenda  — criar aula avulsa
 export async function POST(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+
+  const sessProfId = (session.user as any)?.professoraId as string | null;
+  const perfil     = (session.user as any)?.perfil as string;
 
   const body = await req.json();
   const { alunoId, materiaId, data, horaInicio, horaFim, observacao, professoraId: bodyProfId } = body;
 
   // Admin escolhe o professor no modal → usa bodyProfId; professora usa sua própria sessão
-  const professoraId = scope.isAdmin ? (bodyProfId ?? null) : (scope.professoraId ?? null);
+  const professoraId = perfil === "SUPERADMIN" ? (bodyProfId ?? null) : (sessProfId ?? null);
 
   if (!professoraId)
     return NextResponse.json({ erro: "professoraId é obrigatório" }, { status: 403 });
@@ -147,17 +157,6 @@ export async function POST(req: NextRequest) {
 
   if (!horaInicio || !horaFim)
     return NextResponse.json({ erro: "Início e fim são obrigatórios" }, { status: 400 });
-
-  // Confere que aluno e (quando escolhida pelo admin) professora pertencem à
-  // mesma empresa da sessão — evita vincular uma aula a um registro de outra
-  // empresa via id adivinhado/manipulado no corpo da requisição.
-  const [alunoOk, professoraOk] = await Promise.all([
-    prisma.aluno.findFirst({ where: { id: alunoId, empresaId: scope.empresaId }, select: { id: true } }),
-    prisma.professora.findFirst({ where: { id: professoraId, empresaId: scope.empresaId }, select: { id: true } }),
-  ]);
-  if (!alunoOk || !professoraOk) {
-    return NextResponse.json({ erro: "Aluno ou professora não encontrados." }, { status: 404 });
-  }
 
   // Grava como UTC midnight — padrão único em todo o sistema
   const dataObj = utcDia(data as string); // "YYYY-MM-DD" → T00:00:00Z
@@ -199,7 +198,6 @@ export async function POST(req: NextRequest) {
 
   const aula = await prisma.agendaAula.create({
     data: {
-      empresaId: scope.empresaId,
       professoraId,
       alunoId,
       materiaId:  materiaId  || null,

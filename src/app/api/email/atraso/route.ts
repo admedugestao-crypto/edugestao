@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 import { enviarEmailAtraso, emailConfigurado } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
   const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   if (!emailConfigurado()) {
     return NextResponse.json(
@@ -33,7 +31,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  if (!aluno || aluno.empresaId !== scope.empresaId) {
+  if (!aluno) {
     return NextResponse.json({ erro: "Aluno não encontrado" }, { status: 404 });
   }
 
@@ -46,7 +44,7 @@ export async function POST(req: NextRequest) {
 
   const pagamento = aluno.pagamentos[0];
   const nomeProfessora =
-    aluno.professora?.usuario?.nome ?? (session?.user as any)?.name ?? "Professor(a)";
+    aluno.professora?.usuario?.nome ?? (session.user as any)?.name ?? "Professor(a)";
 
   const dataVencimento = pagamento?.dataVencimento
     ? new Date(pagamento.dataVencimento)

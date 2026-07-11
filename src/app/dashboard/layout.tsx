@@ -12,13 +12,10 @@ export default async function DashboardLayout({
   const session = await auth();
   if (!session) redirect("/login");
 
-  const sessionUser = session.user as { id?: string; empresaId?: string };
-  const userId = sessionUser.id;
-  const empresaId = sessionUser.empresaId;
-  const [db, empresa] = await Promise.all([
-    userId ? prisma.usuario.findUnique({ where: { id: userId }, select: { foto: true } }) : null,
-    empresaId ? prisma.empresa.findUnique({ where: { id: empresaId }, select: { nome: true, logoUrl: true } }) : null,
-  ]);
+  const userId = (session.user as any).id as string | undefined;
+  const db = userId
+    ? await prisma.usuario.findUnique({ where: { id: userId }, select: { foto: true } })
+    : null;
 
   const usuario = { ...session.user, foto: db?.foto ?? null };
 
@@ -29,7 +26,7 @@ export default async function DashboardLayout({
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="print:hidden">
-          <TopBar usuario={usuario} empresaLogoUrl={empresa?.logoUrl ?? null} empresaNome={empresa?.nome ?? null} />
+          <TopBar usuario={usuario} />
         </div>
         <main className="flex-1 overflow-y-auto p-6 bg-slate-100 print:p-0 print:overflow-visible">{children}</main>
       </div>

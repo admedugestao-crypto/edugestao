@@ -7,62 +7,22 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
-// ─── Empresas (multi-tenant) ──────────────────────────────────────────────────
-// Fase 1 da migração multi-empresa: empresaId ainda opcional em todos os
-// modelos abaixo (etapa aditiva) — será tornado obrigatório após o backfill
-// dos dados existentes, EXCETO em Usuario (fica opcional para sempre, por
-// causa do papel PLATAFORMA, que não pertence a nenhuma empresa). Campos de
-// billing/plano e admin cross-empresa (além do PLATAFORMA) ficam
-// deliberadamente fora de escopo por ora.
-
-model Empresa {
-  id       String   @id @default(cuid())
-  nome     String
-  slug     String   @unique
-  logoUrl  String?
-  ativo    Boolean  @default(true)
-  criadoEm DateTime @default(now())
-
-  usuarios          Usuario[]
-  professoras       Professora[]
-  materias          Materia[]
-  escolas           Escola[]
-  unidades          Unidade[]
-  alunos            Aluno[]
-  aulas             AgendaAula[]
-  avaliacoes        Avaliacao[]
-  pagamentos        Pagamento[]
-  conteudos         Conteudo[]
-  notas             Nota[]
-  notificacoesProva NotificacaoProva[]
-  notificacoesAula  NotificacaoAula[]
-  calendarios       CalendarioEscolar[]
-
-  @@map("empresas")
-}
-
 // ─── Usuários e Autenticação ──────────────────────────────────────────────────
 
 model Usuario {
-  id              String   @id @default(cuid())
-  empresaId       String?
-  nome            String
-  email           String
-  senhaHash       String
-  senhaTemporaria Boolean  @default(false)
-  perfil          Perfil   @default(PROFESSORA)
-  ativo           Boolean  @default(true)
-  foto            String?
-  whatsapp        String?
-  criadoEm        DateTime @default(now())
-  atualizadoEm    DateTime @updatedAt
+  id           String   @id @default(cuid())
+  nome         String
+  email        String   @unique
+  senhaHash    String
+  perfil       Perfil   @default(PROFESSORA)
+  ativo        Boolean  @default(true)
+  foto         String?
+  whatsapp     String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
-  empresa    Empresa?    @relation(fields: [empresaId], references: [id])
   professora Professora?
 
-  @@unique([empresaId, email])
-  @@index([empresaId])
   @@map("usuarios")
 }
 
@@ -70,39 +30,33 @@ enum Perfil {
   SUPERADMIN
   PROFESSORA
   AUXILIAR
-  PLATAFORMA
 }
 
 // ─── Professoras ──────────────────────────────────────────────────────────────
 
 model Professora {
-  id              String   @id @default(cuid())
-  empresaId       String
-  usuarioId       String   @unique
-  telefone        String?
+  id             String   @id @default(cuid())
+  usuarioId      String   @unique
+  telefone       String?
   disponibilidade Json?
-  criadoEm        DateTime @default(now())
+  criadoEm       DateTime @default(now())
 
-  empresa      Empresa             @relation(fields: [empresaId], references: [id])
-  usuario      Usuario             @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  materias     ProfessoraMateria[]
-  alunos       Aluno[]
-  notificacoes NotificacaoProva[]
-  aulas        AgendaAula[]
+  usuario       Usuario             @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  materias      ProfessoraMateria[]
+  alunos        Aluno[]
+  notificacoes  NotificacaoProva[]
+  aulas         AgendaAula[]
 
-  @@index([empresaId])
   @@map("professoras")
 }
 
 // ─── Disciplinas ──────────────────────────────────────────────────────────────
 
 model Materia {
-  id        String @id @default(cuid())
-  empresaId String
-  nome      String
-  cor       String @default("#6366f1")
+  id   String @id @default(cuid())
+  nome String @unique
+  cor  String @default("#6366f1")
 
-  empresa       Empresa             @relation(fields: [empresaId], references: [id])
   professoras   ProfessoraMateria[]
   alunoMaterias AlunoMateria[]
   avaliacoes    Avaliacao[]
@@ -111,8 +65,6 @@ model Materia {
   aulas         AgendaAula[]
   aulasMaterias AgendaAulaMateria[]
 
-  @@unique([empresaId, nome])
-  @@index([empresaId])
   @@map("materias")
 }
 
@@ -130,42 +82,36 @@ model ProfessoraMateria {
 // ─── Escolas e Unidades ───────────────────────────────────────────────────────
 
 model Escola {
-  id               String   @id @default(cuid())
-  empresaId        String
+  id               String    @id @default(cuid())
   nome             String
   rede             String?
   periodoAvaliacao String?
-  criadoEm         DateTime @default(now())
+  criadoEm         DateTime  @default(now())
 
-  empresa  Empresa   @relation(fields: [empresaId], references: [id])
   unidades Unidade[]
 
-  @@index([empresaId])
   @@map("escolas")
 }
 
 model Unidade {
-  id        String   @id @default(cuid())
-  empresaId String
-  escolaId  String
-  nome      String
-  endereco  String?
-  bairro    String?
-  cidade    String?
-  estado    String?
-  cep       String?
-  telefone  String?
-  diretor   String?
-  turno     String?
-  criadoEm  DateTime @default(now())
+  id       String   @id @default(cuid())
+  escolaId String
+  nome     String
+  endereco String?
+  bairro   String?
+  cidade   String?
+  estado   String?
+  cep      String?
+  telefone String?
+  diretor  String?
+  turno    String?
+  criadoEm DateTime @default(now())
 
-  empresa     Empresa             @relation(fields: [empresaId], references: [id])
   escola      Escola              @relation(fields: [escolaId], references: [id], onDelete: Cascade)
   alunos      Aluno[]
   calendarios CalendarioEscolar[]
   avaliacoes  Avaliacao[]
 
-  @@index([empresaId])
   @@map("unidades")
 }
 
@@ -173,7 +119,6 @@ model Unidade {
 
 model CalendarioEscolar {
   id         String     @id @default(cuid())
-  empresaId  String
   unidadeId  String
   ano        Int
   titulo     String
@@ -182,10 +127,8 @@ model CalendarioEscolar {
   tipo       TipoEvento @default(AULA)
   descricao  String?
 
-  empresa Empresa @relation(fields: [empresaId], references: [id])
   unidade Unidade @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
 
-  @@index([empresaId])
   @@map("calendario_escolar")
 }
 
@@ -201,7 +144,6 @@ enum TipoEvento {
 
 model Avaliacao {
   id        String   @id @default(cuid())
-  empresaId String
   unidadeId String
   materiaId String?
   serie     String
@@ -210,15 +152,13 @@ model Avaliacao {
   peso      Float    @default(1.0)
   notaMax   Float    @default(10.0)
   periodo   String?
-  criadoEm  DateTime @default(now())
+  criadoEm DateTime @default(now())
 
-  empresa      Empresa            @relation(fields: [empresaId], references: [id])
-  unidade      Unidade            @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
-  materia      Materia?           @relation(fields: [materiaId], references: [id])
-  notas        Nota[]
-  notificacoes NotificacaoProva[]
+  unidade       Unidade            @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
+  materia       Materia?           @relation(fields: [materiaId], references: [id])
+  notas         Nota[]
+  notificacoes  NotificacaoProva[]
 
-  @@index([empresaId])
   @@map("avaliacoes")
 }
 
@@ -226,24 +166,21 @@ model Avaliacao {
 
 model NotificacaoProva {
   id           String   @id @default(cuid())
-  empresaId    String
   professoraId String
   avaliacaoId  String
-  diasAntes    Int // quantos dias faltam para a prova quando enviou
+  diasAntes    Int      // quantos dias faltam para a prova quando enviou
   // WhatsApp
   enviada      Boolean  @default(false)
-  whatsapp     String? // número usado no envio (opcional agora)
+  whatsapp     String?  // número usado no envio (opcional agora)
   // E-mail
   emailEnviado Boolean  @default(false)
-  email        String? // endereço usado no envio
-  criadoEm     DateTime @default(now())
+  email        String?  // endereço usado no envio
+  criadoEm    DateTime @default(now())
 
-  empresa    Empresa    @relation(fields: [empresaId], references: [id])
   professora Professora @relation(fields: [professoraId], references: [id], onDelete: Cascade)
   avaliacao  Avaliacao  @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
 
   @@unique([professoraId, avaliacaoId, diasAntes])
-  @@index([empresaId])
   @@map("notificacoes_prova")
 }
 
@@ -251,7 +188,6 @@ model NotificacaoProva {
 
 model Aluno {
   id                  String      @id @default(cuid())
-  empresaId           String
   professoraId        String?
   unidadeId           String
   nome                String
@@ -272,30 +208,28 @@ model Aluno {
   observacoes         String?
   status              StatusAluno @default(ATIVO)
   // ── Configuração de cobrança ──────────────────────────────────────
-  tipoCobranca        String? // MENSAL | QUINZENAL | SEMANAL | POR_AULA
-  valorCobranca       Float? // valor por parcela / por aula
-  diaPagamento        Int? // dia do mês (MENSAL = venc.; QUINZENAL = 1ª parcela)
-  diaPagamento2       Int? // 2ª parcela (apenas QUINZENAL)
-  diaSemana           Int? // legado — mantido para retrocompat
-  horaAula            String? // legado — mantido para retrocompat
-  agendaSemanal       Json? // [{ diaSemana: 1, horaAula: "14:00" }, ...]
-  diaSemanaCobranca   Int? // 0=Dom … 6=Sáb (vencimento semanal — SEMANAL)
+  tipoCobranca        String?     // MENSAL | QUINZENAL | SEMANAL | POR_AULA
+  valorCobranca       Float?      // valor por parcela / por aula
+  diaPagamento        Int?        // dia do mês (MENSAL = venc.; QUINZENAL = 1ª parcela)
+  diaPagamento2       Int?        // 2ª parcela (apenas QUINZENAL)
+  diaSemana           Int?        // legado — mantido para retrocompat
+  horaAula            String?     // legado — mantido para retrocompat
+  agendaSemanal       Json?       // [{ diaSemana: 1, horaAula: "14:00" }, ...]
+  diaSemanaCobranca   Int?        // 0=Dom … 6=Sáb (vencimento semanal — SEMANAL)
   // ── Período contratual ───────────────────────────────────────────────
   dataInicioContrato  DateTime?
   dataFimContrato     DateTime?
-  criadoEm            DateTime    @default(now())
+  criadoEm           DateTime    @default(now())
   atualizadoEm        DateTime    @updatedAt
 
-  empresa    Empresa        @relation(fields: [empresaId], references: [id])
-  professora Professora?    @relation(fields: [professoraId], references: [id], onDelete: SetNull)
-  unidade    Unidade        @relation(fields: [unidadeId], references: [id])
-  materias   AlunoMateria[]
-  notas      Nota[]
-  conteudos  Conteudo[]
-  pagamentos Pagamento[]
-  aulas      AgendaAula[]
+  professora  Professora?    @relation(fields: [professoraId], references: [id], onDelete: SetNull)
+  unidade     Unidade        @relation(fields: [unidadeId], references: [id])
+  materias    AlunoMateria[]
+  notas       Nota[]
+  conteudos   Conteudo[]
+  pagamentos  Pagamento[]
+  aulas       AgendaAula[]
 
-  @@index([empresaId])
   @@map("alunos")
 }
 
@@ -320,21 +254,18 @@ model AlunoMateria {
 
 model Nota {
   id          String   @id @default(cuid())
-  empresaId   String
   alunoId     String
   avaliacaoId String
   materiaId   String
   valor       Float
   observacao  String?
-  criadoEm    DateTime @default(now())
+  criadoEm   DateTime @default(now())
 
-  empresa   Empresa   @relation(fields: [empresaId], references: [id])
   aluno     Aluno     @relation(fields: [alunoId], references: [id], onDelete: Cascade)
   avaliacao Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
   materia   Materia   @relation(fields: [materiaId], references: [id])
 
   @@unique([alunoId, avaliacaoId, materiaId])
-  @@index([empresaId])
   @@map("notas")
 }
 
@@ -342,29 +273,26 @@ model Nota {
 
 model Pagamento {
   id              String    @id @default(cuid())
-  empresaId       String
   alunoId         String
-  mes             Int // 1-12
+  mes             Int       // 1-12
   ano             Int
   parcela         Int       @default(1) // 1 para MENSAL/POR_AULA; 1-2 QUINZENAL; 1-5 SEMANAL
-  dataVencimento  DateTime // data exata do vencimento
+  dataVencimento  DateTime  // data exata do vencimento
   valorCobrado    Float
-  quantidadeAulas Int? // apenas POR_AULA
+  quantidadeAulas Int?      // apenas POR_AULA
   pago            Boolean   @default(false)
   dataPagamento   DateTime?
   observacao      String?
-  emailTipo       String? // "lembrete" | "atraso" | "recibo" — último e-mail enviado
+  emailTipo       String?   // "lembrete" | "atraso" | "recibo" — último e-mail enviado
   emailEnviadoEm  DateTime? // data/hora do último envio
   origemManual    Boolean   @default(false) // true = criado manualmente pelo admin
   criadoEm        DateTime  @default(now())
   atualizadoEm    DateTime  @updatedAt
 
-  empresa Empresa         @relation(fields: [empresaId], references: [id])
-  aluno   Aluno           @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  aulas   PagamentoAula[]
+  aluno Aluno          @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  aulas PagamentoAula[]
 
   @@unique([alunoId, mes, ano, parcela])
-  @@index([empresaId])
   @@map("pagamentos")
 }
 
@@ -372,7 +300,7 @@ model PagamentoAula {
   pagamentoId  String
   agendaAulaId String
 
-  pagamento  Pagamento  @relation(fields: [pagamentoId], references: [id], onDelete: Cascade)
+  pagamento  Pagamento  @relation(fields: [pagamentoId],  references: [id], onDelete: Cascade)
   agendaAula AgendaAula @relation(fields: [agendaAulaId], references: [id], onDelete: Cascade)
 
   @@id([pagamentoId, agendaAulaId])
@@ -382,24 +310,21 @@ model PagamentoAula {
 // ─── Conteúdos Didáticos ──────────────────────────────────────────────────────
 
 model Conteudo {
-  id         String   @id @default(cuid())
-  empresaId  String
-  alunoId    String
-  materiaId  String?
-  aulaId     String?  @unique // vínculo exato com a Aula Agendada (evita ambiguidade quando há +1 aula no mesmo dia)
-  data       DateTime
+  id        String   @id @default(cuid())
+  alunoId   String
+  materiaId String?
+  aulaId    String?  @unique // vínculo exato com a Aula Agendada (evita ambiguidade quando há +1 aula no mesmo dia)
+  data      DateTime
   topico     String
   descricao  String?
   arquivoUrl String?
   planejado  Boolean  @default(false)
-  criadoEm   DateTime @default(now())
+  criadoEm  DateTime @default(now())
 
-  empresa Empresa     @relation(fields: [empresaId], references: [id])
   aluno   Aluno       @relation(fields: [alunoId], references: [id], onDelete: Cascade)
   materia Materia?    @relation(fields: [materiaId], references: [id])
   aula    AgendaAula? @relation(fields: [aulaId], references: [id], onDelete: SetNull)
 
-  @@index([empresaId])
   @@map("conteudos")
 }
 
@@ -407,27 +332,24 @@ model Conteudo {
 
 model AgendaAula {
   id           String     @id @default(cuid())
-  empresaId    String
   professoraId String
   alunoId      String
   materiaId    String?
   data         DateTime
-  horaInicio   String? // "14:00"
-  horaFim      String? // "15:00"
+  horaInicio   String?    // "14:00"
+  horaFim      String?    // "15:00"
   status       StatusAula @default(AGENDADA)
   observacao   String?
   criadoEm     DateTime   @default(now())
 
-  empresa     Empresa             @relation(fields: [empresaId], references: [id])
-  professora  Professora          @relation(fields: [professoraId], references: [id], onDelete: Cascade)
-  aluno       Aluno               @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  materia     Materia?            @relation(fields: [materiaId], references: [id])
-  materias    AgendaAulaMateria[]
-  pagamentos  PagamentoAula[]
-  notificacao NotificacaoAula?
-  conteudo    Conteudo?
+  professora    Professora          @relation(fields: [professoraId], references: [id], onDelete: Cascade)
+  aluno         Aluno               @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia       Materia?            @relation(fields: [materiaId], references: [id])
+  materias      AgendaAulaMateria[]
+  pagamentos    PagamentoAula[]
+  notificacao   NotificacaoAula?
+  conteudo      Conteudo?
 
-  @@index([empresaId])
   @@map("agenda_aulas")
 }
 
@@ -457,15 +379,12 @@ enum StatusAula {
 
 model NotificacaoAula {
   id           String   @id @default(cuid())
-  empresaId    String
   agendaAulaId String   @unique
   enviada      Boolean  @default(false)
   whatsapp     String?
   criadoEm     DateTime @default(now())
 
-  empresa    Empresa    @relation(fields: [empresaId], references: [id])
   agendaAula AgendaAula @relation(fields: [agendaAulaId], references: [id], onDelete: Cascade)
 
-  @@index([empresaId])
   @@map("notificacoes_aula")
 }

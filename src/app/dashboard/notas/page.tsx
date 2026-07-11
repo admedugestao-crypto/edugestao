@@ -1,21 +1,18 @@
-import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import { ClipboardList } from "lucide-react";
 import NotasClient from "@/components/NotasClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function NotasPage() {
-  const scope = await getSessionScope();
-  if (!scope) redirect("/login");
-
-  const notaWhere: any = { empresaId: scope.empresaId };
-  if (!scope.isAdmin && scope.professoraId) notaWhere.aluno = { professoraId: scope.professoraId };
+  const session = await auth();
+  const professoraId = (session?.user as any)?.professoraId as string | null;
+  const filtroProf = professoraId ? { professoraId } : {};
 
   const [alunos, avaliacoes, notas] = await Promise.all([
     prisma.aluno.findMany({
-      where: { ...scopeWhere(scope), status: "ATIVO" },
+      where: { ...filtroProf, status: "ATIVO" },
       include: {
         materias: { include: { materia: true } },
         unidade: { include: { escola: true } },
@@ -23,12 +20,11 @@ export default async function NotasPage() {
       orderBy: { nome: "asc" },
     }),
     prisma.avaliacao.findMany({
-      where: { empresaId: scope.empresaId },
       include: { unidade: { include: { escola: true } } },
       orderBy: { data: "asc" },
     }),
     prisma.nota.findMany({
-      where: notaWhere,
+      where: { aluno: filtroProf },
       include: { avaliacao: true, materia: true },
     }),
   ]);

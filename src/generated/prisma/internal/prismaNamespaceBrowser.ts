@@ -51,7 +51,6 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Empresa: 'Empresa',
   Usuario: 'Usuario',
   Professora: 'Professora',
   Materia: 'Materia',
@@ -88,25 +87,11 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const EmpresaScalarFieldEnum = {
-  id: 'id',
-  nome: 'nome',
-  slug: 'slug',
-  logoUrl: 'logoUrl',
-  ativo: 'ativo',
-  criadoEm: 'criadoEm'
-} as const
-
-export type EmpresaScalarFieldEnum = (typeof EmpresaScalarFieldEnum)[keyof typeof EmpresaScalarFieldEnum]
-
-
 export const UsuarioScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   nome: 'nome',
   email: 'email',
   senhaHash: 'senhaHash',
-  senhaTemporaria: 'senhaTemporaria',
   perfil: 'perfil',
   ativo: 'ativo',
   foto: 'foto',
@@ -120,7 +105,6 @@ export type UsuarioScalarFieldEnum = (typeof UsuarioScalarFieldEnum)[keyof typeo
 
 export const ProfessoraScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   usuarioId: 'usuarioId',
   telefone: 'telefone',
   disponibilidade: 'disponibilidade',
@@ -132,7 +116,6 @@ export type ProfessoraScalarFieldEnum = (typeof ProfessoraScalarFieldEnum)[keyof
 
 export const MateriaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   nome: 'nome',
   cor: 'cor'
 } as const
@@ -150,7 +133,6 @@ export type ProfessoraMateriaScalarFieldEnum = (typeof ProfessoraMateriaScalarFi
 
 export const EscolaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   nome: 'nome',
   rede: 'rede',
   periodoAvaliacao: 'periodoAvaliacao',
@@ -162,7 +144,6 @@ export type EscolaScalarFieldEnum = (typeof EscolaScalarFieldEnum)[keyof typeof 
 
 export const UnidadeScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   escolaId: 'escolaId',
   nome: 'nome',
   endereco: 'endereco',
@@ -181,7 +162,6 @@ export type UnidadeScalarFieldEnum = (typeof UnidadeScalarFieldEnum)[keyof typeo
 
 export const CalendarioEscolarScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   unidadeId: 'unidadeId',
   ano: 'ano',
   titulo: 'titulo',
@@ -196,7 +176,6 @@ export type CalendarioEscolarScalarFieldEnum = (typeof CalendarioEscolarScalarFi
 
 export const AvaliacaoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   unidadeId: 'unidadeId',
   materiaId: 'materiaId',
   serie: 'serie',
@@ -213,7 +192,6 @@ export type AvaliacaoScalarFieldEnum = (typeof AvaliacaoScalarFieldEnum)[keyof t
 
 export const NotificacaoProvaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   professoraId: 'professoraId',
   avaliacaoId: 'avaliacaoId',
   diasAntes: 'diasAntes',
@@ -229,7 +207,6 @@ export type NotificacaoProvaScalarFieldEnum = (typeof NotificacaoProvaScalarFiel
 
 export const AlunoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   professoraId: 'professoraId',
   unidadeId: 'unidadeId',
   nome: 'nome',
@@ -276,7 +253,6 @@ export type AlunoMateriaScalarFieldEnum = (typeof AlunoMateriaScalarFieldEnum)[k
 
 export const NotaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   alunoId: 'alunoId',
   avaliacaoId: 'avaliacaoId',
   materiaId: 'materiaId',
@@ -290,7 +266,6 @@ export type NotaScalarFieldEnum = (typeof NotaScalarFieldEnum)[keyof typeof Nota
 
 export const PagamentoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   alunoId: 'alunoId',
   mes: 'mes',
   ano: 'ano',
@@ -321,10 +296,8 @@ export type PagamentoAulaScalarFieldEnum = (typeof PagamentoAulaScalarFieldEnum)
 
 export const ConteudoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   alunoId: 'alunoId',
   materiaId: 'materiaId',
-  aulaId: 'aulaId',
   data: 'data',
   topico: 'topico',
   descricao: 'descricao',
@@ -338,7 +311,6 @@ export type ConteudoScalarFieldEnum = (typeof ConteudoScalarFieldEnum)[keyof typ
 
 export const AgendaAulaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   professoraId: 'professoraId',
   alunoId: 'alunoId',
   materiaId: 'materiaId',
@@ -364,7 +336,6 @@ export type AgendaAulaMateriaScalarFieldEnum = (typeof AgendaAulaMateriaScalarFi
 
 export const NotificacaoAulaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   agendaAulaId: 'agendaAulaId',
   enviada: 'enviada',
   whatsapp: 'whatsapp',

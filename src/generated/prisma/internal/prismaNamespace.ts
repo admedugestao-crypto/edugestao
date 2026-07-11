@@ -384,7 +384,6 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
-  Empresa: 'Empresa',
   Usuario: 'Usuario',
   Professora: 'Professora',
   Materia: 'Materia',
@@ -418,84 +417,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
+    modelProps: "usuario" | "professora" | "materia" | "professoraMateria" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
-    Empresa: {
-      payload: Prisma.$EmpresaPayload<ExtArgs>
-      fields: Prisma.EmpresaFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.EmpresaFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.EmpresaFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>
-        }
-        findFirst: {
-          args: Prisma.EmpresaFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.EmpresaFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>
-        }
-        findMany: {
-          args: Prisma.EmpresaFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>[]
-        }
-        create: {
-          args: Prisma.EmpresaCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>
-        }
-        createMany: {
-          args: Prisma.EmpresaCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.EmpresaCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>[]
-        }
-        delete: {
-          args: Prisma.EmpresaDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>
-        }
-        update: {
-          args: Prisma.EmpresaUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>
-        }
-        deleteMany: {
-          args: Prisma.EmpresaDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.EmpresaUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.EmpresaUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>[]
-        }
-        upsert: {
-          args: Prisma.EmpresaUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmpresaPayload>
-        }
-        aggregate: {
-          args: Prisma.EmpresaAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateEmpresa>
-        }
-        groupBy: {
-          args: Prisma.EmpresaGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.EmpresaGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.EmpresaCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.EmpresaCountAggregateOutputType> | number
-        }
-      }
-    }
     Usuario: {
       payload: Prisma.$UsuarioPayload<ExtArgs>
       fields: Prisma.UsuarioFieldRefs
@@ -1867,25 +1792,11 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const EmpresaScalarFieldEnum = {
-  id: 'id',
-  nome: 'nome',
-  slug: 'slug',
-  logoUrl: 'logoUrl',
-  ativo: 'ativo',
-  criadoEm: 'criadoEm'
-} as const
-
-export type EmpresaScalarFieldEnum = (typeof EmpresaScalarFieldEnum)[keyof typeof EmpresaScalarFieldEnum]
-
-
 export const UsuarioScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   nome: 'nome',
   email: 'email',
   senhaHash: 'senhaHash',
-  senhaTemporaria: 'senhaTemporaria',
   perfil: 'perfil',
   ativo: 'ativo',
   foto: 'foto',
@@ -1899,7 +1810,6 @@ export type UsuarioScalarFieldEnum = (typeof UsuarioScalarFieldEnum)[keyof typeo
 
 export const ProfessoraScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   usuarioId: 'usuarioId',
   telefone: 'telefone',
   disponibilidade: 'disponibilidade',
@@ -1911,7 +1821,6 @@ export type ProfessoraScalarFieldEnum = (typeof ProfessoraScalarFieldEnum)[keyof
 
 export const MateriaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   nome: 'nome',
   cor: 'cor'
 } as const
@@ -1929,7 +1838,6 @@ export type ProfessoraMateriaScalarFieldEnum = (typeof ProfessoraMateriaScalarFi
 
 export const EscolaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   nome: 'nome',
   rede: 'rede',
   periodoAvaliacao: 'periodoAvaliacao',
@@ -1941,7 +1849,6 @@ export type EscolaScalarFieldEnum = (typeof EscolaScalarFieldEnum)[keyof typeof 
 
 export const UnidadeScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   escolaId: 'escolaId',
   nome: 'nome',
   endereco: 'endereco',
@@ -1960,7 +1867,6 @@ export type UnidadeScalarFieldEnum = (typeof UnidadeScalarFieldEnum)[keyof typeo
 
 export const CalendarioEscolarScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   unidadeId: 'unidadeId',
   ano: 'ano',
   titulo: 'titulo',
@@ -1975,7 +1881,6 @@ export type CalendarioEscolarScalarFieldEnum = (typeof CalendarioEscolarScalarFi
 
 export const AvaliacaoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   unidadeId: 'unidadeId',
   materiaId: 'materiaId',
   serie: 'serie',
@@ -1992,7 +1897,6 @@ export type AvaliacaoScalarFieldEnum = (typeof AvaliacaoScalarFieldEnum)[keyof t
 
 export const NotificacaoProvaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   professoraId: 'professoraId',
   avaliacaoId: 'avaliacaoId',
   diasAntes: 'diasAntes',
@@ -2008,7 +1912,6 @@ export type NotificacaoProvaScalarFieldEnum = (typeof NotificacaoProvaScalarFiel
 
 export const AlunoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   professoraId: 'professoraId',
   unidadeId: 'unidadeId',
   nome: 'nome',
@@ -2055,7 +1958,6 @@ export type AlunoMateriaScalarFieldEnum = (typeof AlunoMateriaScalarFieldEnum)[k
 
 export const NotaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   alunoId: 'alunoId',
   avaliacaoId: 'avaliacaoId',
   materiaId: 'materiaId',
@@ -2069,7 +1971,6 @@ export type NotaScalarFieldEnum = (typeof NotaScalarFieldEnum)[keyof typeof Nota
 
 export const PagamentoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   alunoId: 'alunoId',
   mes: 'mes',
   ano: 'ano',
@@ -2100,10 +2001,8 @@ export type PagamentoAulaScalarFieldEnum = (typeof PagamentoAulaScalarFieldEnum)
 
 export const ConteudoScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   alunoId: 'alunoId',
   materiaId: 'materiaId',
-  aulaId: 'aulaId',
   data: 'data',
   topico: 'topico',
   descricao: 'descricao',
@@ -2117,7 +2016,6 @@ export type ConteudoScalarFieldEnum = (typeof ConteudoScalarFieldEnum)[keyof typ
 
 export const AgendaAulaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   professoraId: 'professoraId',
   alunoId: 'alunoId',
   materiaId: 'materiaId',
@@ -2143,7 +2041,6 @@ export type AgendaAulaMateriaScalarFieldEnum = (typeof AgendaAulaMateriaScalarFi
 
 export const NotificacaoAulaScalarFieldEnum = {
   id: 'id',
-  empresaId: 'empresaId',
   agendaAulaId: 'agendaAulaId',
   enviada: 'enviada',
   whatsapp: 'whatsapp',
@@ -2215,6 +2112,20 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'Perfil'
+ */
+export type EnumPerfilFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Perfil'>
+    
+
+
+/**
+ * Reference to a field of type 'Perfil[]'
+ */
+export type ListEnumPerfilFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Perfil[]'>
+    
+
+
+/**
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -2232,20 +2143,6 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-/**
- * Reference to a field of type 'Perfil'
- */
-export type EnumPerfilFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Perfil'>
-    
-
-
-/**
- * Reference to a field of type 'Perfil[]'
- */
-export type ListEnumPerfilFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Perfil[]'>
     
 
 
@@ -2442,7 +2339,6 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
-  empresa?: Prisma.EmpresaOmit
   usuario?: Prisma.UsuarioOmit
   professora?: Prisma.ProfessoraOmit
   materia?: Prisma.MateriaOmit

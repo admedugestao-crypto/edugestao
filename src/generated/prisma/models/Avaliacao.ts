@@ -38,7 +38,6 @@ export type AvaliacaoSumAggregateOutputType = {
 
 export type AvaliacaoMinAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   unidadeId: string | null
   materiaId: string | null
   serie: string | null
@@ -52,7 +51,6 @@ export type AvaliacaoMinAggregateOutputType = {
 
 export type AvaliacaoMaxAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   unidadeId: string | null
   materiaId: string | null
   serie: string | null
@@ -66,7 +64,6 @@ export type AvaliacaoMaxAggregateOutputType = {
 
 export type AvaliacaoCountAggregateOutputType = {
   id: number
-  empresaId: number
   unidadeId: number
   materiaId: number
   serie: number
@@ -92,7 +89,6 @@ export type AvaliacaoSumAggregateInputType = {
 
 export type AvaliacaoMinAggregateInputType = {
   id?: true
-  empresaId?: true
   unidadeId?: true
   materiaId?: true
   serie?: true
@@ -106,7 +102,6 @@ export type AvaliacaoMinAggregateInputType = {
 
 export type AvaliacaoMaxAggregateInputType = {
   id?: true
-  empresaId?: true
   unidadeId?: true
   materiaId?: true
   serie?: true
@@ -120,7 +115,6 @@ export type AvaliacaoMaxAggregateInputType = {
 
 export type AvaliacaoCountAggregateInputType = {
   id?: true
-  empresaId?: true
   unidadeId?: true
   materiaId?: true
   serie?: true
@@ -221,7 +215,6 @@ export type AvaliacaoGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type AvaliacaoGroupByOutputType = {
   id: string
-  empresaId: string
   unidadeId: string
   materiaId: string | null
   serie: string
@@ -258,7 +251,6 @@ export type AvaliacaoWhereInput = {
   OR?: Prisma.AvaliacaoWhereInput[]
   NOT?: Prisma.AvaliacaoWhereInput | Prisma.AvaliacaoWhereInput[]
   id?: Prisma.StringFilter<"Avaliacao"> | string
-  empresaId?: Prisma.StringFilter<"Avaliacao"> | string
   unidadeId?: Prisma.StringFilter<"Avaliacao"> | string
   materiaId?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
   serie?: Prisma.StringFilter<"Avaliacao"> | string
@@ -268,7 +260,6 @@ export type AvaliacaoWhereInput = {
   notaMax?: Prisma.FloatFilter<"Avaliacao"> | number
   periodo?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidade?: Prisma.XOR<Prisma.UnidadeScalarRelationFilter, Prisma.UnidadeWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
   notas?: Prisma.NotaListRelationFilter
@@ -277,7 +268,6 @@ export type AvaliacaoWhereInput = {
 
 export type AvaliacaoOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrderInput | Prisma.SortOrder
   serie?: Prisma.SortOrder
@@ -287,7 +277,6 @@ export type AvaliacaoOrderByWithRelationInput = {
   notaMax?: Prisma.SortOrder
   periodo?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
-  empresa?: Prisma.EmpresaOrderByWithRelationInput
   unidade?: Prisma.UnidadeOrderByWithRelationInput
   materia?: Prisma.MateriaOrderByWithRelationInput
   notas?: Prisma.NotaOrderByRelationAggregateInput
@@ -299,7 +288,6 @@ export type AvaliacaoWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.AvaliacaoWhereInput | Prisma.AvaliacaoWhereInput[]
   OR?: Prisma.AvaliacaoWhereInput[]
   NOT?: Prisma.AvaliacaoWhereInput | Prisma.AvaliacaoWhereInput[]
-  empresaId?: Prisma.StringFilter<"Avaliacao"> | string
   unidadeId?: Prisma.StringFilter<"Avaliacao"> | string
   materiaId?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
   serie?: Prisma.StringFilter<"Avaliacao"> | string
@@ -309,7 +297,6 @@ export type AvaliacaoWhereUniqueInput = Prisma.AtLeast<{
   notaMax?: Prisma.FloatFilter<"Avaliacao"> | number
   periodo?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidade?: Prisma.XOR<Prisma.UnidadeScalarRelationFilter, Prisma.UnidadeWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
   notas?: Prisma.NotaListRelationFilter
@@ -318,7 +305,6 @@ export type AvaliacaoWhereUniqueInput = Prisma.AtLeast<{
 
 export type AvaliacaoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrderInput | Prisma.SortOrder
   serie?: Prisma.SortOrder
@@ -340,7 +326,6 @@ export type AvaliacaoScalarWhereWithAggregatesInput = {
   OR?: Prisma.AvaliacaoScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AvaliacaoScalarWhereWithAggregatesInput | Prisma.AvaliacaoScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Avaliacao"> | string
-  empresaId?: Prisma.StringWithAggregatesFilter<"Avaliacao"> | string
   unidadeId?: Prisma.StringWithAggregatesFilter<"Avaliacao"> | string
   materiaId?: Prisma.StringNullableWithAggregatesFilter<"Avaliacao"> | string | null
   serie?: Prisma.StringWithAggregatesFilter<"Avaliacao"> | string
@@ -361,7 +346,6 @@ export type AvaliacaoCreateInput = {
   notaMax?: number
   periodo?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAvaliacoesInput
   notas?: Prisma.NotaCreateNestedManyWithoutAvaliacaoInput
@@ -370,7 +354,6 @@ export type AvaliacaoCreateInput = {
 
 export type AvaliacaoUncheckedCreateInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   materiaId?: string | null
   serie: string
@@ -393,7 +376,6 @@ export type AvaliacaoUpdateInput = {
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAvaliacoesNestedInput
   notas?: Prisma.NotaUpdateManyWithoutAvaliacaoNestedInput
@@ -402,7 +384,6 @@ export type AvaliacaoUpdateInput = {
 
 export type AvaliacaoUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serie?: Prisma.StringFieldUpdateOperationsInput | string
@@ -418,7 +399,6 @@ export type AvaliacaoUncheckedUpdateInput = {
 
 export type AvaliacaoCreateManyInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   materiaId?: string | null
   serie: string
@@ -443,7 +423,6 @@ export type AvaliacaoUpdateManyMutationInput = {
 
 export type AvaliacaoUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serie?: Prisma.StringFieldUpdateOperationsInput | string
@@ -467,7 +446,6 @@ export type AvaliacaoOrderByRelationAggregateInput = {
 
 export type AvaliacaoCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
   serie?: Prisma.SortOrder
@@ -486,7 +464,6 @@ export type AvaliacaoAvgOrderByAggregateInput = {
 
 export type AvaliacaoMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
   serie?: Prisma.SortOrder
@@ -500,7 +477,6 @@ export type AvaliacaoMaxOrderByAggregateInput = {
 
 export type AvaliacaoMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   materiaId?: Prisma.SortOrder
   serie?: Prisma.SortOrder
@@ -520,48 +496,6 @@ export type AvaliacaoSumOrderByAggregateInput = {
 export type AvaliacaoScalarRelationFilter = {
   is?: Prisma.AvaliacaoWhereInput
   isNot?: Prisma.AvaliacaoWhereInput
-}
-
-export type AvaliacaoCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.AvaliacaoCreateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput> | Prisma.AvaliacaoCreateWithoutEmpresaInput[] | Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput | Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.AvaliacaoCreateManyEmpresaInputEnvelope
-  connect?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-}
-
-export type AvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.AvaliacaoCreateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput> | Prisma.AvaliacaoCreateWithoutEmpresaInput[] | Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput | Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.AvaliacaoCreateManyEmpresaInputEnvelope
-  connect?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-}
-
-export type AvaliacaoUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.AvaliacaoCreateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput> | Prisma.AvaliacaoCreateWithoutEmpresaInput[] | Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput | Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.AvaliacaoUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.AvaliacaoUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.AvaliacaoCreateManyEmpresaInputEnvelope
-  set?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  disconnect?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  delete?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  connect?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  update?: Prisma.AvaliacaoUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.AvaliacaoUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.AvaliacaoUpdateManyWithWhereWithoutEmpresaInput | Prisma.AvaliacaoUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.AvaliacaoScalarWhereInput | Prisma.AvaliacaoScalarWhereInput[]
-}
-
-export type AvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.AvaliacaoCreateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput> | Prisma.AvaliacaoCreateWithoutEmpresaInput[] | Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput | Prisma.AvaliacaoCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.AvaliacaoUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.AvaliacaoUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.AvaliacaoCreateManyEmpresaInputEnvelope
-  set?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  disconnect?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  delete?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  connect?: Prisma.AvaliacaoWhereUniqueInput | Prisma.AvaliacaoWhereUniqueInput[]
-  update?: Prisma.AvaliacaoUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.AvaliacaoUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.AvaliacaoUpdateManyWithWhereWithoutEmpresaInput | Prisma.AvaliacaoUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.AvaliacaoScalarWhereInput | Prisma.AvaliacaoScalarWhereInput[]
 }
 
 export type AvaliacaoCreateNestedManyWithoutMateriaInput = {
@@ -684,79 +618,6 @@ export type AvaliacaoUpdateOneRequiredWithoutNotasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AvaliacaoUpdateToOneWithWhereWithoutNotasInput, Prisma.AvaliacaoUpdateWithoutNotasInput>, Prisma.AvaliacaoUncheckedUpdateWithoutNotasInput>
 }
 
-export type AvaliacaoCreateWithoutEmpresaInput = {
-  id?: string
-  serie: string
-  nome: string
-  data: Date | string
-  peso?: number
-  notaMax?: number
-  periodo?: string | null
-  criadoEm?: Date | string
-  unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
-  materia?: Prisma.MateriaCreateNestedOneWithoutAvaliacoesInput
-  notas?: Prisma.NotaCreateNestedManyWithoutAvaliacaoInput
-  notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutAvaliacaoInput
-}
-
-export type AvaliacaoUncheckedCreateWithoutEmpresaInput = {
-  id?: string
-  unidadeId: string
-  materiaId?: string | null
-  serie: string
-  nome: string
-  data: Date | string
-  peso?: number
-  notaMax?: number
-  periodo?: string | null
-  criadoEm?: Date | string
-  notas?: Prisma.NotaUncheckedCreateNestedManyWithoutAvaliacaoInput
-  notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutAvaliacaoInput
-}
-
-export type AvaliacaoCreateOrConnectWithoutEmpresaInput = {
-  where: Prisma.AvaliacaoWhereUniqueInput
-  create: Prisma.XOR<Prisma.AvaliacaoCreateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput>
-}
-
-export type AvaliacaoCreateManyEmpresaInputEnvelope = {
-  data: Prisma.AvaliacaoCreateManyEmpresaInput | Prisma.AvaliacaoCreateManyEmpresaInput[]
-  skipDuplicates?: boolean
-}
-
-export type AvaliacaoUpsertWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.AvaliacaoWhereUniqueInput
-  update: Prisma.XOR<Prisma.AvaliacaoUpdateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedUpdateWithoutEmpresaInput>
-  create: Prisma.XOR<Prisma.AvaliacaoCreateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedCreateWithoutEmpresaInput>
-}
-
-export type AvaliacaoUpdateWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.AvaliacaoWhereUniqueInput
-  data: Prisma.XOR<Prisma.AvaliacaoUpdateWithoutEmpresaInput, Prisma.AvaliacaoUncheckedUpdateWithoutEmpresaInput>
-}
-
-export type AvaliacaoUpdateManyWithWhereWithoutEmpresaInput = {
-  where: Prisma.AvaliacaoScalarWhereInput
-  data: Prisma.XOR<Prisma.AvaliacaoUpdateManyMutationInput, Prisma.AvaliacaoUncheckedUpdateManyWithoutEmpresaInput>
-}
-
-export type AvaliacaoScalarWhereInput = {
-  AND?: Prisma.AvaliacaoScalarWhereInput | Prisma.AvaliacaoScalarWhereInput[]
-  OR?: Prisma.AvaliacaoScalarWhereInput[]
-  NOT?: Prisma.AvaliacaoScalarWhereInput | Prisma.AvaliacaoScalarWhereInput[]
-  id?: Prisma.StringFilter<"Avaliacao"> | string
-  empresaId?: Prisma.StringFilter<"Avaliacao"> | string
-  unidadeId?: Prisma.StringFilter<"Avaliacao"> | string
-  materiaId?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
-  serie?: Prisma.StringFilter<"Avaliacao"> | string
-  nome?: Prisma.StringFilter<"Avaliacao"> | string
-  data?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
-  peso?: Prisma.FloatFilter<"Avaliacao"> | number
-  notaMax?: Prisma.FloatFilter<"Avaliacao"> | number
-  periodo?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
-  criadoEm?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
-}
-
 export type AvaliacaoCreateWithoutMateriaInput = {
   id?: string
   serie: string
@@ -766,7 +627,6 @@ export type AvaliacaoCreateWithoutMateriaInput = {
   notaMax?: number
   periodo?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
   notas?: Prisma.NotaCreateNestedManyWithoutAvaliacaoInput
   notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutAvaliacaoInput
@@ -774,7 +634,6 @@ export type AvaliacaoCreateWithoutMateriaInput = {
 
 export type AvaliacaoUncheckedCreateWithoutMateriaInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   serie: string
   nome: string
@@ -813,6 +672,22 @@ export type AvaliacaoUpdateManyWithWhereWithoutMateriaInput = {
   data: Prisma.XOR<Prisma.AvaliacaoUpdateManyMutationInput, Prisma.AvaliacaoUncheckedUpdateManyWithoutMateriaInput>
 }
 
+export type AvaliacaoScalarWhereInput = {
+  AND?: Prisma.AvaliacaoScalarWhereInput | Prisma.AvaliacaoScalarWhereInput[]
+  OR?: Prisma.AvaliacaoScalarWhereInput[]
+  NOT?: Prisma.AvaliacaoScalarWhereInput | Prisma.AvaliacaoScalarWhereInput[]
+  id?: Prisma.StringFilter<"Avaliacao"> | string
+  unidadeId?: Prisma.StringFilter<"Avaliacao"> | string
+  materiaId?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
+  serie?: Prisma.StringFilter<"Avaliacao"> | string
+  nome?: Prisma.StringFilter<"Avaliacao"> | string
+  data?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
+  peso?: Prisma.FloatFilter<"Avaliacao"> | number
+  notaMax?: Prisma.FloatFilter<"Avaliacao"> | number
+  periodo?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
+  criadoEm?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
+}
+
 export type AvaliacaoCreateWithoutUnidadeInput = {
   id?: string
   serie: string
@@ -822,7 +697,6 @@ export type AvaliacaoCreateWithoutUnidadeInput = {
   notaMax?: number
   periodo?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAvaliacoesInput
   notas?: Prisma.NotaCreateNestedManyWithoutAvaliacaoInput
   notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutAvaliacaoInput
@@ -830,7 +704,6 @@ export type AvaliacaoCreateWithoutUnidadeInput = {
 
 export type AvaliacaoUncheckedCreateWithoutUnidadeInput = {
   id?: string
-  empresaId: string
   materiaId?: string | null
   serie: string
   nome: string
@@ -878,7 +751,6 @@ export type AvaliacaoCreateWithoutNotificacoesInput = {
   notaMax?: number
   periodo?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAvaliacoesInput
   notas?: Prisma.NotaCreateNestedManyWithoutAvaliacaoInput
@@ -886,7 +758,6 @@ export type AvaliacaoCreateWithoutNotificacoesInput = {
 
 export type AvaliacaoUncheckedCreateWithoutNotificacoesInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   materiaId?: string | null
   serie: string
@@ -924,7 +795,6 @@ export type AvaliacaoUpdateWithoutNotificacoesInput = {
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAvaliacoesNestedInput
   notas?: Prisma.NotaUpdateManyWithoutAvaliacaoNestedInput
@@ -932,7 +802,6 @@ export type AvaliacaoUpdateWithoutNotificacoesInput = {
 
 export type AvaliacaoUncheckedUpdateWithoutNotificacoesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serie?: Prisma.StringFieldUpdateOperationsInput | string
@@ -954,7 +823,6 @@ export type AvaliacaoCreateWithoutNotasInput = {
   notaMax?: number
   periodo?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAvaliacoesInput
   notificacoes?: Prisma.NotificacaoProvaCreateNestedManyWithoutAvaliacaoInput
@@ -962,7 +830,6 @@ export type AvaliacaoCreateWithoutNotasInput = {
 
 export type AvaliacaoUncheckedCreateWithoutNotasInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   materiaId?: string | null
   serie: string
@@ -1000,7 +867,6 @@ export type AvaliacaoUpdateWithoutNotasInput = {
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAvaliacoesNestedInput
   notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutAvaliacaoNestedInput
@@ -1008,7 +874,6 @@ export type AvaliacaoUpdateWithoutNotasInput = {
 
 export type AvaliacaoUncheckedUpdateWithoutNotasInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serie?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1019,67 +884,10 @@ export type AvaliacaoUncheckedUpdateWithoutNotasInput = {
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput
-}
-
-export type AvaliacaoCreateManyEmpresaInput = {
-  id?: string
-  unidadeId: string
-  materiaId?: string | null
-  serie: string
-  nome: string
-  data: Date | string
-  peso?: number
-  notaMax?: number
-  periodo?: string | null
-  criadoEm?: Date | string
-}
-
-export type AvaliacaoUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  serie?: Prisma.StringFieldUpdateOperationsInput | string
-  nome?: Prisma.StringFieldUpdateOperationsInput | string
-  data?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  peso?: Prisma.FloatFieldUpdateOperationsInput | number
-  notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
-  periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
-  materia?: Prisma.MateriaUpdateOneWithoutAvaliacoesNestedInput
-  notas?: Prisma.NotaUpdateManyWithoutAvaliacaoNestedInput
-  notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutAvaliacaoNestedInput
-}
-
-export type AvaliacaoUncheckedUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
-  materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  serie?: Prisma.StringFieldUpdateOperationsInput | string
-  nome?: Prisma.StringFieldUpdateOperationsInput | string
-  data?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  peso?: Prisma.FloatFieldUpdateOperationsInput | number
-  notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
-  periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  notas?: Prisma.NotaUncheckedUpdateManyWithoutAvaliacaoNestedInput
-  notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput
-}
-
-export type AvaliacaoUncheckedUpdateManyWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
-  materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  serie?: Prisma.StringFieldUpdateOperationsInput | string
-  nome?: Prisma.StringFieldUpdateOperationsInput | string
-  data?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  peso?: Prisma.FloatFieldUpdateOperationsInput | number
-  notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
-  periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AvaliacaoCreateManyMateriaInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   serie: string
   nome: string
@@ -1099,7 +907,6 @@ export type AvaliacaoUpdateWithoutMateriaInput = {
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
   notas?: Prisma.NotaUpdateManyWithoutAvaliacaoNestedInput
   notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutAvaliacaoNestedInput
@@ -1107,7 +914,6 @@ export type AvaliacaoUpdateWithoutMateriaInput = {
 
 export type AvaliacaoUncheckedUpdateWithoutMateriaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   serie?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1122,7 +928,6 @@ export type AvaliacaoUncheckedUpdateWithoutMateriaInput = {
 
 export type AvaliacaoUncheckedUpdateManyWithoutMateriaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   serie?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1135,7 +940,6 @@ export type AvaliacaoUncheckedUpdateManyWithoutMateriaInput = {
 
 export type AvaliacaoCreateManyUnidadeInput = {
   id?: string
-  empresaId: string
   materiaId?: string | null
   serie: string
   nome: string
@@ -1155,7 +959,6 @@ export type AvaliacaoUpdateWithoutUnidadeInput = {
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAvaliacoesNestedInput
   notas?: Prisma.NotaUpdateManyWithoutAvaliacaoNestedInput
   notificacoes?: Prisma.NotificacaoProvaUpdateManyWithoutAvaliacaoNestedInput
@@ -1163,7 +966,6 @@ export type AvaliacaoUpdateWithoutUnidadeInput = {
 
 export type AvaliacaoUncheckedUpdateWithoutUnidadeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serie?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1178,7 +980,6 @@ export type AvaliacaoUncheckedUpdateWithoutUnidadeInput = {
 
 export type AvaliacaoUncheckedUpdateManyWithoutUnidadeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serie?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1231,7 +1032,6 @@ export type AvaliacaoCountOutputTypeCountNotificacoesArgs<ExtArgs extends runtim
 
 export type AvaliacaoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   materiaId?: boolean
   serie?: boolean
@@ -1241,7 +1041,6 @@ export type AvaliacaoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   notaMax?: boolean
   periodo?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Avaliacao$materiaArgs<ExtArgs>
   notas?: boolean | Prisma.Avaliacao$notasArgs<ExtArgs>
@@ -1251,7 +1050,6 @@ export type AvaliacaoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type AvaliacaoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   materiaId?: boolean
   serie?: boolean
@@ -1261,14 +1059,12 @@ export type AvaliacaoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   notaMax?: boolean
   periodo?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Avaliacao$materiaArgs<ExtArgs>
 }, ExtArgs["result"]["avaliacao"]>
 
 export type AvaliacaoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   materiaId?: boolean
   serie?: boolean
@@ -1278,14 +1074,12 @@ export type AvaliacaoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   notaMax?: boolean
   periodo?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Avaliacao$materiaArgs<ExtArgs>
 }, ExtArgs["result"]["avaliacao"]>
 
 export type AvaliacaoSelectScalar = {
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   materiaId?: boolean
   serie?: boolean
@@ -1297,9 +1091,8 @@ export type AvaliacaoSelectScalar = {
   criadoEm?: boolean
 }
 
-export type AvaliacaoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "unidadeId" | "materiaId" | "serie" | "nome" | "data" | "peso" | "notaMax" | "periodo" | "criadoEm", ExtArgs["result"]["avaliacao"]>
+export type AvaliacaoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "unidadeId" | "materiaId" | "serie" | "nome" | "data" | "peso" | "notaMax" | "periodo" | "criadoEm", ExtArgs["result"]["avaliacao"]>
 export type AvaliacaoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Avaliacao$materiaArgs<ExtArgs>
   notas?: boolean | Prisma.Avaliacao$notasArgs<ExtArgs>
@@ -1307,12 +1100,10 @@ export type AvaliacaoInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   _count?: boolean | Prisma.AvaliacaoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AvaliacaoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Avaliacao$materiaArgs<ExtArgs>
 }
 export type AvaliacaoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Avaliacao$materiaArgs<ExtArgs>
 }
@@ -1320,7 +1111,6 @@ export type AvaliacaoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $AvaliacaoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Avaliacao"
   objects: {
-    empresa: Prisma.$EmpresaPayload<ExtArgs>
     unidade: Prisma.$UnidadePayload<ExtArgs>
     materia: Prisma.$MateriaPayload<ExtArgs> | null
     notas: Prisma.$NotaPayload<ExtArgs>[]
@@ -1328,7 +1118,6 @@ export type $AvaliacaoPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    empresaId: string
     unidadeId: string
     materiaId: string | null
     serie: string
@@ -1732,7 +1521,6 @@ readonly fields: AvaliacaoFieldRefs;
  */
 export interface Prisma__AvaliacaoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   unidade<T extends Prisma.UnidadeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UnidadeDefaultArgs<ExtArgs>>): Prisma.Prisma__UnidadeClient<runtime.Types.Result.GetResult<Prisma.$UnidadePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   materia<T extends Prisma.Avaliacao$materiaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Avaliacao$materiaArgs<ExtArgs>>): Prisma.Prisma__MateriaClient<runtime.Types.Result.GetResult<Prisma.$MateriaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   notas<T extends Prisma.Avaliacao$notasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Avaliacao$notasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1767,7 +1555,6 @@ export interface Prisma__AvaliacaoClient<T, Null = never, ExtArgs extends runtim
  */
 export interface AvaliacaoFieldRefs {
   readonly id: Prisma.FieldRef<"Avaliacao", 'String'>
-  readonly empresaId: Prisma.FieldRef<"Avaliacao", 'String'>
   readonly unidadeId: Prisma.FieldRef<"Avaliacao", 'String'>
   readonly materiaId: Prisma.FieldRef<"Avaliacao", 'String'>
   readonly serie: Prisma.FieldRef<"Avaliacao", 'String'>

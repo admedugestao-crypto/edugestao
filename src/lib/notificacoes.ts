@@ -12,7 +12,6 @@ export function formatarWhatsapp(num: string): string {
 
 // ── Monta a mensagem de notificação ─────────────────────────────────────────
 export function montarMensagem(params: {
-  nomeEmpresa: string;
   nomeProfessor: string;
   nomeAvaliacao: string;
   nomeMateria: string | null;
@@ -23,7 +22,7 @@ export function montarMensagem(params: {
   diasRestantes: number;
   nomesAlunos: string[];
 }): string {
-  const { nomeEmpresa, nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola, nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos } = params;
+  const { nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola, nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos } = params;
 
   const dataFormatada = dataProva.toLocaleDateString("pt-BR", {
     weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
@@ -45,7 +44,7 @@ export function montarMensagem(params: {
     : [];
 
   return [
-    `📚 *${nomeEmpresa} – Lembrete de Prova*`,
+    `📚 *EduGestão – Lembrete de Prova*`,
     ``,
     `Olá, prof. *${nomeProfessor}*!`,
     ``,
@@ -58,12 +57,12 @@ export function montarMensagem(params: {
     `📆 *Data:* ${dataFormatada}`,
     ...(linhasAlunos.length > 0 ? [``, ...linhasAlunos] : []),
     ``,
-    `_Mensagem automática de ${nomeEmpresa} via EduGestão_`,
+    `_Mensagem automática do EduGestão_`,
   ].join("\n");
 }
 
-// ── Busca avaliações nos próximos 30 dias (escopado a uma empresa) ──────────
-async function buscarAvaliacoes(empresaId: string) {
+// ── Busca avaliações nos próximos 30 dias ────────────────────────────────────
+async function buscarAvaliacoes() {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
   const em30dias = new Date(hoje);
@@ -71,16 +70,15 @@ async function buscarAvaliacoes(empresaId: string) {
   em30dias.setHours(23, 59, 59, 999);
 
   return prisma.avaliacao.findMany({
-    where: { empresaId, data: { gte: hoje, lte: em30dias } },
+    where: { data: { gte: hoje, lte: em30dias } },
     include: { unidade: { include: { escola: true } }, materia: true },
   });
 }
 
-/** Busca professores com alunos ativos na unidade+série da avaliação (mesma empresa) */
-async function buscarProfessores(empresaId: string, unidadeId: string, serie: string) {
+/** Busca professores com alunos ativos na unidade+série da avaliação */
+async function buscarProfessores(unidadeId: string, serie: string) {
   return prisma.professora.findMany({
     where: {
-      empresaId,
       alunos: { some: { unidadeId, serie, status: "ATIVO" } },
     },
     include: {
@@ -173,72 +171,64 @@ export async function enviarWhatsapp(numero: string, mensagem: string): Promise<
 }
 
 // ── PROCESSO 1: WhatsApp ─────────────────────────────────────────────────────
-// Itera por empresa — cada empresa é processada de forma isolada (mesmo
-// usando as mesmas credenciais globais de WhatsApp para todas, o nome da
-// empresa é embutido no texto da mensagem, ver montarMensagem()).
 export async function processarNotificacoes(): Promise<{
   enviadas: number;
   pendentes: { numero: string; mensagem: string; professorNome: string; avaliacaoNome: string; erro?: string }[];
   erros: string[];
 }> {
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const avaliacoes = await buscarAvaliacoes();
   const resultado = { enviadas: 0, pendentes: [] as any[], erros: [] as string[] };
-  const empresas = await prisma.empresa.findMany({ where: { ativo: true }, select: { id: true, nome: true } });
 
-  for (const empresa of empresas) {
-    const avaliacoes = await buscarAvaliacoes(empresa.id);
+  for (const av of avaliacoes) {
+    const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);
+    const diasRestantes = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
 
-    for (const av of avaliacoes) {
-      const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);
-      const diasRestantes = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+    // Só notifica até 1 dia antes — no dia da prova não envia mais
+    if (diasRestantes < 1) continue;
 
-      // Só notifica até 1 dia antes — no dia da prova não envia mais
-      if (diasRestantes < 1) continue;
+    const professores = await buscarProfessores(av.unidadeId, av.serie);
 
-      const professores = await buscarProfessores(empresa.id, av.unidadeId, av.serie);
+    for (const prof of professores) {
+      if (!prof.usuario.whatsapp) continue;
 
-      for (const prof of professores) {
-        if (!prof.usuario.whatsapp) continue;
+      try {
+        // Deduplicação: só envia se ainda não enviou WhatsApp neste ciclo
+        const registro = await prisma.notificacaoProva.findUnique({
+          where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
+        });
+        if (registro?.enviada) continue;
 
-        try {
-          // Deduplicação: só envia se ainda não enviou WhatsApp neste ciclo
-          const registro = await prisma.notificacaoProva.findUnique({
-            where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
-          });
-          if (registro?.enviada) continue;
+        const numero = formatarWhatsapp(prof.usuario.whatsapp);
+        const nomesAlunos = prof.alunos.map((a) => a.nome);
+        const mensagem = montarMensagem({
+          nomeProfessor: prof.usuario.nome,
+          nomeAvaliacao: av.nome,
+          nomeMateria: av.materia?.nome ?? null,
+          nomeEscola: av.unidade.escola.nome,
+          nomeUnidade: av.unidade.nome,
+          serie: av.serie,
+          dataProva,
+          diasRestantes,
+          nomesAlunos,
+        });
 
-          const numero = formatarWhatsapp(prof.usuario.whatsapp);
-          const nomesAlunos = prof.alunos.map((a) => a.nome);
-          const mensagem = montarMensagem({
-            nomeEmpresa: empresa.nome,
-            nomeProfessor: prof.usuario.nome,
-            nomeAvaliacao: av.nome,
-            nomeMateria: av.materia?.nome ?? null,
-            nomeEscola: av.unidade.escola.nome,
-            nomeUnidade: av.unidade.nome,
-            serie: av.serie,
-            dataProva,
-            diasRestantes,
-            nomesAlunos,
-          });
+        const envio = await enviarWhatsapp(numero, mensagem);
 
-          const envio = await enviarWhatsapp(numero, mensagem);
+        await prisma.notificacaoProva.upsert({
+          where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
+          update: { enviada: envio.ok, whatsapp: numero },
+          create: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes, whatsapp: numero, enviada: envio.ok },
+        });
 
-          await prisma.notificacaoProva.upsert({
-            where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
-            update: { enviada: envio.ok, whatsapp: numero },
-            create: { empresaId: empresa.id, professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes, whatsapp: numero, enviada: envio.ok },
-          });
-
-          if (envio.ok) {
-            resultado.enviadas++;
-          } else {
-            resultado.pendentes.push({ numero, mensagem, professorNome: prof.usuario.nome, avaliacaoNome: av.nome, erro: envio.erro });
-            resultado.erros.push(`WhatsApp – ${prof.usuario.nome}: ${envio.erro}`);
-          }
-        } catch (err) {
-          resultado.erros.push(`WhatsApp – ${prof.usuario.nome}: ${String(err)}`);
+        if (envio.ok) {
+          resultado.enviadas++;
+        } else {
+          resultado.pendentes.push({ numero, mensagem, professorNome: prof.usuario.nome, avaliacaoNome: av.nome, erro: envio.erro });
+          resultado.erros.push(`WhatsApp – ${prof.usuario.nome}: ${envio.erro}`);
         }
+      } catch (err) {
+        resultado.erros.push(`WhatsApp – ${prof.usuario.nome}: ${String(err)}`);
       }
     }
   }
@@ -259,62 +249,58 @@ export async function processarNotificacoesEmail(): Promise<{
   }
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const empresas = await prisma.empresa.findMany({ where: { ativo: true }, select: { id: true } });
+  const avaliacoes = await buscarAvaliacoes();
 
-  for (const empresa of empresas) {
-    const avaliacoes = await buscarAvaliacoes(empresa.id);
+  for (const av of avaliacoes) {
+    const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);
+    const diasRestantes = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
 
-    for (const av of avaliacoes) {
-      const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);
-      const diasRestantes = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+    // Só notifica até 1 dia antes — no dia da prova não envia mais
+    if (diasRestantes < 1) continue;
 
-      // Só notifica até 1 dia antes — no dia da prova não envia mais
-      if (diasRestantes < 1) continue;
+    const professores = await buscarProfessores(av.unidadeId, av.serie);
 
-      const professores = await buscarProfessores(empresa.id, av.unidadeId, av.serie);
+    for (const prof of professores) {
+      if (!prof.usuario.email) continue;
 
-      for (const prof of professores) {
-        if (!prof.usuario.email) continue;
+      try {
+        // Deduplicação: só envia se ainda não enviou e-mail neste ciclo
+        const registro = await prisma.notificacaoProva.findUnique({
+          where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
+        });
+        if (registro?.emailEnviado) continue;
 
-        try {
-          // Deduplicação: só envia se ainda não enviou e-mail neste ciclo
-          const registro = await prisma.notificacaoProva.findUnique({
-            where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
-          });
-          if (registro?.emailEnviado) continue;
+        const nomesAlunos = prof.alunos.map((a) => a.nome);
 
-          const nomesAlunos = prof.alunos.map((a) => a.nome);
+        const { ok, erro } = await enviarEmailProva({
+          emailProfessor: prof.usuario.email,
+          nomeProfessor:  prof.usuario.nome,
+          nomeAvaliacao:  av.nome,
+          nomeMateria:    av.materia?.nome ?? null,
+          nomeEscola:     av.unidade.escola.nome,
+          nomeUnidade:    av.unidade.nome,
+          serie:          av.serie,
+          dataProva,
+          diasRestantes,
+          nomesAlunos,
+        });
 
-          const { ok, erro } = await enviarEmailProva({
-            emailProfessor: prof.usuario.email,
-            nomeProfessor:  prof.usuario.nome,
-            nomeAvaliacao:  av.nome,
-            nomeMateria:    av.materia?.nome ?? null,
-            nomeEscola:     av.unidade.escola.nome,
-            nomeUnidade:    av.unidade.nome,
-            serie:          av.serie,
-            dataProva,
-            diasRestantes,
-            nomesAlunos,
-          });
+        await prisma.notificacaoProva.upsert({
+          where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
+          update: { emailEnviado: ok, email: prof.usuario.email },
+          create: {
+            professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes,
+            email: prof.usuario.email, emailEnviado: ok,
+          },
+        });
 
-          await prisma.notificacaoProva.upsert({
-            where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
-            update: { emailEnviado: ok, email: prof.usuario.email },
-            create: {
-              empresaId: empresa.id, professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes,
-              email: prof.usuario.email, emailEnviado: ok,
-            },
-          });
-
-          if (ok) {
-            resultado.enviadas++;
-          } else {
-            resultado.erros.push(`${prof.usuario.nome} (${prof.usuario.email}): ${erro}`);
-          }
-        } catch (err) {
-          resultado.erros.push(`E-mail – ${prof.usuario.nome}: ${String(err)}`);
+        if (ok) {
+          resultado.enviadas++;
+        } else {
+          resultado.erros.push(`${prof.usuario.nome} (${prof.usuario.email}): ${erro}`);
         }
+      } catch (err) {
+        resultado.erros.push(`E-mail – ${prof.usuario.nome}: ${String(err)}`);
       }
     }
   }
@@ -339,8 +325,6 @@ export async function processarNotificacoesAula(): Promise<{
   const fimAmanha = new Date(amanha);
   fimAmanha.setHours(23, 59, 59, 999);
 
-  // empresaId é redundante aqui (aula/notificacao já herdam da agenda), mas
-  // deixa a query explícita e resistente a joins futuros.
   const aulas = await prisma.agendaAula.findMany({
     where: {
       data: { gte: amanha, lte: fimAmanha },
@@ -352,7 +336,6 @@ export async function processarNotificacoesAula(): Promise<{
       professora: { include: { usuario: { select: { nome: true } } } },
       materia: true,
       notificacao: true,
-      empresa: { select: { nome: true } },
     },
   });
 
@@ -370,7 +353,7 @@ export async function processarNotificacoesAula(): Promise<{
       : "horário a confirmar";
 
     const mensagem = [
-      `📚 *${aula.empresa.nome} – Lembrete de Aula*`,
+      `📚 *EduGestão – Lembrete de Aula*`,
       ``,
       `Olá${aula.aluno.responsavel ? `, *${aula.aluno.responsavel}*` : ""}!`,
       ``,
@@ -381,7 +364,7 @@ export async function processarNotificacoesAula(): Promise<{
       `🕐 *Horário:* ${horario}`,
       `👩‍🏫 *Professor(a):* ${aula.professora.usuario.nome}`,
       ``,
-      `_Mensagem automática de ${aula.empresa.nome} via EduGestão_`,
+      `_Mensagem automática do EduGestão_`,
     ].join("\n");
 
     try {
@@ -390,7 +373,7 @@ export async function processarNotificacoesAula(): Promise<{
       await prisma.notificacaoAula.upsert({
         where: { agendaAulaId: aula.id },
         update: { enviada: envio.ok, whatsapp: numero },
-        create: { empresaId: aula.empresaId, agendaAulaId: aula.id, enviada: envio.ok, whatsapp: numero },
+        create: { agendaAulaId: aula.id, enviada: envio.ok, whatsapp: numero },
       });
 
       if (envio.ok) resultado.enviadas++;

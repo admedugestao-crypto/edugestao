@@ -1,6 +1,5 @@
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import dns from "dns";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
@@ -10,13 +9,7 @@ function createPrismaClient(): PrismaClient {
     process.env.DIRECT_URL ??
     "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
   const connectionString = rawUrl.replace("?pgbouncer=true", "").replace("&pgbouncer=true", "");
-  // Força resolução IPv4 — alguns ambientes de desenvolvimento não têm
-  // saída IPv6, e o pooler do Supabase resolve para IPv6 por padrão.
-  const adapter = new PrismaPg({
-    connectionString,
-    lookup: (hostname: string, options: dns.LookupOneOptions, callback: (...args: any[]) => void) =>
-      dns.lookup(hostname, { family: 4 }, callback),
-  } as any);
+  const adapter = new PrismaPg({ connectionString });
   // @ts-ignore — PrismaClient aceita adapter no Prisma 7
   return new PrismaClient({ adapter });
 }

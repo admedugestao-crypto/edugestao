@@ -36,7 +36,6 @@ export type CalendarioEscolarSumAggregateOutputType = {
 
 export type CalendarioEscolarMinAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   unidadeId: string | null
   ano: number | null
   titulo: string | null
@@ -48,7 +47,6 @@ export type CalendarioEscolarMinAggregateOutputType = {
 
 export type CalendarioEscolarMaxAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   unidadeId: string | null
   ano: number | null
   titulo: string | null
@@ -60,7 +58,6 @@ export type CalendarioEscolarMaxAggregateOutputType = {
 
 export type CalendarioEscolarCountAggregateOutputType = {
   id: number
-  empresaId: number
   unidadeId: number
   ano: number
   titulo: number
@@ -82,7 +79,6 @@ export type CalendarioEscolarSumAggregateInputType = {
 
 export type CalendarioEscolarMinAggregateInputType = {
   id?: true
-  empresaId?: true
   unidadeId?: true
   ano?: true
   titulo?: true
@@ -94,7 +90,6 @@ export type CalendarioEscolarMinAggregateInputType = {
 
 export type CalendarioEscolarMaxAggregateInputType = {
   id?: true
-  empresaId?: true
   unidadeId?: true
   ano?: true
   titulo?: true
@@ -106,7 +101,6 @@ export type CalendarioEscolarMaxAggregateInputType = {
 
 export type CalendarioEscolarCountAggregateInputType = {
   id?: true
-  empresaId?: true
   unidadeId?: true
   ano?: true
   titulo?: true
@@ -205,7 +199,6 @@ export type CalendarioEscolarGroupByArgs<ExtArgs extends runtime.Types.Extension
 
 export type CalendarioEscolarGroupByOutputType = {
   id: string
-  empresaId: string
   unidadeId: string
   ano: number
   titulo: string
@@ -240,7 +233,6 @@ export type CalendarioEscolarWhereInput = {
   OR?: Prisma.CalendarioEscolarWhereInput[]
   NOT?: Prisma.CalendarioEscolarWhereInput | Prisma.CalendarioEscolarWhereInput[]
   id?: Prisma.StringFilter<"CalendarioEscolar"> | string
-  empresaId?: Prisma.StringFilter<"CalendarioEscolar"> | string
   unidadeId?: Prisma.StringFilter<"CalendarioEscolar"> | string
   ano?: Prisma.IntFilter<"CalendarioEscolar"> | number
   titulo?: Prisma.StringFilter<"CalendarioEscolar"> | string
@@ -248,13 +240,11 @@ export type CalendarioEscolarWhereInput = {
   dataFim?: Prisma.DateTimeFilter<"CalendarioEscolar"> | Date | string
   tipo?: Prisma.EnumTipoEventoFilter<"CalendarioEscolar"> | $Enums.TipoEvento
   descricao?: Prisma.StringNullableFilter<"CalendarioEscolar"> | string | null
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidade?: Prisma.XOR<Prisma.UnidadeScalarRelationFilter, Prisma.UnidadeWhereInput>
 }
 
 export type CalendarioEscolarOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   ano?: Prisma.SortOrder
   titulo?: Prisma.SortOrder
@@ -262,7 +252,6 @@ export type CalendarioEscolarOrderByWithRelationInput = {
   dataFim?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
   descricao?: Prisma.SortOrderInput | Prisma.SortOrder
-  empresa?: Prisma.EmpresaOrderByWithRelationInput
   unidade?: Prisma.UnidadeOrderByWithRelationInput
 }
 
@@ -271,7 +260,6 @@ export type CalendarioEscolarWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CalendarioEscolarWhereInput | Prisma.CalendarioEscolarWhereInput[]
   OR?: Prisma.CalendarioEscolarWhereInput[]
   NOT?: Prisma.CalendarioEscolarWhereInput | Prisma.CalendarioEscolarWhereInput[]
-  empresaId?: Prisma.StringFilter<"CalendarioEscolar"> | string
   unidadeId?: Prisma.StringFilter<"CalendarioEscolar"> | string
   ano?: Prisma.IntFilter<"CalendarioEscolar"> | number
   titulo?: Prisma.StringFilter<"CalendarioEscolar"> | string
@@ -279,13 +267,11 @@ export type CalendarioEscolarWhereUniqueInput = Prisma.AtLeast<{
   dataFim?: Prisma.DateTimeFilter<"CalendarioEscolar"> | Date | string
   tipo?: Prisma.EnumTipoEventoFilter<"CalendarioEscolar"> | $Enums.TipoEvento
   descricao?: Prisma.StringNullableFilter<"CalendarioEscolar"> | string | null
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidade?: Prisma.XOR<Prisma.UnidadeScalarRelationFilter, Prisma.UnidadeWhereInput>
 }, "id">
 
 export type CalendarioEscolarOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   ano?: Prisma.SortOrder
   titulo?: Prisma.SortOrder
@@ -305,7 +291,6 @@ export type CalendarioEscolarScalarWhereWithAggregatesInput = {
   OR?: Prisma.CalendarioEscolarScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CalendarioEscolarScalarWhereWithAggregatesInput | Prisma.CalendarioEscolarScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CalendarioEscolar"> | string
-  empresaId?: Prisma.StringWithAggregatesFilter<"CalendarioEscolar"> | string
   unidadeId?: Prisma.StringWithAggregatesFilter<"CalendarioEscolar"> | string
   ano?: Prisma.IntWithAggregatesFilter<"CalendarioEscolar"> | number
   titulo?: Prisma.StringWithAggregatesFilter<"CalendarioEscolar"> | string
@@ -323,13 +308,11 @@ export type CalendarioEscolarCreateInput = {
   dataFim: Date | string
   tipo?: $Enums.TipoEvento
   descricao?: string | null
-  empresa: Prisma.EmpresaCreateNestedOneWithoutCalendariosInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutCalendariosInput
 }
 
 export type CalendarioEscolarUncheckedCreateInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   ano: number
   titulo: string
@@ -347,13 +330,11 @@ export type CalendarioEscolarUpdateInput = {
   dataFim?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tipo?: Prisma.EnumTipoEventoFieldUpdateOperationsInput | $Enums.TipoEvento
   descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutCalendariosNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutCalendariosNestedInput
 }
 
 export type CalendarioEscolarUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   titulo?: Prisma.StringFieldUpdateOperationsInput | string
@@ -365,7 +346,6 @@ export type CalendarioEscolarUncheckedUpdateInput = {
 
 export type CalendarioEscolarCreateManyInput = {
   id?: string
-  empresaId: string
   unidadeId: string
   ano: number
   titulo: string
@@ -387,7 +367,6 @@ export type CalendarioEscolarUpdateManyMutationInput = {
 
 export type CalendarioEscolarUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   titulo?: Prisma.StringFieldUpdateOperationsInput | string
@@ -409,7 +388,6 @@ export type CalendarioEscolarOrderByRelationAggregateInput = {
 
 export type CalendarioEscolarCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   ano?: Prisma.SortOrder
   titulo?: Prisma.SortOrder
@@ -425,7 +403,6 @@ export type CalendarioEscolarAvgOrderByAggregateInput = {
 
 export type CalendarioEscolarMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   ano?: Prisma.SortOrder
   titulo?: Prisma.SortOrder
@@ -437,7 +414,6 @@ export type CalendarioEscolarMaxOrderByAggregateInput = {
 
 export type CalendarioEscolarMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   unidadeId?: Prisma.SortOrder
   ano?: Prisma.SortOrder
   titulo?: Prisma.SortOrder
@@ -449,48 +425,6 @@ export type CalendarioEscolarMinOrderByAggregateInput = {
 
 export type CalendarioEscolarSumOrderByAggregateInput = {
   ano?: Prisma.SortOrder
-}
-
-export type CalendarioEscolarCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.CalendarioEscolarCreateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput> | Prisma.CalendarioEscolarCreateWithoutEmpresaInput[] | Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput | Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.CalendarioEscolarCreateManyEmpresaInputEnvelope
-  connect?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-}
-
-export type CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.CalendarioEscolarCreateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput> | Prisma.CalendarioEscolarCreateWithoutEmpresaInput[] | Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput | Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.CalendarioEscolarCreateManyEmpresaInputEnvelope
-  connect?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-}
-
-export type CalendarioEscolarUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.CalendarioEscolarCreateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput> | Prisma.CalendarioEscolarCreateWithoutEmpresaInput[] | Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput | Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.CalendarioEscolarUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.CalendarioEscolarUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.CalendarioEscolarCreateManyEmpresaInputEnvelope
-  set?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  disconnect?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  delete?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  connect?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  update?: Prisma.CalendarioEscolarUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.CalendarioEscolarUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.CalendarioEscolarUpdateManyWithWhereWithoutEmpresaInput | Prisma.CalendarioEscolarUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.CalendarioEscolarScalarWhereInput | Prisma.CalendarioEscolarScalarWhereInput[]
-}
-
-export type CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.CalendarioEscolarCreateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput> | Prisma.CalendarioEscolarCreateWithoutEmpresaInput[] | Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput | Prisma.CalendarioEscolarCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.CalendarioEscolarUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.CalendarioEscolarUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.CalendarioEscolarCreateManyEmpresaInputEnvelope
-  set?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  disconnect?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  delete?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  connect?: Prisma.CalendarioEscolarWhereUniqueInput | Prisma.CalendarioEscolarWhereUniqueInput[]
-  update?: Prisma.CalendarioEscolarUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.CalendarioEscolarUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.CalendarioEscolarUpdateManyWithWhereWithoutEmpresaInput | Prisma.CalendarioEscolarUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.CalendarioEscolarScalarWhereInput | Prisma.CalendarioEscolarScalarWhereInput[]
 }
 
 export type CalendarioEscolarCreateNestedManyWithoutUnidadeInput = {
@@ -547,69 +481,6 @@ export type EnumTipoEventoFieldUpdateOperationsInput = {
   set?: $Enums.TipoEvento
 }
 
-export type CalendarioEscolarCreateWithoutEmpresaInput = {
-  id?: string
-  ano: number
-  titulo: string
-  dataInicio: Date | string
-  dataFim: Date | string
-  tipo?: $Enums.TipoEvento
-  descricao?: string | null
-  unidade: Prisma.UnidadeCreateNestedOneWithoutCalendariosInput
-}
-
-export type CalendarioEscolarUncheckedCreateWithoutEmpresaInput = {
-  id?: string
-  unidadeId: string
-  ano: number
-  titulo: string
-  dataInicio: Date | string
-  dataFim: Date | string
-  tipo?: $Enums.TipoEvento
-  descricao?: string | null
-}
-
-export type CalendarioEscolarCreateOrConnectWithoutEmpresaInput = {
-  where: Prisma.CalendarioEscolarWhereUniqueInput
-  create: Prisma.XOR<Prisma.CalendarioEscolarCreateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput>
-}
-
-export type CalendarioEscolarCreateManyEmpresaInputEnvelope = {
-  data: Prisma.CalendarioEscolarCreateManyEmpresaInput | Prisma.CalendarioEscolarCreateManyEmpresaInput[]
-  skipDuplicates?: boolean
-}
-
-export type CalendarioEscolarUpsertWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.CalendarioEscolarWhereUniqueInput
-  update: Prisma.XOR<Prisma.CalendarioEscolarUpdateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedUpdateWithoutEmpresaInput>
-  create: Prisma.XOR<Prisma.CalendarioEscolarCreateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedCreateWithoutEmpresaInput>
-}
-
-export type CalendarioEscolarUpdateWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.CalendarioEscolarWhereUniqueInput
-  data: Prisma.XOR<Prisma.CalendarioEscolarUpdateWithoutEmpresaInput, Prisma.CalendarioEscolarUncheckedUpdateWithoutEmpresaInput>
-}
-
-export type CalendarioEscolarUpdateManyWithWhereWithoutEmpresaInput = {
-  where: Prisma.CalendarioEscolarScalarWhereInput
-  data: Prisma.XOR<Prisma.CalendarioEscolarUpdateManyMutationInput, Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaInput>
-}
-
-export type CalendarioEscolarScalarWhereInput = {
-  AND?: Prisma.CalendarioEscolarScalarWhereInput | Prisma.CalendarioEscolarScalarWhereInput[]
-  OR?: Prisma.CalendarioEscolarScalarWhereInput[]
-  NOT?: Prisma.CalendarioEscolarScalarWhereInput | Prisma.CalendarioEscolarScalarWhereInput[]
-  id?: Prisma.StringFilter<"CalendarioEscolar"> | string
-  empresaId?: Prisma.StringFilter<"CalendarioEscolar"> | string
-  unidadeId?: Prisma.StringFilter<"CalendarioEscolar"> | string
-  ano?: Prisma.IntFilter<"CalendarioEscolar"> | number
-  titulo?: Prisma.StringFilter<"CalendarioEscolar"> | string
-  dataInicio?: Prisma.DateTimeFilter<"CalendarioEscolar"> | Date | string
-  dataFim?: Prisma.DateTimeFilter<"CalendarioEscolar"> | Date | string
-  tipo?: Prisma.EnumTipoEventoFilter<"CalendarioEscolar"> | $Enums.TipoEvento
-  descricao?: Prisma.StringNullableFilter<"CalendarioEscolar"> | string | null
-}
-
 export type CalendarioEscolarCreateWithoutUnidadeInput = {
   id?: string
   ano: number
@@ -618,12 +489,10 @@ export type CalendarioEscolarCreateWithoutUnidadeInput = {
   dataFim: Date | string
   tipo?: $Enums.TipoEvento
   descricao?: string | null
-  empresa: Prisma.EmpresaCreateNestedOneWithoutCalendariosInput
 }
 
 export type CalendarioEscolarUncheckedCreateWithoutUnidadeInput = {
   id?: string
-  empresaId: string
   ano: number
   titulo: string
   dataInicio: Date | string
@@ -658,53 +527,22 @@ export type CalendarioEscolarUpdateManyWithWhereWithoutUnidadeInput = {
   data: Prisma.XOR<Prisma.CalendarioEscolarUpdateManyMutationInput, Prisma.CalendarioEscolarUncheckedUpdateManyWithoutUnidadeInput>
 }
 
-export type CalendarioEscolarCreateManyEmpresaInput = {
-  id?: string
-  unidadeId: string
-  ano: number
-  titulo: string
-  dataInicio: Date | string
-  dataFim: Date | string
-  tipo?: $Enums.TipoEvento
-  descricao?: string | null
-}
-
-export type CalendarioEscolarUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  ano?: Prisma.IntFieldUpdateOperationsInput | number
-  titulo?: Prisma.StringFieldUpdateOperationsInput | string
-  dataInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  dataFim?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tipo?: Prisma.EnumTipoEventoFieldUpdateOperationsInput | $Enums.TipoEvento
-  descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  unidade?: Prisma.UnidadeUpdateOneRequiredWithoutCalendariosNestedInput
-}
-
-export type CalendarioEscolarUncheckedUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
-  ano?: Prisma.IntFieldUpdateOperationsInput | number
-  titulo?: Prisma.StringFieldUpdateOperationsInput | string
-  dataInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  dataFim?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tipo?: Prisma.EnumTipoEventoFieldUpdateOperationsInput | $Enums.TipoEvento
-  descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type CalendarioEscolarUncheckedUpdateManyWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  unidadeId?: Prisma.StringFieldUpdateOperationsInput | string
-  ano?: Prisma.IntFieldUpdateOperationsInput | number
-  titulo?: Prisma.StringFieldUpdateOperationsInput | string
-  dataInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  dataFim?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  tipo?: Prisma.EnumTipoEventoFieldUpdateOperationsInput | $Enums.TipoEvento
-  descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+export type CalendarioEscolarScalarWhereInput = {
+  AND?: Prisma.CalendarioEscolarScalarWhereInput | Prisma.CalendarioEscolarScalarWhereInput[]
+  OR?: Prisma.CalendarioEscolarScalarWhereInput[]
+  NOT?: Prisma.CalendarioEscolarScalarWhereInput | Prisma.CalendarioEscolarScalarWhereInput[]
+  id?: Prisma.StringFilter<"CalendarioEscolar"> | string
+  unidadeId?: Prisma.StringFilter<"CalendarioEscolar"> | string
+  ano?: Prisma.IntFilter<"CalendarioEscolar"> | number
+  titulo?: Prisma.StringFilter<"CalendarioEscolar"> | string
+  dataInicio?: Prisma.DateTimeFilter<"CalendarioEscolar"> | Date | string
+  dataFim?: Prisma.DateTimeFilter<"CalendarioEscolar"> | Date | string
+  tipo?: Prisma.EnumTipoEventoFilter<"CalendarioEscolar"> | $Enums.TipoEvento
+  descricao?: Prisma.StringNullableFilter<"CalendarioEscolar"> | string | null
 }
 
 export type CalendarioEscolarCreateManyUnidadeInput = {
   id?: string
-  empresaId: string
   ano: number
   titulo: string
   dataInicio: Date | string
@@ -721,12 +559,10 @@ export type CalendarioEscolarUpdateWithoutUnidadeInput = {
   dataFim?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tipo?: Prisma.EnumTipoEventoFieldUpdateOperationsInput | $Enums.TipoEvento
   descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutCalendariosNestedInput
 }
 
 export type CalendarioEscolarUncheckedUpdateWithoutUnidadeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   titulo?: Prisma.StringFieldUpdateOperationsInput | string
   dataInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -737,7 +573,6 @@ export type CalendarioEscolarUncheckedUpdateWithoutUnidadeInput = {
 
 export type CalendarioEscolarUncheckedUpdateManyWithoutUnidadeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   titulo?: Prisma.StringFieldUpdateOperationsInput | string
   dataInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -750,7 +585,6 @@ export type CalendarioEscolarUncheckedUpdateManyWithoutUnidadeInput = {
 
 export type CalendarioEscolarSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   ano?: boolean
   titulo?: boolean
@@ -758,13 +592,11 @@ export type CalendarioEscolarSelect<ExtArgs extends runtime.Types.Extensions.Int
   dataFim?: boolean
   tipo?: boolean
   descricao?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["calendarioEscolar"]>
 
 export type CalendarioEscolarSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   ano?: boolean
   titulo?: boolean
@@ -772,13 +604,11 @@ export type CalendarioEscolarSelectCreateManyAndReturn<ExtArgs extends runtime.T
   dataFim?: boolean
   tipo?: boolean
   descricao?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["calendarioEscolar"]>
 
 export type CalendarioEscolarSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   ano?: boolean
   titulo?: boolean
@@ -786,13 +616,11 @@ export type CalendarioEscolarSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   dataFim?: boolean
   tipo?: boolean
   descricao?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["calendarioEscolar"]>
 
 export type CalendarioEscolarSelectScalar = {
   id?: boolean
-  empresaId?: boolean
   unidadeId?: boolean
   ano?: boolean
   titulo?: boolean
@@ -802,29 +630,24 @@ export type CalendarioEscolarSelectScalar = {
   descricao?: boolean
 }
 
-export type CalendarioEscolarOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "unidadeId" | "ano" | "titulo" | "dataInicio" | "dataFim" | "tipo" | "descricao", ExtArgs["result"]["calendarioEscolar"]>
+export type CalendarioEscolarOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "unidadeId" | "ano" | "titulo" | "dataInicio" | "dataFim" | "tipo" | "descricao", ExtArgs["result"]["calendarioEscolar"]>
 export type CalendarioEscolarInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
 }
 export type CalendarioEscolarIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
 }
 export type CalendarioEscolarIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
 }
 
 export type $CalendarioEscolarPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CalendarioEscolar"
   objects: {
-    empresa: Prisma.$EmpresaPayload<ExtArgs>
     unidade: Prisma.$UnidadePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    empresaId: string
     unidadeId: string
     ano: number
     titulo: string
@@ -1226,7 +1049,6 @@ readonly fields: CalendarioEscolarFieldRefs;
  */
 export interface Prisma__CalendarioEscolarClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   unidade<T extends Prisma.UnidadeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UnidadeDefaultArgs<ExtArgs>>): Prisma.Prisma__UnidadeClient<runtime.Types.Result.GetResult<Prisma.$UnidadePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1258,7 +1080,6 @@ export interface Prisma__CalendarioEscolarClient<T, Null = never, ExtArgs extend
  */
 export interface CalendarioEscolarFieldRefs {
   readonly id: Prisma.FieldRef<"CalendarioEscolar", 'String'>
-  readonly empresaId: Prisma.FieldRef<"CalendarioEscolar", 'String'>
   readonly unidadeId: Prisma.FieldRef<"CalendarioEscolar", 'String'>
   readonly ano: Prisma.FieldRef<"CalendarioEscolar", 'Int'>
   readonly titulo: Prisma.FieldRef<"CalendarioEscolar", 'String'>

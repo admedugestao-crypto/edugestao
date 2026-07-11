@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -29,11 +29,11 @@ export type ForaDisponibilidadeDet = {
 };
 
 export async function POST(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
-  const professoraId = scope.professoraId;
-  const perfil       = scope.perfil;
+  const professoraId = (session.user as any)?.professoraId as string | null;
+  const perfil       = (session.user as any)?.perfil as string;
 
   const body = await req.json() as { semanaInicio: string; professoraId?: string };
   const { semanaInicio } = body;
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
   if (toInt(inicio) > fimAnoInt)
     return NextResponse.json({ criadas: 0, ignoradas: 0, conflitos: [], semAgenda: [] });
 
-  const whereBase: any = { empresaId: scope.empresaId, status: "ATIVO" };
+  const whereBase: any = { status: "ATIVO" };
   if (perfil === "SUPERADMIN") {
     // Admin pode filtrar por professora específica ou gerar para todas
     if (professoraIdBody) whereBase.professoraId = professoraIdBody;
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
   const profIds = [...new Set(alunos.map((a) => a.professoraId).filter(Boolean))] as string[];
   const professoras = profIds.length > 0
     ? await prisma.professora.findMany({
-        where: { id: { in: profIds }, empresaId: scope.empresaId },
+        where: { id: { in: profIds } },
         select: { id: true, disponibilidade: true },
       })
     : [];
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
         }
 
         const aulasNoDia = await prisma.agendaAula.findMany({
-          where: { empresaId: scope.empresaId, professoraId: profId!, data: { gte: rangeGte, lt: rangeLt } },
+          where: { professoraId: profId!, data: { gte: rangeGte, lt: rangeLt } },
           select: { id: true, alunoId: true, horaInicio: true, horaFim: true, status: true, materiaId: true, aluno: { select: { nome: true } } },
         });
 
@@ -247,7 +247,6 @@ export async function POST(req: NextRequest) {
         const materiaIds = aluno.materias.map((m) => m.materiaId);
         await prisma.agendaAula.create({
           data: {
-            empresaId: scope.empresaId,
             professoraId: profId!, alunoId: aluno.id,
             materiaId: materiaIds[0] ?? null,
             data: dataUTC, horaInicio, horaFim, status: "AGENDADA",

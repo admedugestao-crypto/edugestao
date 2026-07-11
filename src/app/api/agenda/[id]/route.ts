@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -9,17 +9,12 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
   const body   = await req.json();
   const { status, horaInicio, horaFim, observacao, materiaId, todasMaterias, data } = body;
-
-  const aulaEmpresa = await prisma.agendaAula.findUnique({ where: { id }, select: { empresaId: true } });
-  if (!aulaEmpresa || aulaEmpresa.empresaId !== scope.empresaId) {
-    return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
-  }
 
   if ((horaInicio !== undefined && !horaInicio) || (horaFim !== undefined && !horaFim)) {
     return NextResponse.json({ erro: "Início e fim são obrigatórios" }, { status: 400 });
@@ -124,15 +119,13 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
 
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
-  if (!aula || aula.empresaId !== scope.empresaId) {
-    return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
-  }
+  if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
   // Bloqueia apenas se houver pagamento já quitado vinculado
   const vinculosPagos = await prisma.$queryRaw<{ count: bigint }[]>`

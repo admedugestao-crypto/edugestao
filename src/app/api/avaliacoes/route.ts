@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const unidadeId = searchParams.get("unidadeId");
@@ -14,7 +14,6 @@ export async function GET(req: NextRequest) {
 
   const avaliacoes = await prisma.avaliacao.findMany({
     where: {
-      empresaId: scope.empresaId,
       ...(unidadeId ? { unidadeId } : {}),
       ...(serie ? { serie } : {}),
     },
@@ -25,20 +24,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
-
-  const unidadeOk = await prisma.unidade.findFirst({
-    where: { id: body.unidadeId, empresaId: scope.empresaId },
-    select: { id: true },
-  });
-  if (!unidadeOk) return NextResponse.json({ erro: "Unidade não encontrada." }, { status: 404 });
-
   const avaliacao = await prisma.avaliacao.create({
     data: {
-      empresaId: scope.empresaId,
       unidadeId: body.unidadeId,
       materiaId: body.materiaId || null,
       serie: body.serie,

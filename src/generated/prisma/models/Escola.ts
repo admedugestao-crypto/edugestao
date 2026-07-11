@@ -26,7 +26,6 @@ export type AggregateEscola = {
 
 export type EscolaMinAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   nome: string | null
   rede: string | null
   periodoAvaliacao: string | null
@@ -35,7 +34,6 @@ export type EscolaMinAggregateOutputType = {
 
 export type EscolaMaxAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   nome: string | null
   rede: string | null
   periodoAvaliacao: string | null
@@ -44,7 +42,6 @@ export type EscolaMaxAggregateOutputType = {
 
 export type EscolaCountAggregateOutputType = {
   id: number
-  empresaId: number
   nome: number
   rede: number
   periodoAvaliacao: number
@@ -55,7 +52,6 @@ export type EscolaCountAggregateOutputType = {
 
 export type EscolaMinAggregateInputType = {
   id?: true
-  empresaId?: true
   nome?: true
   rede?: true
   periodoAvaliacao?: true
@@ -64,7 +60,6 @@ export type EscolaMinAggregateInputType = {
 
 export type EscolaMaxAggregateInputType = {
   id?: true
-  empresaId?: true
   nome?: true
   rede?: true
   periodoAvaliacao?: true
@@ -73,7 +68,6 @@ export type EscolaMaxAggregateInputType = {
 
 export type EscolaCountAggregateInputType = {
   id?: true
-  empresaId?: true
   nome?: true
   rede?: true
   periodoAvaliacao?: true
@@ -155,7 +149,6 @@ export type EscolaGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type EscolaGroupByOutputType = {
   id: string
-  empresaId: string
   nome: string
   rede: string | null
   periodoAvaliacao: string | null
@@ -185,23 +178,19 @@ export type EscolaWhereInput = {
   OR?: Prisma.EscolaWhereInput[]
   NOT?: Prisma.EscolaWhereInput | Prisma.EscolaWhereInput[]
   id?: Prisma.StringFilter<"Escola"> | string
-  empresaId?: Prisma.StringFilter<"Escola"> | string
   nome?: Prisma.StringFilter<"Escola"> | string
   rede?: Prisma.StringNullableFilter<"Escola"> | string | null
   periodoAvaliacao?: Prisma.StringNullableFilter<"Escola"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Escola"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidades?: Prisma.UnidadeListRelationFilter
 }
 
 export type EscolaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   rede?: Prisma.SortOrderInput | Prisma.SortOrder
   periodoAvaliacao?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
-  empresa?: Prisma.EmpresaOrderByWithRelationInput
   unidades?: Prisma.UnidadeOrderByRelationAggregateInput
 }
 
@@ -210,18 +199,15 @@ export type EscolaWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.EscolaWhereInput | Prisma.EscolaWhereInput[]
   OR?: Prisma.EscolaWhereInput[]
   NOT?: Prisma.EscolaWhereInput | Prisma.EscolaWhereInput[]
-  empresaId?: Prisma.StringFilter<"Escola"> | string
   nome?: Prisma.StringFilter<"Escola"> | string
   rede?: Prisma.StringNullableFilter<"Escola"> | string | null
   periodoAvaliacao?: Prisma.StringNullableFilter<"Escola"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Escola"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidades?: Prisma.UnidadeListRelationFilter
 }, "id">
 
 export type EscolaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   rede?: Prisma.SortOrderInput | Prisma.SortOrder
   periodoAvaliacao?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -236,7 +222,6 @@ export type EscolaScalarWhereWithAggregatesInput = {
   OR?: Prisma.EscolaScalarWhereWithAggregatesInput[]
   NOT?: Prisma.EscolaScalarWhereWithAggregatesInput | Prisma.EscolaScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Escola"> | string
-  empresaId?: Prisma.StringWithAggregatesFilter<"Escola"> | string
   nome?: Prisma.StringWithAggregatesFilter<"Escola"> | string
   rede?: Prisma.StringNullableWithAggregatesFilter<"Escola"> | string | null
   periodoAvaliacao?: Prisma.StringNullableWithAggregatesFilter<"Escola"> | string | null
@@ -249,13 +234,11 @@ export type EscolaCreateInput = {
   rede?: string | null
   periodoAvaliacao?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutEscolasInput
   unidades?: Prisma.UnidadeCreateNestedManyWithoutEscolaInput
 }
 
 export type EscolaUncheckedCreateInput = {
   id?: string
-  empresaId: string
   nome: string
   rede?: string | null
   periodoAvaliacao?: string | null
@@ -269,13 +252,11 @@ export type EscolaUpdateInput = {
   rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   periodoAvaliacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutEscolasNestedInput
   unidades?: Prisma.UnidadeUpdateManyWithoutEscolaNestedInput
 }
 
 export type EscolaUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   periodoAvaliacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -285,7 +266,6 @@ export type EscolaUncheckedUpdateInput = {
 
 export type EscolaCreateManyInput = {
   id?: string
-  empresaId: string
   nome: string
   rede?: string | null
   periodoAvaliacao?: string | null
@@ -302,26 +282,14 @@ export type EscolaUpdateManyMutationInput = {
 
 export type EscolaUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   periodoAvaliacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type EscolaListRelationFilter = {
-  every?: Prisma.EscolaWhereInput
-  some?: Prisma.EscolaWhereInput
-  none?: Prisma.EscolaWhereInput
-}
-
-export type EscolaOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
 export type EscolaCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   rede?: Prisma.SortOrder
   periodoAvaliacao?: Prisma.SortOrder
@@ -330,7 +298,6 @@ export type EscolaCountOrderByAggregateInput = {
 
 export type EscolaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   rede?: Prisma.SortOrder
   periodoAvaliacao?: Prisma.SortOrder
@@ -339,7 +306,6 @@ export type EscolaMaxOrderByAggregateInput = {
 
 export type EscolaMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   rede?: Prisma.SortOrder
   periodoAvaliacao?: Prisma.SortOrder
@@ -349,48 +315,6 @@ export type EscolaMinOrderByAggregateInput = {
 export type EscolaScalarRelationFilter = {
   is?: Prisma.EscolaWhereInput
   isNot?: Prisma.EscolaWhereInput
-}
-
-export type EscolaCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.EscolaCreateWithoutEmpresaInput, Prisma.EscolaUncheckedCreateWithoutEmpresaInput> | Prisma.EscolaCreateWithoutEmpresaInput[] | Prisma.EscolaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.EscolaCreateOrConnectWithoutEmpresaInput | Prisma.EscolaCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.EscolaCreateManyEmpresaInputEnvelope
-  connect?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-}
-
-export type EscolaUncheckedCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.EscolaCreateWithoutEmpresaInput, Prisma.EscolaUncheckedCreateWithoutEmpresaInput> | Prisma.EscolaCreateWithoutEmpresaInput[] | Prisma.EscolaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.EscolaCreateOrConnectWithoutEmpresaInput | Prisma.EscolaCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.EscolaCreateManyEmpresaInputEnvelope
-  connect?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-}
-
-export type EscolaUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.EscolaCreateWithoutEmpresaInput, Prisma.EscolaUncheckedCreateWithoutEmpresaInput> | Prisma.EscolaCreateWithoutEmpresaInput[] | Prisma.EscolaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.EscolaCreateOrConnectWithoutEmpresaInput | Prisma.EscolaCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.EscolaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.EscolaUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.EscolaCreateManyEmpresaInputEnvelope
-  set?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  disconnect?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  delete?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  connect?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  update?: Prisma.EscolaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.EscolaUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.EscolaUpdateManyWithWhereWithoutEmpresaInput | Prisma.EscolaUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.EscolaScalarWhereInput | Prisma.EscolaScalarWhereInput[]
-}
-
-export type EscolaUncheckedUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.EscolaCreateWithoutEmpresaInput, Prisma.EscolaUncheckedCreateWithoutEmpresaInput> | Prisma.EscolaCreateWithoutEmpresaInput[] | Prisma.EscolaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.EscolaCreateOrConnectWithoutEmpresaInput | Prisma.EscolaCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.EscolaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.EscolaUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.EscolaCreateManyEmpresaInputEnvelope
-  set?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  disconnect?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  delete?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  connect?: Prisma.EscolaWhereUniqueInput | Prisma.EscolaWhereUniqueInput[]
-  update?: Prisma.EscolaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.EscolaUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.EscolaUpdateManyWithWhereWithoutEmpresaInput | Prisma.EscolaUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.EscolaScalarWhereInput | Prisma.EscolaScalarWhereInput[]
 }
 
 export type EscolaCreateNestedOneWithoutUnidadesInput = {
@@ -407,74 +331,16 @@ export type EscolaUpdateOneRequiredWithoutUnidadesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EscolaUpdateToOneWithWhereWithoutUnidadesInput, Prisma.EscolaUpdateWithoutUnidadesInput>, Prisma.EscolaUncheckedUpdateWithoutUnidadesInput>
 }
 
-export type EscolaCreateWithoutEmpresaInput = {
-  id?: string
-  nome: string
-  rede?: string | null
-  periodoAvaliacao?: string | null
-  criadoEm?: Date | string
-  unidades?: Prisma.UnidadeCreateNestedManyWithoutEscolaInput
-}
-
-export type EscolaUncheckedCreateWithoutEmpresaInput = {
-  id?: string
-  nome: string
-  rede?: string | null
-  periodoAvaliacao?: string | null
-  criadoEm?: Date | string
-  unidades?: Prisma.UnidadeUncheckedCreateNestedManyWithoutEscolaInput
-}
-
-export type EscolaCreateOrConnectWithoutEmpresaInput = {
-  where: Prisma.EscolaWhereUniqueInput
-  create: Prisma.XOR<Prisma.EscolaCreateWithoutEmpresaInput, Prisma.EscolaUncheckedCreateWithoutEmpresaInput>
-}
-
-export type EscolaCreateManyEmpresaInputEnvelope = {
-  data: Prisma.EscolaCreateManyEmpresaInput | Prisma.EscolaCreateManyEmpresaInput[]
-  skipDuplicates?: boolean
-}
-
-export type EscolaUpsertWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.EscolaWhereUniqueInput
-  update: Prisma.XOR<Prisma.EscolaUpdateWithoutEmpresaInput, Prisma.EscolaUncheckedUpdateWithoutEmpresaInput>
-  create: Prisma.XOR<Prisma.EscolaCreateWithoutEmpresaInput, Prisma.EscolaUncheckedCreateWithoutEmpresaInput>
-}
-
-export type EscolaUpdateWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.EscolaWhereUniqueInput
-  data: Prisma.XOR<Prisma.EscolaUpdateWithoutEmpresaInput, Prisma.EscolaUncheckedUpdateWithoutEmpresaInput>
-}
-
-export type EscolaUpdateManyWithWhereWithoutEmpresaInput = {
-  where: Prisma.EscolaScalarWhereInput
-  data: Prisma.XOR<Prisma.EscolaUpdateManyMutationInput, Prisma.EscolaUncheckedUpdateManyWithoutEmpresaInput>
-}
-
-export type EscolaScalarWhereInput = {
-  AND?: Prisma.EscolaScalarWhereInput | Prisma.EscolaScalarWhereInput[]
-  OR?: Prisma.EscolaScalarWhereInput[]
-  NOT?: Prisma.EscolaScalarWhereInput | Prisma.EscolaScalarWhereInput[]
-  id?: Prisma.StringFilter<"Escola"> | string
-  empresaId?: Prisma.StringFilter<"Escola"> | string
-  nome?: Prisma.StringFilter<"Escola"> | string
-  rede?: Prisma.StringNullableFilter<"Escola"> | string | null
-  periodoAvaliacao?: Prisma.StringNullableFilter<"Escola"> | string | null
-  criadoEm?: Prisma.DateTimeFilter<"Escola"> | Date | string
-}
-
 export type EscolaCreateWithoutUnidadesInput = {
   id?: string
   nome: string
   rede?: string | null
   periodoAvaliacao?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutEscolasInput
 }
 
 export type EscolaUncheckedCreateWithoutUnidadesInput = {
   id?: string
-  empresaId: string
   nome: string
   rede?: string | null
   periodoAvaliacao?: string | null
@@ -503,45 +369,9 @@ export type EscolaUpdateWithoutUnidadesInput = {
   rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   periodoAvaliacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutEscolasNestedInput
 }
 
 export type EscolaUncheckedUpdateWithoutUnidadesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
-  nome?: Prisma.StringFieldUpdateOperationsInput | string
-  rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  periodoAvaliacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type EscolaCreateManyEmpresaInput = {
-  id?: string
-  nome: string
-  rede?: string | null
-  periodoAvaliacao?: string | null
-  criadoEm?: Date | string
-}
-
-export type EscolaUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  nome?: Prisma.StringFieldUpdateOperationsInput | string
-  rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  periodoAvaliacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  unidades?: Prisma.UnidadeUpdateManyWithoutEscolaNestedInput
-}
-
-export type EscolaUncheckedUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  nome?: Prisma.StringFieldUpdateOperationsInput | string
-  rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  periodoAvaliacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  unidades?: Prisma.UnidadeUncheckedUpdateManyWithoutEscolaNestedInput
-}
-
-export type EscolaUncheckedUpdateManyWithoutEmpresaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   rede?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -582,67 +412,53 @@ export type EscolaCountOutputTypeCountUnidadesArgs<ExtArgs extends runtime.Types
 
 export type EscolaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   nome?: boolean
   rede?: boolean
   periodoAvaliacao?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidades?: boolean | Prisma.Escola$unidadesArgs<ExtArgs>
   _count?: boolean | Prisma.EscolaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["escola"]>
 
 export type EscolaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   nome?: boolean
   rede?: boolean
   periodoAvaliacao?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["escola"]>
 
 export type EscolaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   nome?: boolean
   rede?: boolean
   periodoAvaliacao?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["escola"]>
 
 export type EscolaSelectScalar = {
   id?: boolean
-  empresaId?: boolean
   nome?: boolean
   rede?: boolean
   periodoAvaliacao?: boolean
   criadoEm?: boolean
 }
 
-export type EscolaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "nome" | "rede" | "periodoAvaliacao" | "criadoEm", ExtArgs["result"]["escola"]>
+export type EscolaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "rede" | "periodoAvaliacao" | "criadoEm", ExtArgs["result"]["escola"]>
 export type EscolaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidades?: boolean | Prisma.Escola$unidadesArgs<ExtArgs>
   _count?: boolean | Prisma.EscolaCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type EscolaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
-}
-export type EscolaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
-}
+export type EscolaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type EscolaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $EscolaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Escola"
   objects: {
-    empresa: Prisma.$EmpresaPayload<ExtArgs>
     unidades: Prisma.$UnidadePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    empresaId: string
     nome: string
     rede: string | null
     periodoAvaliacao: string | null
@@ -1041,7 +857,6 @@ readonly fields: EscolaFieldRefs;
  */
 export interface Prisma__EscolaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   unidades<T extends Prisma.Escola$unidadesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Escola$unidadesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UnidadePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1073,7 +888,6 @@ export interface Prisma__EscolaClient<T, Null = never, ExtArgs extends runtime.T
  */
 export interface EscolaFieldRefs {
   readonly id: Prisma.FieldRef<"Escola", 'String'>
-  readonly empresaId: Prisma.FieldRef<"Escola", 'String'>
   readonly nome: Prisma.FieldRef<"Escola", 'String'>
   readonly rede: Prisma.FieldRef<"Escola", 'String'>
   readonly periodoAvaliacao: Prisma.FieldRef<"Escola", 'String'>
@@ -1332,10 +1146,6 @@ export type EscolaCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensio
    */
   data: Prisma.EscolaCreateManyInput | Prisma.EscolaCreateManyInput[]
   skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.EscolaIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1406,10 +1216,6 @@ export type EscolaUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensio
    * Limit how many Escolas to update.
    */
   limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.EscolaIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

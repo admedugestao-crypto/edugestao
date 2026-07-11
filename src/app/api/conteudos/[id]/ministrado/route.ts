@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 import { buscarAulaVinculada } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
@@ -9,8 +9,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
   const body = await req.json().catch(() => ({}));
@@ -20,12 +20,10 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, empresaId: true, alunoId: true, data: true, planejado: true, materiaId: true, aulaId: true, materia: { select: { nome: true } } },
+    select: { id: true, alunoId: true, data: true, planejado: true, materiaId: true, aulaId: true, materia: { select: { nome: true } } },
   });
 
-  if (!conteudo || conteudo.empresaId !== scope.empresaId) {
-    return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
-  }
+  if (!conteudo) return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   if (!conteudo.planejado) return NextResponse.json({ erro: "Conteúdo já está Ministrado." }, { status: 422 });
 
   const dY = conteudo.data.getUTCFullYear();
@@ -36,7 +34,6 @@ export async function POST(
   // usuário) — só cai para a busca por aluno+data (materia-aware, segura
   // contra ambiguidade) quando nenhum dos dois está disponível.
   const { aula, ambigua, candidatas } = await buscarAulaVinculada({
-    empresaId: scope.empresaId,
     aulaId: conteudo.aulaId || aulaIdEscolhido,
     alunoId: conteudo.alunoId,
     data: conteudo.data,

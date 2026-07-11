@@ -36,7 +36,6 @@ export type NotificacaoProvaSumAggregateOutputType = {
 
 export type NotificacaoProvaMinAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   professoraId: string | null
   avaliacaoId: string | null
   diasAntes: number | null
@@ -49,7 +48,6 @@ export type NotificacaoProvaMinAggregateOutputType = {
 
 export type NotificacaoProvaMaxAggregateOutputType = {
   id: string | null
-  empresaId: string | null
   professoraId: string | null
   avaliacaoId: string | null
   diasAntes: number | null
@@ -62,7 +60,6 @@ export type NotificacaoProvaMaxAggregateOutputType = {
 
 export type NotificacaoProvaCountAggregateOutputType = {
   id: number
-  empresaId: number
   professoraId: number
   avaliacaoId: number
   diasAntes: number
@@ -85,7 +82,6 @@ export type NotificacaoProvaSumAggregateInputType = {
 
 export type NotificacaoProvaMinAggregateInputType = {
   id?: true
-  empresaId?: true
   professoraId?: true
   avaliacaoId?: true
   diasAntes?: true
@@ -98,7 +94,6 @@ export type NotificacaoProvaMinAggregateInputType = {
 
 export type NotificacaoProvaMaxAggregateInputType = {
   id?: true
-  empresaId?: true
   professoraId?: true
   avaliacaoId?: true
   diasAntes?: true
@@ -111,7 +106,6 @@ export type NotificacaoProvaMaxAggregateInputType = {
 
 export type NotificacaoProvaCountAggregateInputType = {
   id?: true
-  empresaId?: true
   professoraId?: true
   avaliacaoId?: true
   diasAntes?: true
@@ -211,7 +205,6 @@ export type NotificacaoProvaGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type NotificacaoProvaGroupByOutputType = {
   id: string
-  empresaId: string
   professoraId: string
   avaliacaoId: string
   diasAntes: number
@@ -247,7 +240,6 @@ export type NotificacaoProvaWhereInput = {
   OR?: Prisma.NotificacaoProvaWhereInput[]
   NOT?: Prisma.NotificacaoProvaWhereInput | Prisma.NotificacaoProvaWhereInput[]
   id?: Prisma.StringFilter<"NotificacaoProva"> | string
-  empresaId?: Prisma.StringFilter<"NotificacaoProva"> | string
   professoraId?: Prisma.StringFilter<"NotificacaoProva"> | string
   avaliacaoId?: Prisma.StringFilter<"NotificacaoProva"> | string
   diasAntes?: Prisma.IntFilter<"NotificacaoProva"> | number
@@ -256,14 +248,12 @@ export type NotificacaoProvaWhereInput = {
   emailEnviado?: Prisma.BoolFilter<"NotificacaoProva"> | boolean
   email?: Prisma.StringNullableFilter<"NotificacaoProva"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"NotificacaoProva"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   professora?: Prisma.XOR<Prisma.ProfessoraScalarRelationFilter, Prisma.ProfessoraWhereInput>
   avaliacao?: Prisma.XOR<Prisma.AvaliacaoScalarRelationFilter, Prisma.AvaliacaoWhereInput>
 }
 
 export type NotificacaoProvaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   professoraId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   diasAntes?: Prisma.SortOrder
@@ -272,7 +262,6 @@ export type NotificacaoProvaOrderByWithRelationInput = {
   emailEnviado?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
-  empresa?: Prisma.EmpresaOrderByWithRelationInput
   professora?: Prisma.ProfessoraOrderByWithRelationInput
   avaliacao?: Prisma.AvaliacaoOrderByWithRelationInput
 }
@@ -283,7 +272,6 @@ export type NotificacaoProvaWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.NotificacaoProvaWhereInput | Prisma.NotificacaoProvaWhereInput[]
   OR?: Prisma.NotificacaoProvaWhereInput[]
   NOT?: Prisma.NotificacaoProvaWhereInput | Prisma.NotificacaoProvaWhereInput[]
-  empresaId?: Prisma.StringFilter<"NotificacaoProva"> | string
   professoraId?: Prisma.StringFilter<"NotificacaoProva"> | string
   avaliacaoId?: Prisma.StringFilter<"NotificacaoProva"> | string
   diasAntes?: Prisma.IntFilter<"NotificacaoProva"> | number
@@ -292,14 +280,12 @@ export type NotificacaoProvaWhereUniqueInput = Prisma.AtLeast<{
   emailEnviado?: Prisma.BoolFilter<"NotificacaoProva"> | boolean
   email?: Prisma.StringNullableFilter<"NotificacaoProva"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"NotificacaoProva"> | Date | string
-  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   professora?: Prisma.XOR<Prisma.ProfessoraScalarRelationFilter, Prisma.ProfessoraWhereInput>
   avaliacao?: Prisma.XOR<Prisma.AvaliacaoScalarRelationFilter, Prisma.AvaliacaoWhereInput>
 }, "id" | "professoraId_avaliacaoId_diasAntes">
 
 export type NotificacaoProvaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   professoraId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   diasAntes?: Prisma.SortOrder
@@ -320,7 +306,6 @@ export type NotificacaoProvaScalarWhereWithAggregatesInput = {
   OR?: Prisma.NotificacaoProvaScalarWhereWithAggregatesInput[]
   NOT?: Prisma.NotificacaoProvaScalarWhereWithAggregatesInput | Prisma.NotificacaoProvaScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"NotificacaoProva"> | string
-  empresaId?: Prisma.StringWithAggregatesFilter<"NotificacaoProva"> | string
   professoraId?: Prisma.StringWithAggregatesFilter<"NotificacaoProva"> | string
   avaliacaoId?: Prisma.StringWithAggregatesFilter<"NotificacaoProva"> | string
   diasAntes?: Prisma.IntWithAggregatesFilter<"NotificacaoProva"> | number
@@ -339,14 +324,12 @@ export type NotificacaoProvaCreateInput = {
   emailEnviado?: boolean
   email?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutNotificacoesProvaInput
   professora: Prisma.ProfessoraCreateNestedOneWithoutNotificacoesInput
   avaliacao: Prisma.AvaliacaoCreateNestedOneWithoutNotificacoesInput
 }
 
 export type NotificacaoProvaUncheckedCreateInput = {
   id?: string
-  empresaId: string
   professoraId: string
   avaliacaoId: string
   diasAntes: number
@@ -365,14 +348,12 @@ export type NotificacaoProvaUpdateInput = {
   emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotificacoesProvaNestedInput
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutNotificacoesNestedInput
   avaliacao?: Prisma.AvaliacaoUpdateOneRequiredWithoutNotificacoesNestedInput
 }
 
 export type NotificacaoProvaUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   professoraId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
@@ -385,7 +366,6 @@ export type NotificacaoProvaUncheckedUpdateInput = {
 
 export type NotificacaoProvaCreateManyInput = {
   id?: string
-  empresaId: string
   professoraId: string
   avaliacaoId: string
   diasAntes: number
@@ -408,7 +388,6 @@ export type NotificacaoProvaUpdateManyMutationInput = {
 
 export type NotificacaoProvaUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   professoraId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
@@ -437,7 +416,6 @@ export type NotificacaoProvaProfessoraIdAvaliacaoIdDiasAntesCompoundUniqueInput 
 
 export type NotificacaoProvaCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   professoraId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   diasAntes?: Prisma.SortOrder
@@ -454,7 +432,6 @@ export type NotificacaoProvaAvgOrderByAggregateInput = {
 
 export type NotificacaoProvaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   professoraId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   diasAntes?: Prisma.SortOrder
@@ -467,7 +444,6 @@ export type NotificacaoProvaMaxOrderByAggregateInput = {
 
 export type NotificacaoProvaMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  empresaId?: Prisma.SortOrder
   professoraId?: Prisma.SortOrder
   avaliacaoId?: Prisma.SortOrder
   diasAntes?: Prisma.SortOrder
@@ -480,48 +456,6 @@ export type NotificacaoProvaMinOrderByAggregateInput = {
 
 export type NotificacaoProvaSumOrderByAggregateInput = {
   diasAntes?: Prisma.SortOrder
-}
-
-export type NotificacaoProvaCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.NotificacaoProvaCreateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput> | Prisma.NotificacaoProvaCreateWithoutEmpresaInput[] | Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput | Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.NotificacaoProvaCreateManyEmpresaInputEnvelope
-  connect?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-}
-
-export type NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput = {
-  create?: Prisma.XOR<Prisma.NotificacaoProvaCreateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput> | Prisma.NotificacaoProvaCreateWithoutEmpresaInput[] | Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput | Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput[]
-  createMany?: Prisma.NotificacaoProvaCreateManyEmpresaInputEnvelope
-  connect?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-}
-
-export type NotificacaoProvaUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.NotificacaoProvaCreateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput> | Prisma.NotificacaoProvaCreateWithoutEmpresaInput[] | Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput | Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.NotificacaoProvaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.NotificacaoProvaUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.NotificacaoProvaCreateManyEmpresaInputEnvelope
-  set?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  disconnect?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  delete?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  connect?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  update?: Prisma.NotificacaoProvaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.NotificacaoProvaUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.NotificacaoProvaUpdateManyWithWhereWithoutEmpresaInput | Prisma.NotificacaoProvaUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.NotificacaoProvaScalarWhereInput | Prisma.NotificacaoProvaScalarWhereInput[]
-}
-
-export type NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput = {
-  create?: Prisma.XOR<Prisma.NotificacaoProvaCreateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput> | Prisma.NotificacaoProvaCreateWithoutEmpresaInput[] | Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput[]
-  connectOrCreate?: Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput | Prisma.NotificacaoProvaCreateOrConnectWithoutEmpresaInput[]
-  upsert?: Prisma.NotificacaoProvaUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.NotificacaoProvaUpsertWithWhereUniqueWithoutEmpresaInput[]
-  createMany?: Prisma.NotificacaoProvaCreateManyEmpresaInputEnvelope
-  set?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  disconnect?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  delete?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  connect?: Prisma.NotificacaoProvaWhereUniqueInput | Prisma.NotificacaoProvaWhereUniqueInput[]
-  update?: Prisma.NotificacaoProvaUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.NotificacaoProvaUpdateWithWhereUniqueWithoutEmpresaInput[]
-  updateMany?: Prisma.NotificacaoProvaUpdateManyWithWhereWithoutEmpresaInput | Prisma.NotificacaoProvaUpdateManyWithWhereWithoutEmpresaInput[]
-  deleteMany?: Prisma.NotificacaoProvaScalarWhereInput | Prisma.NotificacaoProvaScalarWhereInput[]
 }
 
 export type NotificacaoProvaCreateNestedManyWithoutProfessoraInput = {
@@ -608,72 +542,6 @@ export type NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput = {
   deleteMany?: Prisma.NotificacaoProvaScalarWhereInput | Prisma.NotificacaoProvaScalarWhereInput[]
 }
 
-export type NotificacaoProvaCreateWithoutEmpresaInput = {
-  id?: string
-  diasAntes: number
-  enviada?: boolean
-  whatsapp?: string | null
-  emailEnviado?: boolean
-  email?: string | null
-  criadoEm?: Date | string
-  professora: Prisma.ProfessoraCreateNestedOneWithoutNotificacoesInput
-  avaliacao: Prisma.AvaliacaoCreateNestedOneWithoutNotificacoesInput
-}
-
-export type NotificacaoProvaUncheckedCreateWithoutEmpresaInput = {
-  id?: string
-  professoraId: string
-  avaliacaoId: string
-  diasAntes: number
-  enviada?: boolean
-  whatsapp?: string | null
-  emailEnviado?: boolean
-  email?: string | null
-  criadoEm?: Date | string
-}
-
-export type NotificacaoProvaCreateOrConnectWithoutEmpresaInput = {
-  where: Prisma.NotificacaoProvaWhereUniqueInput
-  create: Prisma.XOR<Prisma.NotificacaoProvaCreateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput>
-}
-
-export type NotificacaoProvaCreateManyEmpresaInputEnvelope = {
-  data: Prisma.NotificacaoProvaCreateManyEmpresaInput | Prisma.NotificacaoProvaCreateManyEmpresaInput[]
-  skipDuplicates?: boolean
-}
-
-export type NotificacaoProvaUpsertWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.NotificacaoProvaWhereUniqueInput
-  update: Prisma.XOR<Prisma.NotificacaoProvaUpdateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedUpdateWithoutEmpresaInput>
-  create: Prisma.XOR<Prisma.NotificacaoProvaCreateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedCreateWithoutEmpresaInput>
-}
-
-export type NotificacaoProvaUpdateWithWhereUniqueWithoutEmpresaInput = {
-  where: Prisma.NotificacaoProvaWhereUniqueInput
-  data: Prisma.XOR<Prisma.NotificacaoProvaUpdateWithoutEmpresaInput, Prisma.NotificacaoProvaUncheckedUpdateWithoutEmpresaInput>
-}
-
-export type NotificacaoProvaUpdateManyWithWhereWithoutEmpresaInput = {
-  where: Prisma.NotificacaoProvaScalarWhereInput
-  data: Prisma.XOR<Prisma.NotificacaoProvaUpdateManyMutationInput, Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaInput>
-}
-
-export type NotificacaoProvaScalarWhereInput = {
-  AND?: Prisma.NotificacaoProvaScalarWhereInput | Prisma.NotificacaoProvaScalarWhereInput[]
-  OR?: Prisma.NotificacaoProvaScalarWhereInput[]
-  NOT?: Prisma.NotificacaoProvaScalarWhereInput | Prisma.NotificacaoProvaScalarWhereInput[]
-  id?: Prisma.StringFilter<"NotificacaoProva"> | string
-  empresaId?: Prisma.StringFilter<"NotificacaoProva"> | string
-  professoraId?: Prisma.StringFilter<"NotificacaoProva"> | string
-  avaliacaoId?: Prisma.StringFilter<"NotificacaoProva"> | string
-  diasAntes?: Prisma.IntFilter<"NotificacaoProva"> | number
-  enviada?: Prisma.BoolFilter<"NotificacaoProva"> | boolean
-  whatsapp?: Prisma.StringNullableFilter<"NotificacaoProva"> | string | null
-  emailEnviado?: Prisma.BoolFilter<"NotificacaoProva"> | boolean
-  email?: Prisma.StringNullableFilter<"NotificacaoProva"> | string | null
-  criadoEm?: Prisma.DateTimeFilter<"NotificacaoProva"> | Date | string
-}
-
 export type NotificacaoProvaCreateWithoutProfessoraInput = {
   id?: string
   diasAntes: number
@@ -682,13 +550,11 @@ export type NotificacaoProvaCreateWithoutProfessoraInput = {
   emailEnviado?: boolean
   email?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutNotificacoesProvaInput
   avaliacao: Prisma.AvaliacaoCreateNestedOneWithoutNotificacoesInput
 }
 
 export type NotificacaoProvaUncheckedCreateWithoutProfessoraInput = {
   id?: string
-  empresaId: string
   avaliacaoId: string
   diasAntes: number
   enviada?: boolean
@@ -724,6 +590,21 @@ export type NotificacaoProvaUpdateManyWithWhereWithoutProfessoraInput = {
   data: Prisma.XOR<Prisma.NotificacaoProvaUpdateManyMutationInput, Prisma.NotificacaoProvaUncheckedUpdateManyWithoutProfessoraInput>
 }
 
+export type NotificacaoProvaScalarWhereInput = {
+  AND?: Prisma.NotificacaoProvaScalarWhereInput | Prisma.NotificacaoProvaScalarWhereInput[]
+  OR?: Prisma.NotificacaoProvaScalarWhereInput[]
+  NOT?: Prisma.NotificacaoProvaScalarWhereInput | Prisma.NotificacaoProvaScalarWhereInput[]
+  id?: Prisma.StringFilter<"NotificacaoProva"> | string
+  professoraId?: Prisma.StringFilter<"NotificacaoProva"> | string
+  avaliacaoId?: Prisma.StringFilter<"NotificacaoProva"> | string
+  diasAntes?: Prisma.IntFilter<"NotificacaoProva"> | number
+  enviada?: Prisma.BoolFilter<"NotificacaoProva"> | boolean
+  whatsapp?: Prisma.StringNullableFilter<"NotificacaoProva"> | string | null
+  emailEnviado?: Prisma.BoolFilter<"NotificacaoProva"> | boolean
+  email?: Prisma.StringNullableFilter<"NotificacaoProva"> | string | null
+  criadoEm?: Prisma.DateTimeFilter<"NotificacaoProva"> | Date | string
+}
+
 export type NotificacaoProvaCreateWithoutAvaliacaoInput = {
   id?: string
   diasAntes: number
@@ -732,13 +613,11 @@ export type NotificacaoProvaCreateWithoutAvaliacaoInput = {
   emailEnviado?: boolean
   email?: string | null
   criadoEm?: Date | string
-  empresa: Prisma.EmpresaCreateNestedOneWithoutNotificacoesProvaInput
   professora: Prisma.ProfessoraCreateNestedOneWithoutNotificacoesInput
 }
 
 export type NotificacaoProvaUncheckedCreateWithoutAvaliacaoInput = {
   id?: string
-  empresaId: string
   professoraId: string
   diasAntes: number
   enviada?: boolean
@@ -774,57 +653,8 @@ export type NotificacaoProvaUpdateManyWithWhereWithoutAvaliacaoInput = {
   data: Prisma.XOR<Prisma.NotificacaoProvaUpdateManyMutationInput, Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoInput>
 }
 
-export type NotificacaoProvaCreateManyEmpresaInput = {
-  id?: string
-  professoraId: string
-  avaliacaoId: string
-  diasAntes: number
-  enviada?: boolean
-  whatsapp?: string | null
-  emailEnviado?: boolean
-  email?: string | null
-  criadoEm?: Date | string
-}
-
-export type NotificacaoProvaUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
-  enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  professora?: Prisma.ProfessoraUpdateOneRequiredWithoutNotificacoesNestedInput
-  avaliacao?: Prisma.AvaliacaoUpdateOneRequiredWithoutNotificacoesNestedInput
-}
-
-export type NotificacaoProvaUncheckedUpdateWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  professoraId?: Prisma.StringFieldUpdateOperationsInput | string
-  avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
-  diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
-  enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type NotificacaoProvaUncheckedUpdateManyWithoutEmpresaInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  professoraId?: Prisma.StringFieldUpdateOperationsInput | string
-  avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
-  diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
-  enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 export type NotificacaoProvaCreateManyProfessoraInput = {
   id?: string
-  empresaId: string
   avaliacaoId: string
   diasAntes: number
   enviada?: boolean
@@ -842,13 +672,11 @@ export type NotificacaoProvaUpdateWithoutProfessoraInput = {
   emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotificacoesProvaNestedInput
   avaliacao?: Prisma.AvaliacaoUpdateOneRequiredWithoutNotificacoesNestedInput
 }
 
 export type NotificacaoProvaUncheckedUpdateWithoutProfessoraInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -860,7 +688,6 @@ export type NotificacaoProvaUncheckedUpdateWithoutProfessoraInput = {
 
 export type NotificacaoProvaUncheckedUpdateManyWithoutProfessoraInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   avaliacaoId?: Prisma.StringFieldUpdateOperationsInput | string
   diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -872,7 +699,6 @@ export type NotificacaoProvaUncheckedUpdateManyWithoutProfessoraInput = {
 
 export type NotificacaoProvaCreateManyAvaliacaoInput = {
   id?: string
-  empresaId: string
   professoraId: string
   diasAntes: number
   enviada?: boolean
@@ -890,13 +716,11 @@ export type NotificacaoProvaUpdateWithoutAvaliacaoInput = {
   emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotificacoesProvaNestedInput
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutNotificacoesNestedInput
 }
 
 export type NotificacaoProvaUncheckedUpdateWithoutAvaliacaoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   professoraId?: Prisma.StringFieldUpdateOperationsInput | string
   diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -908,7 +732,6 @@ export type NotificacaoProvaUncheckedUpdateWithoutAvaliacaoInput = {
 
 export type NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   professoraId?: Prisma.StringFieldUpdateOperationsInput | string
   diasAntes?: Prisma.IntFieldUpdateOperationsInput | number
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -922,7 +745,6 @@ export type NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoInput = {
 
 export type NotificacaoProvaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   professoraId?: boolean
   avaliacaoId?: boolean
   diasAntes?: boolean
@@ -931,14 +753,12 @@ export type NotificacaoProvaSelect<ExtArgs extends runtime.Types.Extensions.Inte
   emailEnviado?: boolean
   email?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["notificacaoProva"]>
 
 export type NotificacaoProvaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   professoraId?: boolean
   avaliacaoId?: boolean
   diasAntes?: boolean
@@ -947,14 +767,12 @@ export type NotificacaoProvaSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   emailEnviado?: boolean
   email?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["notificacaoProva"]>
 
 export type NotificacaoProvaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  empresaId?: boolean
   professoraId?: boolean
   avaliacaoId?: boolean
   diasAntes?: boolean
@@ -963,14 +781,12 @@ export type NotificacaoProvaSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   emailEnviado?: boolean
   email?: boolean
   criadoEm?: boolean
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["notificacaoProva"]>
 
 export type NotificacaoProvaSelectScalar = {
   id?: boolean
-  empresaId?: boolean
   professoraId?: boolean
   avaliacaoId?: boolean
   diasAntes?: boolean
@@ -981,19 +797,16 @@ export type NotificacaoProvaSelectScalar = {
   criadoEm?: boolean
 }
 
-export type NotificacaoProvaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "professoraId" | "avaliacaoId" | "diasAntes" | "enviada" | "whatsapp" | "emailEnviado" | "email" | "criadoEm", ExtArgs["result"]["notificacaoProva"]>
+export type NotificacaoProvaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "professoraId" | "avaliacaoId" | "diasAntes" | "enviada" | "whatsapp" | "emailEnviado" | "email" | "criadoEm", ExtArgs["result"]["notificacaoProva"]>
 export type NotificacaoProvaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
 }
 export type NotificacaoProvaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
 }
 export type NotificacaoProvaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
   avaliacao?: boolean | Prisma.AvaliacaoDefaultArgs<ExtArgs>
 }
@@ -1001,13 +814,11 @@ export type NotificacaoProvaIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
 export type $NotificacaoProvaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "NotificacaoProva"
   objects: {
-    empresa: Prisma.$EmpresaPayload<ExtArgs>
     professora: Prisma.$ProfessoraPayload<ExtArgs>
     avaliacao: Prisma.$AvaliacaoPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    empresaId: string
     professoraId: string
     avaliacaoId: string
     diasAntes: number
@@ -1410,7 +1221,6 @@ readonly fields: NotificacaoProvaFieldRefs;
  */
 export interface Prisma__NotificacaoProvaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   professora<T extends Prisma.ProfessoraDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProfessoraDefaultArgs<ExtArgs>>): Prisma.Prisma__ProfessoraClient<runtime.Types.Result.GetResult<Prisma.$ProfessoraPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   avaliacao<T extends Prisma.AvaliacaoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AvaliacaoDefaultArgs<ExtArgs>>): Prisma.Prisma__AvaliacaoClient<runtime.Types.Result.GetResult<Prisma.$AvaliacaoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1443,7 +1253,6 @@ export interface Prisma__NotificacaoProvaClient<T, Null = never, ExtArgs extends
  */
 export interface NotificacaoProvaFieldRefs {
   readonly id: Prisma.FieldRef<"NotificacaoProva", 'String'>
-  readonly empresaId: Prisma.FieldRef<"NotificacaoProva", 'String'>
   readonly professoraId: Prisma.FieldRef<"NotificacaoProva", 'String'>
   readonly avaliacaoId: Prisma.FieldRef<"NotificacaoProva", 'String'>
   readonly diasAntes: Prisma.FieldRef<"NotificacaoProva", 'Int'>

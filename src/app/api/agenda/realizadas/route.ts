@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getSessionScope } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/agenda/realizadas?alunoId=xxx
 // Retorna aulas REALIZADA do aluno que ainda não têm pagamento vinculado
 export async function GET(req: NextRequest) {
-  const scope = await getSessionScope();
-  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  const session = await auth();
+  if (!session) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const alunoId = new URL(req.url).searchParams.get("alunoId");
   if (!alunoId) return NextResponse.json({ erro: "alunoId obrigatório" }, { status: 400 });
 
   const aulas = await prisma.agendaAula.findMany({
     where: {
-      empresaId: scope.empresaId,
       alunoId,
       status: "REALIZADA",
       pagamentos: { none: {} },
