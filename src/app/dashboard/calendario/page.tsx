@@ -13,13 +13,24 @@ export default async function CalendarioPage() {
 
   const [avaliacoes, escolas, materias] = await Promise.all([
     prisma.avaliacao.findMany({
-      where: { empresaId: scope.empresaId },
+      where: {
+        empresaId: scope.empresaId,
+        ...(professoraId ? { unidade: { alunos: { some: { professoraId, status: "ATIVO" } } } } : {}),
+      },
       include: { unidade: { include: { escola: true } }, materia: true },
       orderBy: { data: "asc" },
     }),
     prisma.escola.findMany({
-      where: { empresaId: scope.empresaId },
-      include: { unidades: { orderBy: { nome: "asc" } } },
+      where: {
+        empresaId: scope.empresaId,
+        ...(professoraId ? { unidades: { some: { alunos: { some: { professoraId, status: "ATIVO" } } } } } : {}),
+      },
+      include: {
+        unidades: {
+          where: professoraId ? { alunos: { some: { professoraId, status: "ATIVO" } } } : undefined,
+          orderBy: { nome: "asc" },
+        },
+      },
       orderBy: { nome: "asc" },
     }),
     // Se for professor, traz só as disciplinas vinculadas aos seus alunos

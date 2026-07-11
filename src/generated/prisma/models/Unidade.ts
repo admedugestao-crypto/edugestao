@@ -26,6 +26,7 @@ export type AggregateUnidade = {
 
 export type UnidadeMinAggregateOutputType = {
   id: string | null
+  empresaId: string | null
   escolaId: string | null
   nome: string | null
   endereco: string | null
@@ -41,6 +42,7 @@ export type UnidadeMinAggregateOutputType = {
 
 export type UnidadeMaxAggregateOutputType = {
   id: string | null
+  empresaId: string | null
   escolaId: string | null
   nome: string | null
   endereco: string | null
@@ -56,6 +58,7 @@ export type UnidadeMaxAggregateOutputType = {
 
 export type UnidadeCountAggregateOutputType = {
   id: number
+  empresaId: number
   escolaId: number
   nome: number
   endereco: number
@@ -73,6 +76,7 @@ export type UnidadeCountAggregateOutputType = {
 
 export type UnidadeMinAggregateInputType = {
   id?: true
+  empresaId?: true
   escolaId?: true
   nome?: true
   endereco?: true
@@ -88,6 +92,7 @@ export type UnidadeMinAggregateInputType = {
 
 export type UnidadeMaxAggregateInputType = {
   id?: true
+  empresaId?: true
   escolaId?: true
   nome?: true
   endereco?: true
@@ -103,6 +108,7 @@ export type UnidadeMaxAggregateInputType = {
 
 export type UnidadeCountAggregateInputType = {
   id?: true
+  empresaId?: true
   escolaId?: true
   nome?: true
   endereco?: true
@@ -191,6 +197,7 @@ export type UnidadeGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type UnidadeGroupByOutputType = {
   id: string
+  empresaId: string
   escolaId: string
   nome: string
   endereco: string | null
@@ -227,6 +234,7 @@ export type UnidadeWhereInput = {
   OR?: Prisma.UnidadeWhereInput[]
   NOT?: Prisma.UnidadeWhereInput | Prisma.UnidadeWhereInput[]
   id?: Prisma.StringFilter<"Unidade"> | string
+  empresaId?: Prisma.StringFilter<"Unidade"> | string
   escolaId?: Prisma.StringFilter<"Unidade"> | string
   nome?: Prisma.StringFilter<"Unidade"> | string
   endereco?: Prisma.StringNullableFilter<"Unidade"> | string | null
@@ -238,6 +246,7 @@ export type UnidadeWhereInput = {
   diretor?: Prisma.StringNullableFilter<"Unidade"> | string | null
   turno?: Prisma.StringNullableFilter<"Unidade"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Unidade"> | Date | string
+  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   escola?: Prisma.XOR<Prisma.EscolaScalarRelationFilter, Prisma.EscolaWhereInput>
   alunos?: Prisma.AlunoListRelationFilter
   calendarios?: Prisma.CalendarioEscolarListRelationFilter
@@ -246,6 +255,7 @@ export type UnidadeWhereInput = {
 
 export type UnidadeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   escolaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   endereco?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -257,6 +267,7 @@ export type UnidadeOrderByWithRelationInput = {
   diretor?: Prisma.SortOrderInput | Prisma.SortOrder
   turno?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+  empresa?: Prisma.EmpresaOrderByWithRelationInput
   escola?: Prisma.EscolaOrderByWithRelationInput
   alunos?: Prisma.AlunoOrderByRelationAggregateInput
   calendarios?: Prisma.CalendarioEscolarOrderByRelationAggregateInput
@@ -268,6 +279,7 @@ export type UnidadeWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.UnidadeWhereInput | Prisma.UnidadeWhereInput[]
   OR?: Prisma.UnidadeWhereInput[]
   NOT?: Prisma.UnidadeWhereInput | Prisma.UnidadeWhereInput[]
+  empresaId?: Prisma.StringFilter<"Unidade"> | string
   escolaId?: Prisma.StringFilter<"Unidade"> | string
   nome?: Prisma.StringFilter<"Unidade"> | string
   endereco?: Prisma.StringNullableFilter<"Unidade"> | string | null
@@ -279,6 +291,7 @@ export type UnidadeWhereUniqueInput = Prisma.AtLeast<{
   diretor?: Prisma.StringNullableFilter<"Unidade"> | string | null
   turno?: Prisma.StringNullableFilter<"Unidade"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Unidade"> | Date | string
+  empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   escola?: Prisma.XOR<Prisma.EscolaScalarRelationFilter, Prisma.EscolaWhereInput>
   alunos?: Prisma.AlunoListRelationFilter
   calendarios?: Prisma.CalendarioEscolarListRelationFilter
@@ -287,6 +300,7 @@ export type UnidadeWhereUniqueInput = Prisma.AtLeast<{
 
 export type UnidadeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   escolaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   endereco?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -308,6 +322,7 @@ export type UnidadeScalarWhereWithAggregatesInput = {
   OR?: Prisma.UnidadeScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UnidadeScalarWhereWithAggregatesInput | Prisma.UnidadeScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Unidade"> | string
+  empresaId?: Prisma.StringWithAggregatesFilter<"Unidade"> | string
   escolaId?: Prisma.StringWithAggregatesFilter<"Unidade"> | string
   nome?: Prisma.StringWithAggregatesFilter<"Unidade"> | string
   endereco?: Prisma.StringNullableWithAggregatesFilter<"Unidade"> | string | null
@@ -333,6 +348,7 @@ export type UnidadeCreateInput = {
   diretor?: string | null
   turno?: string | null
   criadoEm?: Date | string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutUnidadesInput
   escola: Prisma.EscolaCreateNestedOneWithoutUnidadesInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutUnidadeInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutUnidadeInput
@@ -341,6 +357,7 @@ export type UnidadeCreateInput = {
 
 export type UnidadeUncheckedCreateInput = {
   id?: string
+  empresaId: string
   escolaId: string
   nome: string
   endereco?: string | null
@@ -369,6 +386,7 @@ export type UnidadeUpdateInput = {
   diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutUnidadesNestedInput
   escola?: Prisma.EscolaUpdateOneRequiredWithoutUnidadesNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutUnidadeNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutUnidadeNestedInput
@@ -377,6 +395,7 @@ export type UnidadeUpdateInput = {
 
 export type UnidadeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   escolaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -395,6 +414,7 @@ export type UnidadeUncheckedUpdateInput = {
 
 export type UnidadeCreateManyInput = {
   id?: string
+  empresaId: string
   escolaId: string
   nome: string
   endereco?: string | null
@@ -424,6 +444,7 @@ export type UnidadeUpdateManyMutationInput = {
 
 export type UnidadeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   escolaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -449,6 +470,7 @@ export type UnidadeOrderByRelationAggregateInput = {
 
 export type UnidadeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   escolaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   endereco?: Prisma.SortOrder
@@ -464,6 +486,7 @@ export type UnidadeCountOrderByAggregateInput = {
 
 export type UnidadeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   escolaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   endereco?: Prisma.SortOrder
@@ -479,6 +502,7 @@ export type UnidadeMaxOrderByAggregateInput = {
 
 export type UnidadeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  empresaId?: Prisma.SortOrder
   escolaId?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   endereco?: Prisma.SortOrder
@@ -495,6 +519,48 @@ export type UnidadeMinOrderByAggregateInput = {
 export type UnidadeScalarRelationFilter = {
   is?: Prisma.UnidadeWhereInput
   isNot?: Prisma.UnidadeWhereInput
+}
+
+export type UnidadeCreateNestedManyWithoutEmpresaInput = {
+  create?: Prisma.XOR<Prisma.UnidadeCreateWithoutEmpresaInput, Prisma.UnidadeUncheckedCreateWithoutEmpresaInput> | Prisma.UnidadeCreateWithoutEmpresaInput[] | Prisma.UnidadeUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.UnidadeCreateOrConnectWithoutEmpresaInput | Prisma.UnidadeCreateOrConnectWithoutEmpresaInput[]
+  createMany?: Prisma.UnidadeCreateManyEmpresaInputEnvelope
+  connect?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+}
+
+export type UnidadeUncheckedCreateNestedManyWithoutEmpresaInput = {
+  create?: Prisma.XOR<Prisma.UnidadeCreateWithoutEmpresaInput, Prisma.UnidadeUncheckedCreateWithoutEmpresaInput> | Prisma.UnidadeCreateWithoutEmpresaInput[] | Prisma.UnidadeUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.UnidadeCreateOrConnectWithoutEmpresaInput | Prisma.UnidadeCreateOrConnectWithoutEmpresaInput[]
+  createMany?: Prisma.UnidadeCreateManyEmpresaInputEnvelope
+  connect?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+}
+
+export type UnidadeUpdateManyWithoutEmpresaNestedInput = {
+  create?: Prisma.XOR<Prisma.UnidadeCreateWithoutEmpresaInput, Prisma.UnidadeUncheckedCreateWithoutEmpresaInput> | Prisma.UnidadeCreateWithoutEmpresaInput[] | Prisma.UnidadeUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.UnidadeCreateOrConnectWithoutEmpresaInput | Prisma.UnidadeCreateOrConnectWithoutEmpresaInput[]
+  upsert?: Prisma.UnidadeUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.UnidadeUpsertWithWhereUniqueWithoutEmpresaInput[]
+  createMany?: Prisma.UnidadeCreateManyEmpresaInputEnvelope
+  set?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  disconnect?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  delete?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  connect?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  update?: Prisma.UnidadeUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.UnidadeUpdateWithWhereUniqueWithoutEmpresaInput[]
+  updateMany?: Prisma.UnidadeUpdateManyWithWhereWithoutEmpresaInput | Prisma.UnidadeUpdateManyWithWhereWithoutEmpresaInput[]
+  deleteMany?: Prisma.UnidadeScalarWhereInput | Prisma.UnidadeScalarWhereInput[]
+}
+
+export type UnidadeUncheckedUpdateManyWithoutEmpresaNestedInput = {
+  create?: Prisma.XOR<Prisma.UnidadeCreateWithoutEmpresaInput, Prisma.UnidadeUncheckedCreateWithoutEmpresaInput> | Prisma.UnidadeCreateWithoutEmpresaInput[] | Prisma.UnidadeUncheckedCreateWithoutEmpresaInput[]
+  connectOrCreate?: Prisma.UnidadeCreateOrConnectWithoutEmpresaInput | Prisma.UnidadeCreateOrConnectWithoutEmpresaInput[]
+  upsert?: Prisma.UnidadeUpsertWithWhereUniqueWithoutEmpresaInput | Prisma.UnidadeUpsertWithWhereUniqueWithoutEmpresaInput[]
+  createMany?: Prisma.UnidadeCreateManyEmpresaInputEnvelope
+  set?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  disconnect?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  delete?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  connect?: Prisma.UnidadeWhereUniqueInput | Prisma.UnidadeWhereUniqueInput[]
+  update?: Prisma.UnidadeUpdateWithWhereUniqueWithoutEmpresaInput | Prisma.UnidadeUpdateWithWhereUniqueWithoutEmpresaInput[]
+  updateMany?: Prisma.UnidadeUpdateManyWithWhereWithoutEmpresaInput | Prisma.UnidadeUpdateManyWithWhereWithoutEmpresaInput[]
+  deleteMany?: Prisma.UnidadeScalarWhereInput | Prisma.UnidadeScalarWhereInput[]
 }
 
 export type UnidadeCreateNestedManyWithoutEscolaInput = {
@@ -581,6 +647,87 @@ export type UnidadeUpdateOneRequiredWithoutAlunosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UnidadeUpdateToOneWithWhereWithoutAlunosInput, Prisma.UnidadeUpdateWithoutAlunosInput>, Prisma.UnidadeUncheckedUpdateWithoutAlunosInput>
 }
 
+export type UnidadeCreateWithoutEmpresaInput = {
+  id?: string
+  nome: string
+  endereco?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  cep?: string | null
+  telefone?: string | null
+  diretor?: string | null
+  turno?: string | null
+  criadoEm?: Date | string
+  escola: Prisma.EscolaCreateNestedOneWithoutUnidadesInput
+  alunos?: Prisma.AlunoCreateNestedManyWithoutUnidadeInput
+  calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutUnidadeInput
+  avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutUnidadeInput
+}
+
+export type UnidadeUncheckedCreateWithoutEmpresaInput = {
+  id?: string
+  escolaId: string
+  nome: string
+  endereco?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  cep?: string | null
+  telefone?: string | null
+  diretor?: string | null
+  turno?: string | null
+  criadoEm?: Date | string
+  alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutUnidadeInput
+  calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutUnidadeInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedCreateNestedManyWithoutUnidadeInput
+}
+
+export type UnidadeCreateOrConnectWithoutEmpresaInput = {
+  where: Prisma.UnidadeWhereUniqueInput
+  create: Prisma.XOR<Prisma.UnidadeCreateWithoutEmpresaInput, Prisma.UnidadeUncheckedCreateWithoutEmpresaInput>
+}
+
+export type UnidadeCreateManyEmpresaInputEnvelope = {
+  data: Prisma.UnidadeCreateManyEmpresaInput | Prisma.UnidadeCreateManyEmpresaInput[]
+  skipDuplicates?: boolean
+}
+
+export type UnidadeUpsertWithWhereUniqueWithoutEmpresaInput = {
+  where: Prisma.UnidadeWhereUniqueInput
+  update: Prisma.XOR<Prisma.UnidadeUpdateWithoutEmpresaInput, Prisma.UnidadeUncheckedUpdateWithoutEmpresaInput>
+  create: Prisma.XOR<Prisma.UnidadeCreateWithoutEmpresaInput, Prisma.UnidadeUncheckedCreateWithoutEmpresaInput>
+}
+
+export type UnidadeUpdateWithWhereUniqueWithoutEmpresaInput = {
+  where: Prisma.UnidadeWhereUniqueInput
+  data: Prisma.XOR<Prisma.UnidadeUpdateWithoutEmpresaInput, Prisma.UnidadeUncheckedUpdateWithoutEmpresaInput>
+}
+
+export type UnidadeUpdateManyWithWhereWithoutEmpresaInput = {
+  where: Prisma.UnidadeScalarWhereInput
+  data: Prisma.XOR<Prisma.UnidadeUpdateManyMutationInput, Prisma.UnidadeUncheckedUpdateManyWithoutEmpresaInput>
+}
+
+export type UnidadeScalarWhereInput = {
+  AND?: Prisma.UnidadeScalarWhereInput | Prisma.UnidadeScalarWhereInput[]
+  OR?: Prisma.UnidadeScalarWhereInput[]
+  NOT?: Prisma.UnidadeScalarWhereInput | Prisma.UnidadeScalarWhereInput[]
+  id?: Prisma.StringFilter<"Unidade"> | string
+  empresaId?: Prisma.StringFilter<"Unidade"> | string
+  escolaId?: Prisma.StringFilter<"Unidade"> | string
+  nome?: Prisma.StringFilter<"Unidade"> | string
+  endereco?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  bairro?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  cidade?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  estado?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  cep?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  telefone?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  diretor?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  turno?: Prisma.StringNullableFilter<"Unidade"> | string | null
+  criadoEm?: Prisma.DateTimeFilter<"Unidade"> | Date | string
+}
+
 export type UnidadeCreateWithoutEscolaInput = {
   id?: string
   nome: string
@@ -593,6 +740,7 @@ export type UnidadeCreateWithoutEscolaInput = {
   diretor?: string | null
   turno?: string | null
   criadoEm?: Date | string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutUnidadesInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutUnidadeInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutUnidadeInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutUnidadeInput
@@ -600,6 +748,7 @@ export type UnidadeCreateWithoutEscolaInput = {
 
 export type UnidadeUncheckedCreateWithoutEscolaInput = {
   id?: string
+  empresaId: string
   nome: string
   endereco?: string | null
   bairro?: string | null
@@ -641,24 +790,6 @@ export type UnidadeUpdateManyWithWhereWithoutEscolaInput = {
   data: Prisma.XOR<Prisma.UnidadeUpdateManyMutationInput, Prisma.UnidadeUncheckedUpdateManyWithoutEscolaInput>
 }
 
-export type UnidadeScalarWhereInput = {
-  AND?: Prisma.UnidadeScalarWhereInput | Prisma.UnidadeScalarWhereInput[]
-  OR?: Prisma.UnidadeScalarWhereInput[]
-  NOT?: Prisma.UnidadeScalarWhereInput | Prisma.UnidadeScalarWhereInput[]
-  id?: Prisma.StringFilter<"Unidade"> | string
-  escolaId?: Prisma.StringFilter<"Unidade"> | string
-  nome?: Prisma.StringFilter<"Unidade"> | string
-  endereco?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  bairro?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  cidade?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  estado?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  cep?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  telefone?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  diretor?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  turno?: Prisma.StringNullableFilter<"Unidade"> | string | null
-  criadoEm?: Prisma.DateTimeFilter<"Unidade"> | Date | string
-}
-
 export type UnidadeCreateWithoutCalendariosInput = {
   id?: string
   nome: string
@@ -671,6 +802,7 @@ export type UnidadeCreateWithoutCalendariosInput = {
   diretor?: string | null
   turno?: string | null
   criadoEm?: Date | string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutUnidadesInput
   escola: Prisma.EscolaCreateNestedOneWithoutUnidadesInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutUnidadeInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutUnidadeInput
@@ -678,6 +810,7 @@ export type UnidadeCreateWithoutCalendariosInput = {
 
 export type UnidadeUncheckedCreateWithoutCalendariosInput = {
   id?: string
+  empresaId: string
   escolaId: string
   nome: string
   endereco?: string | null
@@ -721,6 +854,7 @@ export type UnidadeUpdateWithoutCalendariosInput = {
   diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutUnidadesNestedInput
   escola?: Prisma.EscolaUpdateOneRequiredWithoutUnidadesNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutUnidadeNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutUnidadeNestedInput
@@ -728,6 +862,7 @@ export type UnidadeUpdateWithoutCalendariosInput = {
 
 export type UnidadeUncheckedUpdateWithoutCalendariosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   escolaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -755,6 +890,7 @@ export type UnidadeCreateWithoutAvaliacoesInput = {
   diretor?: string | null
   turno?: string | null
   criadoEm?: Date | string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutUnidadesInput
   escola: Prisma.EscolaCreateNestedOneWithoutUnidadesInput
   alunos?: Prisma.AlunoCreateNestedManyWithoutUnidadeInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutUnidadeInput
@@ -762,6 +898,7 @@ export type UnidadeCreateWithoutAvaliacoesInput = {
 
 export type UnidadeUncheckedCreateWithoutAvaliacoesInput = {
   id?: string
+  empresaId: string
   escolaId: string
   nome: string
   endereco?: string | null
@@ -805,6 +942,7 @@ export type UnidadeUpdateWithoutAvaliacoesInput = {
   diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutUnidadesNestedInput
   escola?: Prisma.EscolaUpdateOneRequiredWithoutUnidadesNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutUnidadeNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutUnidadeNestedInput
@@ -812,6 +950,7 @@ export type UnidadeUpdateWithoutAvaliacoesInput = {
 
 export type UnidadeUncheckedUpdateWithoutAvaliacoesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   escolaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -839,6 +978,7 @@ export type UnidadeCreateWithoutAlunosInput = {
   diretor?: string | null
   turno?: string | null
   criadoEm?: Date | string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutUnidadesInput
   escola: Prisma.EscolaCreateNestedOneWithoutUnidadesInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutUnidadeInput
   avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutUnidadeInput
@@ -846,6 +986,7 @@ export type UnidadeCreateWithoutAlunosInput = {
 
 export type UnidadeUncheckedCreateWithoutAlunosInput = {
   id?: string
+  empresaId: string
   escolaId: string
   nome: string
   endereco?: string | null
@@ -889,6 +1030,7 @@ export type UnidadeUpdateWithoutAlunosInput = {
   diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutUnidadesNestedInput
   escola?: Prisma.EscolaUpdateOneRequiredWithoutUnidadesNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutUnidadeNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutUnidadeNestedInput
@@ -896,6 +1038,7 @@ export type UnidadeUpdateWithoutAlunosInput = {
 
 export type UnidadeUncheckedUpdateWithoutAlunosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   escolaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -911,8 +1054,75 @@ export type UnidadeUncheckedUpdateWithoutAlunosInput = {
   avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutUnidadeNestedInput
 }
 
+export type UnidadeCreateManyEmpresaInput = {
+  id?: string
+  escolaId: string
+  nome: string
+  endereco?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  cep?: string | null
+  telefone?: string | null
+  diretor?: string | null
+  turno?: string | null
+  criadoEm?: Date | string
+}
+
+export type UnidadeUpdateWithoutEmpresaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  escola?: Prisma.EscolaUpdateOneRequiredWithoutUnidadesNestedInput
+  alunos?: Prisma.AlunoUpdateManyWithoutUnidadeNestedInput
+  calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutUnidadeNestedInput
+  avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutUnidadeNestedInput
+}
+
+export type UnidadeUncheckedUpdateWithoutEmpresaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  escolaId?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  alunos?: Prisma.AlunoUncheckedUpdateManyWithoutUnidadeNestedInput
+  calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutUnidadeNestedInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutUnidadeNestedInput
+}
+
+export type UnidadeUncheckedUpdateManyWithoutEmpresaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  escolaId?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type UnidadeCreateManyEscolaInput = {
   id?: string
+  empresaId: string
   nome: string
   endereco?: string | null
   bairro?: string | null
@@ -937,6 +1147,7 @@ export type UnidadeUpdateWithoutEscolaInput = {
   diretor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   turno?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutUnidadesNestedInput
   alunos?: Prisma.AlunoUpdateManyWithoutUnidadeNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutUnidadeNestedInput
   avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutUnidadeNestedInput
@@ -944,6 +1155,7 @@ export type UnidadeUpdateWithoutEscolaInput = {
 
 export type UnidadeUncheckedUpdateWithoutEscolaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -961,6 +1173,7 @@ export type UnidadeUncheckedUpdateWithoutEscolaInput = {
 
 export type UnidadeUncheckedUpdateManyWithoutEscolaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   endereco?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1024,6 +1237,7 @@ export type UnidadeCountOutputTypeCountAvaliacoesArgs<ExtArgs extends runtime.Ty
 
 export type UnidadeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  empresaId?: boolean
   escolaId?: boolean
   nome?: boolean
   endereco?: boolean
@@ -1035,6 +1249,7 @@ export type UnidadeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   diretor?: boolean
   turno?: boolean
   criadoEm?: boolean
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   escola?: boolean | Prisma.EscolaDefaultArgs<ExtArgs>
   alunos?: boolean | Prisma.Unidade$alunosArgs<ExtArgs>
   calendarios?: boolean | Prisma.Unidade$calendariosArgs<ExtArgs>
@@ -1044,6 +1259,7 @@ export type UnidadeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type UnidadeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  empresaId?: boolean
   escolaId?: boolean
   nome?: boolean
   endereco?: boolean
@@ -1055,11 +1271,13 @@ export type UnidadeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   diretor?: boolean
   turno?: boolean
   criadoEm?: boolean
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   escola?: boolean | Prisma.EscolaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["unidade"]>
 
 export type UnidadeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  empresaId?: boolean
   escolaId?: boolean
   nome?: boolean
   endereco?: boolean
@@ -1071,11 +1289,13 @@ export type UnidadeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   diretor?: boolean
   turno?: boolean
   criadoEm?: boolean
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   escola?: boolean | Prisma.EscolaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["unidade"]>
 
 export type UnidadeSelectScalar = {
   id?: boolean
+  empresaId?: boolean
   escolaId?: boolean
   nome?: boolean
   endereco?: boolean
@@ -1089,8 +1309,9 @@ export type UnidadeSelectScalar = {
   criadoEm?: boolean
 }
 
-export type UnidadeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "escolaId" | "nome" | "endereco" | "bairro" | "cidade" | "estado" | "cep" | "telefone" | "diretor" | "turno" | "criadoEm", ExtArgs["result"]["unidade"]>
+export type UnidadeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "escolaId" | "nome" | "endereco" | "bairro" | "cidade" | "estado" | "cep" | "telefone" | "diretor" | "turno" | "criadoEm", ExtArgs["result"]["unidade"]>
 export type UnidadeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   escola?: boolean | Prisma.EscolaDefaultArgs<ExtArgs>
   alunos?: boolean | Prisma.Unidade$alunosArgs<ExtArgs>
   calendarios?: boolean | Prisma.Unidade$calendariosArgs<ExtArgs>
@@ -1098,15 +1319,18 @@ export type UnidadeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   _count?: boolean | Prisma.UnidadeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UnidadeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   escola?: boolean | Prisma.EscolaDefaultArgs<ExtArgs>
 }
 export type UnidadeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   escola?: boolean | Prisma.EscolaDefaultArgs<ExtArgs>
 }
 
 export type $UnidadePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Unidade"
   objects: {
+    empresa: Prisma.$EmpresaPayload<ExtArgs>
     escola: Prisma.$EscolaPayload<ExtArgs>
     alunos: Prisma.$AlunoPayload<ExtArgs>[]
     calendarios: Prisma.$CalendarioEscolarPayload<ExtArgs>[]
@@ -1114,6 +1338,7 @@ export type $UnidadePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    empresaId: string
     escolaId: string
     nome: string
     endereco: string | null
@@ -1519,6 +1744,7 @@ readonly fields: UnidadeFieldRefs;
  */
 export interface Prisma__UnidadeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   escola<T extends Prisma.EscolaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EscolaDefaultArgs<ExtArgs>>): Prisma.Prisma__EscolaClient<runtime.Types.Result.GetResult<Prisma.$EscolaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   alunos<T extends Prisma.Unidade$alunosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Unidade$alunosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlunoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   calendarios<T extends Prisma.Unidade$calendariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Unidade$calendariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarioEscolarPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1553,6 +1779,7 @@ export interface Prisma__UnidadeClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface UnidadeFieldRefs {
   readonly id: Prisma.FieldRef<"Unidade", 'String'>
+  readonly empresaId: Prisma.FieldRef<"Unidade", 'String'>
   readonly escolaId: Prisma.FieldRef<"Unidade", 'String'>
   readonly nome: Prisma.FieldRef<"Unidade", 'String'>
   readonly endereco: Prisma.FieldRef<"Unidade", 'String'>

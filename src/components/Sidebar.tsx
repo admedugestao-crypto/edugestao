@@ -11,7 +11,6 @@ import {
   Calendar,
   CalendarDays,
   GraduationCap,
-  UserCog,
   Bell,
   DollarSign,
 } from "lucide-react";
@@ -27,7 +26,6 @@ const nav = [
   { href: "/dashboard/conteudos",        label: "Conteúdos",      icon: GraduationCap,   adminOnly: false },
   { href: "/dashboard/pagamentos",       label: "Pagamentos",     icon: DollarSign,      adminOnly: false },
   { href: "/dashboard/notificacoes",     label: "Notificações",   icon: Bell,            adminOnly: true  },
-  { href: "/dashboard/usuarios",         label: "Usuários",       icon: UserCog,         adminOnly: true  },
 ];
 
 function Avatar({ foto, nome }: { foto?: string | null; nome?: string }) {

@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
 
   const publicPaths = [
     "/login", "/plataforma/login",
-    "/api/auth", "/api/empresas/validar-slug",
+    "/api/auth",
     "/api/dev-fix", "/api/cron",
   ];
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));

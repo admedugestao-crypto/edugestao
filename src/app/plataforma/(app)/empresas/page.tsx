@@ -233,7 +233,11 @@ export default function PlataformaEmpresasPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova empresa</h2>
-            <form onSubmit={criar} className="space-y-3">
+            <form onSubmit={criar} method="post" action="#" className="space-y-3" autoComplete="off">
+              <div className="hidden" aria-hidden="true">
+                <input type="text" name="username" tabIndex={-1} />
+                <input type="password" name="password" tabIndex={-1} />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nome da empresa</label>
                 <input
@@ -241,6 +245,7 @@ export default function PlataformaEmpresasPage() {
                   value={form.empresaNome}
                   onChange={(e) => setForm({ ...form, empresaNome: e.target.value })}
                   required
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -251,6 +256,7 @@ export default function PlataformaEmpresasPage() {
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   required
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -258,9 +264,11 @@ export default function PlataformaEmpresasPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
                 <input
                   type="email"
+                  name="admin_email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -268,10 +276,12 @@ export default function PlataformaEmpresasPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Senha inicial</label>
                 <input
                   type="password"
+                  name="admin_senha"
                   value={form.senha}
                   onChange={(e) => setForm({ ...form, senha: e.target.value })}
                   required
                   minLength={6}
+                  autoComplete="new-password"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -314,7 +324,7 @@ export default function PlataformaEmpresasPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar empresa</h2>
-            <form onSubmit={salvarEdicao} className="space-y-3">
+            <form onSubmit={salvarEdicao} method="post" action="#" className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nome da empresa</label>
                 <input
@@ -384,7 +394,11 @@ export default function PlataformaEmpresasPage() {
             <p className="text-xs text-slate-500 mb-4">
               Vinculado à empresa <strong>{empresaNovoAdmin.nome}</strong> ({empresaNovoAdmin.slug}).
             </p>
-            <form onSubmit={salvarNovoAdmin} className="space-y-3">
+            <form onSubmit={salvarNovoAdmin} method="post" action="#" className="space-y-3" autoComplete="off">
+              <div className="hidden" aria-hidden="true">
+                <input type="text" name="username" tabIndex={-1} />
+                <input type="password" name="password" tabIndex={-1} />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
                 <input
@@ -392,6 +406,7 @@ export default function PlataformaEmpresasPage() {
                   value={formAdmin.nome}
                   onChange={(e) => setFormAdmin({ ...formAdmin, nome: e.target.value })}
                   required
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -399,9 +414,11 @@ export default function PlataformaEmpresasPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
                 <input
                   type="email"
+                  name="admin_email"
                   value={formAdmin.email}
                   onChange={(e) => setFormAdmin({ ...formAdmin, email: e.target.value })}
                   required
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -409,10 +426,12 @@ export default function PlataformaEmpresasPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Senha inicial</label>
                 <input
                   type="password"
+                  name="admin_senha"
                   value={formAdmin.senha}
                   onChange={(e) => setFormAdmin({ ...formAdmin, senha: e.target.value })}
                   required
                   minLength={6}
+                  autoComplete="new-password"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>

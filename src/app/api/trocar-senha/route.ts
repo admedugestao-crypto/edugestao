@@ -17,10 +17,14 @@ export async function POST(req: NextRequest) {
   const senhaHash = await bcrypt.hash(senha, 10);
   const id = (session.user as any).id as string;
 
-  await prisma.usuario.update({
-    where: { id },
-    data: { senhaHash, senhaTemporaria: false },
-  });
+  try {
+    await prisma.usuario.update({
+      where: { id },
+      data: { senhaHash, senhaTemporaria: false },
+    });
+  } catch {
+    return NextResponse.json({ erro: "Não foi possível salvar agora. Tente novamente em instantes." }, { status: 503 });
+  }
 
   return NextResponse.json({ ok: true });
 }
