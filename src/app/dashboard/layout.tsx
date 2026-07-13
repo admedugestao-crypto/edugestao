@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
+import { ambienteAtual } from "@/lib/ambiente";
 
 export default async function DashboardLayout({
   children,
@@ -25,7 +26,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="print:hidden">
-        <Sidebar usuario={usuario} />
+        <Sidebar usuario={usuario} ambiente={ambienteAtual()} />
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="print:hidden">

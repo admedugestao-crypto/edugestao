@@ -83,6 +83,13 @@ export async function POST(req: NextRequest) {
       diaSemana: true, horaAula: true, agendaSemanal: true,
       dataInicioContrato: true, dataFimContrato: true,
       materias: { select: { materiaId: true } },
+      unidade: {
+        select: {
+          escola: {
+            select: { periodoLetivo1Fim: true, periodoLetivo2Inicio: true },
+          },
+        },
+      },
     },
   });
 
@@ -143,6 +150,16 @@ export async function POST(req: NextRequest) {
     }
     if (toInt(inicioAluno) > fimAluno) continue;
 
+    // Período de férias da escola (entre o fim do 1º e o início do 2º período) —
+    // aulas cuja data caia nesse intervalo são puladas silenciosamente.
+    const escolaAluno = aluno.unidade?.escola;
+    let feriasInicio: number | null = null;
+    let feriasFim: number | null = null;
+    if (escolaAluno?.periodoLetivo1Fim && escolaAluno?.periodoLetivo2Inicio) {
+      feriasInicio = toInt(new Date(escolaAluno.periodoLetivo1Fim));
+      feriasFim = toInt(new Date(escolaAluno.periodoLetivo2Inicio));
+    }
+
     // Itera sobre cada entrada da agenda semanal
     for (const entrada of getEntradas(aluno)) {
       const diaSemanaEntrada = entrada.diaSemana;
@@ -163,6 +180,15 @@ export async function POST(req: NextRequest) {
         const dataUTC  = new Date(Date.UTC(dY, dM, dD));
         const rangeGte = new Date(Date.UTC(dY, dM, dD));
         const rangeLt  = new Date(Date.UTC(dY, dM, dD + 1));
+
+        // Pula silenciosamente aulas dentro do período de férias da escola
+        if (feriasInicio !== null && feriasFim !== null) {
+          const dataAulaInt = toInt(dataAula);
+          if (dataAulaInt > feriasInicio && dataAulaInt < feriasFim) {
+            dataAula.setDate(dataAula.getDate() + 7);
+            continue;
+          }
+        }
 
         // Para o dia atual, pula se o horário já passou
         const ehHoje = toInt(dataAula) === toInt(hoje);

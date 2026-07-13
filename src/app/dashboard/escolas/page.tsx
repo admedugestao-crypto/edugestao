@@ -16,6 +16,14 @@ export default async function EscolasPage() {
     orderBy: { nome: "asc" },
   });
 
+  const escolasSerial = escolas.map((e) => ({
+    ...e,
+    periodoLetivo1Inicio: e.periodoLetivo1Inicio?.toISOString() ?? null,
+    periodoLetivo1Fim: e.periodoLetivo1Fim?.toISOString() ?? null,
+    periodoLetivo2Inicio: e.periodoLetivo2Inicio?.toISOString() ?? null,
+    periodoLetivo2Fim: e.periodoLetivo2Fim?.toISOString() ?? null,
+  }));
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -28,7 +36,7 @@ export default async function EscolasPage() {
         </div>
       </div>
 
-      <EscolasClient escolasIniciais={escolas} />
+      <EscolasClient escolasIniciais={escolasSerial} />
     </div>
   );
 }

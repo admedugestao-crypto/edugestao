@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ChevronDown, ChevronRight, MapPin, Building2, Pencil, Trash2 } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, MapPin, Building2, Pencil, Trash2, CalendarRange } from "lucide-react";
 
 type Unidade = {
   id: string;
@@ -16,8 +16,25 @@ type Escola = {
   nome: string;
   rede: string | null;
   periodoAvaliacao: string | null;
+  periodoLetivo1Inicio: string | null;
+  periodoLetivo1Fim: string | null;
+  periodoLetivo2Inicio: string | null;
+  periodoLetivo2Fim: string | null;
   unidades: Unidade[];
 };
+
+// Converte "2026-07-11T00:00:00.000Z" (ISO vindo do banco) para "2026-07-11"
+// (formato aceito por <input type="date">), e vice-versa não é necessário
+// porque o próprio input já entrega nesse formato.
+function paraInputDate(iso: string | null): string {
+  return iso ? iso.slice(0, 10) : "";
+}
+
+function formatarData(iso: string | null): string {
+  if (!iso) return "";
+  const [y, m, d] = iso.slice(0, 10).split("-");
+  return `${d}/${m}/${y}`;
+}
 
 const PERIODOS_AVALIACAO = ["Bimestral", "Trimestral", "Semestral"] as const;
 
@@ -30,12 +47,29 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
   // modais criar
   const [modalEscola, setModalEscola] = useState(false);
   const [modalUnidade, setModalUnidade] = useState<string | null>(null);
-  const [novaEscola, setNovaEscola] = useState({ nome: "", rede: "", periodoAvaliacao: "" });
+  const [novaEscola, setNovaEscola] = useState({
+    nome: "",
+    rede: "",
+    periodoAvaliacao: "",
+    periodoLetivo1Inicio: "",
+    periodoLetivo1Fim: "",
+    periodoLetivo2Inicio: "",
+    periodoLetivo2Fim: "",
+  });
   const [primeiraUnidade, setPrimeiraUnidade] = useState({ nome: "", cidade: "", estado: "", turno: "" });
   const [novaUnidade, setNovaUnidade] = useState({ nome: "", cidade: "", estado: "", turno: "" });
 
   // modais editar
-  const [editEscola, setEditEscola] = useState<{ id: string; nome: string; rede: string; periodoAvaliacao: string } | null>(null);
+  const [editEscola, setEditEscola] = useState<{
+    id: string;
+    nome: string;
+    rede: string;
+    periodoAvaliacao: string;
+    periodoLetivo1Inicio: string;
+    periodoLetivo1Fim: string;
+    periodoLetivo2Inicio: string;
+    periodoLetivo2Fim: string;
+  } | null>(null);
   const [editUnidade, setEditUnidade] = useState<{ id: string; escolaId: string; nome: string; cidade: string; estado: string; turno: string } | null>(null);
 
   // confirmação de exclusão
@@ -50,7 +84,15 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
     const res = await fetch("/api/escolas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome: novaEscola.nome, rede: novaEscola.rede, periodoAvaliacao: novaEscola.periodoAvaliacao }),
+      body: JSON.stringify({
+        nome: novaEscola.nome,
+        rede: novaEscola.rede,
+        periodoAvaliacao: novaEscola.periodoAvaliacao,
+        periodoLetivo1Inicio: novaEscola.periodoLetivo1Inicio || null,
+        periodoLetivo1Fim: novaEscola.periodoLetivo1Fim || null,
+        periodoLetivo2Inicio: novaEscola.periodoLetivo2Inicio || null,
+        periodoLetivo2Fim: novaEscola.periodoLetivo2Fim || null,
+      }),
     });
     const escola: Escola = await res.json();
 
@@ -66,7 +108,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
 
     setEscolas((prev) => [...prev, escola]);
     setModalEscola(false);
-    setNovaEscola({ nome: "", rede: "", periodoAvaliacao: "" });
+    setNovaEscola({ nome: "", rede: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" });
     setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" });
     setSalvando(false);
   }
@@ -95,12 +137,18 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
     const res = await fetch(`/api/escolas/${editEscola.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome: editEscola.nome, rede: editEscola.rede, periodoAvaliacao: editEscola.periodoAvaliacao }),
+      body: JSON.stringify({
+        nome: editEscola.nome,
+        rede: editEscola.rede,
+        periodoAvaliacao: editEscola.periodoAvaliacao,
+        periodoLetivo1Inicio: editEscola.periodoLetivo1Inicio || null,
+        periodoLetivo1Fim: editEscola.periodoLetivo1Fim || null,
+        periodoLetivo2Inicio: editEscola.periodoLetivo2Inicio || null,
+        periodoLetivo2Fim: editEscola.periodoLetivo2Fim || null,
+      }),
     });
     const atualizada = await res.json();
-    setEscolas((prev) =>
-      prev.map((e) => (e.id === atualizada.id ? { ...e, nome: atualizada.nome, rede: atualizada.rede } : e))
-    );
+    setEscolas((prev) => prev.map((e) => (e.id === atualizada.id ? { ...e, ...atualizada } : e)));
     setEditEscola(null);
     setSalvando(false);
   }
@@ -193,6 +241,18 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                 <p className="text-xs text-slate-500">
                   {[escola.rede, escola.periodoAvaliacao].filter(Boolean).join(" · ")}
                 </p>
+                {(escola.periodoLetivo1Inicio || escola.periodoLetivo1Fim) && (
+                  <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                    <CalendarRange size={11} />
+                    1º período: {formatarData(escola.periodoLetivo1Inicio)} – {formatarData(escola.periodoLetivo1Fim)}
+                  </p>
+                )}
+                {(escola.periodoLetivo2Inicio || escola.periodoLetivo2Fim) && (
+                  <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                    <CalendarRange size={11} />
+                    2º período: {formatarData(escola.periodoLetivo2Inicio)} – {formatarData(escola.periodoLetivo2Fim)}
+                  </p>
+                )}
               </div>
               <span className="text-xs text-slate-500 mr-2">
                 {escola.unidades.length} unidade{escola.unidades.length !== 1 ? "s" : ""}
@@ -204,7 +264,18 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
               )}
             </button>
             <button
-              onClick={() => setEditEscola({ id: escola.id, nome: escola.nome, rede: escola.rede ?? "", periodoAvaliacao: escola.periodoAvaliacao ?? "" })}
+              onClick={() =>
+                setEditEscola({
+                  id: escola.id,
+                  nome: escola.nome,
+                  rede: escola.rede ?? "",
+                  periodoAvaliacao: escola.periodoAvaliacao ?? "",
+                  periodoLetivo1Inicio: paraInputDate(escola.periodoLetivo1Inicio),
+                  periodoLetivo1Fim: paraInputDate(escola.periodoLetivo1Fim),
+                  periodoLetivo2Inicio: paraInputDate(escola.periodoLetivo2Inicio),
+                  periodoLetivo2Fim: paraInputDate(escola.periodoLetivo2Fim),
+                })
+              }
               className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
               title="Editar escola"
             >
@@ -305,6 +376,46 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                   {PERIODOS_AVALIACAO.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
+                  <input
+                    type="date"
+                    value={novaEscola.periodoLetivo1Inicio}
+                    onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo1Inicio: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">1º período — fim</label>
+                  <input
+                    type="date"
+                    value={novaEscola.periodoLetivo1Fim}
+                    onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo1Fim: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
+                  <input
+                    type="date"
+                    value={novaEscola.periodoLetivo2Inicio}
+                    onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo2Inicio: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">2º período — fim</label>
+                  <input
+                    type="date"
+                    value={novaEscola.periodoLetivo2Fim}
+                    onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo2Fim: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
 
               <div className="border-t border-slate-100 pt-3 mt-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
@@ -361,7 +472,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                 {salvando ? "Salvando..." : "Criar escola"}
               </button>
               <button
-                onClick={() => { setModalEscola(false); setNovaEscola({ nome: "", rede: "", periodoAvaliacao: "" }); setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" }); }}
+                onClick={() => { setModalEscola(false); setNovaEscola({ nome: "", rede: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" }); setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" }); }}
                 className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 Cancelar
@@ -467,6 +578,46 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                   <option value="">Selecione...</option>
                   {PERIODOS_AVALIACAO.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
+                  <input
+                    type="date"
+                    value={editEscola.periodoLetivo1Inicio}
+                    onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo1Inicio: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">1º período — fim</label>
+                  <input
+                    type="date"
+                    value={editEscola.periodoLetivo1Fim}
+                    onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo1Fim: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
+                  <input
+                    type="date"
+                    value={editEscola.periodoLetivo2Inicio}
+                    onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo2Inicio: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">2º período — fim</label>
+                  <input
+                    type="date"
+                    value={editEscola.periodoLetivo2Fim}
+                    onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo2Fim: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
               </div>
             </div>
             <div className="flex gap-3 mt-5">

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { parseDataLocal } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest) {
         ...(professoraId ? { professoraId } : {}),
         unidadeId,
         nome: form.get("nome") as string,
-        dataNascimento: dataNasc ? new Date(dataNasc) : null,
+        dataNascimento: dataNasc ? parseDataLocal(dataNasc) : null,
         fotoUrl,
         serie: form.get("serie") as string,
         turma: (form.get("turma") as string) || null,
@@ -92,8 +93,8 @@ export async function POST(req: NextRequest) {
         diaPagamento2: form.get("diaPagamento2") ? parseInt(form.get("diaPagamento2") as string) : null,
         diaSemanaCobranca:  form.get("diaSemanaCobranca") !== null && form.get("diaSemanaCobranca") !== "" ? parseInt(form.get("diaSemanaCobranca") as string) : null,
         agendaSemanal: (() => { try { return JSON.parse(form.get("agendaSemanal") as string ?? "[]"); } catch { return []; } })(),
-        dataInicioContrato: form.get("dataInicioContrato") ? new Date(form.get("dataInicioContrato") as string) : null,
-        dataFimContrato:    form.get("dataFimContrato")    ? new Date(form.get("dataFimContrato")    as string) : null,
+        dataInicioContrato: form.get("dataInicioContrato") ? parseDataLocal(form.get("dataInicioContrato") as string) : null,
+        dataFimContrato:    form.get("dataFimContrato")    ? parseDataLocal(form.get("dataFimContrato")    as string) : null,
         materias: { create: materias.map((mid) => ({ materiaId: mid })) },
       },
     });

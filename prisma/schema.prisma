@@ -130,12 +130,16 @@ model ProfessoraMateria {
 // ─── Escolas e Unidades ───────────────────────────────────────────────────────
 
 model Escola {
-  id               String   @id @default(cuid())
-  empresaId        String
-  nome             String
-  rede             String?
-  periodoAvaliacao String?
-  criadoEm         DateTime @default(now())
+  id                   String    @id @default(cuid())
+  empresaId            String
+  nome                 String
+  rede                 String?
+  periodoAvaliacao     String?
+  periodoLetivo1Inicio DateTime?
+  periodoLetivo1Fim    DateTime?
+  periodoLetivo2Inicio DateTime?
+  periodoLetivo2Fim    DateTime?
+  criadoEm             DateTime  @default(now())
 
   empresa  Empresa   @relation(fields: [empresaId], references: [id])
   unidades Unidade[]

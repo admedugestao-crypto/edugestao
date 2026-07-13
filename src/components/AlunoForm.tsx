@@ -9,6 +9,8 @@ import { Camera, MapPin, User, School, BookOpen, Trash2, DollarSign, CalendarDay
 type Escola = {
   id: string;
   nome: string;
+  periodoLetivo1Inicio?: string | Date | null;
+  periodoLetivo2Fim?: string | Date | null;
   unidades: { id: string; nome: string }[];
 };
 type Materia = { id: string; nome: string; cor: string };
@@ -551,7 +553,22 @@ export default function AlunoForm({
             <select
               name="escolaId"
               value={escolaId}
-              onChange={(e) => setEscolaId(e.target.value)}
+              onChange={(e) => {
+                const novoEscolaId = e.target.value;
+                setEscolaId(novoEscolaId);
+                // Sugere o período contratual com base no ano letivo da escola,
+                // só quando o cadastro ainda não tem datas definidas (não
+                // sobrescreve um período já ajustado manualmente).
+                if (!dataInicio && !dataFim) {
+                  const escolaEscolhida = escolas.find((esc) => esc.id === novoEscolaId);
+                  if (escolaEscolhida?.periodoLetivo1Inicio) {
+                    setDataInicio(new Date(escolaEscolhida.periodoLetivo1Inicio).toISOString().split("T")[0]);
+                  }
+                  if (escolaEscolhida?.periodoLetivo2Fim) {
+                    setDataFim(new Date(escolaEscolhida.periodoLetivo2Fim).toISOString().split("T")[0]);
+                  }
+                }
+              }}
               required
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >

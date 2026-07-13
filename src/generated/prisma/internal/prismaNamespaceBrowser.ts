@@ -154,6 +154,10 @@ export const EscolaScalarFieldEnum = {
   nome: 'nome',
   rede: 'rede',
   periodoAvaliacao: 'periodoAvaliacao',
+  periodoLetivo1Inicio: 'periodoLetivo1Inicio',
+  periodoLetivo1Fim: 'periodoLetivo1Fim',
+  periodoLetivo2Inicio: 'periodoLetivo2Inicio',
+  periodoLetivo2Fim: 'periodoLetivo2Fim',
   criadoEm: 'criadoEm'
 } as const
 

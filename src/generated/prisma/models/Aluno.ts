@@ -1165,10 +1165,6 @@ export type AlunoUncheckedUpdateManyWithoutUnidadeNestedInput = {
   deleteMany?: Prisma.AlunoScalarWhereInput | Prisma.AlunoScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type EnumStatusAlunoFieldUpdateOperationsInput = {
   set?: $Enums.StatusAluno
 }
