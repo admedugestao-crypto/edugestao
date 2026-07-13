@@ -165,6 +165,8 @@ export default function AgendaClient({
   const [filtroProfId, setFiltroProfId] = useState(() => isProfessor ? (professoras[0]?.id ?? "") : "");
   // Filtro de matéria (todos os perfis)
   const [filtroMateriaId, setFiltroMateriaId] = useState("");
+  // Filtro de aluno (todos os perfis)
+  const [filtroAlunoId, setFiltroAlunoId] = useState("");
 
   // Gerar semana
   const [gerando, setGerando]             = useState(false);
@@ -597,10 +599,15 @@ export default function AgendaClient({
     return Array.from(map.values()).sort((a, b) => a.nome.localeCompare(b.nome));
   })();
 
-  // Aulas filtradas pela matéria selecionada — usa o materiaId da própria aula
-  const aulasFiltradas = filtroMateriaId
-    ? aulas.filter((a) => a.materiaId === filtroMateriaId)
-    : aulas;
+  // Alunos disponíveis no filtro — restringe à professora selecionada, se houver
+  const alunosDisponiveisFiltro = !isProfessor && filtroProfId
+    ? alunos.filter((a) => a.professoraId === filtroProfId)
+    : alunos;
+
+  // Aulas filtradas pela matéria e/ou aluno selecionados
+  const aulasFiltradas = aulas
+    .filter((a) => !filtroMateriaId || a.materiaId === filtroMateriaId)
+    .filter((a) => !filtroAlunoId || a.alunoId === filtroAlunoId);
 
   function aulasNoDia(dia: Date) {
     return aulasFiltradas.filter((a) => isSameDay(parseLocal(a.data), dia))
@@ -814,6 +821,20 @@ export default function AgendaClient({
             <option value="">Todas as matérias</option>
             {materiasDisponiveis.map((m) => (
               <option key={m.id} value={m.id}>{m.nome}</option>
+            ))}
+          </select>
+        )}
+
+        {/* Filtro por aluno */}
+        {alunosDisponiveisFiltro.length > 0 && (
+          <select
+            value={filtroAlunoId}
+            onChange={(e) => setFiltroAlunoId(e.target.value)}
+            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
+          >
+            <option value="">Todos os alunos</option>
+            {alunosDisponiveisFiltro.map((a) => (
+              <option key={a.id} value={a.id}>{a.nome}</option>
             ))}
           </select>
         )}

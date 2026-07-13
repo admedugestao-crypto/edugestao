@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import SairButton from "./SairButton";
+import { ambienteAtual } from "@/lib/ambiente";
 
 export default async function PlataformaLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -15,6 +16,13 @@ export default async function PlataformaLayout({ children }: { children: React.R
         <div className="px-5 py-5 border-b border-slate-800">
           <p className="font-bold text-white">Plataforma</p>
           <p className="text-xs text-slate-400 mt-0.5">{session.user?.name}</p>
+          <span
+            className={`inline-block mt-1.5 px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wide ${
+              ambienteAtual() === "Produção" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"
+            }`}
+          >
+            {ambienteAtual()}
+          </span>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1 text-sm">
           <Link href="/plataforma/empresas" className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
