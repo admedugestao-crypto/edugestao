@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
   // Garante que o Prisma client (e dependências Node.js nativas) nunca seja
   // empacotado para o Edge Runtime nem para o bundler do lado do servidor.
   serverExternalPackages: ["@prisma/client", "prisma"],
+  // Permite acessar o servidor de dev pelo IP da rede local (ex: celular no
+  // mesmo Wi-Fi) — sem isso o Next 16 bloqueia HMR/fontes/recursos de dev
+  // vindos de uma origem diferente de "localhost", quebrando a página.
+  allowedDevOrigins: ["192.168.18.10"],
 };
 
 export default nextConfig;

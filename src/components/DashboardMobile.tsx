@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CalendarDays, GraduationCap, LogOut } from "lucide-react";
+import { CalendarDays, GraduationCap, LogOut, Library } from "lucide-react";
 
 export default function DashboardMobile({ nomeUsuario }: { nomeUsuario: string }) {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function DashboardMobile({ nomeUsuario }: { nomeUsuario: string }
       </div>
 
       {/* ── Atalhos ──────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6">
+      <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 py-4 overflow-y-auto">
         <button onClick={() => router.push("/m/agenda")}
           className="w-full max-w-xs flex flex-col items-center gap-3 bg-white rounded-2xl shadow-sm border border-slate-100 py-8 active:scale-[0.98] transition-transform">
           <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -35,6 +35,14 @@ export default function DashboardMobile({ nomeUsuario }: { nomeUsuario: string }
             <GraduationCap size={26} className="text-emerald-600"/>
           </div>
           <span className="text-base font-bold text-slate-800">Conteúdos</span>
+        </button>
+
+        <button onClick={() => router.push("/m/biblioteca")}
+          className="w-full max-w-xs flex flex-col items-center gap-3 bg-white rounded-2xl shadow-sm border border-slate-100 py-8 active:scale-[0.98] transition-transform">
+          <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center">
+            <Library size={26} className="text-amber-600"/>
+          </div>
+          <span className="text-base font-bold text-slate-800">Biblioteca</span>
         </button>
       </div>
     </div>
