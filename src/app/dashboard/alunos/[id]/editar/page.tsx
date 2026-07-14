@@ -57,7 +57,7 @@ export default async function EditarAlunoPage({
 
   return (
     <div className="space-y-5">
-      <div>
+      <div className="sticky top-0 z-10 bg-slate-100 py-2 -mt-2">
         <h1 className="text-xl font-bold text-slate-800">Editar Aluno</h1>
         <p className="text-slate-500 text-sm mt-1">{aluno.nome}</p>
       </div>

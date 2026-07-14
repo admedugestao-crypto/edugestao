@@ -5,10 +5,22 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   User, School, MapPin, BookOpen, Pencil, Phone, Mail,
-  CalendarDays, ArrowLeft, ClipboardList, Printer,
+  CalendarDays, ArrowLeft, ClipboardList, Printer, DollarSign, Clock,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+const DIA_NOME: Record<string, string> = {
+  "0": "Domingo", "1": "Segunda-feira", "2": "Terça-feira",
+  "3": "Quarta-feira", "4": "Quinta-feira", "5": "Sexta-feira", "6": "Sábado",
+};
+
+const TIPO_COBRANCA_LABEL: Record<string, string> = {
+  MENSAL: "Mensal",
+  QUINZENAL: "Quinzenal (2x por mês)",
+  SEMANAL: "Semanal",
+  POR_AULA: "Por aula",
+};
 
 export default async function VisualizarAlunoPage({
   params,
@@ -25,6 +37,7 @@ export default async function VisualizarAlunoPage({
     include: {
       unidade: { include: { escola: true } },
       materias: { include: { materia: true } },
+      professora: { include: { usuario: { select: { nome: true } } } },
       notas: {
         include: { avaliacao: true, materia: true },
         orderBy: { avaliacao: { data: "desc" } },
@@ -59,6 +72,16 @@ export default async function VisualizarAlunoPage({
   const endereco = [aluno.rua, aluno.numero, aluno.complemento].filter(Boolean).join(", ");
   const enderecoLinha2 = [aluno.bairro, aluno.cidade, aluno.estado].filter(Boolean).join(" · ");
 
+  const agendaSemanal = (Array.isArray(aluno.agendaSemanal) ? aluno.agendaSemanal : []) as {
+    diaSemana: number;
+    horaAula: string;
+  }[];
+  const temAgendaLegado = agendaSemanal.length === 0 && aluno.diaSemana != null && !!aluno.horaAula;
+
+  function formatBRL(v: number) {
+    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
+
   return (
     <div className="space-y-5 max-w-3xl">
       {/* Header */}
@@ -88,8 +111,8 @@ export default async function VisualizarAlunoPage({
         </div>
       </div>
 
-      {/* Perfil */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      {/* Perfil — fixo no topo enquanto o resto da página rola */}
+      <div className="sticky top-0 z-10 bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
         <div className="flex items-center gap-4">
           {aluno.fotoUrl ? (
             <Image
@@ -180,6 +203,92 @@ export default async function VisualizarAlunoPage({
           </div>
         )}
       </div>
+
+      {/* Professor(a) responsável */}
+      {aluno.professora && (
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <User size={16} className="text-indigo-600" />
+            <h2 className="font-semibold text-slate-800">Professor(a) responsável</h2>
+          </div>
+          <p className="text-sm text-slate-800">{aluno.professora.usuario.nome}</p>
+        </div>
+      )}
+
+      {/* Agenda semanal */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Clock size={16} className="text-indigo-600" />
+          <h2 className="font-semibold text-slate-800">Agenda semanal</h2>
+        </div>
+        {agendaSemanal.length > 0 || temAgendaLegado ? (
+          <div className="flex flex-wrap gap-2">
+            {agendaSemanal.map((e, i) => (
+              <span key={i} className="px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700">
+                {DIA_NOME[String(e.diaSemana)]} · {e.horaAula}
+              </span>
+            ))}
+            {temAgendaLegado && (
+              <span className="px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700">
+                {DIA_NOME[String(aluno.diaSemana)]} · {aluno.horaAula}
+              </span>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400">Nenhum horário fixo cadastrado.</p>
+        )}
+      </div>
+
+      {/* Cobrança */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <DollarSign size={16} className="text-indigo-600" />
+          <h2 className="font-semibold text-slate-800">Cobrança</h2>
+        </div>
+        {aluno.tipoCobranca ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Campo label="Tipo de cobrança" valor={TIPO_COBRANCA_LABEL[aluno.tipoCobranca] ?? aluno.tipoCobranca} />
+            <Campo label="Valor" valor={aluno.valorCobranca != null ? formatBRL(aluno.valorCobranca) : null} />
+            {aluno.tipoCobranca === "MENSAL" && (
+              <Campo label="Dia do vencimento" valor={aluno.diaPagamento != null ? String(aluno.diaPagamento) : null} />
+            )}
+            {aluno.tipoCobranca === "QUINZENAL" && (
+              <>
+                <Campo label="1º vencimento (dia)" valor={aluno.diaPagamento != null ? String(aluno.diaPagamento) : null} />
+                <Campo label="2º vencimento (dia)" valor={aluno.diaPagamento2 != null ? String(aluno.diaPagamento2) : null} />
+              </>
+            )}
+            {aluno.tipoCobranca === "SEMANAL" && (
+              <Campo
+                label="Dia de vencimento semanal"
+                valor={aluno.diaSemanaCobranca != null ? DIA_NOME[String(aluno.diaSemanaCobranca)] : null}
+              />
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400">Nenhuma configuração de cobrança cadastrada.</p>
+        )}
+      </div>
+
+      {/* Período contratual */}
+      {(aluno.dataInicioContrato || aluno.dataFimContrato) && (
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <CalendarDays size={16} className="text-indigo-600" />
+            <h2 className="font-semibold text-slate-800">Período contratual</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Campo
+              label="Data de início"
+              valor={aluno.dataInicioContrato ? new Date(aluno.dataInicioContrato).toLocaleDateString("pt-BR") : null}
+            />
+            <Campo
+              label="Data de término"
+              valor={aluno.dataFimContrato ? new Date(aluno.dataFimContrato).toLocaleDateString("pt-BR") : null}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Últimas notas */}
       {aluno.notas.length > 0 && (

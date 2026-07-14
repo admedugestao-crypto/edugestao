@@ -170,6 +170,19 @@ export default function AgendaClient({
 
   // Gerar semana
   const [gerando, setGerando]             = useState(false);
+
+  // Avisa antes de fechar/recarregar a aba enquanto a geração está rodando
+  // (navegação interna do Next.js não dispara beforeunload, mas o overlay
+  // de tela cheia abaixo já bloqueia clique nos links do menu nesse caso)
+  useEffect(() => {
+    if (!gerando) return;
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [gerando]);
   const [msgGerar, setMsgGerar]           = useState<string | null>(null);
   const [conflitosModal,  setConflitosModal]  = useState<ConflitoDet[]>([]);
   const [semAgendaModal,  setSemAgendaModal]  = useState<SemAgendaDet[]>([]);
@@ -843,7 +856,11 @@ export default function AgendaClient({
         {vista === "semana" && (
           <button onClick={abrirModalGerar} disabled={gerando}
             title="Gera todas as aulas recorrentes a partir de hoje até 31/12"
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-50">
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+              gerando
+                ? "border border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-200 cursor-wait"
+                : "border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+            }`}>
             {gerando ? <RefreshCw size={13} className="animate-spin"/> : <Zap size={13}/>}
             {gerando ? "Gerando..." : "Gerar agenda"}
           </button>
@@ -1521,6 +1538,17 @@ export default function AgendaClient({
         </Modal>
       )}
     </div>
+
+    {/* ── Overlay de bloqueio durante a geração de agenda ─────────────────── */}
+    {gerando && (
+      <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-[1px] flex items-center justify-center print:hidden">
+        <div className="bg-white rounded-2xl px-8 py-6 shadow-xl flex flex-col items-center gap-3 max-w-sm text-center">
+          <RefreshCw size={28} className="text-indigo-600 animate-spin" />
+          <p className="font-semibold text-slate-800">Gerando agenda...</p>
+          <p className="text-xs text-slate-500">Isso pode levar alguns instantes. Não feche nem saia desta tela até terminar.</p>
+        </div>
+      </div>
+    )}
     </>
   );
 }
