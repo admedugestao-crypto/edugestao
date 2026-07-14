@@ -204,6 +204,7 @@ export type EmpresaWhereInput = {
   notificacoesProva?: Prisma.NotificacaoProvaListRelationFilter
   notificacoesAula?: Prisma.NotificacaoAulaListRelationFilter
   calendarios?: Prisma.CalendarioEscolarListRelationFilter
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaListRelationFilter
 }
 
 export type EmpresaOrderByWithRelationInput = {
@@ -227,6 +228,7 @@ export type EmpresaOrderByWithRelationInput = {
   notificacoesProva?: Prisma.NotificacaoProvaOrderByRelationAggregateInput
   notificacoesAula?: Prisma.NotificacaoAulaOrderByRelationAggregateInput
   calendarios?: Prisma.CalendarioEscolarOrderByRelationAggregateInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaOrderByRelationAggregateInput
 }
 
 export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
@@ -253,6 +255,7 @@ export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
   notificacoesProva?: Prisma.NotificacaoProvaListRelationFilter
   notificacoesAula?: Prisma.NotificacaoAulaListRelationFilter
   calendarios?: Prisma.CalendarioEscolarListRelationFilter
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaListRelationFilter
 }, "id" | "slug">
 
 export type EmpresaOrderByWithAggregationInput = {
@@ -300,6 +303,7 @@ export type EmpresaCreateInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateInput = {
@@ -323,6 +327,7 @@ export type EmpresaUncheckedCreateInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUpdateInput = {
@@ -346,6 +351,7 @@ export type EmpresaUpdateInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateInput = {
@@ -369,6 +375,7 @@ export type EmpresaUncheckedUpdateInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateManyInput = {
@@ -621,6 +628,20 @@ export type EmpresaUpdateOneRequiredWithoutConteudosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EmpresaUpdateToOneWithWhereWithoutConteudosInput, Prisma.EmpresaUpdateWithoutConteudosInput>, Prisma.EmpresaUncheckedUpdateWithoutConteudosInput>
 }
 
+export type EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput = {
+  create?: Prisma.XOR<Prisma.EmpresaCreateWithoutMateriaisBibliotecaInput, Prisma.EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput>
+  connectOrCreate?: Prisma.EmpresaCreateOrConnectWithoutMateriaisBibliotecaInput
+  connect?: Prisma.EmpresaWhereUniqueInput
+}
+
+export type EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput = {
+  create?: Prisma.XOR<Prisma.EmpresaCreateWithoutMateriaisBibliotecaInput, Prisma.EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput>
+  connectOrCreate?: Prisma.EmpresaCreateOrConnectWithoutMateriaisBibliotecaInput
+  upsert?: Prisma.EmpresaUpsertWithoutMateriaisBibliotecaInput
+  connect?: Prisma.EmpresaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmpresaUpdateToOneWithWhereWithoutMateriaisBibliotecaInput, Prisma.EmpresaUpdateWithoutMateriaisBibliotecaInput>, Prisma.EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput>
+}
+
 export type EmpresaCreateNestedOneWithoutAulasInput = {
   create?: Prisma.XOR<Prisma.EmpresaCreateWithoutAulasInput, Prisma.EmpresaUncheckedCreateWithoutAulasInput>
   connectOrCreate?: Prisma.EmpresaCreateOrConnectWithoutAulasInput
@@ -669,6 +690,7 @@ export type EmpresaCreateWithoutUsuariosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutUsuariosInput = {
@@ -691,6 +713,7 @@ export type EmpresaUncheckedCreateWithoutUsuariosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutUsuariosInput = {
@@ -729,6 +752,7 @@ export type EmpresaUpdateWithoutUsuariosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
@@ -751,6 +775,7 @@ export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutProfessorasInput = {
@@ -773,6 +798,7 @@ export type EmpresaCreateWithoutProfessorasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutProfessorasInput = {
@@ -795,6 +821,7 @@ export type EmpresaUncheckedCreateWithoutProfessorasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutProfessorasInput = {
@@ -833,6 +860,7 @@ export type EmpresaUpdateWithoutProfessorasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
@@ -855,6 +883,7 @@ export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutMateriasInput = {
@@ -877,6 +906,7 @@ export type EmpresaCreateWithoutMateriasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutMateriasInput = {
@@ -899,6 +929,7 @@ export type EmpresaUncheckedCreateWithoutMateriasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutMateriasInput = {
@@ -937,6 +968,7 @@ export type EmpresaUpdateWithoutMateriasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutMateriasInput = {
@@ -959,6 +991,7 @@ export type EmpresaUncheckedUpdateWithoutMateriasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutEscolasInput = {
@@ -981,6 +1014,7 @@ export type EmpresaCreateWithoutEscolasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutEscolasInput = {
@@ -1003,6 +1037,7 @@ export type EmpresaUncheckedCreateWithoutEscolasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutEscolasInput = {
@@ -1041,6 +1076,7 @@ export type EmpresaUpdateWithoutEscolasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutEscolasInput = {
@@ -1063,6 +1099,7 @@ export type EmpresaUncheckedUpdateWithoutEscolasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutUnidadesInput = {
@@ -1085,6 +1122,7 @@ export type EmpresaCreateWithoutUnidadesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutUnidadesInput = {
@@ -1107,6 +1145,7 @@ export type EmpresaUncheckedCreateWithoutUnidadesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutUnidadesInput = {
@@ -1145,6 +1184,7 @@ export type EmpresaUpdateWithoutUnidadesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
@@ -1167,6 +1207,7 @@ export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutCalendariosInput = {
@@ -1189,6 +1230,7 @@ export type EmpresaCreateWithoutCalendariosInput = {
   notas?: Prisma.NotaCreateNestedManyWithoutEmpresaInput
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutCalendariosInput = {
@@ -1211,6 +1253,7 @@ export type EmpresaUncheckedCreateWithoutCalendariosInput = {
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutCalendariosInput = {
@@ -1249,6 +1292,7 @@ export type EmpresaUpdateWithoutCalendariosInput = {
   notas?: Prisma.NotaUpdateManyWithoutEmpresaNestedInput
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
@@ -1271,6 +1315,7 @@ export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
   notas?: Prisma.NotaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutAvaliacoesInput = {
@@ -1293,6 +1338,7 @@ export type EmpresaCreateWithoutAvaliacoesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
@@ -1315,6 +1361,7 @@ export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutAvaliacoesInput = {
@@ -1353,6 +1400,7 @@ export type EmpresaUpdateWithoutAvaliacoesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
@@ -1375,6 +1423,7 @@ export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutNotificacoesProvaInput = {
@@ -1397,6 +1446,7 @@ export type EmpresaCreateWithoutNotificacoesProvaInput = {
   notas?: Prisma.NotaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
@@ -1419,6 +1469,7 @@ export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutNotificacoesProvaInput = {
@@ -1457,6 +1508,7 @@ export type EmpresaUpdateWithoutNotificacoesProvaInput = {
   notas?: Prisma.NotaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
@@ -1479,6 +1531,7 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
   notas?: Prisma.NotaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutAlunosInput = {
@@ -1501,6 +1554,7 @@ export type EmpresaCreateWithoutAlunosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutAlunosInput = {
@@ -1523,6 +1577,7 @@ export type EmpresaUncheckedCreateWithoutAlunosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutAlunosInput = {
@@ -1561,6 +1616,7 @@ export type EmpresaUpdateWithoutAlunosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutAlunosInput = {
@@ -1583,6 +1639,7 @@ export type EmpresaUncheckedUpdateWithoutAlunosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutNotasInput = {
@@ -1605,6 +1662,7 @@ export type EmpresaCreateWithoutNotasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutNotasInput = {
@@ -1627,6 +1685,7 @@ export type EmpresaUncheckedCreateWithoutNotasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutNotasInput = {
@@ -1665,6 +1724,7 @@ export type EmpresaUpdateWithoutNotasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutNotasInput = {
@@ -1687,6 +1747,7 @@ export type EmpresaUncheckedUpdateWithoutNotasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutPagamentosInput = {
@@ -1709,6 +1770,7 @@ export type EmpresaCreateWithoutPagamentosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutPagamentosInput = {
@@ -1731,6 +1793,7 @@ export type EmpresaUncheckedCreateWithoutPagamentosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutPagamentosInput = {
@@ -1769,6 +1832,7 @@ export type EmpresaUpdateWithoutPagamentosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
@@ -1791,6 +1855,7 @@ export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutConteudosInput = {
@@ -1813,6 +1878,7 @@ export type EmpresaCreateWithoutConteudosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutConteudosInput = {
@@ -1835,6 +1901,7 @@ export type EmpresaUncheckedCreateWithoutConteudosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutConteudosInput = {
@@ -1873,6 +1940,7 @@ export type EmpresaUpdateWithoutConteudosInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutConteudosInput = {
@@ -1891,6 +1959,115 @@ export type EmpresaUncheckedUpdateWithoutConteudosInput = {
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
   pagamentos?: Prisma.PagamentoUncheckedUpdateManyWithoutEmpresaNestedInput
+  notas?: Prisma.NotaUncheckedUpdateManyWithoutEmpresaNestedInput
+  notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
+  notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
+  calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
+}
+
+export type EmpresaCreateWithoutMateriaisBibliotecaInput = {
+  id?: string
+  nome: string
+  slug: string
+  logoUrl?: string | null
+  ativo?: boolean
+  criadoEm?: Date | string
+  usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
+  professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
+  materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
+  escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
+  unidades?: Prisma.UnidadeCreateNestedManyWithoutEmpresaInput
+  alunos?: Prisma.AlunoCreateNestedManyWithoutEmpresaInput
+  aulas?: Prisma.AgendaAulaCreateNestedManyWithoutEmpresaInput
+  avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutEmpresaInput
+  pagamentos?: Prisma.PagamentoCreateNestedManyWithoutEmpresaInput
+  conteudos?: Prisma.ConteudoCreateNestedManyWithoutEmpresaInput
+  notas?: Prisma.NotaCreateNestedManyWithoutEmpresaInput
+  notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
+  notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
+  calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+}
+
+export type EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput = {
+  id?: string
+  nome: string
+  slug: string
+  logoUrl?: string | null
+  ativo?: boolean
+  criadoEm?: Date | string
+  usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
+  professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
+  materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
+  escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
+  unidades?: Prisma.UnidadeUncheckedCreateNestedManyWithoutEmpresaInput
+  alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutEmpresaInput
+  aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutEmpresaInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  pagamentos?: Prisma.PagamentoUncheckedCreateNestedManyWithoutEmpresaInput
+  conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutEmpresaInput
+  notas?: Prisma.NotaUncheckedCreateNestedManyWithoutEmpresaInput
+  notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
+  notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
+  calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+}
+
+export type EmpresaCreateOrConnectWithoutMateriaisBibliotecaInput = {
+  where: Prisma.EmpresaWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmpresaCreateWithoutMateriaisBibliotecaInput, Prisma.EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput>
+}
+
+export type EmpresaUpsertWithoutMateriaisBibliotecaInput = {
+  update: Prisma.XOR<Prisma.EmpresaUpdateWithoutMateriaisBibliotecaInput, Prisma.EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput>
+  create: Prisma.XOR<Prisma.EmpresaCreateWithoutMateriaisBibliotecaInput, Prisma.EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput>
+  where?: Prisma.EmpresaWhereInput
+}
+
+export type EmpresaUpdateToOneWithWhereWithoutMateriaisBibliotecaInput = {
+  where?: Prisma.EmpresaWhereInput
+  data: Prisma.XOR<Prisma.EmpresaUpdateWithoutMateriaisBibliotecaInput, Prisma.EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput>
+}
+
+export type EmpresaUpdateWithoutMateriaisBibliotecaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
+  professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
+  materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
+  escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
+  unidades?: Prisma.UnidadeUpdateManyWithoutEmpresaNestedInput
+  alunos?: Prisma.AlunoUpdateManyWithoutEmpresaNestedInput
+  aulas?: Prisma.AgendaAulaUpdateManyWithoutEmpresaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutEmpresaNestedInput
+  pagamentos?: Prisma.PagamentoUpdateManyWithoutEmpresaNestedInput
+  conteudos?: Prisma.ConteudoUpdateManyWithoutEmpresaNestedInput
+  notas?: Prisma.NotaUpdateManyWithoutEmpresaNestedInput
+  notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
+  notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
+  calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+}
+
+export type EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
+  professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
+  materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
+  escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
+  unidades?: Prisma.UnidadeUncheckedUpdateManyWithoutEmpresaNestedInput
+  alunos?: Prisma.AlunoUncheckedUpdateManyWithoutEmpresaNestedInput
+  aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutEmpresaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  pagamentos?: Prisma.PagamentoUncheckedUpdateManyWithoutEmpresaNestedInput
+  conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutEmpresaNestedInput
   notas?: Prisma.NotaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1917,6 +2094,7 @@ export type EmpresaCreateWithoutAulasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutAulasInput = {
@@ -1939,6 +2117,7 @@ export type EmpresaUncheckedCreateWithoutAulasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutAulasInput = {
@@ -1977,6 +2156,7 @@ export type EmpresaUpdateWithoutAulasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutAulasInput = {
@@ -1999,6 +2179,7 @@ export type EmpresaUncheckedUpdateWithoutAulasInput = {
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutNotificacoesAulaInput = {
@@ -2021,6 +2202,7 @@ export type EmpresaCreateWithoutNotificacoesAulaInput = {
   notas?: Prisma.NotaCreateNestedManyWithoutEmpresaInput
   notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
@@ -2043,6 +2225,7 @@ export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutEmpresaInput
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutNotificacoesAulaInput = {
@@ -2081,6 +2264,7 @@ export type EmpresaUpdateWithoutNotificacoesAulaInput = {
   notas?: Prisma.NotaUpdateManyWithoutEmpresaNestedInput
   notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
@@ -2103,6 +2287,7 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
   notas?: Prisma.NotaUncheckedUpdateManyWithoutEmpresaNestedInput
   notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 
@@ -2125,6 +2310,7 @@ export type EmpresaCountOutputType = {
   notificacoesProva: number
   notificacoesAula: number
   calendarios: number
+  materiaisBiblioteca: number
 }
 
 export type EmpresaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2142,6 +2328,7 @@ export type EmpresaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   notificacoesProva?: boolean | EmpresaCountOutputTypeCountNotificacoesProvaArgs
   notificacoesAula?: boolean | EmpresaCountOutputTypeCountNotificacoesAulaArgs
   calendarios?: boolean | EmpresaCountOutputTypeCountCalendariosArgs
+  materiaisBiblioteca?: boolean | EmpresaCountOutputTypeCountMateriaisBibliotecaArgs
 }
 
 /**
@@ -2252,6 +2439,13 @@ export type EmpresaCountOutputTypeCountCalendariosArgs<ExtArgs extends runtime.T
   where?: Prisma.CalendarioEscolarWhereInput
 }
 
+/**
+ * EmpresaCountOutputType without action
+ */
+export type EmpresaCountOutputTypeCountMateriaisBibliotecaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaterialBibliotecaWhereInput
+}
+
 
 export type EmpresaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2274,6 +2468,7 @@ export type EmpresaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   notificacoesProva?: boolean | Prisma.Empresa$notificacoesProvaArgs<ExtArgs>
   notificacoesAula?: boolean | Prisma.Empresa$notificacoesAulaArgs<ExtArgs>
   calendarios?: boolean | Prisma.Empresa$calendariosArgs<ExtArgs>
+  materiaisBiblioteca?: boolean | Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs>
   _count?: boolean | Prisma.EmpresaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["empresa"]>
 
@@ -2320,6 +2515,7 @@ export type EmpresaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   notificacoesProva?: boolean | Prisma.Empresa$notificacoesProvaArgs<ExtArgs>
   notificacoesAula?: boolean | Prisma.Empresa$notificacoesAulaArgs<ExtArgs>
   calendarios?: boolean | Prisma.Empresa$calendariosArgs<ExtArgs>
+  materiaisBiblioteca?: boolean | Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs>
   _count?: boolean | Prisma.EmpresaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EmpresaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2342,6 +2538,7 @@ export type $EmpresaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     notificacoesProva: Prisma.$NotificacaoProvaPayload<ExtArgs>[]
     notificacoesAula: Prisma.$NotificacaoAulaPayload<ExtArgs>[]
     calendarios: Prisma.$CalendarioEscolarPayload<ExtArgs>[]
+    materiaisBiblioteca: Prisma.$MaterialBibliotecaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2758,6 +2955,7 @@ export interface Prisma__EmpresaClient<T, Null = never, ExtArgs extends runtime.
   notificacoesProva<T extends Prisma.Empresa$notificacoesProvaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$notificacoesProvaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificacaoProvaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notificacoesAula<T extends Prisma.Empresa$notificacoesAulaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$notificacoesAulaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificacaoAulaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   calendarios<T extends Prisma.Empresa$calendariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$calendariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarioEscolarPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  materiaisBiblioteca<T extends Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaterialBibliotecaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3519,6 +3717,30 @@ export type Empresa$calendariosArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.CalendarioEscolarScalarFieldEnum | Prisma.CalendarioEscolarScalarFieldEnum[]
+}
+
+/**
+ * Empresa.materiaisBiblioteca
+ */
+export type Empresa$materiaisBibliotecaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaterialBiblioteca
+   */
+  select?: Prisma.MaterialBibliotecaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaterialBiblioteca
+   */
+  omit?: Prisma.MaterialBibliotecaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaterialBibliotecaInclude<ExtArgs> | null
+  where?: Prisma.MaterialBibliotecaWhereInput
+  orderBy?: Prisma.MaterialBibliotecaOrderByWithRelationInput | Prisma.MaterialBibliotecaOrderByWithRelationInput[]
+  cursor?: Prisma.MaterialBibliotecaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaterialBibliotecaScalarFieldEnum | Prisma.MaterialBibliotecaScalarFieldEnum[]
 }
 
 /**

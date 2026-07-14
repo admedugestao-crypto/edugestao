@@ -67,6 +67,7 @@ export const ModelName = {
   Pagamento: 'Pagamento',
   PagamentoAula: 'PagamentoAula',
   Conteudo: 'Conteudo',
+  MaterialBiblioteca: 'MaterialBiblioteca',
   AgendaAula: 'AgendaAula',
   AgendaAulaMateria: 'AgendaAulaMateria',
   NotificacaoAula: 'NotificacaoAula'
@@ -338,6 +339,22 @@ export const ConteudoScalarFieldEnum = {
 } as const
 
 export type ConteudoScalarFieldEnum = (typeof ConteudoScalarFieldEnum)[keyof typeof ConteudoScalarFieldEnum]
+
+
+export const MaterialBibliotecaScalarFieldEnum = {
+  id: 'id',
+  empresaId: 'empresaId',
+  titulo: 'titulo',
+  descricao: 'descricao',
+  metodo: 'metodo',
+  serie: 'serie',
+  materiaId: 'materiaId',
+  arquivoUrl: 'arquivoUrl',
+  arquivoNome: 'arquivoNome',
+  criadoEm: 'criadoEm'
+} as const
+
+export type MaterialBibliotecaScalarFieldEnum = (typeof MaterialBibliotecaScalarFieldEnum)[keyof typeof MaterialBibliotecaScalarFieldEnum]
 
 
 export const AgendaAulaScalarFieldEnum = {

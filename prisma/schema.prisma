@@ -24,20 +24,21 @@ model Empresa {
   ativo    Boolean  @default(true)
   criadoEm DateTime @default(now())
 
-  usuarios          Usuario[]
-  professoras       Professora[]
-  materias          Materia[]
-  escolas           Escola[]
-  unidades          Unidade[]
-  alunos            Aluno[]
-  aulas             AgendaAula[]
-  avaliacoes        Avaliacao[]
-  pagamentos        Pagamento[]
-  conteudos         Conteudo[]
-  notas             Nota[]
-  notificacoesProva NotificacaoProva[]
-  notificacoesAula  NotificacaoAula[]
-  calendarios       CalendarioEscolar[]
+  usuarios            Usuario[]
+  professoras         Professora[]
+  materias            Materia[]
+  escolas             Escola[]
+  unidades            Unidade[]
+  alunos              Aluno[]
+  aulas               AgendaAula[]
+  avaliacoes          Avaliacao[]
+  pagamentos          Pagamento[]
+  conteudos           Conteudo[]
+  notas               Nota[]
+  notificacoesProva   NotificacaoProva[]
+  notificacoesAula    NotificacaoAula[]
+  calendarios         CalendarioEscolar[]
+  materiaisBiblioteca MaterialBiblioteca[]
 
   @@map("empresas")
 }
@@ -102,14 +103,15 @@ model Materia {
   nome      String
   cor       String @default("#6366f1")
 
-  empresa       Empresa             @relation(fields: [empresaId], references: [id])
-  professoras   ProfessoraMateria[]
-  alunoMaterias AlunoMateria[]
-  avaliacoes    Avaliacao[]
-  notas         Nota[]
-  conteudos     Conteudo[]
-  aulas         AgendaAula[]
-  aulasMaterias AgendaAulaMateria[]
+  empresa             Empresa              @relation(fields: [empresaId], references: [id])
+  professoras         ProfessoraMateria[]
+  alunoMaterias       AlunoMateria[]
+  avaliacoes          Avaliacao[]
+  notas               Nota[]
+  conteudos           Conteudo[]
+  aulas               AgendaAula[]
+  aulasMaterias       AgendaAulaMateria[]
+  materiaisBiblioteca MaterialBiblioteca[]
 
   @@unique([empresaId, nome])
   @@index([empresaId])
@@ -405,6 +407,27 @@ model Conteudo {
 
   @@index([empresaId])
   @@map("conteudos")
+}
+
+// ─── Biblioteca de Materiais ────────────────────────────────────────────────
+
+model MaterialBiblioteca {
+  id          String   @id @default(cuid())
+  empresaId   String
+  titulo      String
+  descricao   String?
+  metodo      String?
+  serie       String?
+  materiaId   String?
+  arquivoUrl  String
+  arquivoNome String?
+  criadoEm    DateTime @default(now())
+
+  empresa Empresa  @relation(fields: [empresaId], references: [id])
+  materia Materia? @relation(fields: [materiaId], references: [id])
+
+  @@index([empresaId])
+  @@map("biblioteca_materiais")
 }
 
 // ─── Agenda de Aulas ──────────────────────────────────────────────────────────

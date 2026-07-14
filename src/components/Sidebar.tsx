@@ -13,6 +13,7 @@ import {
   GraduationCap,
   Bell,
   DollarSign,
+  Library,
 } from "lucide-react";
 
 const nav = [
@@ -24,6 +25,7 @@ const nav = [
   { href: "/dashboard/calendario",       label: "Calendário",     icon: Calendar,        adminOnly: false },
   { href: "/dashboard/notas",            label: "Notas",          icon: ClipboardList,   adminOnly: false },
   { href: "/dashboard/conteudos",        label: "Conteúdos",      icon: GraduationCap,   adminOnly: false },
+  { href: "/dashboard/biblioteca",       label: "Biblioteca",     icon: Library,         adminOnly: false },
   { href: "/dashboard/pagamentos",       label: "Pagamentos",     icon: DollarSign,      adminOnly: false },
   { href: "/dashboard/notificacoes",     label: "Notificações",   icon: Bell,            adminOnly: true  },
 ];
