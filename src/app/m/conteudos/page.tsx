@@ -1,25 +1,30 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
+import { redirect } from "next/navigation";
 import ConteudosMobile from "@/components/ConteudosMobile";
 
 export const dynamic = "force-dynamic";
 
 export default async function ConteudosMobilePage() {
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+
   const session      = await auth();
-  const professoraId = (session?.user as any)?.professoraId as string | null;
-  const perfil       = (session?.user as any)?.perfil as string | null;
+  const professoraId = scope.professoraId;
+  const perfil       = scope.perfil;
   const nomeUsuario  = (session?.user as any)?.name as string ?? "";
   const isAdmin      = perfil !== "PROFESSORA";
   const filtroProf   = (!isAdmin && professoraId) ? { professoraId } : {};
 
   const [alunos, conteudos, professoras] = await Promise.all([
     prisma.aluno.findMany({
-      where: { ...filtroProf },
+      where: { empresaId: scope.empresaId, ...filtroProf },
       include: { materias: { include: { materia: true } }, professora: { select: { id: true } } },
       orderBy: { nome: "asc" },
     }),
     prisma.conteudo.findMany({
-      where: { aluno: filtroProf },
+      where: { empresaId: scope.empresaId, aluno: filtroProf },
       include: {
         aluno: {
           select: {
@@ -40,7 +45,7 @@ export default async function ConteudosMobilePage() {
       take: 50,
     }),
     prisma.professora.findMany({
-      where: { usuario: { perfil: "PROFESSORA" } },
+      where: { empresaId: scope.empresaId, usuario: { perfil: "PROFESSORA" } },
       include: { usuario: { select: { nome: true } } },
       orderBy: { usuario: { nome: "asc" } },
     }),
