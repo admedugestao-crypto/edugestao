@@ -122,6 +122,11 @@ export type PagamentoAula = Prisma.PagamentoAulaModel
  */
 export type Conteudo = Prisma.ConteudoModel
 /**
+ * Model MaterialBiblioteca
+ * 
+ */
+export type MaterialBiblioteca = Prisma.MaterialBibliotecaModel
+/**
  * Model AgendaAula
  * 
  */

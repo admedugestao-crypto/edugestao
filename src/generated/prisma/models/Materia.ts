@@ -182,6 +182,7 @@ export type MateriaWhereInput = {
   conteudos?: Prisma.ConteudoListRelationFilter
   aulas?: Prisma.AgendaAulaListRelationFilter
   aulasMaterias?: Prisma.AgendaAulaMateriaListRelationFilter
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaListRelationFilter
 }
 
 export type MateriaOrderByWithRelationInput = {
@@ -197,6 +198,7 @@ export type MateriaOrderByWithRelationInput = {
   conteudos?: Prisma.ConteudoOrderByRelationAggregateInput
   aulas?: Prisma.AgendaAulaOrderByRelationAggregateInput
   aulasMaterias?: Prisma.AgendaAulaMateriaOrderByRelationAggregateInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaOrderByRelationAggregateInput
 }
 
 export type MateriaWhereUniqueInput = Prisma.AtLeast<{
@@ -216,6 +218,7 @@ export type MateriaWhereUniqueInput = Prisma.AtLeast<{
   conteudos?: Prisma.ConteudoListRelationFilter
   aulas?: Prisma.AgendaAulaListRelationFilter
   aulasMaterias?: Prisma.AgendaAulaMateriaListRelationFilter
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaListRelationFilter
 }, "id" | "empresaId_nome">
 
 export type MateriaOrderByWithAggregationInput = {
@@ -250,6 +253,7 @@ export type MateriaCreateInput = {
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateInput = {
@@ -264,6 +268,7 @@ export type MateriaUncheckedCreateInput = {
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUpdateInput = {
@@ -278,6 +283,7 @@ export type MateriaUpdateInput = {
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateInput = {
@@ -292,6 +298,7 @@ export type MateriaUncheckedUpdateInput = {
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaCreateManyInput = {
@@ -476,6 +483,22 @@ export type MateriaUpdateOneWithoutConteudosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MateriaUpdateToOneWithWhereWithoutConteudosInput, Prisma.MateriaUpdateWithoutConteudosInput>, Prisma.MateriaUncheckedUpdateWithoutConteudosInput>
 }
 
+export type MateriaCreateNestedOneWithoutMateriaisBibliotecaInput = {
+  create?: Prisma.XOR<Prisma.MateriaCreateWithoutMateriaisBibliotecaInput, Prisma.MateriaUncheckedCreateWithoutMateriaisBibliotecaInput>
+  connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutMateriaisBibliotecaInput
+  connect?: Prisma.MateriaWhereUniqueInput
+}
+
+export type MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput = {
+  create?: Prisma.XOR<Prisma.MateriaCreateWithoutMateriaisBibliotecaInput, Prisma.MateriaUncheckedCreateWithoutMateriaisBibliotecaInput>
+  connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutMateriaisBibliotecaInput
+  upsert?: Prisma.MateriaUpsertWithoutMateriaisBibliotecaInput
+  disconnect?: Prisma.MateriaWhereInput | boolean
+  delete?: Prisma.MateriaWhereInput | boolean
+  connect?: Prisma.MateriaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MateriaUpdateToOneWithWhereWithoutMateriaisBibliotecaInput, Prisma.MateriaUpdateWithoutMateriaisBibliotecaInput>, Prisma.MateriaUncheckedUpdateWithoutMateriaisBibliotecaInput>
+}
+
 export type MateriaCreateNestedOneWithoutAulasInput = {
   create?: Prisma.XOR<Prisma.MateriaCreateWithoutAulasInput, Prisma.MateriaUncheckedCreateWithoutAulasInput>
   connectOrCreate?: Prisma.MateriaCreateOrConnectWithoutAulasInput
@@ -517,6 +540,7 @@ export type MateriaCreateWithoutEmpresaInput = {
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutEmpresaInput = {
@@ -530,6 +554,7 @@ export type MateriaUncheckedCreateWithoutEmpresaInput = {
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutEmpresaInput = {
@@ -579,6 +604,7 @@ export type MateriaCreateWithoutProfessorasInput = {
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutProfessorasInput = {
@@ -592,6 +618,7 @@ export type MateriaUncheckedCreateWithoutProfessorasInput = {
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutProfessorasInput = {
@@ -621,6 +648,7 @@ export type MateriaUpdateWithoutProfessorasInput = {
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutProfessorasInput = {
@@ -634,6 +662,7 @@ export type MateriaUncheckedUpdateWithoutProfessorasInput = {
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaCreateWithoutAvaliacoesInput = {
@@ -647,6 +676,7 @@ export type MateriaCreateWithoutAvaliacoesInput = {
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutAvaliacoesInput = {
@@ -660,6 +690,7 @@ export type MateriaUncheckedCreateWithoutAvaliacoesInput = {
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutAvaliacoesInput = {
@@ -689,6 +720,7 @@ export type MateriaUpdateWithoutAvaliacoesInput = {
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutAvaliacoesInput = {
@@ -702,6 +734,7 @@ export type MateriaUncheckedUpdateWithoutAvaliacoesInput = {
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaCreateWithoutAlunoMateriasInput = {
@@ -715,6 +748,7 @@ export type MateriaCreateWithoutAlunoMateriasInput = {
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutAlunoMateriasInput = {
@@ -728,6 +762,7 @@ export type MateriaUncheckedCreateWithoutAlunoMateriasInput = {
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutAlunoMateriasInput = {
@@ -757,6 +792,7 @@ export type MateriaUpdateWithoutAlunoMateriasInput = {
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutAlunoMateriasInput = {
@@ -770,6 +806,7 @@ export type MateriaUncheckedUpdateWithoutAlunoMateriasInput = {
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaCreateWithoutNotasInput = {
@@ -783,6 +820,7 @@ export type MateriaCreateWithoutNotasInput = {
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutNotasInput = {
@@ -796,6 +834,7 @@ export type MateriaUncheckedCreateWithoutNotasInput = {
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutNotasInput = {
@@ -825,6 +864,7 @@ export type MateriaUpdateWithoutNotasInput = {
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutNotasInput = {
@@ -838,6 +878,7 @@ export type MateriaUncheckedUpdateWithoutNotasInput = {
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaCreateWithoutConteudosInput = {
@@ -851,6 +892,7 @@ export type MateriaCreateWithoutConteudosInput = {
   notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutConteudosInput = {
@@ -864,6 +906,7 @@ export type MateriaUncheckedCreateWithoutConteudosInput = {
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutConteudosInput = {
@@ -893,6 +936,7 @@ export type MateriaUpdateWithoutConteudosInput = {
   notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutConteudosInput = {
@@ -904,6 +948,79 @@ export type MateriaUncheckedUpdateWithoutConteudosInput = {
   alunoMaterias?: Prisma.AlunoMateriaUncheckedUpdateManyWithoutMateriaNestedInput
   avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutMateriaNestedInput
   notas?: Prisma.NotaUncheckedUpdateManyWithoutMateriaNestedInput
+  aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
+}
+
+export type MateriaCreateWithoutMateriaisBibliotecaInput = {
+  id?: string
+  nome: string
+  cor?: string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriasInput
+  professoras?: Prisma.ProfessoraMateriaCreateNestedManyWithoutMateriaInput
+  alunoMaterias?: Prisma.AlunoMateriaCreateNestedManyWithoutMateriaInput
+  avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutMateriaInput
+  notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
+  conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
+  aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+}
+
+export type MateriaUncheckedCreateWithoutMateriaisBibliotecaInput = {
+  id?: string
+  empresaId: string
+  nome: string
+  cor?: string
+  professoras?: Prisma.ProfessoraMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  alunoMaterias?: Prisma.AlunoMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedCreateNestedManyWithoutMateriaInput
+  notas?: Prisma.NotaUncheckedCreateNestedManyWithoutMateriaInput
+  conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
+  aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+}
+
+export type MateriaCreateOrConnectWithoutMateriaisBibliotecaInput = {
+  where: Prisma.MateriaWhereUniqueInput
+  create: Prisma.XOR<Prisma.MateriaCreateWithoutMateriaisBibliotecaInput, Prisma.MateriaUncheckedCreateWithoutMateriaisBibliotecaInput>
+}
+
+export type MateriaUpsertWithoutMateriaisBibliotecaInput = {
+  update: Prisma.XOR<Prisma.MateriaUpdateWithoutMateriaisBibliotecaInput, Prisma.MateriaUncheckedUpdateWithoutMateriaisBibliotecaInput>
+  create: Prisma.XOR<Prisma.MateriaCreateWithoutMateriaisBibliotecaInput, Prisma.MateriaUncheckedCreateWithoutMateriaisBibliotecaInput>
+  where?: Prisma.MateriaWhereInput
+}
+
+export type MateriaUpdateToOneWithWhereWithoutMateriaisBibliotecaInput = {
+  where?: Prisma.MateriaWhereInput
+  data: Prisma.XOR<Prisma.MateriaUpdateWithoutMateriaisBibliotecaInput, Prisma.MateriaUncheckedUpdateWithoutMateriaisBibliotecaInput>
+}
+
+export type MateriaUpdateWithoutMateriaisBibliotecaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  cor?: Prisma.StringFieldUpdateOperationsInput | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriasNestedInput
+  professoras?: Prisma.ProfessoraMateriaUpdateManyWithoutMateriaNestedInput
+  alunoMaterias?: Prisma.AlunoMateriaUpdateManyWithoutMateriaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutMateriaNestedInput
+  notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
+  conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
+  aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
+  aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+}
+
+export type MateriaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  cor?: Prisma.StringFieldUpdateOperationsInput | string
+  professoras?: Prisma.ProfessoraMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  alunoMaterias?: Prisma.AlunoMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutMateriaNestedInput
+  notas?: Prisma.NotaUncheckedUpdateManyWithoutMateriaNestedInput
+  conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
 }
@@ -919,6 +1036,7 @@ export type MateriaCreateWithoutAulasInput = {
   notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutAulasInput = {
@@ -932,6 +1050,7 @@ export type MateriaUncheckedCreateWithoutAulasInput = {
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutMateriaInput
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutAulasInput = {
@@ -961,6 +1080,7 @@ export type MateriaUpdateWithoutAulasInput = {
   notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutAulasInput = {
@@ -974,6 +1094,7 @@ export type MateriaUncheckedUpdateWithoutAulasInput = {
   notas?: Prisma.NotaUncheckedUpdateManyWithoutMateriaNestedInput
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaCreateWithoutAulasMateriasInput = {
@@ -987,6 +1108,7 @@ export type MateriaCreateWithoutAulasMateriasInput = {
   notas?: Prisma.NotaCreateNestedManyWithoutMateriaInput
   conteudos?: Prisma.ConteudoCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaUncheckedCreateWithoutAulasMateriasInput = {
@@ -1000,6 +1122,7 @@ export type MateriaUncheckedCreateWithoutAulasMateriasInput = {
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutMateriaInput
   conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutMateriaInput
   aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutMateriaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutMateriaInput
 }
 
 export type MateriaCreateOrConnectWithoutAulasMateriasInput = {
@@ -1029,6 +1152,7 @@ export type MateriaUpdateWithoutAulasMateriasInput = {
   notas?: Prisma.NotaUpdateManyWithoutMateriaNestedInput
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutAulasMateriasInput = {
@@ -1042,6 +1166,7 @@ export type MateriaUncheckedUpdateWithoutAulasMateriasInput = {
   notas?: Prisma.NotaUncheckedUpdateManyWithoutMateriaNestedInput
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaCreateManyEmpresaInput = {
@@ -1061,6 +1186,7 @@ export type MateriaUpdateWithoutEmpresaInput = {
   conteudos?: Prisma.ConteudoUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateWithoutEmpresaInput = {
@@ -1074,6 +1200,7 @@ export type MateriaUncheckedUpdateWithoutEmpresaInput = {
   conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutMateriaNestedInput
   aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutMateriaNestedInput
   aulasMaterias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutMateriaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMateriaNestedInput
 }
 
 export type MateriaUncheckedUpdateManyWithoutEmpresaInput = {
@@ -1095,6 +1222,7 @@ export type MateriaCountOutputType = {
   conteudos: number
   aulas: number
   aulasMaterias: number
+  materiaisBiblioteca: number
 }
 
 export type MateriaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1105,6 +1233,7 @@ export type MateriaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   conteudos?: boolean | MateriaCountOutputTypeCountConteudosArgs
   aulas?: boolean | MateriaCountOutputTypeCountAulasArgs
   aulasMaterias?: boolean | MateriaCountOutputTypeCountAulasMateriasArgs
+  materiaisBiblioteca?: boolean | MateriaCountOutputTypeCountMateriaisBibliotecaArgs
 }
 
 /**
@@ -1166,6 +1295,13 @@ export type MateriaCountOutputTypeCountAulasMateriasArgs<ExtArgs extends runtime
   where?: Prisma.AgendaAulaMateriaWhereInput
 }
 
+/**
+ * MateriaCountOutputType without action
+ */
+export type MateriaCountOutputTypeCountMateriaisBibliotecaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaterialBibliotecaWhereInput
+}
+
 
 export type MateriaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1180,6 +1316,7 @@ export type MateriaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   conteudos?: boolean | Prisma.Materia$conteudosArgs<ExtArgs>
   aulas?: boolean | Prisma.Materia$aulasArgs<ExtArgs>
   aulasMaterias?: boolean | Prisma.Materia$aulasMateriasArgs<ExtArgs>
+  materiaisBiblioteca?: boolean | Prisma.Materia$materiaisBibliotecaArgs<ExtArgs>
   _count?: boolean | Prisma.MateriaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["materia"]>
 
@@ -1216,6 +1353,7 @@ export type MateriaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   conteudos?: boolean | Prisma.Materia$conteudosArgs<ExtArgs>
   aulas?: boolean | Prisma.Materia$aulasArgs<ExtArgs>
   aulasMaterias?: boolean | Prisma.Materia$aulasMateriasArgs<ExtArgs>
+  materiaisBiblioteca?: boolean | Prisma.Materia$materiaisBibliotecaArgs<ExtArgs>
   _count?: boolean | Prisma.MateriaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MateriaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1236,6 +1374,7 @@ export type $MateriaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     conteudos: Prisma.$ConteudoPayload<ExtArgs>[]
     aulas: Prisma.$AgendaAulaPayload<ExtArgs>[]
     aulasMaterias: Prisma.$AgendaAulaMateriaPayload<ExtArgs>[]
+    materiaisBiblioteca: Prisma.$MaterialBibliotecaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1644,6 +1783,7 @@ export interface Prisma__MateriaClient<T, Null = never, ExtArgs extends runtime.
   conteudos<T extends Prisma.Materia$conteudosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Materia$conteudosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConteudoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aulas<T extends Prisma.Materia$aulasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Materia$aulasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgendaAulaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aulasMaterias<T extends Prisma.Materia$aulasMateriasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Materia$aulasMateriasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgendaAulaMateriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  materiaisBiblioteca<T extends Prisma.Materia$materiaisBibliotecaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Materia$materiaisBibliotecaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaterialBibliotecaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2243,6 +2383,30 @@ export type Materia$aulasMateriasArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.AgendaAulaMateriaScalarFieldEnum | Prisma.AgendaAulaMateriaScalarFieldEnum[]
+}
+
+/**
+ * Materia.materiaisBiblioteca
+ */
+export type Materia$materiaisBibliotecaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaterialBiblioteca
+   */
+  select?: Prisma.MaterialBibliotecaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaterialBiblioteca
+   */
+  omit?: Prisma.MaterialBibliotecaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaterialBibliotecaInclude<ExtArgs> | null
+  where?: Prisma.MaterialBibliotecaWhereInput
+  orderBy?: Prisma.MaterialBibliotecaOrderByWithRelationInput | Prisma.MaterialBibliotecaOrderByWithRelationInput[]
+  cursor?: Prisma.MaterialBibliotecaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaterialBibliotecaScalarFieldEnum | Prisma.MaterialBibliotecaScalarFieldEnum[]
 }
 
 /**
