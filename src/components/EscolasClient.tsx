@@ -36,6 +36,27 @@ function formatarData(iso: string | null): string {
   return `${d}/${m}/${y}`;
 }
 
+// Comparação de strings "YYYY-MM-DD" funciona direto (ordem lexicográfica =
+// ordem cronológica nesse formato). Mesma regra aplicada no servidor.
+function validarPeriodoLetivoStr(p: {
+  periodoLetivo1Inicio: string;
+  periodoLetivo1Fim: string;
+  periodoLetivo2Inicio: string;
+  periodoLetivo2Fim: string;
+}): string {
+  const { periodoLetivo1Inicio, periodoLetivo1Fim, periodoLetivo2Inicio, periodoLetivo2Fim } = p;
+  if (periodoLetivo1Inicio && periodoLetivo1Fim && periodoLetivo1Fim < periodoLetivo1Inicio) {
+    return "O fim do 1º período não pode ser antes do início do 1º período.";
+  }
+  if (periodoLetivo2Inicio && periodoLetivo2Fim && periodoLetivo2Fim < periodoLetivo2Inicio) {
+    return "O fim do 2º período não pode ser antes do início do 2º período.";
+  }
+  if (periodoLetivo1Fim && periodoLetivo2Inicio && periodoLetivo2Inicio <= periodoLetivo1Fim) {
+    return "O início do 2º período precisa ser depois do fim do 1º período.";
+  }
+  return "";
+}
+
 const PERIODOS_AVALIACAO = ["Bimestral", "Trimestral", "Semestral"] as const;
 
 type ConfirmDelete = { tipo: "escola"; id: string; nome: string } | { tipo: "unidade"; id: string; escolaId: string; nome: string };
@@ -77,6 +98,9 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
   const [erroDelete, setErroDelete] = useState("");
 
   const [salvando, setSalvando] = useState(false);
+
+  const erroPeriodoNova = validarPeriodoLetivoStr(novaEscola);
+  const erroPeriodoEdit = editEscola ? validarPeriodoLetivoStr(editEscola) : "";
 
   // ── Criar escola (+ primeira unidade) ──────────────────────────────────────
   async function criarEscola() {
@@ -416,6 +440,9 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                   />
                 </div>
               </div>
+              {erroPeriodoNova && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoNova}</p>
+              )}
 
               <div className="border-t border-slate-100 pt-3 mt-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
@@ -466,7 +493,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
             <div className="flex gap-3 mt-5">
               <button
                 onClick={criarEscola}
-                disabled={!novaEscola.nome || !primeiraUnidade.nome || salvando}
+                disabled={!novaEscola.nome || !primeiraUnidade.nome || !!erroPeriodoNova || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Criar escola"}
@@ -619,11 +646,14 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                   />
                 </div>
               </div>
+              {erroPeriodoEdit && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoEdit}</p>
+              )}
             </div>
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarEscola}
-                disabled={!editEscola.nome || salvando}
+                disabled={!editEscola.nome || !!erroPeriodoEdit || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Salvar"}
