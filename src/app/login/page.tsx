@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { isMobileUserAgent } from "@/lib/device";
 
@@ -70,7 +71,12 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Senha</label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-sm font-medium text-slate-700">Senha</label>
+            <Link href="/esqueci-senha" className="text-xs text-indigo-600 hover:underline font-medium">
+              Esqueci minha senha
+            </Link>
+          </div>
           <div className="relative">
             <input
               type={mostrarSenha ? "text" : "password"}

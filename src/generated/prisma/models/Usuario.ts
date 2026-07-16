@@ -31,6 +31,8 @@ export type UsuarioMinAggregateOutputType = {
   email: string | null
   senhaHash: string | null
   senhaTemporaria: boolean | null
+  resetToken: string | null
+  resetTokenExpira: Date | null
   perfil: $Enums.Perfil | null
   ativo: boolean | null
   foto: string | null
@@ -46,6 +48,8 @@ export type UsuarioMaxAggregateOutputType = {
   email: string | null
   senhaHash: string | null
   senhaTemporaria: boolean | null
+  resetToken: string | null
+  resetTokenExpira: Date | null
   perfil: $Enums.Perfil | null
   ativo: boolean | null
   foto: string | null
@@ -61,6 +65,8 @@ export type UsuarioCountAggregateOutputType = {
   email: number
   senhaHash: number
   senhaTemporaria: number
+  resetToken: number
+  resetTokenExpira: number
   perfil: number
   ativo: number
   foto: number
@@ -78,6 +84,8 @@ export type UsuarioMinAggregateInputType = {
   email?: true
   senhaHash?: true
   senhaTemporaria?: true
+  resetToken?: true
+  resetTokenExpira?: true
   perfil?: true
   ativo?: true
   foto?: true
@@ -93,6 +101,8 @@ export type UsuarioMaxAggregateInputType = {
   email?: true
   senhaHash?: true
   senhaTemporaria?: true
+  resetToken?: true
+  resetTokenExpira?: true
   perfil?: true
   ativo?: true
   foto?: true
@@ -108,6 +118,8 @@ export type UsuarioCountAggregateInputType = {
   email?: true
   senhaHash?: true
   senhaTemporaria?: true
+  resetToken?: true
+  resetTokenExpira?: true
   perfil?: true
   ativo?: true
   foto?: true
@@ -196,6 +208,8 @@ export type UsuarioGroupByOutputType = {
   email: string
   senhaHash: string
   senhaTemporaria: boolean
+  resetToken: string | null
+  resetTokenExpira: Date | null
   perfil: $Enums.Perfil
   ativo: boolean
   foto: string | null
@@ -232,6 +246,8 @@ export type UsuarioWhereInput = {
   email?: Prisma.StringFilter<"Usuario"> | string
   senhaHash?: Prisma.StringFilter<"Usuario"> | string
   senhaTemporaria?: Prisma.BoolFilter<"Usuario"> | boolean
+  resetToken?: Prisma.StringNullableFilter<"Usuario"> | string | null
+  resetTokenExpira?: Prisma.DateTimeNullableFilter<"Usuario"> | Date | string | null
   perfil?: Prisma.EnumPerfilFilter<"Usuario"> | $Enums.Perfil
   ativo?: Prisma.BoolFilter<"Usuario"> | boolean
   foto?: Prisma.StringNullableFilter<"Usuario"> | string | null
@@ -249,6 +265,8 @@ export type UsuarioOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   senhaHash?: Prisma.SortOrder
   senhaTemporaria?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetTokenExpira?: Prisma.SortOrderInput | Prisma.SortOrder
   perfil?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   foto?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -261,6 +279,7 @@ export type UsuarioOrderByWithRelationInput = {
 
 export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  resetToken?: string
   empresaId_email?: Prisma.UsuarioEmpresaIdEmailCompoundUniqueInput
   AND?: Prisma.UsuarioWhereInput | Prisma.UsuarioWhereInput[]
   OR?: Prisma.UsuarioWhereInput[]
@@ -270,6 +289,7 @@ export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
   email?: Prisma.StringFilter<"Usuario"> | string
   senhaHash?: Prisma.StringFilter<"Usuario"> | string
   senhaTemporaria?: Prisma.BoolFilter<"Usuario"> | boolean
+  resetTokenExpira?: Prisma.DateTimeNullableFilter<"Usuario"> | Date | string | null
   perfil?: Prisma.EnumPerfilFilter<"Usuario"> | $Enums.Perfil
   ativo?: Prisma.BoolFilter<"Usuario"> | boolean
   foto?: Prisma.StringNullableFilter<"Usuario"> | string | null
@@ -278,7 +298,7 @@ export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
   atualizadoEm?: Prisma.DateTimeFilter<"Usuario"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaNullableScalarRelationFilter, Prisma.EmpresaWhereInput> | null
   professora?: Prisma.XOR<Prisma.ProfessoraNullableScalarRelationFilter, Prisma.ProfessoraWhereInput> | null
-}, "id" | "empresaId_email">
+}, "id" | "resetToken" | "empresaId_email">
 
 export type UsuarioOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -287,6 +307,8 @@ export type UsuarioOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   senhaHash?: Prisma.SortOrder
   senhaTemporaria?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetTokenExpira?: Prisma.SortOrderInput | Prisma.SortOrder
   perfil?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   foto?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -308,6 +330,8 @@ export type UsuarioScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"Usuario"> | string
   senhaHash?: Prisma.StringWithAggregatesFilter<"Usuario"> | string
   senhaTemporaria?: Prisma.BoolWithAggregatesFilter<"Usuario"> | boolean
+  resetToken?: Prisma.StringNullableWithAggregatesFilter<"Usuario"> | string | null
+  resetTokenExpira?: Prisma.DateTimeNullableWithAggregatesFilter<"Usuario"> | Date | string | null
   perfil?: Prisma.EnumPerfilWithAggregatesFilter<"Usuario"> | $Enums.Perfil
   ativo?: Prisma.BoolWithAggregatesFilter<"Usuario"> | boolean
   foto?: Prisma.StringNullableWithAggregatesFilter<"Usuario"> | string | null
@@ -322,6 +346,8 @@ export type UsuarioCreateInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -339,6 +365,8 @@ export type UsuarioUncheckedCreateInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -354,6 +382,8 @@ export type UsuarioUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -371,6 +401,8 @@ export type UsuarioUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -387,6 +419,8 @@ export type UsuarioCreateManyInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -401,6 +435,8 @@ export type UsuarioUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -416,6 +452,8 @@ export type UsuarioUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -446,6 +484,8 @@ export type UsuarioCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   senhaHash?: Prisma.SortOrder
   senhaTemporaria?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrder
+  resetTokenExpira?: Prisma.SortOrder
   perfil?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   foto?: Prisma.SortOrder
@@ -461,6 +501,8 @@ export type UsuarioMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   senhaHash?: Prisma.SortOrder
   senhaTemporaria?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrder
+  resetTokenExpira?: Prisma.SortOrder
   perfil?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   foto?: Prisma.SortOrder
@@ -476,6 +518,8 @@ export type UsuarioMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   senhaHash?: Prisma.SortOrder
   senhaTemporaria?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrder
+  resetTokenExpira?: Prisma.SortOrder
   perfil?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   foto?: Prisma.SortOrder
@@ -531,6 +575,10 @@ export type UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput = {
   deleteMany?: Prisma.UsuarioScalarWhereInput | Prisma.UsuarioScalarWhereInput[]
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type EnumPerfilFieldUpdateOperationsInput = {
   set?: $Enums.Perfil
 }
@@ -555,6 +603,8 @@ export type UsuarioCreateWithoutEmpresaInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -570,6 +620,8 @@ export type UsuarioUncheckedCreateWithoutEmpresaInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -615,6 +667,8 @@ export type UsuarioScalarWhereInput = {
   email?: Prisma.StringFilter<"Usuario"> | string
   senhaHash?: Prisma.StringFilter<"Usuario"> | string
   senhaTemporaria?: Prisma.BoolFilter<"Usuario"> | boolean
+  resetToken?: Prisma.StringNullableFilter<"Usuario"> | string | null
+  resetTokenExpira?: Prisma.DateTimeNullableFilter<"Usuario"> | Date | string | null
   perfil?: Prisma.EnumPerfilFilter<"Usuario"> | $Enums.Perfil
   ativo?: Prisma.BoolFilter<"Usuario"> | boolean
   foto?: Prisma.StringNullableFilter<"Usuario"> | string | null
@@ -629,6 +683,8 @@ export type UsuarioCreateWithoutProfessoraInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -645,6 +701,8 @@ export type UsuarioUncheckedCreateWithoutProfessoraInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -675,6 +733,8 @@ export type UsuarioUpdateWithoutProfessoraInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -691,6 +751,8 @@ export type UsuarioUncheckedUpdateWithoutProfessoraInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -705,6 +767,8 @@ export type UsuarioCreateManyEmpresaInput = {
   email: string
   senhaHash: string
   senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
   perfil?: $Enums.Perfil
   ativo?: boolean
   foto?: string | null
@@ -719,6 +783,8 @@ export type UsuarioUpdateWithoutEmpresaInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -734,6 +800,8 @@ export type UsuarioUncheckedUpdateWithoutEmpresaInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -749,6 +817,8 @@ export type UsuarioUncheckedUpdateManyWithoutEmpresaInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
   senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -766,6 +836,8 @@ export type UsuarioSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   email?: boolean
   senhaHash?: boolean
   senhaTemporaria?: boolean
+  resetToken?: boolean
+  resetTokenExpira?: boolean
   perfil?: boolean
   ativo?: boolean
   foto?: boolean
@@ -783,6 +855,8 @@ export type UsuarioSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   email?: boolean
   senhaHash?: boolean
   senhaTemporaria?: boolean
+  resetToken?: boolean
+  resetTokenExpira?: boolean
   perfil?: boolean
   ativo?: boolean
   foto?: boolean
@@ -799,6 +873,8 @@ export type UsuarioSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   email?: boolean
   senhaHash?: boolean
   senhaTemporaria?: boolean
+  resetToken?: boolean
+  resetTokenExpira?: boolean
   perfil?: boolean
   ativo?: boolean
   foto?: boolean
@@ -815,6 +891,8 @@ export type UsuarioSelectScalar = {
   email?: boolean
   senhaHash?: boolean
   senhaTemporaria?: boolean
+  resetToken?: boolean
+  resetTokenExpira?: boolean
   perfil?: boolean
   ativo?: boolean
   foto?: boolean
@@ -823,7 +901,7 @@ export type UsuarioSelectScalar = {
   atualizadoEm?: boolean
 }
 
-export type UsuarioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "nome" | "email" | "senhaHash" | "senhaTemporaria" | "perfil" | "ativo" | "foto" | "whatsapp" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["usuario"]>
+export type UsuarioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "nome" | "email" | "senhaHash" | "senhaTemporaria" | "resetToken" | "resetTokenExpira" | "perfil" | "ativo" | "foto" | "whatsapp" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["usuario"]>
 export type UsuarioInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.Usuario$empresaArgs<ExtArgs>
   professora?: boolean | Prisma.Usuario$professoraArgs<ExtArgs>
@@ -848,6 +926,8 @@ export type $UsuarioPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     email: string
     senhaHash: string
     senhaTemporaria: boolean
+    resetToken: string | null
+    resetTokenExpira: Date | null
     perfil: $Enums.Perfil
     ativo: boolean
     foto: string | null
@@ -1285,6 +1365,8 @@ export interface UsuarioFieldRefs {
   readonly email: Prisma.FieldRef<"Usuario", 'String'>
   readonly senhaHash: Prisma.FieldRef<"Usuario", 'String'>
   readonly senhaTemporaria: Prisma.FieldRef<"Usuario", 'Boolean'>
+  readonly resetToken: Prisma.FieldRef<"Usuario", 'String'>
+  readonly resetTokenExpira: Prisma.FieldRef<"Usuario", 'DateTime'>
   readonly perfil: Prisma.FieldRef<"Usuario", 'Perfil'>
   readonly ativo: Prisma.FieldRef<"Usuario", 'Boolean'>
   readonly foto: Prisma.FieldRef<"Usuario", 'String'>

@@ -481,10 +481,6 @@ export type EscolaUncheckedUpdateManyWithoutEmpresaNestedInput = {
   deleteMany?: Prisma.EscolaScalarWhereInput | Prisma.EscolaScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type EscolaCreateNestedOneWithoutUnidadesInput = {
   create?: Prisma.XOR<Prisma.EscolaCreateWithoutUnidadesInput, Prisma.EscolaUncheckedCreateWithoutUnidadesInput>
   connectOrCreate?: Prisma.EscolaCreateOrConnectWithoutUnidadesInput
