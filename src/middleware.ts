@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   const publicPaths = [
     "/login", "/plataforma/login",
     "/api/auth",
-    "/api/dev-fix", "/api/cron",
+    "/api/cron",
   ];
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
   if (isPublic) return NextResponse.next();
