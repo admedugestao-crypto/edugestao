@@ -39,8 +39,18 @@ export async function POST(req: NextRequest) {
   if (file.type !== "image/svg+xml") {
     try {
       const original = Buffer.from(await file.arrayBuffer());
-      corpo = await sharp(original)
-        .trim() // remove margem uniforme/transparente ao redor do desenho
+      // .trim() sozinho só remove margem que combina com a cor do CANTO da
+      // imagem — se o logo é um bloco colorido (ex.: quadrado vermelho) com
+      // canvas branco sobrando do lado, o canto é a cor do bloco, não branco,
+      // e aquele branco nunca é removido. Por isso rodamos um trim adicional
+      // mirando especificamente branco/transparente, que cobre esse caso sem
+      // atrapalhar logos que já têm o canto branco (aí o 2º trim não acha mais
+      // nada pra cortar).
+      const semMargemCorner = await sharp(original).trim().toBuffer();
+      const semCanvasBranco = await sharp(semMargemCorner)
+        .trim({ background: "#FFFFFF" })
+        .toBuffer();
+      corpo = await sharp(semCanvasBranco)
         .resize({ width: LADO_MAX, height: LADO_MAX, fit: "inside", withoutEnlargement: true })
         .png()
         .toBuffer();

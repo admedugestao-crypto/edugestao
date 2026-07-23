@@ -1961,6 +1961,8 @@ export const UsuarioScalarFieldEnum = {
   email: 'email',
   senhaHash: 'senhaHash',
   senhaTemporaria: 'senhaTemporaria',
+  resetToken: 'resetToken',
+  resetTokenExpira: 'resetTokenExpira',
   perfil: 'perfil',
   ativo: 'ativo',
   foto: 'foto',

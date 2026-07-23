@@ -686,6 +686,81 @@ export async function enviarEmailReciboMultiplo(params: Parameters<typeof templa
   }
 }
 
+// ── Template HTML — Redefinição de Senha ─────────────────────────────────────
+function templateRedefinirSenha(params: { nomeUsuario: string; link: string }) {
+  const { nomeUsuario, link } = params;
+
+  return {
+    subject: "🔒 Redefinição de senha — EduGestão",
+    html: `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <tr>
+          <td style="background:#111827;padding:24px 32px;text-align:center;">
+            <p style="margin:0;color:#fff;font-size:22px;font-weight:bold;letter-spacing:1px;">▲ EduGestão</p>
+            <p style="margin:6px 0 0;color:#9ca3af;font-size:13px;">Gestão Educacional</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;">
+              Olá, <strong>${nomeUsuario}</strong>,
+            </p>
+            <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+              Recebemos uma solicitação para redefinir sua senha no EduGestão.
+              Clique no botão abaixo para escolher uma nova senha. Este link
+              expira em 1 hora.
+            </p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="padding:8px 0 24px;">
+                  <a href="${link}" style="background:#4f46e5;color:#fff;text-decoration:none;font-size:14px;font-weight:bold;padding:12px 28px;border-radius:8px;display:inline-block;">
+                    Redefinir senha
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:0;color:#6b7280;font-size:13px;line-height:1.6;">
+              Se você não solicitou essa alteração, pode ignorar este e-mail —
+              sua senha atual continua válida.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
+            <p style="margin:0;color:#9ca3af;font-size:12px;">
+              Mensagem automática enviada pelo <strong>EduGestão</strong>.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  };
+}
+
+export async function enviarEmailRedefinirSenha(params: Parameters<typeof templateRedefinirSenha>[0] & {
+  emailUsuario: string;
+}): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte();
+  if (!transporte) return { ok: false, erro: "E-mail não configurado no servidor." };
+  const { subject, html } = templateRedefinirSenha(params);
+  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  try {
+    await transporte.sendMail({ from, to: params.emailUsuario, subject, html });
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, erro: err?.message ?? "Erro ao enviar e-mail." };
+  }
+}
+
 // ── Função principal de envio ─────────────────────────────────────────────────
 export async function enviarEmailAtraso(params: Parameters<typeof templateAtraso>[0] & {
   emailResponsavel: string;

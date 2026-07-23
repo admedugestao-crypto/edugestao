@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import SairButton from "./SairButton";
 import { ambienteAtual } from "@/lib/ambiente";
+
+export const metadata: Metadata = {
+  title: "Plataforma",
+};
 
 export default async function PlataformaLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
