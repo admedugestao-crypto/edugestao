@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle, Library, Search } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -13,6 +13,8 @@ type Aluno = {
   id: string;
   nome: string;
   professoraId: string | null;
+  serie: string;
+  escolaMetodo: MetodoEnsino | null;
   materias: { materiaId: string; materia: Materia }[];
 };
 
@@ -60,6 +62,21 @@ type FormC = {
   planejado: boolean;
 };
 
+type MetodoEnsino = { id: string; nome: string };
+
+type MaterialBiblioteca = {
+  id: string;
+  titulo: string;
+  descricao: string | null;
+  metodoId: string | null;
+  metodoEnsino: MetodoEnsino | null;
+  serie: string | null;
+  materiaId: string | null;
+  materia: Materia | null;
+  arquivoUrl: string;
+  arquivoNome: string | null;
+};
+
 function parseDataLocal(iso: string) {
   const [y, m, d] = iso.split("T")[0].split("-").map(Number);
   return new Date(y, m - 1, d);
@@ -76,19 +93,170 @@ const formVazio = (): FormC => ({
   planejado: true,
 });
 
+// ── Seletor de material da Biblioteca ────────────────────────────────────────
+function SeletorBiblioteca({
+  materiaIdInicial,
+  serieInicial,
+  metodoInicial,
+  onSelecionar,
+  onFechar,
+}: {
+  materiaIdInicial: string | null;
+  serieInicial: string | null;
+  metodoInicial: MetodoEnsino | null;
+  onSelecionar: (material: MaterialBiblioteca) => void;
+  onFechar: () => void;
+}) {
+  const [materiais, setMateriais] = useState<MaterialBiblioteca[] | null>(null);
+  const [erro, setErro] = useState("");
+  const [busca, setBusca] = useState("");
+  const [filtroMateriaId, setFiltroMateriaId] = useState(materiaIdInicial ?? "");
+  const [filtroMetodo, setFiltroMetodo] = useState(metodoInicial?.id ?? "");
+  const [filtroSerie, setFiltroSerie] = useState(serieInicial ?? "");
+
+  useEffect(() => {
+    fetch("/api/biblioteca")
+      .then((res) => res.json())
+      .then((data) => setMateriais(Array.isArray(data) ? data : []))
+      .catch(() => setErro("Erro ao carregar a biblioteca."));
+  }, []);
+
+  const lista = materiais ?? [];
+  // Inclui o método da escola do aluno mesmo sem material cadastrado nele,
+  // senão o <select> não acha a opção pra exibir (mesmo motivo da série).
+  const metodosDisponiveis = Array.from(
+    new Map(
+      [...lista.filter((m) => m.metodoEnsino).map((m) => m.metodoEnsino!), ...(metodoInicial ? [metodoInicial] : [])].map(
+        (m) => [m.id, m]
+      )
+    ).values()
+  );
+  // Inclui a série do aluno mesmo sem material cadastrado nela, senão o
+  // <select> não acha a opção pra exibir e o filtro pré-preenchido some da tela.
+  const seriesDisponiveis = Array.from(
+    new Set([...lista.map((m) => m.serie).filter((s): s is string => !!s), ...(serieInicial ? [serieInicial] : [])])
+  ).sort();
+  const materiasDisponiveis = Array.from(
+    new Map(lista.filter((m) => m.materia).map((m) => [m.materia!.id, m.materia!])).values()
+  );
+
+  const filtrados = lista.filter((m) => {
+    if (filtroMateriaId && m.materiaId !== filtroMateriaId) return false;
+    if (filtroMetodo && m.metodoId !== filtroMetodo) return false;
+    if (filtroSerie && m.serie !== filtroSerie) return false;
+    if (busca) {
+      const termo = busca.trim().toLowerCase();
+      const noTitulo = m.titulo.toLowerCase().includes(termo);
+      const naDescricao = (m.descricao ?? "").toLowerCase().includes(termo);
+      if (!noTitulo && !naDescricao) return false;
+    }
+    return true;
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] p-4">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl flex flex-col max-h-[85vh]">
+        <div className="px-5 pt-4 pb-3 border-b border-slate-100 shrink-0 flex items-center justify-between">
+          <h2 className="text-base font-bold text-slate-800">Usar material da Biblioteca</h2>
+          <button type="button" onClick={onFechar} className="text-slate-400 hover:text-slate-600">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="px-5 pt-3 pb-2 shrink-0 space-y-2">
+          <div className="relative">
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por título ou descrição..."
+              className="w-full border border-slate-200 rounded-lg pl-8 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <select
+              value={filtroMateriaId}
+              onChange={(e) => setFiltroMateriaId(e.target.value)}
+              className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+            >
+              <option value="">Todas matérias</option>
+              {materiasDisponiveis.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+            </select>
+            <select
+              value={filtroMetodo}
+              onChange={(e) => setFiltroMetodo(e.target.value)}
+              className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+            >
+              <option value="">Todos métodos</option>
+              {metodosDisponiveis.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+            </select>
+            <select
+              value={filtroSerie}
+              onChange={(e) => setFiltroSerie(e.target.value)}
+              className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+            >
+              <option value="">Todas séries</option>
+              {seriesDisponiveis.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="overflow-y-auto px-5 pb-4 flex-1 space-y-1.5">
+          {erro && <p className="text-xs text-red-600">{erro}</p>}
+          {materiais === null && !erro && (
+            <div className="flex items-center justify-center py-8 text-slate-400">
+              <Loader2 size={18} className="animate-spin" />
+            </div>
+          )}
+          {materiais !== null && filtrados.length === 0 && (
+            <p className="text-sm text-slate-400 text-center py-8">Nenhum material encontrado.</p>
+          )}
+          {filtrados.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => onSelecionar(m)}
+              className="w-full flex items-start gap-2 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 rounded-lg px-3 py-2 text-left transition-colors"
+            >
+              <FileText size={15} className="text-indigo-500 mt-0.5 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-700 truncate">{m.titulo}</p>
+                <p className="text-xs text-slate-400 truncate">
+                  {m.materia?.nome ?? "Sem matéria"}
+                  {m.serie ? ` · ${m.serie}` : ""}
+                  {m.arquivoNome ? ` · ${m.arquivoNome}` : ""}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Upload de arquivo ────────────────────────────────────────────────────────
 function UploadArquivo({
   arquivoUrl,
   arquivoNome,
+  materiaId,
+  serie,
+  metodoEscola,
   onChange,
+  onSelecionarBiblioteca,
 }: {
   arquivoUrl: string;
   arquivoNome: string;
+  materiaId?: string | null;
+  serie?: string | null;
+  metodoEscola?: MetodoEnsino | null;
   onChange: (url: string, nome: string) => void;
+  onSelecionarBiblioteca?: (material: MaterialBiblioteca) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
+  const [seletorAberto, setSeletorAberto] = useState(false);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -134,26 +302,53 @@ function UploadArquivo({
           </button>
         </div>
       ) : (
-        <label className="flex items-center gap-2 cursor-pointer border border-dashed border-slate-300 hover:border-indigo-400 rounded-lg px-3 py-2.5 transition-colors group">
-          {enviando ? (
-            <Loader2 size={15} className="text-indigo-500 animate-spin" />
-          ) : (
-            <Paperclip size={15} className="text-slate-400 group-hover:text-indigo-500" />
-          )}
-          <span className="text-sm text-slate-500 group-hover:text-indigo-600">
-            {enviando ? "Enviando..." : "Clique para anexar PDF, imagem ou Word (máx. 10 MB)"}
-          </span>
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-            onChange={handleFile}
-            disabled={enviando}
-            className="hidden"
-          />
-        </label>
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-2 cursor-pointer border border-dashed border-slate-300 hover:border-indigo-400 rounded-lg px-3 py-2.5 transition-colors group">
+            {enviando ? (
+              <Loader2 size={15} className="text-indigo-500 animate-spin" />
+            ) : (
+              <Paperclip size={15} className="text-slate-400 group-hover:text-indigo-500" />
+            )}
+            <span className="text-sm text-slate-500 group-hover:text-indigo-600">
+              {enviando ? "Enviando..." : "Clique para anexar PDF, imagem ou Word (máx. 10 MB)"}
+            </span>
+            <input
+              ref={inputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+              onChange={handleFile}
+              disabled={enviando}
+              className="hidden"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => setSeletorAberto(true)}
+            className="flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-700 font-medium px-1"
+          >
+            <Library size={13} />
+            Usar material da Biblioteca
+          </button>
+        </div>
       )}
       {erro && <p className="text-xs text-red-600 mt-1">{erro}</p>}
+
+      {seletorAberto && (
+        <SeletorBiblioteca
+          materiaIdInicial={materiaId ?? null}
+          serieInicial={serie ?? null}
+          metodoInicial={metodoEscola ?? null}
+          onFechar={() => setSeletorAberto(false)}
+          onSelecionar={(material) => {
+            if (onSelecionarBiblioteca) {
+              onSelecionarBiblioteca(material);
+            } else {
+              onChange(material.arquivoUrl, material.arquivoNome || material.titulo);
+            }
+            setSeletorAberto(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -298,7 +493,19 @@ function CamposForm({
       <UploadArquivo
         arquivoUrl={form.arquivoUrl}
         arquivoNome={form.arquivoNome}
+        materiaId={form.materiaId}
+        serie={alunoSel?.serie}
+        metodoEscola={alunoSel?.escolaMetodo}
         onChange={(url, nome) => setForm({ ...form, arquivoUrl: url, arquivoNome: nome })}
+        onSelecionarBiblioteca={(material) =>
+          setForm({
+            ...form,
+            topico: material.titulo,
+            descricao: material.descricao ?? "",
+            arquivoUrl: material.arquivoUrl,
+            arquivoNome: material.arquivoNome || material.titulo,
+          })
+        }
       />
     </div>
   );

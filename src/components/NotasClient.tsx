@@ -53,7 +53,7 @@ export default function NotasClient({
   notasIniciais: Nota[];
 }) {
   const [alunoSel, setAlunoSel] = useState<string>("");
-  const [notas, setNotas] = useState<Record<string, number>>(
+  const [notas, setNotas] = useState<Record<string, number>>(() =>
     Object.fromEntries(notasIniciais.map((n) => [`${n.alunoId}-${n.avaliacaoId}-${n.materiaId}`, n.valor]))
   );
   const [salvando, setSalvando] = useState<string | null>(null);

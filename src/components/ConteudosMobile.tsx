@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, Home, LogOut,
+  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, Home, LogOut, Library, Search, FileText,
 } from "lucide-react";
 
 type Materia = { id: string; nome: string; cor: string };
@@ -13,6 +13,8 @@ type Aluno = {
   id: string;
   nome: string;
   professoraId: string | null;
+  serie: string;
+  escolaMetodo: MetodoEnsino | null;
   materias: { materiaId: string; materia: Materia }[];
 };
 type Professora = { id: string; nome: string };
@@ -55,6 +57,21 @@ type FormC = {
   planejado: boolean;
 };
 
+type MetodoEnsino = { id: string; nome: string };
+
+type MaterialBiblioteca = {
+  id: string;
+  titulo: string;
+  descricao: string | null;
+  metodoId: string | null;
+  metodoEnsino: MetodoEnsino | null;
+  serie: string | null;
+  materiaId: string | null;
+  materia: Materia | null;
+  arquivoUrl: string;
+  arquivoNome: string | null;
+};
+
 function parseDataLocal(iso: string) {
   const [y, m, d] = iso.split("T")[0].split("-").map(Number);
   return new Date(y, m - 1, d);
@@ -79,6 +96,148 @@ const STATUS_AGENDA: Record<string, { label: string; color: string }> = {
   FALTA_PROFESSOR: { label: "Falta do Prof.", color: "bg-purple-100 text-purple-700" },
 };
 
+// ── Seletor de material da Biblioteca ────────────────────────────────────────
+function SeletorBibliotecaMobile({
+  materiaIdInicial,
+  serieInicial,
+  metodoInicial,
+  onSelecionar,
+  onFechar,
+}: {
+  materiaIdInicial: string | null;
+  serieInicial: string | null;
+  metodoInicial: MetodoEnsino | null;
+  onSelecionar: (material: MaterialBiblioteca) => void;
+  onFechar: () => void;
+}) {
+  const [materiais, setMateriais] = useState<MaterialBiblioteca[] | null>(null);
+  const [erro, setErro] = useState("");
+  const [busca, setBusca] = useState("");
+  const [filtroMateriaId, setFiltroMateriaId] = useState(materiaIdInicial ?? "");
+  const [filtroMetodo, setFiltroMetodo] = useState(metodoInicial?.id ?? "");
+  const [filtroSerie, setFiltroSerie] = useState(serieInicial ?? "");
+
+  useEffect(() => {
+    fetch("/api/biblioteca")
+      .then((res) => res.json())
+      .then((data) => setMateriais(Array.isArray(data) ? data : []))
+      .catch(() => setErro("Erro ao carregar a biblioteca."));
+  }, []);
+
+  const lista = materiais ?? [];
+  // Inclui o método da escola do aluno mesmo sem material cadastrado nele,
+  // senão o <select> não acha a opção pra exibir (mesmo motivo da série).
+  const metodosDisponiveis = Array.from(
+    new Map(
+      [...lista.filter((m) => m.metodoEnsino).map((m) => m.metodoEnsino!), ...(metodoInicial ? [metodoInicial] : [])].map(
+        (m) => [m.id, m]
+      )
+    ).values()
+  );
+  // Inclui a série do aluno mesmo sem material cadastrado nela, senão o
+  // <select> não acha a opção pra exibir e o filtro pré-preenchido some da tela.
+  const seriesDisponiveis = Array.from(
+    new Set([...lista.map((m) => m.serie).filter((s): s is string => !!s), ...(serieInicial ? [serieInicial] : [])])
+  ).sort();
+  const materiasDisponiveis = Array.from(
+    new Map(lista.filter((m) => m.materia).map((m) => [m.materia!.id, m.materia!])).values()
+  );
+
+  const filtrados = lista.filter((m) => {
+    if (filtroMateriaId && m.materiaId !== filtroMateriaId) return false;
+    if (filtroMetodo && m.metodoId !== filtroMetodo) return false;
+    if (filtroSerie && m.serie !== filtroSerie) return false;
+    if (busca) {
+      const termo = busca.trim().toLowerCase();
+      const noTitulo = m.titulo.toLowerCase().includes(termo);
+      const naDescricao = (m.descricao ?? "").toLowerCase().includes(termo);
+      if (!noTitulo && !naDescricao) return false;
+    }
+    return true;
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-end justify-center z-[60]">
+      <div className="bg-white rounded-t-2xl w-full shadow-xl flex flex-col max-h-[85vh]">
+        <div className="px-4 pt-4 pb-3 border-b border-slate-100 shrink-0 flex items-center justify-between">
+          <h2 className="text-base font-bold text-slate-800">Usar material da Biblioteca</h2>
+          <button type="button" onClick={onFechar} className="text-slate-400 hover:text-slate-600">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="px-4 pt-3 pb-2 shrink-0 space-y-2">
+          <div className="relative">
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por título ou descrição..."
+              className="w-full border border-slate-200 rounded-xl pl-8 pr-2 py-2 text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <select
+              value={filtroMateriaId}
+              onChange={(e) => setFiltroMateriaId(e.target.value)}
+              className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+            >
+              <option value="">Matérias</option>
+              {materiasDisponiveis.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+            </select>
+            <select
+              value={filtroMetodo}
+              onChange={(e) => setFiltroMetodo(e.target.value)}
+              className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+            >
+              <option value="">Métodos</option>
+              {metodosDisponiveis.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+            </select>
+            <select
+              value={filtroSerie}
+              onChange={(e) => setFiltroSerie(e.target.value)}
+              className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+            >
+              <option value="">Séries</option>
+              {seriesDisponiveis.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="overflow-y-auto px-4 pb-6 flex-1 space-y-1.5">
+          {erro && <p className="text-xs text-red-600">{erro}</p>}
+          {materiais === null && !erro && (
+            <div className="flex items-center justify-center py-8 text-slate-400">
+              <Loader2 size={18} className="animate-spin" />
+            </div>
+          )}
+          {materiais !== null && filtrados.length === 0 && (
+            <p className="text-sm text-slate-400 text-center py-8">Nenhum material encontrado.</p>
+          )}
+          {filtrados.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => onSelecionar(m)}
+              className="w-full flex items-start gap-2 border border-slate-200 active:bg-indigo-50 rounded-lg px-3 py-2.5 text-left transition-colors"
+            >
+              <FileText size={15} className="text-indigo-500 mt-0.5 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-700 truncate">{m.titulo}</p>
+                <p className="text-xs text-slate-400 truncate">
+                  {m.materia?.nome ?? "Sem matéria"}
+                  {m.serie ? ` · ${m.serie}` : ""}
+                  {m.arquivoNome ? ` · ${m.arquivoNome}` : ""}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Campos do formulário (criar/editar) — componente à parte evita remount a cada tecla ──
 function CamposFormMobile({
   form, setForm, alunos, professoras, isProfessor, filtroProfId, setFiltroProfId,
@@ -98,6 +257,7 @@ function CamposFormMobile({
   const alunosFiltrados = isProfessor ? alunos : (filtroProfId ? alunos.filter((a) => a.professoraId === filtroProfId) : []);
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
+  const [seletorBibliotecaAberto, setSeletorBibliotecaAberto] = useState(false);
 
   return (
     <div className="space-y-3">
@@ -170,15 +330,44 @@ function CamposFormMobile({
             </button>
           </div>
         ) : (
-          <label className="flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
-            {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
-            {enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
-            <input type="file" className="hidden" disabled={enviandoArquivo}
-              accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
-          </label>
+          <div className="space-y-1.5">
+            <label className="flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
+              {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
+              {enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
+              <input type="file" className="hidden" disabled={enviandoArquivo}
+                accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
+            </label>
+            <button
+              type="button"
+              onClick={() => setSeletorBibliotecaAberto(true)}
+              className="w-full flex items-center justify-center gap-1.5 text-xs text-indigo-600 font-medium py-1"
+            >
+              <Library size={13} />
+              Usar material da Biblioteca
+            </button>
+          </div>
         )}
       </div>
+
+      {seletorBibliotecaAberto && (
+        <SeletorBibliotecaMobile
+          materiaIdInicial={form.materiaId}
+          serieInicial={alunoSel?.serie ?? null}
+          metodoInicial={alunoSel?.escolaMetodo ?? null}
+          onFechar={() => setSeletorBibliotecaAberto(false)}
+          onSelecionar={(material) => {
+            setForm({
+              ...form,
+              topico: material.titulo,
+              descricao: material.descricao ?? "",
+              arquivoUrl: material.arquivoUrl,
+              arquivoNome: material.arquivoNome || material.titulo,
+            });
+            setSeletorBibliotecaAberto(false);
+          }}
+        />
+      )}
     </div>
   );
 }

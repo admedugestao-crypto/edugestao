@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const professoraId = scope.professoraId;
-  const perfil       = scope.perfil;
 
   const body = await req.json() as { semanaInicio: string; professoraId?: string };
   const { semanaInicio } = body;
@@ -65,8 +64,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ criadas: 0, ignoradas: 0, conflitos: [], semAgenda: [] });
 
   const whereBase: any = { empresaId: scope.empresaId, status: "ATIVO" };
-  if (perfil === "SUPERADMIN") {
-    // Admin pode filtrar por professora específica ou gerar para todas
+  if (scope.isAdmin) {
+    // Admin (inclusive perfil híbrido) pode filtrar por professora específica ou gerar para todas
     if (professoraIdBody) whereBase.professoraId = professoraIdBody;
   } else if (professoraId) {
     whereBase.professoraId = professoraId;
@@ -131,7 +130,7 @@ export async function POST(req: NextRequest) {
   const foraDispLista: ForaDisponibilidadeDet[] = [];
 
   for (const aluno of alunos) {
-    const profId = perfil === "SUPERADMIN"
+    const profId = scope.isAdmin
       ? aluno.professoraId
       : (professoraId ?? aluno.professoraId);
     if (!profId) continue;

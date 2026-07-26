@@ -27,7 +27,7 @@ export type AggregateAluno = {
 }
 
 export type AlunoAvgAggregateOutputType = {
-  valorCobranca: number | null
+  valorCobranca: runtime.Decimal | null
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
@@ -35,7 +35,7 @@ export type AlunoAvgAggregateOutputType = {
 }
 
 export type AlunoSumAggregateOutputType = {
-  valorCobranca: number | null
+  valorCobranca: runtime.Decimal | null
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
@@ -65,7 +65,7 @@ export type AlunoMinAggregateOutputType = {
   observacoes: string | null
   status: $Enums.StatusAluno | null
   tipoCobranca: string | null
-  valorCobranca: number | null
+  valorCobranca: runtime.Decimal | null
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
@@ -100,7 +100,7 @@ export type AlunoMaxAggregateOutputType = {
   observacoes: string | null
   status: $Enums.StatusAluno | null
   tipoCobranca: string | null
-  valorCobranca: number | null
+  valorCobranca: runtime.Decimal | null
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
@@ -382,7 +382,7 @@ export type AlunoGroupByOutputType = {
   observacoes: string | null
   status: $Enums.StatusAluno
   tipoCobranca: string | null
-  valorCobranca: number | null
+  valorCobranca: runtime.Decimal | null
   diaPagamento: number | null
   diaPagamento2: number | null
   diaSemana: number | null
@@ -441,7 +441,7 @@ export type AlunoWhereInput = {
   observacoes?: Prisma.StringNullableFilter<"Aluno"> | string | null
   status?: Prisma.EnumStatusAlunoFilter<"Aluno"> | $Enums.StatusAluno
   tipoCobranca?: Prisma.StringNullableFilter<"Aluno"> | string | null
-  valorCobranca?: Prisma.FloatNullableFilter<"Aluno"> | number | null
+  valorCobranca?: Prisma.DecimalNullableFilter<"Aluno"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableFilter<"Aluno"> | number | null
@@ -532,7 +532,7 @@ export type AlunoWhereUniqueInput = Prisma.AtLeast<{
   observacoes?: Prisma.StringNullableFilter<"Aluno"> | string | null
   status?: Prisma.EnumStatusAlunoFilter<"Aluno"> | $Enums.StatusAluno
   tipoCobranca?: Prisma.StringNullableFilter<"Aluno"> | string | null
-  valorCobranca?: Prisma.FloatNullableFilter<"Aluno"> | number | null
+  valorCobranca?: Prisma.DecimalNullableFilter<"Aluno"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableFilter<"Aluno"> | number | null
@@ -620,7 +620,7 @@ export type AlunoScalarWhereWithAggregatesInput = {
   observacoes?: Prisma.StringNullableWithAggregatesFilter<"Aluno"> | string | null
   status?: Prisma.EnumStatusAlunoWithAggregatesFilter<"Aluno"> | $Enums.StatusAluno
   tipoCobranca?: Prisma.StringNullableWithAggregatesFilter<"Aluno"> | string | null
-  valorCobranca?: Prisma.FloatNullableWithAggregatesFilter<"Aluno"> | number | null
+  valorCobranca?: Prisma.DecimalNullableWithAggregatesFilter<"Aluno"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableWithAggregatesFilter<"Aluno"> | number | null
@@ -653,7 +653,7 @@ export type AlunoCreateInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -697,7 +697,7 @@ export type AlunoUncheckedCreateInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -735,7 +735,7 @@ export type AlunoUpdateInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -779,7 +779,7 @@ export type AlunoUncheckedUpdateInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -820,7 +820,7 @@ export type AlunoCreateManyInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -853,7 +853,7 @@ export type AlunoUpdateManyMutationInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -889,7 +889,7 @@ export type AlunoUncheckedUpdateManyInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1169,12 +1169,12 @@ export type EnumStatusAlunoFieldUpdateOperationsInput = {
   set?: $Enums.StatusAluno
 }
 
-export type NullableFloatFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type NullableIntFieldUpdateOperationsInput = {
@@ -1275,7 +1275,7 @@ export type AlunoCreateWithoutEmpresaInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1317,7 +1317,7 @@ export type AlunoUncheckedCreateWithoutEmpresaInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1387,7 +1387,7 @@ export type AlunoScalarWhereInput = {
   observacoes?: Prisma.StringNullableFilter<"Aluno"> | string | null
   status?: Prisma.EnumStatusAlunoFilter<"Aluno"> | $Enums.StatusAluno
   tipoCobranca?: Prisma.StringNullableFilter<"Aluno"> | string | null
-  valorCobranca?: Prisma.FloatNullableFilter<"Aluno"> | number | null
+  valorCobranca?: Prisma.DecimalNullableFilter<"Aluno"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaPagamento2?: Prisma.IntNullableFilter<"Aluno"> | number | null
   diaSemana?: Prisma.IntNullableFilter<"Aluno"> | number | null
@@ -1420,7 +1420,7 @@ export type AlunoCreateWithoutProfessoraInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1462,7 +1462,7 @@ export type AlunoUncheckedCreateWithoutProfessoraInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1526,7 +1526,7 @@ export type AlunoCreateWithoutUnidadeInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1568,7 +1568,7 @@ export type AlunoUncheckedCreateWithoutUnidadeInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1632,7 +1632,7 @@ export type AlunoCreateWithoutMateriasInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1675,7 +1675,7 @@ export type AlunoUncheckedCreateWithoutMateriasInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1728,7 +1728,7 @@ export type AlunoUpdateWithoutMateriasInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1771,7 +1771,7 @@ export type AlunoUncheckedUpdateWithoutMateriasInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1808,7 +1808,7 @@ export type AlunoCreateWithoutNotasInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1851,7 +1851,7 @@ export type AlunoUncheckedCreateWithoutNotasInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -1904,7 +1904,7 @@ export type AlunoUpdateWithoutNotasInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1947,7 +1947,7 @@ export type AlunoUncheckedUpdateWithoutNotasInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1984,7 +1984,7 @@ export type AlunoCreateWithoutPagamentosInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2027,7 +2027,7 @@ export type AlunoUncheckedCreateWithoutPagamentosInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2080,7 +2080,7 @@ export type AlunoUpdateWithoutPagamentosInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2123,7 +2123,7 @@ export type AlunoUncheckedUpdateWithoutPagamentosInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2160,7 +2160,7 @@ export type AlunoCreateWithoutConteudosInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2203,7 +2203,7 @@ export type AlunoUncheckedCreateWithoutConteudosInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2256,7 +2256,7 @@ export type AlunoUpdateWithoutConteudosInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2299,7 +2299,7 @@ export type AlunoUncheckedUpdateWithoutConteudosInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2336,7 +2336,7 @@ export type AlunoCreateWithoutAulasInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2379,7 +2379,7 @@ export type AlunoUncheckedCreateWithoutAulasInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2432,7 +2432,7 @@ export type AlunoUpdateWithoutAulasInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2475,7 +2475,7 @@ export type AlunoUncheckedUpdateWithoutAulasInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2514,7 +2514,7 @@ export type AlunoCreateManyEmpresaInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2547,7 +2547,7 @@ export type AlunoUpdateWithoutEmpresaInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2589,7 +2589,7 @@ export type AlunoUncheckedUpdateWithoutEmpresaInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2629,7 +2629,7 @@ export type AlunoUncheckedUpdateManyWithoutEmpresaInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2664,7 +2664,7 @@ export type AlunoCreateManyProfessoraInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2697,7 +2697,7 @@ export type AlunoUpdateWithoutProfessoraInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2739,7 +2739,7 @@ export type AlunoUncheckedUpdateWithoutProfessoraInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2779,7 +2779,7 @@ export type AlunoUncheckedUpdateManyWithoutProfessoraInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2814,7 +2814,7 @@ export type AlunoCreateManyUnidadeInput = {
   observacoes?: string | null
   status?: $Enums.StatusAluno
   tipoCobranca?: string | null
-  valorCobranca?: number | null
+  valorCobranca?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: number | null
   diaPagamento2?: number | null
   diaSemana?: number | null
@@ -2847,7 +2847,7 @@ export type AlunoUpdateWithoutUnidadeInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2889,7 +2889,7 @@ export type AlunoUncheckedUpdateWithoutUnidadeInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2929,7 +2929,7 @@ export type AlunoUncheckedUpdateManyWithoutUnidadeInput = {
   observacoes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAlunoFieldUpdateOperationsInput | $Enums.StatusAluno
   tipoCobranca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  valorCobranca?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  valorCobranca?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   diaPagamento?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaPagamento2?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   diaSemana?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3226,7 +3226,7 @@ export type $AlunoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     observacoes: string | null
     status: $Enums.StatusAluno
     tipoCobranca: string | null
-    valorCobranca: number | null
+    valorCobranca: runtime.Decimal | null
     diaPagamento: number | null
     diaPagamento2: number | null
     diaSemana: number | null
@@ -3690,7 +3690,7 @@ export interface AlunoFieldRefs {
   readonly observacoes: Prisma.FieldRef<"Aluno", 'String'>
   readonly status: Prisma.FieldRef<"Aluno", 'StatusAluno'>
   readonly tipoCobranca: Prisma.FieldRef<"Aluno", 'String'>
-  readonly valorCobranca: Prisma.FieldRef<"Aluno", 'Float'>
+  readonly valorCobranca: Prisma.FieldRef<"Aluno", 'Decimal'>
   readonly diaPagamento: Prisma.FieldRef<"Aluno", 'Int'>
   readonly diaPagamento2: Prisma.FieldRef<"Aluno", 'Int'>
   readonly diaSemana: Prisma.FieldRef<"Aluno", 'Int'>

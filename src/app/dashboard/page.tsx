@@ -32,7 +32,7 @@ export default async function DashboardPage() {
   const mesAtual = agora.getUTCMonth() + 1;
   const anoAtual = agora.getUTCFullYear();
 
-  const [totalAlunos, todasNotas, proximasProvas, pagamentosMes] =
+  const [totalAlunos, todasNotas, proximasProvas, pagamentosMes, totalEscolas] =
     await Promise.all([
       prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
       isAdmin ? Promise.resolve([]) : prisma.nota.findMany({
@@ -63,15 +63,15 @@ export default async function DashboardPage() {
         },
         select: { valorCobrado: true, pago: true },
       }),
+      prisma.escola.count({ where: { empresaId: scope.empresaId } }),
     ]);
 
   const alunosBaixoDesempenho = todasNotas
     .filter((n) => n.valor < n.avaliacao.notaMax / 2)
     .slice(0, 5);
 
-  const totalEscolas  = await prisma.escola.count({ where: { empresaId: scope.empresaId } });
-  const totalEsperado = pagamentosMes.reduce((s, p) => s + p.valorCobrado, 0);
-  const totalRecebido = pagamentosMes.filter((p) => p.pago).reduce((s, p) => s + p.valorCobrado, 0);
+  const totalEsperado = pagamentosMes.reduce((s, p) => s + Number(p.valorCobrado), 0);
+  const totalRecebido = pagamentosMes.filter((p) => p.pago).reduce((s, p) => s + Number(p.valorCobrado), 0);
   const totalPendente = totalEsperado - totalRecebido;
 
   function formatBRL(v: number) {

@@ -5,8 +5,9 @@ import { requirePlataforma } from "@/lib/plataforma";
 
 export const dynamic = "force-dynamic";
 
-const PERFIS = ["PLATAFORMA", "SUPERADMIN", "PROFESSORA", "AUXILIAR"] as const;
+const PERFIS = ["PLATAFORMA", "SUPERADMIN", "PROFESSORA", "SUPERADMIN_PROFESSORA", "AUXILIAR"] as const;
 type PerfilValido = (typeof PERFIS)[number];
+const PERFIS_COM_DISPONIBILIDADE: PerfilValido[] = ["PROFESSORA", "SUPERADMIN_PROFESSORA"];
 
 // Edita qualquer usuário do sistema — de qualquer empresa e qualquer perfil.
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -125,7 +126,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           data: { empresaId: empresaIdFinal, disponibilidade: body.disponibilidade },
         });
       }
-    } else if (perfilFinal === "PROFESSORA" && !existente.professora && empresaIdFinal) {
+    } else if (PERFIS_COM_DISPONIBILIDADE.includes(perfilFinal) && !existente.professora && empresaIdFinal) {
       await prisma.professora.create({
         data: { empresaId: empresaIdFinal, usuarioId: id, disponibilidade: [] },
       });
@@ -144,25 +145,44 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 }
 
-// PLATAFORMA e SUPERADMIN nunca podem ser excluídos, só desativados (perda
-// de acesso é revertida ativando de novo, não recriando). PROFESSORA e
-// AUXILIAR podem ser removidos de verdade — mesma regra que já existia
-// quando esse cadastro vivia dentro de cada empresa.
+// PLATAFORMA e SUPERADMIN (administrador puro) nunca podem ser excluídos, só
+// desativados (perda de acesso é revertida ativando de novo, não recriando).
+// SUPERADMIN_PROFESSORA (perfil híbrido) pode ser excluído, mas só se sobrar
+// pelo menos outro usuário com poder de admin na mesma empresa — senão a
+// empresa fica sem ninguém pra administrar. PROFESSORA e AUXILIAR podem ser
+// removidos livremente — mesma regra que já existia quando esse cadastro
+// vivia dentro de cada empresa.
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await requirePlataforma())) {
     return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
   }
   const { id } = await params;
 
-  const existente = await prisma.usuario.findUnique({ where: { id }, select: { perfil: true } });
+  const existente = await prisma.usuario.findUnique({ where: { id }, select: { perfil: true, empresaId: true } });
   if (!existente) {
     return NextResponse.json({ erro: "Usuário não encontrado." }, { status: 404 });
   }
   if (existente.perfil === "PLATAFORMA" || existente.perfil === "SUPERADMIN") {
     return NextResponse.json(
-      { erro: "Usuários PLATAFORMA e SUPERADMIN não podem ser excluídos. Desative o acesso em vez disso." },
+      { erro: "Usuários com perfil de administrador não podem ser excluídos. Desative o acesso em vez disso." },
       { status: 405 }
     );
+  }
+  if (existente.perfil === "SUPERADMIN_PROFESSORA") {
+    const outroAdmin = await prisma.usuario.findFirst({
+      where: {
+        empresaId: existente.empresaId,
+        perfil: { in: ["SUPERADMIN", "SUPERADMIN_PROFESSORA"] },
+        ativo: true,
+        NOT: { id },
+      },
+    });
+    if (!outroAdmin) {
+      return NextResponse.json(
+        { erro: "Não é possível excluir: precisa existir outro Administrador ativo na empresa antes. Desative o acesso em vez disso." },
+        { status: 409 }
+      );
+    }
   }
 
   await prisma.usuario.delete({ where: { id } });

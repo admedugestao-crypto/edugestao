@@ -147,6 +147,99 @@ function CamposForm({
   );
 }
 
+function AvaliacaoRow({
+  av,
+  onEdit,
+  onDeleteClick,
+}: {
+  av: Avaliacao;
+  onEdit: (av: Avaliacao) => void;
+  onDeleteClick: (av: Avaliacao) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 group">
+      <div className="flex-1 min-w-0 flex items-center gap-2">
+        {av.materia && (
+          <span
+            className="px-2 py-0.5 rounded-full text-xs font-medium text-white shrink-0"
+            style={{ backgroundColor: av.materia.cor }}
+          >
+            {av.materia.nome}
+          </span>
+        )}
+        <p className="font-medium text-slate-800 text-sm">{av.nome}</p>
+        {av.periodo && (
+          <span className="text-xs text-slate-400">· {av.periodo}</span>
+        )}
+      </div>
+      <p className="text-xs text-slate-500 truncate hidden sm:block">
+        {av.unidade.escola.nome} · {av.unidade.nome} · {av.serie}
+      </p>
+      <span className="text-xs text-slate-400 shrink-0">Máx: {av.notaMax}</span>
+      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={() => onEdit(av)}
+          className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+          title="Editar"
+        >
+          <Pencil size={14} />
+        </button>
+        <button
+          onClick={() => onDeleteClick(av)}
+          className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+          title="Excluir"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Agrupa avaliações por data (dd/MM/yyyy), preservando a ordem
+function agruparPorData(avs: Avaliacao[]) {
+  const mapa = new Map<string, Avaliacao[]>();
+  for (const av of avs) {
+    const key = av.data.split("T")[0]; // "2026-06-05"
+    if (!mapa.has(key)) mapa.set(key, []);
+    mapa.get(key)!.push(av);
+  }
+  return Array.from(mapa.entries()).sort(([a], [b]) => a.localeCompare(b));
+}
+
+function GrupoData({
+  dateKey,
+  avs,
+  futura,
+  onEdit,
+  onDeleteClick,
+}: {
+  dateKey: string;
+  avs: Avaliacao[];
+  futura: boolean;
+  onEdit: (av: Avaliacao) => void;
+  onDeleteClick: (av: Avaliacao) => void;
+}) {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const dataLocal = new Date(y, m - 1, d);
+  const label = format(dataLocal, "dd/MM/yyyy", { locale: ptBR });
+  const diaSemana = format(dataLocal, "EEE", { locale: ptBR });
+  return (
+    <div className="border border-slate-100 rounded-lg overflow-hidden">
+      <div className={`flex items-center gap-3 px-3 py-2 ${futura ? "bg-indigo-50" : "bg-slate-50"}`}>
+        <span className={`text-sm font-bold ${futura ? "text-indigo-700" : "text-slate-500"}`}>{label}</span>
+        <span className={`text-xs capitalize ${futura ? "text-indigo-500" : "text-slate-400"}`}>{diaSemana}</span>
+        <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded-full ${futura ? "bg-indigo-100 text-indigo-700" : "bg-slate-200 text-slate-600"}`}>
+          {avs.length} prova{avs.length > 1 ? "s" : ""}
+        </span>
+      </div>
+      <div className="divide-y divide-slate-50 px-1">
+        {avs.map((av) => <AvaliacaoRow key={av.id} av={av} onEdit={onEdit} onDeleteClick={onDeleteClick} />)}
+      </div>
+    </div>
+  );
+}
+
 export default function CalendarioClient({
   avaliacoes,
   escolas,
@@ -246,83 +339,15 @@ export default function CalendarioClient({
     });
   }
 
+  function onDeleteClick(av: Avaliacao) {
+    setErroDelete("");
+    setConfirmDelete({ id: av.id, nome: av.nome, materia: av.materia?.nome ?? "" });
+  }
+
   // Parse date without timezone shift
   function parseDataLocal(iso: string) {
     const [y, m, d] = iso.split("T")[0].split("-").map(Number);
     return new Date(y, m - 1, d);
-  }
-
-  function AvaliacaoRow({ av, futura }: { av: Avaliacao; futura: boolean }) {
-    return (
-      <div className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 group">
-        <div className="flex-1 min-w-0 flex items-center gap-2">
-          {av.materia && (
-            <span
-              className="px-2 py-0.5 rounded-full text-xs font-medium text-white shrink-0"
-              style={{ backgroundColor: av.materia.cor }}
-            >
-              {av.materia.nome}
-            </span>
-          )}
-          <p className="font-medium text-slate-800 text-sm">{av.nome}</p>
-          {av.periodo && (
-            <span className="text-xs text-slate-400">· {av.periodo}</span>
-          )}
-        </div>
-        <p className="text-xs text-slate-500 truncate hidden sm:block">
-          {av.unidade.escola.nome} · {av.unidade.nome} · {av.serie}
-        </p>
-        <span className="text-xs text-slate-400 shrink-0">Máx: {av.notaMax}</span>
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={() => abrirEdit(av)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-            title="Editar"
-          >
-            <Pencil size={14} />
-          </button>
-          <button
-            onClick={() => { setErroDelete(""); setConfirmDelete({ id: av.id, nome: av.nome, materia: av.materia?.nome ?? "" }); }}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-            title="Excluir"
-          >
-            <Trash2 size={14} />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Agrupa avaliações por data (dd/MM/yyyy), preservando a ordem
-  function agruparPorData(avs: Avaliacao[]) {
-    const mapa = new Map<string, Avaliacao[]>();
-    for (const av of avs) {
-      const key = av.data.split("T")[0]; // "2026-06-05"
-      if (!mapa.has(key)) mapa.set(key, []);
-      mapa.get(key)!.push(av);
-    }
-    return Array.from(mapa.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }
-
-  function GrupoData({ dateKey, avs, futura }: { dateKey: string; avs: Avaliacao[]; futura: boolean }) {
-    const [y, m, d] = dateKey.split("-").map(Number);
-    const dataLocal = new Date(y, m - 1, d);
-    const label = format(dataLocal, "dd/MM/yyyy", { locale: ptBR });
-    const diaSemana = format(dataLocal, "EEE", { locale: ptBR });
-    return (
-      <div className="border border-slate-100 rounded-lg overflow-hidden">
-        <div className={`flex items-center gap-3 px-3 py-2 ${futura ? "bg-indigo-50" : "bg-slate-50"}`}>
-          <span className={`text-sm font-bold ${futura ? "text-indigo-700" : "text-slate-500"}`}>{label}</span>
-          <span className={`text-xs capitalize ${futura ? "text-indigo-500" : "text-slate-400"}`}>{diaSemana}</span>
-          <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded-full ${futura ? "bg-indigo-100 text-indigo-700" : "bg-slate-200 text-slate-600"}`}>
-            {avs.length} prova{avs.length > 1 ? "s" : ""}
-          </span>
-        </div>
-        <div className="divide-y divide-slate-50 px-1">
-          {avs.map((av) => <AvaliacaoRow key={av.id} av={av} futura={futura} />)}
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -369,7 +394,7 @@ export default function CalendarioClient({
           </div>
           <div className="space-y-2">
             {agruparPorData(proximas).map(([dateKey, avs]) => (
-              <GrupoData key={dateKey} dateKey={dateKey} avs={avs} futura={true} />
+              <GrupoData key={dateKey} dateKey={dateKey} avs={avs} futura={true} onEdit={abrirEdit} onDeleteClick={onDeleteClick} />
             ))}
           </div>
         </div>
@@ -383,7 +408,7 @@ export default function CalendarioClient({
           </div>
           <div className="space-y-2">
             {agruparPorData(passadas).map(([dateKey, avs]) => (
-              <GrupoData key={dateKey} dateKey={dateKey} avs={avs} futura={false} />
+              <GrupoData key={dateKey} dateKey={dateKey} avs={avs} futura={false} onEdit={abrirEdit} onDeleteClick={onDeleteClick} />
             ))}
           </div>
         </div>

@@ -59,7 +59,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     },
   });
 
-  return NextResponse.json(pagamento);
+  return NextResponse.json({ ...pagamento, valorCobrado: Number(pagamento.valorCobrado) });
 }
 
 // DELETE /api/pagamentos/[id]

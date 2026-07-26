@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     : new Date(ano, mes - 1, aluno.diaPagamento ?? 1);
 
   const valorCobrado =
-    pagamento?.valorCobrado ?? aluno.valorCobranca ?? 0;
+    Number(pagamento?.valorCobrado ?? aluno.valorCobranca ?? 0);
 
   const resultado = await enviarEmailAtraso({
     emailResponsavel: aluno.emailResponsavel,

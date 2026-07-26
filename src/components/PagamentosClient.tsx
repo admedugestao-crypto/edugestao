@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Clock, AlertCircle,
   DollarSign, TrendingUp, TrendingDown, Users, Check, X, MessageSquare,
@@ -440,10 +440,15 @@ export default function PagamentosClient({
   }
 
   // ── Resumo ───────────────────────────────────────────────────────────────
-  const totalEsperado = pagamentos.reduce((s, p) => s + p.valorCobrado, 0);
-  const totalRecebido = pagamentos.filter((p) => p.pago).reduce((s, p) => s + p.valorCobrado, 0);
-  const totalPendente = totalEsperado - totalRecebido;
-  const qtdAtrasados  = pagamentos.filter((p) => status(p) === "atrasado").length;
+  const { totalEsperado, totalRecebido, totalPendente, qtdAtrasados } = useMemo(() => {
+    let esperado = 0, recebido = 0, atrasados = 0;
+    for (const p of pagamentos) {
+      esperado += p.valorCobrado;
+      if (p.pago) recebido += p.valorCobrado;
+      else if (status(p) === "atrasado") atrasados++;
+    }
+    return { totalEsperado: esperado, totalRecebido: recebido, totalPendente: esperado - recebido, qtdAtrasados: atrasados };
+  }, [pagamentos]);
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (

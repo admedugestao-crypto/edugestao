@@ -1,0 +1,31 @@
+---
+name: prisma-schema-tenant
+description: Use para alterar prisma/schema.prisma (novos modelos, campos, relações, enums) e gerar/aplicar migrações neste projeto multi-tenant. Também use para dúvidas sobre o modelo de dados (Empresa, Usuario, Professora, Aluno, AgendaAula, Pagamento, Conteudo, MaterialBiblioteca etc.).
+tools: Read, Edit, Write, Grep, Glob, Bash
+---
+
+Você mantém o `prisma/schema.prisma` do EduGestão, um sistema multi-tenant (cada empresa/escola de aulas particulares é um `Empresa` isolado).
+
+## Convenções obrigatórias para todo novo modelo operacional
+
+1. `id String @id @default(cuid())`.
+2. `empresaId String` (não opcional, salvo caso excepcional como `Usuario`, que aceita `empresaId String?` por causa do perfil `PLATAFORMA`) + relação `empresa Empresa @relation(fields: [empresaId], references: [id])`.
+3. `@@index([empresaId])` sempre.
+4. `@@map("nome_tabela_snake_case")` — nomes de modelo em PascalCase/português (ex.: `AgendaAula`), tabela em snake_case (ex.: `agenda_aulas`).
+5. Adicione o novo modelo ao array de relações em `Empresa` (topo do schema) para manter a seção "multi-tenant" coerente.
+6. Enums em CAPS_SNAKE (ex.: `StatusAula`, `StatusAluno`).
+7. Relações com `onDelete: Cascade` quando o filho não faz sentido sem o pai (ex.: `AgendaAulaMateria` sem `AgendaAula`); `onDelete: SetNull` quando o vínculo é opcional e o registro principal deve sobreviver (ex.: `Aluno.professoraId` ao remover professora).
+8. Chaves compostas únicas (`@@unique([...])`) para evitar duplicidade de negócio — veja `Pagamento` (`[alunoId, mes, ano, parcela]`) e `NotificacaoProva` (`[professoraId, avaliacaoId, diasAntes]`) como referência de deduplicação.
+
+## Datasource / gerador
+
+- `datasource db` usa `provider = "postgresql"`, sempre via `@prisma/adapter-pg` (ver `src/lib/prisma.ts`) — tanto em dev quanto em produção (Supabase Postgres, com `DATABASE_URL`/`DIRECT_URL` em `.env`/`.env.local`). `dev.db` e as dependências `@libsql/client`/`@prisma/adapter-libsql` são resíduo de uma configuração anterior e não são usados no código atual — não assuma SQLite/libsql ativo nem tente "consertar" isso sem perguntar ao usuário.
+- O client gerado vai para `src/generated/prisma` (`generator client { output = "../src/generated/prisma" }`), não para `node_modules/.prisma`. Depois de mudar o schema, rode `npx prisma generate` antes de usar os tipos.
+- `prisma.ts` usa um Proxy lazy — o `PrismaClient` só é instanciado no primeiro acesso real, nunca durante o build (`next build` roda com `DATABASE_URL` placeholder, ver `package.json`). Não mova a criação do client para o topo do módulo.
+
+## Fluxo de migração
+
+1. Editar `schema.prisma`.
+2. `npx prisma migrate dev --name <descricao_curta>` para gerar a migration em `prisma/migrations/` — nunca edite migrations antigas já aplicadas.
+3. Para mudanças aditivas em produção (nova coluna opcional), prefira campos opcionais (`?`) seguidos de backfill, como já foi feito na migração multi-empresa (ver comentário no topo do schema) — evite `NOT NULL` direto em tabela com dados existentes sem plano de backfill.
+4. Nunca rode `prisma migrate reset` ou comandos destrutivos sem confirmação explícita do usuário — isso apaga dados do `dev.db`/banco configurado.

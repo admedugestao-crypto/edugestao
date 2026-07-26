@@ -9,12 +9,14 @@ import {
 import { SERIES } from "@/lib/series";
 
 type Materia = { id: string; nome: string; cor: string };
+type MetodoEnsino = { id: string; nome: string };
 
 type Material = {
   id: string;
   titulo: string;
   descricao: string | null;
-  metodo: string | null;
+  metodoId: string | null;
+  metodoEnsino: MetodoEnsino | null;
   serie: string | null;
   materiaId: string | null;
   materia: Materia | null;
@@ -25,7 +27,7 @@ type Material = {
 type Form = {
   titulo: string;
   descricao: string;
-  metodo: string;
+  metodoId: string;
   serie: string;
   materiaId: string;
   arquivoUrl: string;
@@ -33,17 +35,19 @@ type Form = {
 };
 
 const formVazio: Form = {
-  titulo: "", descricao: "", metodo: "", serie: "", materiaId: "", arquivoUrl: "", arquivoNome: "",
+  titulo: "", descricao: "", metodoId: "", serie: "", materiaId: "", arquivoUrl: "", arquivoNome: "",
 };
 
 export default function BibliotecaMobile({
   nomeUsuario,
   materiaisIniciais,
   materias,
+  metodos,
 }: {
   nomeUsuario: string;
   materiaisIniciais: Material[];
   materias: Materia[];
+  metodos: MetodoEnsino[];
 }) {
   const router = useRouter();
   const [materiais, setMateriais] = useState(materiaisIniciais);
@@ -99,7 +103,7 @@ export default function BibliotecaMobile({
     setForm({
       titulo: m.titulo,
       descricao: m.descricao ?? "",
-      metodo: m.metodo ?? "",
+      metodoId: m.metodoId ?? "",
       serie: m.serie ?? "",
       materiaId: m.materiaId ?? "",
       arquivoUrl: m.arquivoUrl,
@@ -108,8 +112,23 @@ export default function BibliotecaMobile({
     setModalAberto(true);
   }
 
+  function camposFaltando(f: Form): string[] {
+    const faltando: string[] = [];
+    if (!f.titulo) faltando.push("Título");
+    if (!f.descricao) faltando.push("Descrição");
+    if (!f.metodoId) faltando.push("Método");
+    if (!f.serie) faltando.push("Série");
+    if (!f.materiaId) faltando.push("Disciplina");
+    if (!f.arquivoUrl) faltando.push("Arquivo");
+    return faltando;
+  }
+
+  function formCompleto(f: Form) {
+    return camposFaltando(f).length === 0;
+  }
+
   async function salvar() {
-    if (!form.titulo || !form.arquivoUrl) return;
+    if (!formCompleto(form)) return;
     setSalvando(true);
     setErro("");
     try {
@@ -201,7 +220,7 @@ export default function BibliotecaMobile({
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-800 text-sm truncate">{m.titulo}</p>
                   <p className="text-xs text-slate-500 truncate">
-                    {[m.metodo, m.serie, m.materia?.nome].filter(Boolean).join(" · ") || "Sem categorização"}
+                    {[m.metodoEnsino?.nome, m.serie, m.materia?.nome].filter(Boolean).join(" · ") || "Sem categorização"}
                   </p>
                 </div>
               </div>
@@ -248,21 +267,27 @@ export default function BibliotecaMobile({
                   className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm" placeholder="Ex: Apostila de frações" />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1">Descrição</label>
+                <label className="text-xs font-medium text-slate-500 block mb-1">Descrição *</label>
                 <textarea rows={2} value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-medium text-slate-500 block mb-1">Método</label>
-                  <input value={form.metodo} onChange={(e) => setForm({ ...form, metodo: e.target.value })}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm" placeholder="Ex: Singapura" />
+                  <label className="text-xs font-medium text-slate-500 block mb-1">Método *</label>
+                  <select value={form.metodoId} onChange={(e) => setForm({ ...form, metodoId: e.target.value })}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white">
+                    <option value="">Selecione...</option>
+                    {metodos.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+                  </select>
+                  {metodos.length === 0 && (
+                    <p className="text-xs text-amber-600 mt-1">Cadastre em Tabelas → Métodos de Ensino.</p>
+                  )}
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-500 block mb-1">Série</label>
+                  <label className="text-xs font-medium text-slate-500 block mb-1">Série *</label>
                   <select value={form.serie} onChange={(e) => setForm({ ...form, serie: e.target.value })}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white">
-                    <option value="">Todas</option>
+                    <option value="">Selecione...</option>
                     {SERIES.map((g) => (
                       <optgroup key={g.grupo} label={g.grupo}>
                         {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -272,10 +297,10 @@ export default function BibliotecaMobile({
                 </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1">Disciplina</label>
+                <label className="text-xs font-medium text-slate-500 block mb-1">Disciplina *</label>
                 <select value={form.materiaId} onChange={(e) => setForm({ ...form, materiaId: e.target.value })}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white">
-                  <option value="">Nenhuma</option>
+                  <option value="">Selecione...</option>
                   {materias.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
                 </select>
               </div>
@@ -301,8 +326,13 @@ export default function BibliotecaMobile({
                 )}
               </div>
             </div>
+            {!formCompleto(form) && !salvando && !enviandoArquivo && (
+              <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
+                Falta preencher: {camposFaltando(form).join(", ")}.
+              </p>
+            )}
             {erro && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erro}</p>}
-            <button onClick={salvar} disabled={!form.titulo || !form.arquivoUrl || salvando || enviandoArquivo}
+            <button onClick={salvar} disabled={!formCompleto(form) || salvando || enviandoArquivo}
               className="w-full bg-indigo-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl text-sm mt-4">
               {salvando ? "Salvando..." : editandoId ? "Salvar alterações" : "Criar material"}
             </button>

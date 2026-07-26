@@ -72,6 +72,13 @@ export default async function AlunosPage({
     console.error("[alunos] ERRO na query:", err?.message ?? err);
   }
 
+  // valorCobranca é Decimal no Prisma — precisa virar number antes de cruzar
+  // a fronteira Server → Client Component (AlunosTabela), senão quebra em runtime.
+  alunos = alunos.map((a) => ({
+    ...a,
+    valorCobranca: a.valorCobranca != null ? Number(a.valorCobranca) : null,
+  }));
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">

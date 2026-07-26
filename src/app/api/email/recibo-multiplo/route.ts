@@ -64,12 +64,12 @@ export async function POST(req: NextRequest) {
   for (const [emailResponsavel, grupo] of grupos) {
     const primeiro = grupo[0].aluno;
     const nomeResponsavel = primeiro.responsavel ?? emailResponsavel;
-    const total = grupo.reduce((s, p) => s + p.valorCobrado, 0);
+    const total = grupo.reduce((s, p) => s + Number(p.valorCobrado), 0);
 
     const itens = grupo.map((p) => ({
       nomeAluno:      p.aluno.nome,
       tipoCobranca:   p.aluno.tipoCobranca ?? "MENSAL",
-      valorCobrado:   p.valorCobrado,
+      valorCobrado:   Number(p.valorCobrado),
       dataPagamento:  p.dataPagamento!,
       mes:            p.mes,
       ano:            p.ano,

@@ -11,10 +11,14 @@ type Unidade = {
   turno: string | null;
 };
 
+type MetodoEnsino = { id: string; nome: string };
+
 type Escola = {
   id: string;
   nome: string;
   rede: string | null;
+  metodoId: string | null;
+  metodoEnsino: MetodoEnsino | null;
   periodoAvaliacao: string | null;
   periodoLetivo1Inicio: string | null;
   periodoLetivo1Fim: string | null;
@@ -61,7 +65,13 @@ const PERIODOS_AVALIACAO = ["Bimestral", "Trimestral", "Semestral"] as const;
 
 type ConfirmDelete = { tipo: "escola"; id: string; nome: string } | { tipo: "unidade"; id: string; escolaId: string; nome: string };
 
-export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Escola[] }) {
+export default function EscolasClient({
+  escolasIniciais,
+  metodos,
+}: {
+  escolasIniciais: Escola[];
+  metodos: MetodoEnsino[];
+}) {
   const [escolas, setEscolas] = useState(escolasIniciais);
   const [expandida, setExpandida] = useState<string | null>(null);
 
@@ -71,6 +81,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
   const [novaEscola, setNovaEscola] = useState({
     nome: "",
     rede: "",
+    metodoId: "",
     periodoAvaliacao: "",
     periodoLetivo1Inicio: "",
     periodoLetivo1Fim: "",
@@ -85,6 +96,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
     id: string;
     nome: string;
     rede: string;
+    metodoId: string;
     periodoAvaliacao: string;
     periodoLetivo1Inicio: string;
     periodoLetivo1Fim: string;
@@ -111,6 +123,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
       body: JSON.stringify({
         nome: novaEscola.nome,
         rede: novaEscola.rede,
+        metodoId: novaEscola.metodoId || null,
         periodoAvaliacao: novaEscola.periodoAvaliacao,
         periodoLetivo1Inicio: novaEscola.periodoLetivo1Inicio || null,
         periodoLetivo1Fim: novaEscola.periodoLetivo1Fim || null,
@@ -132,7 +145,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
 
     setEscolas((prev) => [...prev, escola]);
     setModalEscola(false);
-    setNovaEscola({ nome: "", rede: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" });
+    setNovaEscola({ nome: "", rede: "", metodoId: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" });
     setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" });
     setSalvando(false);
   }
@@ -164,6 +177,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
       body: JSON.stringify({
         nome: editEscola.nome,
         rede: editEscola.rede,
+        metodoId: editEscola.metodoId || null,
         periodoAvaliacao: editEscola.periodoAvaliacao,
         periodoLetivo1Inicio: editEscola.periodoLetivo1Inicio || null,
         periodoLetivo1Fim: editEscola.periodoLetivo1Fim || null,
@@ -263,7 +277,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-slate-800">{escola.nome}</p>
                 <p className="text-xs text-slate-500">
-                  {[escola.rede, escola.periodoAvaliacao].filter(Boolean).join(" · ")}
+                  {[escola.rede, escola.metodoEnsino?.nome, escola.periodoAvaliacao].filter(Boolean).join(" · ")}
                 </p>
                 {(escola.periodoLetivo1Inicio || escola.periodoLetivo1Fim) && (
                   <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
@@ -293,6 +307,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                   id: escola.id,
                   nome: escola.nome,
                   rede: escola.rede ?? "",
+                  metodoId: escola.metodoId ?? "",
                   periodoAvaliacao: escola.periodoAvaliacao ?? "",
                   periodoLetivo1Inicio: paraInputDate(escola.periodoLetivo1Inicio),
                   periodoLetivo1Fim: paraInputDate(escola.periodoLetivo1Fim),
@@ -388,6 +403,17 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Ex: Particular, Pública, Rede X"
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Método de Ensino</label>
+                <select
+                  value={novaEscola.metodoId}
+                  onChange={(e) => setNovaEscola({ ...novaEscola, metodoId: e.target.value })}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                >
+                  <option value="">Nenhum</option>
+                  {metodos.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+                </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Período de Avaliação</label>
@@ -499,7 +525,7 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                 {salvando ? "Salvando..." : "Criar escola"}
               </button>
               <button
-                onClick={() => { setModalEscola(false); setNovaEscola({ nome: "", rede: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" }); setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" }); }}
+                onClick={() => { setModalEscola(false); setNovaEscola({ nome: "", rede: "", metodoId: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" }); setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" }); }}
                 className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 Cancelar
@@ -594,6 +620,17 @@ export default function EscolasClient({ escolasIniciais }: { escolasIniciais: Es
                   onChange={(e) => setEditEscola({ ...editEscola, rede: e.target.value })}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Método de Ensino</label>
+                <select
+                  value={editEscola.metodoId}
+                  onChange={(e) => setEditEscola({ ...editEscola, metodoId: e.target.value })}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                >
+                  <option value="">Nenhum</option>
+                  {metodos.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+                </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Período de Avaliação</label>

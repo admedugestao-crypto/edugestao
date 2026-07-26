@@ -13,13 +13,14 @@ export default async function BibliotecaMobilePage() {
   const session     = await auth();
   const nomeUsuario = (session?.user as any)?.name as string ?? "";
 
-  const [materiais, materias] = await Promise.all([
+  const [materiais, materias, metodos] = await Promise.all([
     prisma.materialBiblioteca.findMany({
       where: { empresaId: scope.empresaId },
-      include: { materia: true },
+      include: { materia: true, metodoEnsino: true },
       orderBy: { criadoEm: "desc" },
     }),
     prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
+    prisma.metodoEnsino.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
   ]);
 
   return (
@@ -27,6 +28,7 @@ export default async function BibliotecaMobilePage() {
       nomeUsuario={nomeUsuario}
       materiaisIniciais={materiais}
       materias={materias}
+      metodos={metodos}
     />
   );
 }

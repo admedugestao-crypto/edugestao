@@ -244,6 +244,42 @@ function AbaWhatsapp({
     if (res.ok) setStatusLocal((prev) => ({ ...prev, [id]: true }));
   }, []);
 
+  const { todasLinhas, totalEnviados, totalFalhos, linhasFiltradas } = useMemo(() => {
+    const linhasProva = historico.map((n) => ({
+      key: `p-${n.id}`,
+      tipo: "Prova" as const,
+      destinatario: n.professora.usuario.nome,
+      descricao: n.avaliacao.nome + (n.avaliacao.materia ? ` · ${n.avaliacao.materia.nome}` : ""),
+      detalhe: <BadgeDias dias={n.diasAntes} />,
+      criadoEm: n.criadoEm,
+      enviada: statusLocal[n.id] ?? n.enviada,
+      searchText: `${n.professora.usuario.nome} ${n.avaliacao.nome} ${n.avaliacao.materia?.nome ?? ""}`.toLowerCase(),
+      onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.id, statusLocal[n.id] ?? n.enviada),
+    }));
+    const linhasAula = historicoAulas.map((n) => ({
+      key: `a-${n.id}`,
+      tipo: "Lembrete de Aula" as const,
+      destinatario: n.agendaAula.aluno.responsavel ?? "—",
+      descricao: (n.agendaAula.materia?.nome ?? "—") + (n.agendaAula.horaInicio ? ` · ${n.agendaAula.horaInicio}${n.agendaAula.horaFim ? `–${n.agendaAula.horaFim}` : ""}` : ""),
+      detalhe: <span className="text-xs text-slate-400">{fmtData(n.agendaAula.data)}</span>,
+      criadoEm: n.criadoEm,
+      enviada: n.enviada,
+      searchText: `${n.agendaAula.aluno.nome} ${n.agendaAula.aluno.responsavel ?? ""} ${n.agendaAula.materia?.nome ?? ""}`.toLowerCase(),
+      onContextMenu: undefined as undefined | ((e: React.MouseEvent) => void),
+    }));
+    const todasLinhas = [...linhasProva, ...linhasAula].sort(
+      (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
+    );
+    const totalEnviados = todasLinhas.filter((l) => l.enviada).length;
+    const totalFalhos   = todasLinhas.length - totalEnviados;
+    const linhasFiltradas = todasLinhas.filter((l) => {
+      const textoOk  = busca === "" || l.searchText.includes(busca.toLowerCase()) || l.destinatario.toLowerCase().includes(busca.toLowerCase()) || l.descricao.toLowerCase().includes(busca.toLowerCase());
+      const statusOk = filtroStatus === "todos" || (filtroStatus === "enviado" ? l.enviada : !l.enviada);
+      return textoOk && statusOk;
+    });
+    return { todasLinhas, totalEnviados, totalFalhos, linhasFiltradas };
+  }, [historico, historicoAulas, statusLocal, busca, filtroStatus]);
+
   return (
     <div className="space-y-5">
       <ContextMenu menu={contextMenu} onClose={() => setContextMenu(null)} onReenviar={reenviar} />
@@ -401,41 +437,7 @@ function AbaWhatsapp({
       )}
 
       {/* Histórico unificado WhatsApp */}
-      {(() => {
-        const linhasProva = historico.map((n) => ({
-          key: `p-${n.id}`,
-          tipo: "Prova" as const,
-          destinatario: n.professora.usuario.nome,
-          descricao: n.avaliacao.nome + (n.avaliacao.materia ? ` · ${n.avaliacao.materia.nome}` : ""),
-          detalhe: <BadgeDias dias={n.diasAntes} />,
-          criadoEm: n.criadoEm,
-          enviada: statusLocal[n.id] ?? n.enviada,
-          searchText: `${n.professora.usuario.nome} ${n.avaliacao.nome} ${n.avaliacao.materia?.nome ?? ""}`.toLowerCase(),
-          onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.id, statusLocal[n.id] ?? n.enviada),
-        }));
-        const linhasAula = historicoAulas.map((n) => ({
-          key: `a-${n.id}`,
-          tipo: "Lembrete de Aula" as const,
-          destinatario: n.agendaAula.aluno.responsavel ?? "—",
-          descricao: (n.agendaAula.materia?.nome ?? "—") + (n.agendaAula.horaInicio ? ` · ${n.agendaAula.horaInicio}${n.agendaAula.horaFim ? `–${n.agendaAula.horaFim}` : ""}` : ""),
-          detalhe: <span className="text-xs text-slate-400">{fmtData(n.agendaAula.data)}</span>,
-          criadoEm: n.criadoEm,
-          enviada: n.enviada,
-          searchText: `${n.agendaAula.aluno.nome} ${n.agendaAula.aluno.responsavel ?? ""} ${n.agendaAula.materia?.nome ?? ""}`.toLowerCase(),
-          onContextMenu: undefined as undefined | ((e: React.MouseEvent) => void),
-        }));
-        const todasLinhas = [...linhasProva, ...linhasAula].sort(
-          (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
-        );
-        const totalEnviados = todasLinhas.filter((l) => l.enviada).length;
-        const totalFalhos   = todasLinhas.length - totalEnviados;
-        const linhasFiltradas = todasLinhas.filter((l) => {
-          const textoOk  = busca === "" || l.searchText.includes(busca.toLowerCase()) || l.destinatario.toLowerCase().includes(busca.toLowerCase()) || l.descricao.toLowerCase().includes(busca.toLowerCase());
-          const statusOk = filtroStatus === "todos" || (filtroStatus === "enviado" ? l.enviada : !l.enviada);
-          return textoOk && statusOk;
-        });
-        return (
-          <>
+      <>
             {/* Cards resumo */}
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-white rounded-xl border border-slate-200 p-4">
@@ -539,9 +541,7 @@ function AbaWhatsapp({
                 </>
               )}
             </div>
-          </>
-        );
-      })()}
+      </>
     </div>
   );
 }
@@ -567,8 +567,11 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
     return textoOk && statusOk;
   }), [historico, busca, filtroStatus, statusLocal]);
 
-  const totalEnviados = historico.filter((r) => (statusLocal[r.id] ?? r.emailEnviado)).length;
-  const totalFalhos   = historico.length - totalEnviados;
+  const totalEnviados = useMemo(
+    () => historico.filter((r) => (statusLocal[r.id] ?? r.emailEnviado)).length,
+    [historico, statusLocal],
+  );
+  const totalFalhos = historico.length - totalEnviados;
 
   async function dispararAgora() {
     setDisparando(true); setMsgDisparo(null);

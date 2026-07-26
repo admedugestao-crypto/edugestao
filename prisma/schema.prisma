@@ -39,6 +39,7 @@ model Empresa {
   notificacoesAula    NotificacaoAula[]
   calendarios         CalendarioEscolar[]
   materiaisBiblioteca MaterialBiblioteca[]
+  metodosEnsino       MetodoEnsino[]
 
   @@map("empresas")
 }
@@ -72,6 +73,7 @@ model Usuario {
 enum Perfil {
   SUPERADMIN
   PROFESSORA
+  SUPERADMIN_PROFESSORA // administra a empresa e também dá aula, num único usuário
   AUXILIAR
   PLATAFORMA
 }
@@ -131,6 +133,22 @@ model ProfessoraMateria {
   @@map("professora_materias")
 }
 
+// ─── Métodos de Ensino ──────────────────────────────────────────────────────────
+
+model MetodoEnsino {
+  id        String @id @default(cuid())
+  empresaId String
+  nome      String
+
+  empresa             Empresa              @relation(fields: [empresaId], references: [id])
+  materiaisBiblioteca MaterialBiblioteca[]
+  escolas             Escola[]
+
+  @@unique([empresaId, nome])
+  @@index([empresaId])
+  @@map("metodos_ensino")
+}
+
 // ─── Escolas e Unidades ───────────────────────────────────────────────────────
 
 model Escola {
@@ -138,6 +156,7 @@ model Escola {
   empresaId            String
   nome                 String
   rede                 String?
+  metodoId             String?
   periodoAvaliacao     String?
   periodoLetivo1Inicio DateTime?
   periodoLetivo1Fim    DateTime?
@@ -145,10 +164,12 @@ model Escola {
   periodoLetivo2Fim    DateTime?
   criadoEm             DateTime  @default(now())
 
-  empresa  Empresa   @relation(fields: [empresaId], references: [id])
-  unidades Unidade[]
+  empresa      Empresa       @relation(fields: [empresaId], references: [id])
+  metodoEnsino MetodoEnsino? @relation(fields: [metodoId], references: [id])
+  unidades     Unidade[]
 
   @@index([empresaId])
+  @@index([metodoId])
   @@map("escolas")
 }
 
@@ -174,6 +195,7 @@ model Unidade {
   avaliacoes  Avaliacao[]
 
   @@index([empresaId])
+  @@index([escolaId])
   @@map("unidades")
 }
 
@@ -194,6 +216,7 @@ model CalendarioEscolar {
   unidade Unidade @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
 
   @@index([empresaId])
+  @@index([unidadeId])
   @@map("calendario_escolar")
 }
 
@@ -227,6 +250,8 @@ model Avaliacao {
   notificacoes NotificacaoProva[]
 
   @@index([empresaId])
+  @@index([unidadeId])
+  @@index([materiaId])
   @@map("avaliacoes")
 }
 
@@ -281,7 +306,7 @@ model Aluno {
   status              StatusAluno @default(ATIVO)
   // ── Configuração de cobrança ──────────────────────────────────────
   tipoCobranca        String? // MENSAL | QUINZENAL | SEMANAL | POR_AULA
-  valorCobranca       Float? // valor por parcela / por aula
+  valorCobranca       Decimal? @db.Decimal(10, 2) // valor por parcela / por aula
   diaPagamento        Int? // dia do mês (MENSAL = venc.; QUINZENAL = 1ª parcela)
   diaPagamento2       Int? // 2ª parcela (apenas QUINZENAL)
   diaSemana           Int? // legado — mantido para retrocompat
@@ -304,6 +329,8 @@ model Aluno {
   aulas      AgendaAula[]
 
   @@index([empresaId])
+  @@index([professoraId])
+  @@index([unidadeId])
   @@map("alunos")
 }
 
@@ -356,7 +383,7 @@ model Pagamento {
   ano             Int
   parcela         Int       @default(1) // 1 para MENSAL/POR_AULA; 1-2 QUINZENAL; 1-5 SEMANAL
   dataVencimento  DateTime // data exata do vencimento
-  valorCobrado    Float
+  valorCobrado    Decimal   @db.Decimal(10, 2)
   quantidadeAulas Int? // apenas POR_AULA
   pago            Boolean   @default(false)
   dataPagamento   DateTime?
@@ -408,6 +435,8 @@ model Conteudo {
   aula    AgendaAula? @relation(fields: [aulaId], references: [id], onDelete: SetNull)
 
   @@index([empresaId])
+  @@index([alunoId])
+  @@index([materiaId])
   @@map("conteudos")
 }
 
@@ -418,17 +447,21 @@ model MaterialBiblioteca {
   empresaId   String
   titulo      String
   descricao   String?
-  metodo      String?
+  metodoTexto String?  @map("metodo") // temporário — removido após backfill pra metodoId
+  metodoId    String?
   serie       String?
   materiaId   String?
   arquivoUrl  String
   arquivoNome String?
   criadoEm    DateTime @default(now())
 
-  empresa Empresa  @relation(fields: [empresaId], references: [id])
-  materia Materia? @relation(fields: [materiaId], references: [id])
+  empresa      Empresa       @relation(fields: [empresaId], references: [id])
+  materia      Materia?      @relation(fields: [materiaId], references: [id])
+  metodoEnsino MetodoEnsino? @relation(fields: [metodoId], references: [id])
 
   @@index([empresaId])
+  @@index([materiaId])
+  @@index([metodoId])
   @@map("biblioteca_materiais")
 }
 
@@ -457,6 +490,9 @@ model AgendaAula {
   conteudo    Conteudo?
 
   @@index([empresaId])
+  @@index([professoraId])
+  @@index([alunoId])
+  @@index([materiaId])
   @@map("agenda_aulas")
 }
 

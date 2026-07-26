@@ -5,8 +5,9 @@ import { requirePlataforma } from "@/lib/plataforma";
 
 export const dynamic = "force-dynamic";
 
-const PERFIS = ["PLATAFORMA", "SUPERADMIN", "PROFESSORA", "AUXILIAR"] as const;
+const PERFIS = ["PLATAFORMA", "SUPERADMIN", "PROFESSORA", "SUPERADMIN_PROFESSORA", "AUXILIAR"] as const;
 type PerfilValido = (typeof PERFIS)[number];
+const PERFIS_COM_DISPONIBILIDADE: PerfilValido[] = ["PROFESSORA", "SUPERADMIN_PROFESSORA"];
 
 // Lista todos os usuários do sistema — de qualquer empresa e de qualquer
 // perfil. Cadastro de usuário é centralizado aqui, na plataforma; as
@@ -84,7 +85,7 @@ export async function POST(req: NextRequest) {
         senhaTemporaria: perfil !== "PLATAFORMA",
         foto: foto || null,
         whatsapp: whatsapp || null,
-        ...(perfil === "PROFESSORA"
+        ...(PERFIS_COM_DISPONIBILIDADE.includes(perfil)
           ? { professora: { create: { empresaId: vinculoEmpresaId!, disponibilidade: disponibilidade ?? [] } } }
           : {}),
       },

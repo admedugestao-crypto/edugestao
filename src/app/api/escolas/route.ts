@@ -11,7 +11,7 @@ export async function GET() {
 
   const escolas = await prisma.escola.findMany({
     where: { empresaId: scope.empresaId },
-    include: { unidades: { orderBy: { nome: "asc" } } },
+    include: { unidades: { orderBy: { nome: "asc" } }, metodoEnsino: true },
     orderBy: { nome: "asc" },
   });
   return NextResponse.json(escolas);
@@ -31,15 +31,23 @@ export async function POST(req: NextRequest) {
   const erroPeriodo = validarPeriodoLetivo(datas);
   if (erroPeriodo) return NextResponse.json({ erro: erroPeriodo }, { status: 400 });
 
+  if (body.metodoId) {
+    const metodo = await prisma.metodoEnsino.findUnique({ where: { id: body.metodoId }, select: { empresaId: true } });
+    if (!metodo || metodo.empresaId !== scope.empresaId) {
+      return NextResponse.json({ erro: "Método inválido." }, { status: 400 });
+    }
+  }
+
   const escola = await prisma.escola.create({
     data: {
       empresaId: scope.empresaId,
       nome: body.nome,
       rede: body.rede || null,
+      metodoId: body.metodoId || null,
       periodoAvaliacao: body.periodoAvaliacao || null,
       ...datas,
     },
-    include: { unidades: true },
+    include: { unidades: true, metodoEnsino: true },
   });
   return NextResponse.json(escola, { status: 201 });
 }

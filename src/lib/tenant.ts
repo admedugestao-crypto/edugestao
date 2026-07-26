@@ -4,7 +4,7 @@ export type SessionScope = {
   userId: string;
   empresaId: string;
   professoraId: string | null;
-  perfil: "SUPERADMIN" | "PROFESSORA" | "AUXILIAR" | "PLATAFORMA";
+  perfil: "SUPERADMIN" | "PROFESSORA" | "SUPERADMIN_PROFESSORA" | "AUXILIAR" | "PLATAFORMA";
   isAdmin: boolean;
 };
 
@@ -21,7 +21,7 @@ export async function getSessionScope(): Promise<SessionScope | null> {
     empresaId: u.empresaId,
     professoraId: u.professoraId ?? null,
     perfil: u.perfil,
-    isAdmin: u.perfil === "SUPERADMIN",
+    isAdmin: u.perfil === "SUPERADMIN" || u.perfil === "SUPERADMIN_PROFESSORA",
   };
 }
 
