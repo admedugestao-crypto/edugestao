@@ -197,20 +197,34 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Sem materiaId = "todas as matérias" do aluno — vincula todas, igual à geração em massa.
+  let materiaIds: string[] = [];
+  if (!materiaId) {
+    const alunoMaterias = await prisma.aluno.findUnique({
+      where: { id: alunoId },
+      select: { materias: { select: { materiaId: true } } },
+    });
+    materiaIds = alunoMaterias?.materias.map((m) => m.materiaId) ?? [];
+  }
+
   const aula = await prisma.agendaAula.create({
     data: {
       empresaId: scope.empresaId,
       professoraId,
       alunoId,
-      materiaId:  materiaId  || null,
+      materiaId:  materiaId || materiaIds[0] || null,
       data:       dataObj,
       horaInicio: horaInicio || null,
       horaFim:    horaFim    || null,
       observacao: observacao || null,
+      materias: materiaIds.length > 0
+        ? { create: materiaIds.map((mid) => ({ materiaId: mid })) }
+        : undefined,
     },
     include: {
       aluno:   { select: { id: true, nome: true, serie: true, turma: true } },
       materia: { select: { id: true, nome: true, cor: true } },
+      materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
     },
   });
 
