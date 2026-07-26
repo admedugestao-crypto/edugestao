@@ -39,6 +39,7 @@ export default function AlunoForm({
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const isAdmin = perfil === "SUPERADMIN" || perfil === "SUPERADMIN_PROFESSORA";
 
   const [escolaId, setEscolaId] = useState(
     alunoInicial?.unidade?.escolaId ?? ""
@@ -99,7 +100,7 @@ export default function AlunoForm({
     unidadeId:           !!alunoInicial?.unidadeId,
     serie:               !!alunoInicial?.serie,
     turma:               !!alunoInicial?.turma,
-    professoraId:        perfil !== "SUPERADMIN" || !!alunoInicial?.professoraId,
+    professoraId:        !isAdmin || !!alunoInicial?.professoraId,
   });
 
   function setCampo(key: keyof typeof campos) {
@@ -158,7 +159,7 @@ export default function AlunoForm({
   const [professoraId, setProfessoraId] = useState<string>(alunoInicial?.professoraId ?? "");
 
   function getDisponibilidade(): Horario[] {
-    if (perfil !== "SUPERADMIN") return dispProfessora ?? [];
+    if (!isAdmin) return dispProfessora ?? [];
     const prof = professoras.find((p) => p.id === professoraId);
     return (prof?.disponibilidade as Horario[]) ?? [];
   }
@@ -284,7 +285,7 @@ export default function AlunoForm({
 
     const form = new FormData(e.currentTarget);
 
-    if (perfil === "SUPERADMIN" && !form.get("professoraId")) {
+    if (isAdmin && !form.get("professoraId")) {
       setErro("Selecione o(a) professor(a) responsável.");
       setSalvando(false);
       return;
@@ -648,7 +649,7 @@ export default function AlunoForm({
               <p className="text-xs text-amber-600 mt-1">Campo obrigatório — selecione o status.</p>
             )}
           </div>
-          {perfil === "SUPERADMIN" && (
+          {isAdmin && (
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Professor(a) *
