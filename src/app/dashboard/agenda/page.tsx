@@ -37,9 +37,10 @@ export default async function AgendaPage() {
         orderBy: { nome: "asc" },
       });
 
-  // Professoras com disponibilidade (excluir admins)
+  // Professoras com disponibilidade — inclui administradores que também dão
+  // aula (têm registro de Professora vinculado, independente do perfil).
   const professorasRaw = await prisma.professora.findMany({
-    where: { empresaId: scope.empresaId, usuario: { perfil: "PROFESSORA" } },
+    where: { empresaId: scope.empresaId },
     select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
     orderBy: { usuario: { nome: "asc" } },
   });

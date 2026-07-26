@@ -14,8 +14,10 @@ export default async function AgendaMobilePage() {
   const isProfessor  = !scope.isAdmin && !!scope.professoraId;
   const nomeUsuario  = (session?.user as any)?.name as string ?? "";
 
+  // Inclui administradores que também dão aula (têm registro de Professora
+  // vinculado, independente do perfil).
   const professoras = await (prisma.professora.findMany({
-    where: { empresaId: scope.empresaId, usuario: { perfil: "PROFESSORA" } },
+    where: { empresaId: scope.empresaId },
     select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
     orderBy: { usuario: { nome: "asc" } },
   }) as unknown as Promise<any[]>);

@@ -44,8 +44,10 @@ export default async function ConteudosMobilePage() {
       orderBy: { data: "desc" },
       take: 50,
     }),
+    // Inclui administradores que também dão aula (têm registro de Professora
+    // vinculado, independente do perfil).
     prisma.professora.findMany({
-      where: { empresaId: scope.empresaId, usuario: { perfil: "PROFESSORA" } },
+      where: { empresaId: scope.empresaId },
       include: { usuario: { select: { nome: true } } },
       orderBy: { usuario: { nome: "asc" } },
     }),
