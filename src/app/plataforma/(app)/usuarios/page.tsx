@@ -111,6 +111,7 @@ export default function PlataformaUsuariosPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [carregandoLista, setCarregandoLista] = useState(true);
+  const [erroLista, setErroLista] = useState("");
   const [filtroEmpresa, setFiltroEmpresa] = useState("");
 
   const [modal, setModal] = useState(false);
@@ -129,13 +130,22 @@ export default function PlataformaUsuariosPage() {
 
   async function carregar() {
     setCarregandoLista(true);
-    const [resUsuarios, resEmpresas] = await Promise.all([
-      fetch("/api/plataforma/usuarios"),
-      fetch("/api/plataforma/empresas"),
-    ]);
-    setUsuarios(await resUsuarios.json());
-    setEmpresas(await resEmpresas.json());
-    setCarregandoLista(false);
+    setErroLista("");
+    try {
+      const [resUsuarios, resEmpresas] = await Promise.all([
+        fetch("/api/plataforma/usuarios"),
+        fetch("/api/plataforma/empresas"),
+      ]);
+      const [dadosUsuarios, dadosEmpresas] = await Promise.all([resUsuarios.json(), resEmpresas.json()]);
+      if (!resUsuarios.ok) throw new Error(dadosUsuarios?.erro ?? "Erro ao carregar usuários.");
+      if (!resEmpresas.ok) throw new Error(dadosEmpresas?.erro ?? "Erro ao carregar empresas.");
+      setUsuarios(dadosUsuarios);
+      setEmpresas(dadosEmpresas);
+    } catch (err: any) {
+      setErroLista(err?.message ?? "Erro ao carregar dados.");
+    } finally {
+      setCarregandoLista(false);
+    }
   }
 
   useEffect(() => { carregar(); }, []);
@@ -331,6 +341,13 @@ export default function PlataformaUsuariosPage() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         {carregandoLista ? (
           <p className="p-6 text-sm text-slate-500">Carregando...</p>
+        ) : erroLista ? (
+          <div className="p-6 text-sm text-red-600 bg-red-50">
+            {erroLista}
+            <button onClick={carregar} className="ml-3 underline font-medium hover:text-red-700">
+              Tentar novamente
+            </button>
+          </div>
         ) : usuariosFiltrados.length === 0 ? (
           <p className="p-6 text-sm text-slate-500">Nenhum usuário encontrado.</p>
         ) : (
