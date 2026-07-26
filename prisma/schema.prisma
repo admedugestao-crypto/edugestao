@@ -74,6 +74,7 @@ enum Perfil {
   PROFESSORA
   AUXILIAR
   PLATAFORMA
+  SUPERADMIN_PROFESSORA // administra a empresa e também dá aula, num único usuário
 }
 
 // ─── Professoras ──────────────────────────────────────────────────────────────
