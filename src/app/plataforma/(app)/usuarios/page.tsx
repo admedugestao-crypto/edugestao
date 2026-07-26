@@ -7,13 +7,14 @@ type Horario = { dia: string; inicio: string; fim: string };
 
 const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
-type Perfil = "PLATAFORMA" | "SUPERADMIN" | "PROFESSORA" | "AUXILIAR";
+type Perfil = "PLATAFORMA" | "SUPERADMIN" | "PROFESSORA" | "AUXILIAR" | "SUPERADMIN_PROFESSORA";
 
 const PERFIL_LABEL: Record<Perfil, string> = {
   PLATAFORMA: "Plataforma",
   SUPERADMIN: "Administrador",
   PROFESSORA: "Professor",
   AUXILIAR: "Auxiliar",
+  SUPERADMIN_PROFESSORA: "Administrador e Professor",
 };
 
 const PERFIL_COR: Record<Perfil, string> = {
@@ -21,6 +22,7 @@ const PERFIL_COR: Record<Perfil, string> = {
   SUPERADMIN: "bg-violet-100 text-violet-700",
   PROFESSORA: "bg-emerald-100 text-emerald-700",
   AUXILIAR: "bg-amber-100 text-amber-700",
+  SUPERADMIN_PROFESSORA: "bg-violet-100 text-violet-700",
 };
 
 type Usuario = {
