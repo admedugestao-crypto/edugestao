@@ -30,33 +30,9 @@ const nav = [
   { href: "/dashboard/notificacoes",     label: "Notificações",   icon: Bell,            adminOnly: true  },
 ];
 
-function Avatar({ foto, nome }: { foto?: string | null; nome?: string }) {
-  if (foto) {
-    return (
-      <img
-        src={foto}
-        alt={nome ?? ""}
-        className="w-8 h-8 rounded-full object-cover shrink-0 border border-slate-200"
-      />
-    );
-  }
-  const iniciais = (nome ?? "U")
-    .split(" ")
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-  return (
-    <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-semibold text-xs shrink-0">
-      {iniciais}
-    </div>
-  );
-}
-
 export default function Sidebar({ usuario, ambiente }: { usuario: any; ambiente: "Produção" | "Desenvolvimento" }) {
   const pathname = usePathname();
   const isAdmin = usuario?.perfil === "SUPERADMIN" || usuario?.perfil === "SUPERADMIN_PROFESSORA";
-  const isHibrido = usuario?.perfil === "SUPERADMIN_PROFESSORA";
 
   return (
     <aside className="w-60 bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0 shrink-0">
@@ -106,26 +82,6 @@ export default function Sidebar({ usuario, ambiente }: { usuario: any; ambiente:
             );
           })}
       </nav>
-
-      {/* Perfil do usuário logado */}
-      <div className="p-3 border-t border-slate-100">
-        <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-slate-50 transition-colors">
-          <Avatar foto={usuario?.foto} nome={usuario?.name} />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-800 truncate">
-              {usuario?.name}
-            </p>
-            <p className="text-xs text-slate-500 truncate">{usuario?.email}</p>
-            <span
-              className={`inline-flex mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                isAdmin ? "bg-indigo-100 text-indigo-700" : "bg-emerald-100 text-emerald-700"
-              }`}
-            >
-              {isHibrido ? "Administrador/Professor" : isAdmin ? "Administrador" : "Professor"}
-            </span>
-          </div>
-        </div>
-      </div>
     </aside>
   );
 }
