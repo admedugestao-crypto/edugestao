@@ -55,7 +55,8 @@ function Avatar({ foto, nome }: { foto?: string | null; nome?: string }) {
 
 export default function Sidebar({ usuario, ambiente }: { usuario: any; ambiente: "Produção" | "Desenvolvimento" }) {
   const pathname = usePathname();
-  const isAdmin = usuario?.perfil === "SUPERADMIN";
+  const isAdmin = usuario?.perfil === "SUPERADMIN" || usuario?.perfil === "SUPERADMIN_PROFESSORA";
+  const isHibrido = usuario?.perfil === "SUPERADMIN_PROFESSORA";
 
   return (
     <aside className="w-60 bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0 shrink-0">
@@ -120,7 +121,7 @@ export default function Sidebar({ usuario, ambiente }: { usuario: any; ambiente:
                 isAdmin ? "bg-indigo-100 text-indigo-700" : "bg-emerald-100 text-emerald-700"
               }`}
             >
-              {isAdmin ? "Administrador" : "Professor"}
+              {isHibrido ? "Administrador/Professor" : isAdmin ? "Administrador" : "Professor"}
             </span>
           </div>
         </div>
