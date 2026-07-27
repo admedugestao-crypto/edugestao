@@ -16,17 +16,29 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Material não encontrado." }, { status: 404 });
   }
 
+  if (!body.titulo || !body.descricao || !body.metodoId || !body.serie || !body.materiaId) {
+    return NextResponse.json(
+      { erro: "Título, descrição, método, série e disciplina são obrigatórios." },
+      { status: 400 }
+    );
+  }
+
+  const metodo = await prisma.metodoEnsino.findUnique({ where: { id: body.metodoId }, select: { empresaId: true } });
+  if (!metodo || metodo.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Método inválido." }, { status: 400 });
+  }
+
   const material = await prisma.materialBiblioteca.update({
     where: { id },
     data: {
       titulo: body.titulo,
-      descricao: body.descricao || null,
-      metodo: body.metodo || null,
-      serie: body.serie || null,
-      materiaId: body.materiaId || null,
+      descricao: body.descricao,
+      metodoId: body.metodoId,
+      serie: body.serie,
+      materiaId: body.materiaId,
       ...(body.arquivoUrl ? { arquivoUrl: body.arquivoUrl, arquivoNome: body.arquivoNome || null } : {}),
     },
-    include: { materia: true },
+    include: { materia: true, metodoEnsino: true },
   });
   return NextResponse.json(material);
 }

@@ -20,7 +20,11 @@ export default async function ConteudosMobilePage() {
   const [alunos, conteudos, professoras] = await Promise.all([
     prisma.aluno.findMany({
       where: { empresaId: scope.empresaId, ...filtroProf },
-      include: { materias: { include: { materia: true } }, professora: { select: { id: true } } },
+      include: {
+        materias: { include: { materia: true } },
+        professora: { select: { id: true } },
+        unidade: { select: { escola: { select: { metodoEnsino: { select: { id: true, nome: true } } } } } },
+      },
       orderBy: { nome: "asc" },
     }),
     prisma.conteudo.findMany({
@@ -61,6 +65,8 @@ export default async function ConteudosMobilePage() {
         id: a.id,
         nome: a.nome,
         professoraId: a.professoraId ?? null,
+        serie: a.serie,
+        escolaMetodo: a.unidade.escola.metodoEnsino,
         materias: a.materias.map((am) => ({
           materiaId: am.materiaId,
           materia: am.materia,

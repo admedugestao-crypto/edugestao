@@ -248,7 +248,7 @@ export default async function VisualizarAlunoPage({
         {aluno.tipoCobranca ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Campo label="Tipo de cobrança" valor={TIPO_COBRANCA_LABEL[aluno.tipoCobranca] ?? aluno.tipoCobranca} />
-            <Campo label="Valor" valor={aluno.valorCobranca != null ? formatBRL(aluno.valorCobranca) : null} />
+            <Campo label="Valor" valor={aluno.valorCobranca != null ? formatBRL(Number(aluno.valorCobranca)) : null} />
             {aluno.tipoCobranca === "MENSAL" && (
               <Campo label="Dia do vencimento" valor={aluno.diaPagamento != null ? String(aluno.diaPagamento) : null} />
             )}

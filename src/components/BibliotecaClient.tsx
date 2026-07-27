@@ -5,12 +5,14 @@ import { Plus, FileText, Download, Pencil, Trash2, Upload, Search } from "lucide
 import { SERIES } from "@/lib/series";
 
 type Materia = { id: string; nome: string; cor: string };
+type MetodoEnsino = { id: string; nome: string };
 
 type Material = {
   id: string;
   titulo: string;
   descricao: string | null;
-  metodo: string | null;
+  metodoId: string | null;
+  metodoEnsino: MetodoEnsino | null;
   serie: string | null;
   materiaId: string | null;
   materia: Materia | null;
@@ -21,7 +23,7 @@ type Material = {
 const formVazio = {
   titulo: "",
   descricao: "",
-  metodo: "",
+  metodoId: "",
   serie: "",
   materiaId: "",
   arquivoUrl: "",
@@ -31,9 +33,11 @@ const formVazio = {
 export default function BibliotecaClient({
   materiaisIniciais,
   materias,
+  metodos,
 }: {
   materiaisIniciais: Material[];
   materias: Materia[];
+  metodos: MetodoEnsino[];
 }) {
   const [materiais, setMateriais] = useState(materiaisIniciais);
   const [busca, setBusca] = useState("");
@@ -49,12 +53,8 @@ export default function BibliotecaClient({
   const [erro, setErro] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; titulo: string } | null>(null);
 
-  const metodosDisponiveis = Array.from(
-    new Set(materiais.map((m) => m.metodo).filter((m): m is string => !!m))
-  ).sort();
-
   const materiaisFiltrados = materiais.filter((m) => {
-    if (filtroMetodo && m.metodo !== filtroMetodo) return false;
+    if (filtroMetodo && m.metodoId !== filtroMetodo) return false;
     if (filtroSerie && m.serie !== filtroSerie) return false;
     if (filtroMateriaId && m.materiaId !== filtroMateriaId) return false;
     if (busca) {
@@ -84,8 +84,23 @@ export default function BibliotecaClient({
     }
   }
 
+  function camposFaltando(m: typeof formVazio): string[] {
+    const faltando: string[] = [];
+    if (!m.titulo) faltando.push("Título");
+    if (!m.descricao) faltando.push("Descrição");
+    if (!m.metodoId) faltando.push("Método");
+    if (!m.serie) faltando.push("Série");
+    if (!m.materiaId) faltando.push("Disciplina");
+    if (!m.arquivoUrl) faltando.push("Arquivo");
+    return faltando;
+  }
+
+  function materialCompleto(m: typeof formVazio) {
+    return camposFaltando(m).length === 0;
+  }
+
   async function criarMaterial() {
-    if (!novo.titulo || !novo.arquivoUrl) return;
+    if (!materialCompleto(novo)) return;
     setSalvando(true);
     setErro("");
     try {
@@ -108,7 +123,7 @@ export default function BibliotecaClient({
   }
 
   async function salvarEdicao() {
-    if (!editando) return;
+    if (!editando || !materialCompleto(editando)) return;
     setSalvando(true);
     setErro("");
     try {
@@ -161,8 +176,8 @@ export default function BibliotecaClient({
             className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="">Todos os métodos</option>
-            {metodosDisponiveis.map((m) => (
-              <option key={m} value={m}>{m}</option>
+            {metodos.map((m) => (
+              <option key={m.id} value={m.id}>{m.nome}</option>
             ))}
           </select>
           <select
@@ -211,7 +226,7 @@ export default function BibliotecaClient({
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-800 text-sm truncate">{m.titulo}</p>
                   <p className="text-xs text-slate-500 truncate">
-                    {[m.metodo, m.serie, m.materia?.nome].filter(Boolean).join(" · ") || "Sem categorização"}
+                    {[m.metodoEnsino?.nome, m.serie, m.materia?.nome].filter(Boolean).join(" · ") || "Sem categorização"}
                   </p>
                 </div>
               </div>
@@ -232,7 +247,7 @@ export default function BibliotecaClient({
                       id: m.id,
                       titulo: m.titulo,
                       descricao: m.descricao ?? "",
-                      metodo: m.metodo ?? "",
+                      metodoId: m.metodoId ?? "",
                       serie: m.serie ?? "",
                       materiaId: m.materiaId ?? "",
                       arquivoUrl: m.arquivoUrl,
@@ -273,7 +288,7 @@ export default function BibliotecaClient({
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Descrição</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Descrição *</label>
                 <textarea
                   value={novo.descricao}
                   onChange={(e) => setNovo({ ...novo, descricao: e.target.value })}
@@ -283,22 +298,31 @@ export default function BibliotecaClient({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Método</label>
-                  <input
-                    value={novo.metodo}
-                    onChange={(e) => setNovo({ ...novo, metodo: e.target.value })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Ex: Singapura"
-                  />
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Método *</label>
+                  <select
+                    value={novo.metodoId}
+                    onChange={(e) => setNovo({ ...novo, metodoId: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  >
+                    <option value="">Selecione...</option>
+                    {metodos.map((m) => (
+                      <option key={m.id} value={m.id}>{m.nome}</option>
+                    ))}
+                  </select>
+                  {metodos.length === 0 && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      Nenhum método cadastrado — cadastre em Tabelas → Métodos de Ensino.
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Série</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
                   <select
                     value={novo.serie}
                     onChange={(e) => setNovo({ ...novo, serie: e.target.value })}
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
-                    <option value="">Todas</option>
+                    <option value="">Selecione...</option>
                     {SERIES.map((g) => (
                       <optgroup key={g.grupo} label={g.grupo}>
                         {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -308,13 +332,13 @@ export default function BibliotecaClient({
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
                 <select
                   value={novo.materiaId}
                   onChange={(e) => setNovo({ ...novo, materiaId: e.target.value })}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 >
-                  <option value="">Nenhuma</option>
+                  <option value="">Selecione...</option>
                   {materias.map((m) => (
                     <option key={m.id} value={m.id}>{m.nome}</option>
                   ))}
@@ -338,11 +362,16 @@ export default function BibliotecaClient({
                 </label>
               </div>
             </div>
+            {!materialCompleto(novo) && !salvando && !enviandoArquivo && (
+              <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
+                Falta preencher: {camposFaltando(novo).join(", ")}.
+              </p>
+            )}
             {erro && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erro}</p>}
             <div className="flex gap-3 mt-5">
               <button
                 onClick={criarMaterial}
-                disabled={!novo.titulo || !novo.arquivoUrl || salvando || enviandoArquivo}
+                disabled={!materialCompleto(novo) || salvando || enviandoArquivo}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Criar material"}
@@ -373,7 +402,7 @@ export default function BibliotecaClient({
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Descrição</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Descrição *</label>
                 <textarea
                   value={editando.descricao}
                   onChange={(e) => setEditando({ ...editando, descricao: e.target.value })}
@@ -383,21 +412,26 @@ export default function BibliotecaClient({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Método</label>
-                  <input
-                    value={editando.metodo}
-                    onChange={(e) => setEditando({ ...editando, metodo: e.target.value })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Método *</label>
+                  <select
+                    value={editando.metodoId}
+                    onChange={(e) => setEditando({ ...editando, metodoId: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  >
+                    <option value="">Selecione...</option>
+                    {metodos.map((m) => (
+                      <option key={m.id} value={m.id}>{m.nome}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Série</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
                   <select
                     value={editando.serie}
                     onChange={(e) => setEditando({ ...editando, serie: e.target.value })}
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
-                    <option value="">Todas</option>
+                    <option value="">Selecione...</option>
                     {SERIES.map((g) => (
                       <optgroup key={g.grupo} label={g.grupo}>
                         {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -407,20 +441,20 @@ export default function BibliotecaClient({
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
                 <select
                   value={editando.materiaId}
                   onChange={(e) => setEditando({ ...editando, materiaId: e.target.value })}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 >
-                  <option value="">Nenhuma</option>
+                  <option value="">Selecione...</option>
                   {materias.map((m) => (
                     <option key={m.id} value={m.id}>{m.nome}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo *</label>
                 <label className="flex items-center gap-2 border border-dashed border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
                   <Upload size={15} />
                   {enviandoArquivo ? "Enviando..." : editando.arquivoNome || "Substituir arquivo"}
@@ -437,11 +471,16 @@ export default function BibliotecaClient({
                 </label>
               </div>
             </div>
+            {!materialCompleto(editando) && !salvando && !enviandoArquivo && (
+              <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
+                Falta preencher: {camposFaltando(editando).join(", ")}.
+              </p>
+            )}
             {erro && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erro}</p>}
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarEdicao}
-                disabled={!editando.titulo || salvando || enviandoArquivo}
+                disabled={!materialCompleto(editando) || salvando || enviandoArquivo}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Salvar"}

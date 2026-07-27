@@ -4,7 +4,7 @@ export type SessionScope = {
   userId: string;
   empresaId: string;
   professoraId: string | null;
-  perfil: "SUPERADMIN" | "PROFESSORA" | "AUXILIAR" | "PLATAFORMA" | "SUPERADMIN_PROFESSORA";
+  perfil: "SUPERADMIN" | "PROFESSORA" | "SUPERADMIN_PROFESSORA" | "AUXILIAR" | "PLATAFORMA";
   isAdmin: boolean;
 };
 

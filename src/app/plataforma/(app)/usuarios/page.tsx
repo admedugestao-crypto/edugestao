@@ -7,23 +7,25 @@ type Horario = { dia: string; inicio: string; fim: string };
 
 const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
-type Perfil = "PLATAFORMA" | "SUPERADMIN" | "PROFESSORA" | "AUXILIAR" | "SUPERADMIN_PROFESSORA";
+type Perfil = "PLATAFORMA" | "SUPERADMIN" | "PROFESSORA" | "SUPERADMIN_PROFESSORA" | "AUXILIAR";
 
 const PERFIL_LABEL: Record<Perfil, string> = {
   PLATAFORMA: "Plataforma",
   SUPERADMIN: "Administrador",
   PROFESSORA: "Professor",
-  AUXILIAR: "Auxiliar",
   SUPERADMIN_PROFESSORA: "Administrador e Professor",
+  AUXILIAR: "Auxiliar",
 };
 
 const PERFIL_COR: Record<Perfil, string> = {
   PLATAFORMA: "bg-indigo-100 text-indigo-700",
   SUPERADMIN: "bg-violet-100 text-violet-700",
   PROFESSORA: "bg-emerald-100 text-emerald-700",
-  AUXILIAR: "bg-amber-100 text-amber-700",
   SUPERADMIN_PROFESSORA: "bg-violet-100 text-violet-700",
+  AUXILIAR: "bg-amber-100 text-amber-700",
 };
+
+const PERFIS_COM_DISPONIBILIDADE: Perfil[] = ["PROFESSORA", "SUPERADMIN_PROFESSORA"];
 
 type Usuario = {
   id: string;
@@ -237,7 +239,7 @@ export default function PlataformaUsuariosPage() {
       setErro("Escolha a empresa para esse perfil.");
       return;
     }
-    if (form.perfil === "PROFESSORA" && form.disponibilidade.length === 0) {
+    if (PERFIS_COM_DISPONIBILIDADE.includes(form.perfil) && form.disponibilidade.length === 0) {
       setErro("Professor(a) deve ter pelo menos um horário de disponibilidade cadastrado.");
       setAbaModal("disponibilidade");
       return;
@@ -257,7 +259,7 @@ export default function PlataformaUsuariosPage() {
         whatsapp: form.whatsapp,
       };
       if (form.senha) body.senha = form.senha;
-      if (!editId && form.perfil === "PROFESSORA") body.disponibilidade = form.disponibilidade;
+      if (!editId && PERFIS_COM_DISPONIBILIDADE.includes(form.perfil)) body.disponibilidade = form.disponibilidade;
 
       const res = await fetch(url, {
         method,
@@ -408,7 +410,7 @@ export default function PlataformaUsuariosPage() {
                     <button onClick={() => alternarAtivo(u.id, u.ativo)} className="text-xs text-indigo-600 hover:underline font-medium">
                       {u.ativo ? "Desativar" : "Ativar"}
                     </button>
-                    {(u.perfil === "PROFESSORA" || u.perfil === "AUXILIAR") && (
+                    {(u.perfil === "PROFESSORA" || u.perfil === "AUXILIAR" || u.perfil === "SUPERADMIN_PROFESSORA") && (
                       <button
                         onClick={() => { setErroDelete(""); setConfirmDelete({ id: u.id, nome: u.nome }); }}
                         className="text-xs text-red-600 hover:underline font-medium"
@@ -432,7 +434,7 @@ export default function PlataformaUsuariosPage() {
               <h2 className="text-lg font-bold text-slate-800 mb-4">
                 {editId ? "Editar usuário" : "Novo usuário"}
               </h2>
-              {(editId || form.perfil === "PROFESSORA") && (
+              {PERFIS_COM_DISPONIBILIDADE.includes(form.perfil) && (
                 <div className="flex border-b border-slate-200 mb-5">
                   {(["dados", "disponibilidade"] as const).map((aba) => (
                     <button
@@ -503,6 +505,7 @@ export default function PlataformaUsuariosPage() {
                         <option value="PROFESSORA">Professor</option>
                         <option value="AUXILIAR">Auxiliar</option>
                         <option value="SUPERADMIN">Administrador</option>
+                        <option value="SUPERADMIN_PROFESSORA">Administrador/Professor</option>
                         <option value="PLATAFORMA">Plataforma (interno)</option>
                       </select>
                     </div>

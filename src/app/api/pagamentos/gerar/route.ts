@@ -108,7 +108,8 @@ export async function POST(req: NextRequest) {
     } else {
       porAluno.set(aula.alunoId, {
         tipoCobranca:      aula.aluno.tipoCobranca      ?? "MENSAL",
-        valorCobranca:     aula.aluno.valorCobranca      ?? 0,
+        // valorCobranca é Decimal no Prisma — converte para number antes de usar em aritmética
+        valorCobranca:     aula.aluno.valorCobranca != null ? Number(aula.aluno.valorCobranca) : 0,
         diaPagamento:      aula.aluno.diaPagamento,
         diaPagamento2:     aula.aluno.diaPagamento2,
         diaSemanaCobranca: aula.aluno.diaSemanaCobranca  ?? null,

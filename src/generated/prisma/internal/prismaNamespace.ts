@@ -389,6 +389,7 @@ export const ModelName = {
   Professora: 'Professora',
   Materia: 'Materia',
   ProfessoraMateria: 'ProfessoraMateria',
+  MetodoEnsino: 'MetodoEnsino',
   Escola: 'Escola',
   Unidade: 'Unidade',
   CalendarioEscolar: 'CalendarioEscolar',
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "materialBiblioteca" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
+    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "metodoEnsino" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "materialBiblioteca" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -790,6 +791,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ProfessoraMateriaCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ProfessoraMateriaCountAggregateOutputType> | number
+        }
+      }
+    }
+    MetodoEnsino: {
+      payload: Prisma.$MetodoEnsinoPayload<ExtArgs>
+      fields: Prisma.MetodoEnsinoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MetodoEnsinoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MetodoEnsinoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>
+        }
+        findFirst: {
+          args: Prisma.MetodoEnsinoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MetodoEnsinoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>
+        }
+        findMany: {
+          args: Prisma.MetodoEnsinoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>[]
+        }
+        create: {
+          args: Prisma.MetodoEnsinoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>
+        }
+        createMany: {
+          args: Prisma.MetodoEnsinoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MetodoEnsinoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>[]
+        }
+        delete: {
+          args: Prisma.MetodoEnsinoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>
+        }
+        update: {
+          args: Prisma.MetodoEnsinoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>
+        }
+        deleteMany: {
+          args: Prisma.MetodoEnsinoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MetodoEnsinoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MetodoEnsinoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>[]
+        }
+        upsert: {
+          args: Prisma.MetodoEnsinoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MetodoEnsinoPayload>
+        }
+        aggregate: {
+          args: Prisma.MetodoEnsinoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMetodoEnsino>
+        }
+        groupBy: {
+          args: Prisma.MetodoEnsinoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MetodoEnsinoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MetodoEnsinoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MetodoEnsinoCountAggregateOutputType> | number
         }
       }
     }
@@ -2004,11 +2079,21 @@ export const ProfessoraMateriaScalarFieldEnum = {
 export type ProfessoraMateriaScalarFieldEnum = (typeof ProfessoraMateriaScalarFieldEnum)[keyof typeof ProfessoraMateriaScalarFieldEnum]
 
 
+export const MetodoEnsinoScalarFieldEnum = {
+  id: 'id',
+  empresaId: 'empresaId',
+  nome: 'nome'
+} as const
+
+export type MetodoEnsinoScalarFieldEnum = (typeof MetodoEnsinoScalarFieldEnum)[keyof typeof MetodoEnsinoScalarFieldEnum]
+
+
 export const EscolaScalarFieldEnum = {
   id: 'id',
   empresaId: 'empresaId',
   nome: 'nome',
   rede: 'rede',
+  metodoId: 'metodoId',
   periodoAvaliacao: 'periodoAvaliacao',
   periodoLetivo1Inicio: 'periodoLetivo1Inicio',
   periodoLetivo1Fim: 'periodoLetivo1Fim',
@@ -2201,7 +2286,8 @@ export const MaterialBibliotecaScalarFieldEnum = {
   empresaId: 'empresaId',
   titulo: 'titulo',
   descricao: 'descricao',
-  metodo: 'metodo',
+  metodoTexto: 'metodoTexto',
+  metodoId: 'metodoId',
   serie: 'serie',
   materiaId: 'materiaId',
   arquivoUrl: 'arquivoUrl',
@@ -2417,6 +2503,20 @@ export type ListEnumStatusAlunoFieldRefInput<$PrismaModel> = FieldRefInputType<$
 
 
 /**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
  * Reference to a field of type 'StatusAula'
  */
 export type EnumStatusAulaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatusAula'>
@@ -2544,6 +2644,7 @@ export type GlobalOmitConfig = {
   professora?: Prisma.ProfessoraOmit
   materia?: Prisma.MateriaOmit
   professoraMateria?: Prisma.ProfessoraMateriaOmit
+  metodoEnsino?: Prisma.MetodoEnsinoOmit
   escola?: Prisma.EscolaOmit
   unidade?: Prisma.UnidadeOmit
   calendarioEscolar?: Prisma.CalendarioEscolarOmit

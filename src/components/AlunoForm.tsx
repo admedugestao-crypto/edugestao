@@ -28,6 +28,7 @@ export default function AlunoForm({
   alunoInicial,
   professoras = [],
   perfil,
+  isAdmin,
   dispProfessora = null,
 }: {
   escolas: Escola[];
@@ -35,11 +36,15 @@ export default function AlunoForm({
   alunoInicial?: any;
   professoras?: Professora[];
   perfil?: string;
+  isAdmin?: boolean;
   dispProfessora?: Horario[] | null;
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const isAdmin = perfil === "SUPERADMIN" || perfil === "SUPERADMIN_PROFESSORA";
+  // `isAdmin` cobre SUPERADMIN e SUPERADMIN_PROFESSORA (perfil híbrido) —
+  // ambos escolhem o(a) professor(a) responsável manualmente, em vez de
+  // usar a própria disponibilidade automaticamente.
+  const admin = isAdmin ?? (perfil === "SUPERADMIN" || perfil === "SUPERADMIN_PROFESSORA");
 
   const [escolaId, setEscolaId] = useState(
     alunoInicial?.unidade?.escolaId ?? ""
@@ -100,7 +105,7 @@ export default function AlunoForm({
     unidadeId:           !!alunoInicial?.unidadeId,
     serie:               !!alunoInicial?.serie,
     turma:               !!alunoInicial?.turma,
-    professoraId:        !isAdmin || !!alunoInicial?.professoraId,
+    professoraId:        !admin || !!alunoInicial?.professoraId,
   });
 
   function setCampo(key: keyof typeof campos) {
@@ -159,7 +164,7 @@ export default function AlunoForm({
   const [professoraId, setProfessoraId] = useState<string>(alunoInicial?.professoraId ?? "");
 
   function getDisponibilidade(): Horario[] {
-    if (!isAdmin) return dispProfessora ?? [];
+    if (!admin) return dispProfessora ?? [];
     const prof = professoras.find((p) => p.id === professoraId);
     return (prof?.disponibilidade as Horario[]) ?? [];
   }
@@ -285,7 +290,7 @@ export default function AlunoForm({
 
     const form = new FormData(e.currentTarget);
 
-    if (isAdmin && !form.get("professoraId")) {
+    if (admin && !form.get("professoraId")) {
       setErro("Selecione o(a) professor(a) responsável.");
       setSalvando(false);
       return;
@@ -649,7 +654,7 @@ export default function AlunoForm({
               <p className="text-xs text-amber-600 mt-1">Campo obrigatório — selecione o status.</p>
             )}
           </div>
-          {isAdmin && (
+          {admin && (
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Professor(a) *

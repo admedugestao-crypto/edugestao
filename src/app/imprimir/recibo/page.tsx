@@ -54,7 +54,7 @@ export default async function ReciboPage({
   const pagamentosFiltrados = pagamentos.filter((p) => p.pago);
   if (pagamentosFiltrados.length === 0) notFound();
 
-  const total   = pagamentosFiltrados.reduce((s, p) => s + p.valorCobrado, 0);
+  const total   = pagamentosFiltrados.reduce((s, p) => s + Number(p.valorCobrado), 0);
   const emissao = fmtData(new Date().toISOString());
 
   const itens = pagamentosFiltrados.map((p) => ({
@@ -67,7 +67,7 @@ export default async function ReciboPage({
     tipo:          TIPO_LABEL[p.aluno.tipoCobranca ?? ""] ?? (p.aluno.tipoCobranca ?? ""),
     parcela:       p.parcela,
     qtdAulas:      p.quantidadeAulas,
-    valorCobrado:  moeda(p.valorCobrado),
+    valorCobrado:  moeda(Number(p.valorCobrado)),
     vencimento:    fmtData(p.dataVencimento),
     pago:          p.pago,
     dataPagamento: fmtData(p.dataPagamento),

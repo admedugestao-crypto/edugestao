@@ -16,9 +16,18 @@ export default async function NotasPage() {
   const [alunos, avaliacoes, notas] = await Promise.all([
     prisma.aluno.findMany({
       where: { ...scopeWhere(scope), status: "ATIVO" },
-      include: {
-        materias: { include: { materia: true } },
-        unidade: { include: { escola: true } },
+      select: {
+        id: true,
+        nome: true,
+        serie: true,
+        unidadeId: true,
+        unidade: {
+          select: {
+            nome: true,
+            escola: { select: { nome: true, periodoAvaliacao: true } },
+          },
+        },
+        materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
       },
       orderBy: { nome: "asc" },
     }),
@@ -40,7 +49,7 @@ export default async function NotasPage() {
         <h1 className="text-xl font-bold text-slate-800">Notas</h1>
       </div>
       <NotasClient
-        alunos={alunos as any}
+        alunos={alunos}
         avaliacoes={avaliacoes.map((a) => ({ ...a, data: a.data.toISOString() })) as any}
         notasIniciais={notas as any}
       />

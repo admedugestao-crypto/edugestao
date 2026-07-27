@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
 
   const whereBase: any = { empresaId: scope.empresaId, status: "ATIVO" };
   if (scope.isAdmin) {
-    // Admin pode filtrar por professora específica ou gerar para todas
+    // Admin (inclusive perfil híbrido) pode filtrar por professora específica ou gerar para todas
     if (professoraIdBody) whereBase.professoraId = professoraIdBody;
   } else if (professoraId) {
     whereBase.professoraId = professoraId;

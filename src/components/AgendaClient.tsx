@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, Plus, RefreshCw, X,
@@ -605,12 +605,12 @@ export default function AgendaClient({
 
   // Matérias únicas derivadas dos alunos (garante que o filtro aparece mesmo
   // quando a prop `materias` vem vazia por falta de vínculo professora-matéria)
-  const materiasDisponiveis: Materia[] = (() => {
+  const materiasDisponiveis: Materia[] = useMemo(() => {
     const map = new Map<string, Materia>();
     for (const m of materias) map.set(m.id, m);
     for (const a of alunos) for (const m of a.materias) if (!map.has(m.id)) map.set(m.id, m);
     return Array.from(map.values()).sort((a, b) => a.nome.localeCompare(b.nome));
-  })();
+  }, [materias, alunos]);
 
   // Alunos disponíveis no filtro — restringe à professora selecionada, se houver
   const alunosDisponiveisFiltro = !isProfessor && filtroProfId
@@ -618,9 +618,12 @@ export default function AgendaClient({
     : alunos;
 
   // Aulas filtradas pela matéria e/ou aluno selecionados
-  const aulasFiltradas = aulas
-    .filter((a) => !filtroMateriaId || a.materiaId === filtroMateriaId)
-    .filter((a) => !filtroAlunoId || a.alunoId === filtroAlunoId);
+  const aulasFiltradas = useMemo(
+    () => aulas
+      .filter((a) => !filtroMateriaId || a.materiaId === filtroMateriaId)
+      .filter((a) => !filtroAlunoId || a.alunoId === filtroAlunoId),
+    [aulas, filtroMateriaId, filtroAlunoId],
+  );
 
   function aulasNoDia(dia: Date) {
     return aulasFiltradas.filter((a) => isSameDay(parseLocal(a.data), dia))
@@ -683,6 +686,16 @@ export default function AgendaClient({
     });
   }
 
+  // Timeline de cada dia da grade semanal, memoizado para não refazer a
+  // varredura de aulasFiltradas/disponibilidade a cada render (é consumido
+  // duas vezes: grade normal e layout de impressão).
+  const timelinesPorDia = useMemo(() => {
+    const map = new Map<number, TimelineItem[]>();
+    for (const dia of diasGrade) map.set(dia.getTime(), timelineDia(dia));
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [semanaRef, aulasFiltradas, aulas, disponibilidades, isProfessor, professoraIdSessao, filtroProfId]);
+
   const aulasHoje = aulasNoDia(diaRef);
   const totalDia  = aulasHoje.length;
   const realizadas = aulasHoje.filter((a) => a.status === "REALIZADA").length;
@@ -727,7 +740,7 @@ export default function AgendaClient({
 
         {/* Conteúdo de cada dia */}
         {diasGrade.map((dia, i) => {
-          const timeline = timelineDia(dia);
+          const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
           return (
             <div key={i} className="border-r last:border-r-0 border-t border-slate-200 p-1 space-y-1 min-h-[60px] align-top">
               {timeline.map((item, j) =>
@@ -926,7 +939,7 @@ export default function AgendaClient({
           </div>
           <div className="grid grid-cols-7 min-h-[320px]">
             {diasGrade.map((dia, i) => {
-              const timeline = timelineDia(dia);
+              const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
               const hoje     = isToday(dia);
               const ds = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
               return (

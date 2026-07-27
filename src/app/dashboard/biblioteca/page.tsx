@@ -10,13 +10,14 @@ export default async function BibliotecaPage() {
   const scope = await getSessionScope();
   if (!scope) redirect("/login");
 
-  const [materiais, materias] = await Promise.all([
+  const [materiais, materias, metodos] = await Promise.all([
     prisma.materialBiblioteca.findMany({
       where: { empresaId: scope.empresaId },
-      include: { materia: true },
+      include: { materia: true, metodoEnsino: true },
       orderBy: { criadoEm: "desc" },
     }),
     prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
+    prisma.metodoEnsino.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
   ]);
 
   return (
@@ -28,7 +29,7 @@ export default async function BibliotecaPage() {
           {materiais.length}
         </span>
       </div>
-      <BibliotecaClient materiaisIniciais={materiais} materias={materias} />
+      <BibliotecaClient materiaisIniciais={materiais} materias={materias} metodos={metodos} />
     </div>
   );
 }

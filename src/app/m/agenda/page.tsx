@@ -16,26 +16,27 @@ export default async function AgendaMobilePage() {
 
   // Inclui administradores que também dão aula (têm registro de Professora
   // vinculado, independente do perfil).
-  const professoras = await (prisma.professora.findMany({
-    where: { empresaId: scope.empresaId },
-    select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
-    orderBy: { usuario: { nome: "asc" } },
-  }) as unknown as Promise<any[]>);
+  const [professoras, alunos] = await Promise.all([
+    prisma.professora.findMany({
+      where: { empresaId: scope.empresaId },
+      select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
+      orderBy: { usuario: { nome: "asc" } },
+    }) as unknown as Promise<any[]>,
+    prisma.aluno.findMany({
+      where: scopeWhere(scope, { extra: { status: "ATIVO" } }),
+      select: {
+        id: true, nome: true, serie: true, turma: true,
+        professoraId: true,
+        materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
+      },
+      orderBy: { nome: "asc" },
+    }),
+  ]);
 
   const disponibilidades = professoras.map((p: any) => ({
     professoraId: p.id,
     slots: (p.disponibilidade as any) ?? [],
   }));
-
-  const alunos = await prisma.aluno.findMany({
-    where: scopeWhere(scope, { extra: { status: "ATIVO" } }),
-    select: {
-      id: true, nome: true, serie: true, turma: true,
-      professoraId: true,
-      materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
-    },
-    orderBy: { nome: "asc" },
-  });
 
   return (
     <AgendaMobile

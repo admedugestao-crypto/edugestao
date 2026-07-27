@@ -13,37 +13,37 @@ export default async function AgendaPage() {
   const isAdmin      = scope.isAdmin;
   const isProfessor  = !isAdmin && !!professoraId;
 
-  // Busca alunos ativos (filtrado por professor se for professora, admin vê todos)
-  const alunos = await prisma.aluno.findMany({
-    where: { ...scopeWhere(scope), status: "ATIVO" },
-    select: {
-      id: true, nome: true, serie: true, turma: true, diaSemana: true,
-      professoraId: true,
-      materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
-    },
-    orderBy: { nome: "asc" },
-  });
-
-  // Busca matérias
-  const materias = isProfessor
-    ? await prisma.materia.findMany({
-        where: { empresaId: scope.empresaId, professoras: { some: { professoraId: professoraId! } } },
-        select: { id: true, nome: true, cor: true },
-        orderBy: { nome: "asc" },
-      })
-    : await prisma.materia.findMany({
-        where: { empresaId: scope.empresaId },
-        select: { id: true, nome: true, cor: true },
-        orderBy: { nome: "asc" },
-      });
-
-  // Professoras com disponibilidade — inclui administradores que também dão
-  // aula (têm registro de Professora vinculado, independente do perfil).
-  const professorasRaw = await prisma.professora.findMany({
-    where: { empresaId: scope.empresaId },
-    select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
-    orderBy: { usuario: { nome: "asc" } },
-  });
+  const [alunos, materias, professorasRaw] = await Promise.all([
+    // Busca alunos ativos (filtrado por professor se for professora, admin vê todos)
+    prisma.aluno.findMany({
+      where: { ...scopeWhere(scope), status: "ATIVO" },
+      select: {
+        id: true, nome: true, serie: true, turma: true, diaSemana: true,
+        professoraId: true,
+        materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
+      },
+      orderBy: { nome: "asc" },
+    }),
+    // Busca matérias
+    isProfessor
+      ? prisma.materia.findMany({
+          where: { empresaId: scope.empresaId, professoras: { some: { professoraId: professoraId! } } },
+          select: { id: true, nome: true, cor: true },
+          orderBy: { nome: "asc" },
+        })
+      : prisma.materia.findMany({
+          where: { empresaId: scope.empresaId },
+          select: { id: true, nome: true, cor: true },
+          orderBy: { nome: "asc" },
+        }),
+    // Professoras com disponibilidade — inclui administradores que também dão
+    // aula (têm registro de Professora vinculado, independente do perfil).
+    prisma.professora.findMany({
+      where: { empresaId: scope.empresaId },
+      select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
+      orderBy: { usuario: { nome: "asc" } },
+    }),
+  ]);
 
   const disponibilidades = professorasRaw.map((p) => ({
     professoraId: p.id,

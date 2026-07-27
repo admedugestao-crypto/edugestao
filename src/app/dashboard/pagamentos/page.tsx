@@ -50,7 +50,7 @@ function serializarPagamentos(pagamentos: Awaited<ReturnType<typeof buscarPagame
     ano:             p.ano,
     parcela:         p.parcela,
     dataVencimento:  p.dataVencimento.toISOString(),
-    valorCobrado:    p.valorCobrado,
+    valorCobrado:    Number(p.valorCobrado),
     quantidadeAulas: p.quantidadeAulas,
     pago:            p.pago,
     dataPagamento:   p.dataPagamento?.toISOString() ?? null,
@@ -61,7 +61,7 @@ function serializarPagamentos(pagamentos: Awaited<ReturnType<typeof buscarPagame
       id:               p.aluno.id,
       nome:             p.aluno.nome,
       tipoCobranca:     p.aluno.tipoCobranca ?? "",
-      valorCobranca:    p.aluno.valorCobranca ?? 0,
+      valorCobranca:    p.aluno.valorCobranca != null ? Number(p.aluno.valorCobranca) : 0,
       responsavel:      p.aluno.responsavel ?? null,
       emailResponsavel: p.aluno.emailResponsavel ?? null,
       unidade: {

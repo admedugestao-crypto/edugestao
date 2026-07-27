@@ -29,7 +29,10 @@ export async function GET(
     return NextResponse.json({ erro: "Não encontrado" }, { status: 404 });
   }
 
-  return NextResponse.json(aluno);
+  return NextResponse.json({
+    ...aluno,
+    valorCobranca: aluno.valorCobranca != null ? Number(aluno.valorCobranca) : null,
+  });
 }
 
 export async function PUT(
@@ -139,7 +142,10 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json(aluno);
+    return NextResponse.json({
+      ...aluno,
+      valorCobranca: aluno.valorCobranca != null ? Number(aluno.valorCobranca) : null,
+    });
   } catch (err: any) {
     console.error("[PUT /api/alunos/:id]", err);
     return NextResponse.json({ erro: err?.message ?? "Erro interno ao salvar aluno." }, { status: 500 });

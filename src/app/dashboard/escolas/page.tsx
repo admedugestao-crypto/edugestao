@@ -10,11 +10,14 @@ export default async function EscolasPage() {
   const scope = await getSessionScope();
   if (!scope) redirect("/login");
 
-  const escolas = await prisma.escola.findMany({
-    where: { empresaId: scope.empresaId },
-    include: { unidades: { orderBy: { nome: "asc" } } },
-    orderBy: { nome: "asc" },
-  });
+  const [escolas, metodos] = await Promise.all([
+    prisma.escola.findMany({
+      where: { empresaId: scope.empresaId },
+      include: { unidades: { orderBy: { nome: "asc" } }, metodoEnsino: true },
+      orderBy: { nome: "asc" },
+    }),
+    prisma.metodoEnsino.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
+  ]);
 
   const escolasSerial = escolas.map((e) => ({
     ...e,
@@ -36,7 +39,7 @@ export default async function EscolasPage() {
         </div>
       </div>
 
-      <EscolasClient escolasIniciais={escolasSerial} />
+      <EscolasClient escolasIniciais={escolasSerial} metodos={metodos} />
     </div>
   );
 }

@@ -14,6 +14,7 @@ import {
   Bell,
   DollarSign,
   Library,
+  Table2,
 } from "lucide-react";
 
 const nav = [
@@ -22,6 +23,7 @@ const nav = [
   { href: "/dashboard/alunos",           label: "Alunos",         icon: Users,           adminOnly: false },
   { href: "/dashboard/escolas",          label: "Escolas",        icon: School,          adminOnly: false },
   { href: "/dashboard/disciplinas",      label: "Disciplinas",    icon: BookOpen,        adminOnly: false },
+  { href: "/dashboard/tabelas",          label: "Tabelas",        icon: Table2,          adminOnly: false },
   { href: "/dashboard/calendario",       label: "Calendário",     icon: Calendar,        adminOnly: false },
   { href: "/dashboard/notas",            label: "Notas",          icon: ClipboardList,   adminOnly: false },
   { href: "/dashboard/conteudos",        label: "Conteúdos",      icon: GraduationCap,   adminOnly: false },

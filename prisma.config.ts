@@ -1,8 +1,11 @@
 import { defineConfig } from "prisma/config";
 
-// Carrega .env localmente (o Prisma CLI avalia este arquivo ANTES de carregar .env)
-try { (process as any).loadEnvFile?.(); } catch {}
-try { (process as any).loadEnvFile?.(".env.local"); } catch {}
+// Carrega .env e .env.local (nessa ordem). `process.loadEnvFile` NÃO
+// sobrescreve variáveis já setadas, então usamos dotenv com override:true
+// pra .env.local vencer — igual ao Next.js faz entre esses dois arquivos.
+import dotenv from "dotenv";
+dotenv.config({ path: ".env" });
+dotenv.config({ path: ".env.local", override: true });
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

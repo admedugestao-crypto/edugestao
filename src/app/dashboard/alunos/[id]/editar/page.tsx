@@ -51,6 +51,9 @@ export default async function EditarAlunoPage({
 
   const alunoInicial = {
     ...aluno,
+    // valorCobranca é Decimal no Prisma — precisa virar number antes de cruzar
+    // a fronteira Server → Client Component (AlunoForm), senão quebra em runtime.
+    valorCobranca: aluno.valorCobranca != null ? Number(aluno.valorCobranca) : null,
     unidade: { ...aluno.unidade, escolaId: aluno.unidade.escolaId ?? aluno.unidadeId },
     materias: aluno.materias.map((m) => ({ materiaId: m.materiaId })),
   };
@@ -67,6 +70,7 @@ export default async function EditarAlunoPage({
         alunoInicial={alunoInicial}
         professoras={professoras}
         perfil={perfil}
+        isAdmin={isAdmin}
         dispProfessora={dispProfessora}
       />
     </div>

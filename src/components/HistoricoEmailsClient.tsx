@@ -67,8 +67,8 @@ export default function HistoricoEmailsClient({
     });
   }, [historico, busca, filtroStatus]);
 
-  const totalEnviados = historico.filter((r) => r.emailEnviado).length;
-  const totalFalhos   = historico.filter((r) => !r.emailEnviado).length;
+  const totalEnviados = useMemo(() => historico.filter((r) => r.emailEnviado).length, [historico]);
+  const totalFalhos   = historico.length - totalEnviados;
 
   async function dispararAgora() {
     setDisparando(true);

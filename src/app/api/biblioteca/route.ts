@@ -9,18 +9,18 @@ export async function GET(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { searchParams } = req.nextUrl;
-  const metodo = searchParams.get("metodo");
+  const metodoId = searchParams.get("metodoId");
   const serie = searchParams.get("serie");
   const materiaId = searchParams.get("materiaId");
 
   const materiais = await prisma.materialBiblioteca.findMany({
     where: {
       empresaId: scope.empresaId,
-      ...(metodo ? { metodo } : {}),
+      ...(metodoId ? { metodoId } : {}),
       ...(serie ? { serie } : {}),
       ...(materiaId ? { materiaId } : {}),
     },
-    include: { materia: true },
+    include: { materia: true, metodoEnsino: true },
     orderBy: { criadoEm: "desc" },
   });
   return NextResponse.json(materiais);
@@ -31,22 +31,30 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
-  if (!body.titulo || !body.arquivoUrl) {
-    return NextResponse.json({ erro: "Título e arquivo são obrigatórios." }, { status: 400 });
+  if (!body.titulo || !body.descricao || !body.metodoId || !body.serie || !body.materiaId || !body.arquivoUrl) {
+    return NextResponse.json(
+      { erro: "Título, descrição, método, série, disciplina e arquivo são obrigatórios." },
+      { status: 400 }
+    );
+  }
+
+  const metodo = await prisma.metodoEnsino.findUnique({ where: { id: body.metodoId }, select: { empresaId: true } });
+  if (!metodo || metodo.empresaId !== scope.empresaId) {
+    return NextResponse.json({ erro: "Método inválido." }, { status: 400 });
   }
 
   const material = await prisma.materialBiblioteca.create({
     data: {
       empresaId: scope.empresaId,
       titulo: body.titulo,
-      descricao: body.descricao || null,
-      metodo: body.metodo || null,
-      serie: body.serie || null,
-      materiaId: body.materiaId || null,
+      descricao: body.descricao,
+      metodoId: body.metodoId,
+      serie: body.serie,
+      materiaId: body.materiaId,
       arquivoUrl: body.arquivoUrl,
       arquivoNome: body.arquivoNome || null,
     },
-    include: { materia: true },
+    include: { materia: true, metodoEnsino: true },
   });
   return NextResponse.json(material, { status: 201 });
 }

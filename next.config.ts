@@ -19,6 +19,11 @@ if (!process.env.DATABASE_URL) {
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  // Importa só os ícones usados de lucide-react em vez do barrel inteiro,
+  // reduzindo o first-load JS de praticamente toda rota.
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   // Garante que o Prisma client (e dependências Node.js nativas) nunca seja
   // empacotado para o Edge Runtime nem para o bundler do lado do servidor.
   serverExternalPackages: ["@prisma/client", "prisma"],

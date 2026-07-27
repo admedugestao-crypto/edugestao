@@ -21,7 +21,13 @@ export async function GET() {
     orderBy: { nome: "asc" },
   });
 
-  return NextResponse.json(alunos);
+  // valorCobranca é Decimal no Prisma — converte para number antes de serializar
+  const resultado = alunos.map((a) => ({
+    ...a,
+    valorCobranca: a.valorCobranca != null ? Number(a.valorCobranca) : null,
+  }));
+
+  return NextResponse.json(resultado);
 }
 
 export async function POST(req: NextRequest) {
@@ -98,7 +104,10 @@ export async function POST(req: NextRequest) {
         materias: { create: materias.map((mid) => ({ materiaId: mid })) },
       },
     });
-    return NextResponse.json(aluno, { status: 201 });
+    return NextResponse.json({
+      ...aluno,
+      valorCobranca: aluno.valorCobranca != null ? Number(aluno.valorCobranca) : null,
+    }, { status: 201 });
   } catch (err: any) {
     console.error("[POST /api/alunos]", err);
     return NextResponse.json({ erro: err?.message ?? "Erro interno ao salvar aluno." }, { status: 500 });

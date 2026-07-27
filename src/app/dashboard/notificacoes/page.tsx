@@ -24,74 +24,73 @@ export default async function NotificacoesPage() {
   em7dias.setDate(em7dias.getDate() + 7);
   em7dias.setHours(23, 59, 59, 999);
 
-  // ── Dados WhatsApp ──────────────────────────────────────────────────────────
-  const avaliacoes = await prisma.avaliacao.findMany({
-    where: { empresaId: scope.empresaId, data: { gte: hoje, lte: em7dias } },
-    include: {
-      unidade: { include: { escola: true } },
-      materia: true,
-      notificacoes: true,
-    },
-    orderBy: { data: "asc" },
-  });
-
-  const historicoWhatsapp = await prisma.notificacaoProva.findMany({
-    where: { empresaId: scope.empresaId },
-    include: {
-      professora: { include: { usuario: { select: { nome: true } } } },
-      avaliacao: {
-        include: { unidade: { include: { escola: true } }, materia: true },
-      },
-    },
-    orderBy: { criadoEm: "desc" },
-    take: 50,
-  });
-
-  // ── Dados E-mail ────────────────────────────────────────────────────────────
-  const historicoEmail = await prisma.notificacaoProva.findMany({
-    where: { empresaId: scope.empresaId, email: { not: null } },
-    include: {
-      professora: { include: { usuario: { select: { nome: true, email: true } } } },
-      avaliacao: {
-        include: { unidade: { include: { escola: true } }, materia: true },
-      },
-    },
-    orderBy: { criadoEm: "desc" },
-    take: 100,
-  });
-
-  // ── Aulas nos próximos 7 dias com responsável cadastrado ───────────────────
-  const aulasProximas = await prisma.agendaAula.findMany({
-    where: {
-      empresaId: scope.empresaId,
-      data: { gte: hoje, lte: em7dias },
-      status: "AGENDADA",
-      aluno: { telefoneResponsavel: { not: null } },
-    },
-    include: {
-      aluno: { select: { nome: true, responsavel: true, telefoneResponsavel: true } },
-      professora: { include: { usuario: { select: { nome: true } } } },
-      materia: { select: { nome: true } },
-      notificacao: true,
-    },
-    orderBy: { data: "asc" },
-  });
-
-  // ── Dados Notificações de Aula ──────────────────────────────────────────────
-  const historicoAulas = await prisma.notificacaoAula.findMany({
-    where: { empresaId: scope.empresaId },
-    include: {
-      agendaAula: {
+  const [avaliacoes, historicoWhatsapp, historicoEmail, aulasProximas, historicoAulas] =
+    await Promise.all([
+      // ── Dados WhatsApp ────────────────────────────────────────────────────
+      prisma.avaliacao.findMany({
+        where: { empresaId: scope.empresaId, data: { gte: hoje, lte: em7dias } },
         include: {
-          aluno: { select: { nome: true, responsavel: true } },
+          unidade: { include: { escola: true } },
+          materia: true,
+          notificacoes: true,
+        },
+        orderBy: { data: "asc" },
+      }),
+      prisma.notificacaoProva.findMany({
+        where: { empresaId: scope.empresaId },
+        include: {
+          professora: { include: { usuario: { select: { nome: true } } } },
+          avaliacao: {
+            include: { unidade: { include: { escola: true } }, materia: true },
+          },
+        },
+        orderBy: { criadoEm: "desc" },
+        take: 50,
+      }),
+      // ── Dados E-mail ──────────────────────────────────────────────────────
+      prisma.notificacaoProva.findMany({
+        where: { empresaId: scope.empresaId, email: { not: null } },
+        include: {
+          professora: { include: { usuario: { select: { nome: true, email: true } } } },
+          avaliacao: {
+            include: { unidade: { include: { escola: true } }, materia: true },
+          },
+        },
+        orderBy: { criadoEm: "desc" },
+        take: 100,
+      }),
+      // ── Aulas nos próximos 7 dias com responsável cadastrado ───────────────
+      prisma.agendaAula.findMany({
+        where: {
+          empresaId: scope.empresaId,
+          data: { gte: hoje, lte: em7dias },
+          status: "AGENDADA",
+          aluno: { telefoneResponsavel: { not: null } },
+        },
+        include: {
+          aluno: { select: { nome: true, responsavel: true, telefoneResponsavel: true } },
           professora: { include: { usuario: { select: { nome: true } } } },
           materia: { select: { nome: true } },
+          notificacao: true,
         },
-      },
-    },
-    orderBy: { criadoEm: "desc" },
-    take: 50,
-  });
+        orderBy: { data: "asc" },
+      }),
+      // ── Dados Notificações de Aula ──────────────────────────────────────────
+      prisma.notificacaoAula.findMany({
+        where: { empresaId: scope.empresaId },
+        include: {
+          agendaAula: {
+            include: {
+              aluno: { select: { nome: true, responsavel: true } },
+              professora: { include: { usuario: { select: { nome: true } } } },
+              materia: { select: { nome: true } },
+            },
+          },
+        },
+        orderBy: { criadoEm: "desc" },
+        take: 50,
+      }),
+    ]);
 
   const fonnteConfigurada    = !!process.env.FONNTE_TOKEN;
   const zapiConfigurada      = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);

@@ -46,6 +46,7 @@ export default async function NovoAlunoPage() {
         materias={materias}
         professoras={professorasComDisp}
         perfil={perfil}
+        isAdmin={isAdmin}
         dispProfessora={dispProfessora}
       />
     </div>

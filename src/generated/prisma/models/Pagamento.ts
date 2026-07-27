@@ -30,7 +30,7 @@ export type PagamentoAvgAggregateOutputType = {
   mes: number | null
   ano: number | null
   parcela: number | null
-  valorCobrado: number | null
+  valorCobrado: runtime.Decimal | null
   quantidadeAulas: number | null
 }
 
@@ -38,7 +38,7 @@ export type PagamentoSumAggregateOutputType = {
   mes: number | null
   ano: number | null
   parcela: number | null
-  valorCobrado: number | null
+  valorCobrado: runtime.Decimal | null
   quantidadeAulas: number | null
 }
 
@@ -50,7 +50,7 @@ export type PagamentoMinAggregateOutputType = {
   ano: number | null
   parcela: number | null
   dataVencimento: Date | null
-  valorCobrado: number | null
+  valorCobrado: runtime.Decimal | null
   quantidadeAulas: number | null
   pago: boolean | null
   dataPagamento: Date | null
@@ -70,7 +70,7 @@ export type PagamentoMaxAggregateOutputType = {
   ano: number | null
   parcela: number | null
   dataVencimento: Date | null
-  valorCobrado: number | null
+  valorCobrado: runtime.Decimal | null
   quantidadeAulas: number | null
   pago: boolean | null
   dataPagamento: Date | null
@@ -275,7 +275,7 @@ export type PagamentoGroupByOutputType = {
   ano: number
   parcela: number
   dataVencimento: Date
-  valorCobrado: number
+  valorCobrado: runtime.Decimal
   quantidadeAulas: number | null
   pago: boolean
   dataPagamento: Date | null
@@ -318,7 +318,7 @@ export type PagamentoWhereInput = {
   ano?: Prisma.IntFilter<"Pagamento"> | number
   parcela?: Prisma.IntFilter<"Pagamento"> | number
   dataVencimento?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-  valorCobrado?: Prisma.FloatFilter<"Pagamento"> | number
+  valorCobrado?: Prisma.DecimalFilter<"Pagamento"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.IntNullableFilter<"Pagamento"> | number | null
   pago?: Prisma.BoolFilter<"Pagamento"> | boolean
   dataPagamento?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
@@ -368,7 +368,7 @@ export type PagamentoWhereUniqueInput = Prisma.AtLeast<{
   ano?: Prisma.IntFilter<"Pagamento"> | number
   parcela?: Prisma.IntFilter<"Pagamento"> | number
   dataVencimento?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-  valorCobrado?: Prisma.FloatFilter<"Pagamento"> | number
+  valorCobrado?: Prisma.DecimalFilter<"Pagamento"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.IntNullableFilter<"Pagamento"> | number | null
   pago?: Prisma.BoolFilter<"Pagamento"> | boolean
   dataPagamento?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
@@ -419,7 +419,7 @@ export type PagamentoScalarWhereWithAggregatesInput = {
   ano?: Prisma.IntWithAggregatesFilter<"Pagamento"> | number
   parcela?: Prisma.IntWithAggregatesFilter<"Pagamento"> | number
   dataVencimento?: Prisma.DateTimeWithAggregatesFilter<"Pagamento"> | Date | string
-  valorCobrado?: Prisma.FloatWithAggregatesFilter<"Pagamento"> | number
+  valorCobrado?: Prisma.DecimalWithAggregatesFilter<"Pagamento"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.IntNullableWithAggregatesFilter<"Pagamento"> | number | null
   pago?: Prisma.BoolWithAggregatesFilter<"Pagamento"> | boolean
   dataPagamento?: Prisma.DateTimeNullableWithAggregatesFilter<"Pagamento"> | Date | string | null
@@ -437,7 +437,7 @@ export type PagamentoCreateInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -460,7 +460,7 @@ export type PagamentoUncheckedCreateInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -479,7 +479,7 @@ export type PagamentoUpdateInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -502,7 +502,7 @@ export type PagamentoUncheckedUpdateInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -523,7 +523,7 @@ export type PagamentoCreateManyInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -541,7 +541,7 @@ export type PagamentoUpdateManyMutationInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -561,7 +561,7 @@ export type PagamentoUncheckedUpdateManyInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -755,6 +755,14 @@ export type PagamentoUncheckedUpdateManyWithoutAlunoNestedInput = {
   deleteMany?: Prisma.PagamentoScalarWhereInput | Prisma.PagamentoScalarWhereInput[]
 }
 
+export type DecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type PagamentoCreateNestedOneWithoutAulasInput = {
   create?: Prisma.XOR<Prisma.PagamentoCreateWithoutAulasInput, Prisma.PagamentoUncheckedCreateWithoutAulasInput>
   connectOrCreate?: Prisma.PagamentoCreateOrConnectWithoutAulasInput
@@ -775,7 +783,7 @@ export type PagamentoCreateWithoutEmpresaInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -796,7 +804,7 @@ export type PagamentoUncheckedCreateWithoutEmpresaInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -846,7 +854,7 @@ export type PagamentoScalarWhereInput = {
   ano?: Prisma.IntFilter<"Pagamento"> | number
   parcela?: Prisma.IntFilter<"Pagamento"> | number
   dataVencimento?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
-  valorCobrado?: Prisma.FloatFilter<"Pagamento"> | number
+  valorCobrado?: Prisma.DecimalFilter<"Pagamento"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.IntNullableFilter<"Pagamento"> | number | null
   pago?: Prisma.BoolFilter<"Pagamento"> | boolean
   dataPagamento?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
@@ -864,7 +872,7 @@ export type PagamentoCreateWithoutAlunoInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -885,7 +893,7 @@ export type PagamentoUncheckedCreateWithoutAlunoInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -930,7 +938,7 @@ export type PagamentoCreateWithoutAulasInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -952,7 +960,7 @@ export type PagamentoUncheckedCreateWithoutAulasInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -986,7 +994,7 @@ export type PagamentoUpdateWithoutAulasInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1008,7 +1016,7 @@ export type PagamentoUncheckedUpdateWithoutAulasInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1027,7 +1035,7 @@ export type PagamentoCreateManyEmpresaInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -1045,7 +1053,7 @@ export type PagamentoUpdateWithoutEmpresaInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1066,7 +1074,7 @@ export type PagamentoUncheckedUpdateWithoutEmpresaInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1086,7 +1094,7 @@ export type PagamentoUncheckedUpdateManyWithoutEmpresaInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1105,7 +1113,7 @@ export type PagamentoCreateManyAlunoInput = {
   ano: number
   parcela?: number
   dataVencimento: Date | string
-  valorCobrado: number
+  valorCobrado: runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: number | null
   pago?: boolean
   dataPagamento?: Date | string | null
@@ -1123,7 +1131,7 @@ export type PagamentoUpdateWithoutAlunoInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1144,7 +1152,7 @@ export type PagamentoUncheckedUpdateWithoutAlunoInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1164,7 +1172,7 @@ export type PagamentoUncheckedUpdateManyWithoutAlunoInput = {
   ano?: Prisma.IntFieldUpdateOperationsInput | number
   parcela?: Prisma.IntFieldUpdateOperationsInput | number
   dataVencimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  valorCobrado?: Prisma.FloatFieldUpdateOperationsInput | number
+  valorCobrado?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   quantidadeAulas?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pago?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dataPagamento?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1326,7 +1334,7 @@ export type $PagamentoPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     ano: number
     parcela: number
     dataVencimento: Date
-    valorCobrado: number
+    valorCobrado: runtime.Decimal
     quantidadeAulas: number | null
     pago: boolean
     dataPagamento: Date | null
@@ -1769,7 +1777,7 @@ export interface PagamentoFieldRefs {
   readonly ano: Prisma.FieldRef<"Pagamento", 'Int'>
   readonly parcela: Prisma.FieldRef<"Pagamento", 'Int'>
   readonly dataVencimento: Prisma.FieldRef<"Pagamento", 'DateTime'>
-  readonly valorCobrado: Prisma.FieldRef<"Pagamento", 'Float'>
+  readonly valorCobrado: Prisma.FieldRef<"Pagamento", 'Decimal'>
   readonly quantidadeAulas: Prisma.FieldRef<"Pagamento", 'Int'>
   readonly pago: Prisma.FieldRef<"Pagamento", 'Boolean'>
   readonly dataPagamento: Prisma.FieldRef<"Pagamento", 'DateTime'>

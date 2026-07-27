@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     nomeResponsavel:  aluno.responsavel ?? aluno.emailResponsavel,
     nomeAluno:        aluno.nome,
     tipoCobranca:     aluno.tipoCobranca ?? "MENSAL",
-    valorCobrado:     pagamento.valorCobrado,
+    valorCobrado:     Number(pagamento.valorCobrado),
     mes:              pagamento.mes,
     ano:              pagamento.ano,
     nomeProfessora,
