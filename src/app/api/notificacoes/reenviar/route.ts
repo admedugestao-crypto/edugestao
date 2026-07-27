@@ -10,8 +10,10 @@ export async function POST(req: NextRequest) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
-  const { id, canal } = await req.json() as { id: string; canal: "whatsapp" | "email" };
+  const { id, canal, tipo } = await req.json() as { id: string; canal: "whatsapp" | "email"; tipo?: "prova" | "aula" };
   if (!id || !canal) return NextResponse.json({ erro: "id e canal são obrigatórios" }, { status: 400 });
+
+  if (tipo === "aula") return reenviarAula(id, canal, scope.empresaId);
 
   // Busca o registro completo
   const registro = await prisma.notificacaoProva.findUnique({
@@ -95,4 +97,67 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ erro: "Canal inválido." }, { status: 400 });
+}
+
+// Lembrete de aula pro responsável do aluno — so tem canal WhatsApp (sem
+// e-mail nesse fluxo). `id` aqui e o id da AgendaAula, nao da notificacao -
+// assim funciona tanto pra reenviar quanto pra mandar pela 1a vez manualmente
+// (a notificacao pode ainda nao existir se o cron nao rodou pra essa aula).
+async function reenviarAula(agendaAulaId: string, canal: "whatsapp" | "email", empresaId: string) {
+  if (canal !== "whatsapp") {
+    return NextResponse.json({ erro: "Lembrete de aula só pode ser enviado por WhatsApp." }, { status: 400 });
+  }
+
+  const aula = await prisma.agendaAula.findUnique({
+    where: { id: agendaAulaId },
+    include: {
+      aluno: true,
+      professora: { include: { usuario: { select: { nome: true } } } },
+      materia: true,
+      empresa: { select: { nome: true } },
+    },
+  });
+
+  if (!aula || aula.empresaId !== empresaId) {
+    return NextResponse.json({ erro: "Aula não encontrada." }, { status: 404 });
+  }
+
+  if (!aula.aluno.telefoneResponsavel) {
+    return NextResponse.json({ erro: "Responsável sem WhatsApp cadastrado." }, { status: 422 });
+  }
+
+  const numero = formatarWhatsapp(aula.aluno.telefoneResponsavel);
+
+  const dataFormatada = new Date(aula.data).toLocaleDateString("pt-BR", {
+    weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
+  });
+  const horario = aula.horaInicio
+    ? aula.horaFim ? `${aula.horaInicio} – ${aula.horaFim}` : aula.horaInicio
+    : "horário a confirmar";
+
+  const mensagem = [
+    `📚 *${aula.empresa.nome} – Lembrete de Aula*`,
+    ``,
+    `Olá${aula.aluno.responsavel ? `, *${aula.aluno.responsavel}*` : ""}!`,
+    ``,
+    `⚠️ A(o) *${aula.aluno.nome}* tem aula agendada:`,
+    ``,
+    ...(aula.materia ? [`📖 *Disciplina:* ${aula.materia.nome}`] : []),
+    `📆 *Data:* ${dataFormatada}`,
+    `🕐 *Horário:* ${horario}`,
+    `👩‍🏫 *Professor(a):* ${aula.professora.usuario.nome}`,
+    ``,
+    `_Mensagem automática de ${aula.empresa.nome} via EduGestão_`,
+  ].join("\n");
+
+  const envio = await enviarWhatsapp(numero, mensagem);
+  if (!envio.ok) return NextResponse.json({ erro: `Falha ao enviar via WhatsApp: ${envio.erro}` }, { status: 500 });
+
+  await prisma.notificacaoAula.upsert({
+    where: { agendaAulaId },
+    update: { enviada: true, whatsapp: numero },
+    create: { empresaId, agendaAulaId, enviada: true, whatsapp: numero },
+  });
+
+  return NextResponse.json({ ok: true, canal: "whatsapp" });
 }

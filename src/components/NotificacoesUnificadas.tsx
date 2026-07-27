@@ -34,7 +34,7 @@ type AulaProxima = {
 };
 
 type HistoricoAula = {
-  id: string; enviada: boolean; whatsapp: string; criadoEm: string;
+  id: string; agendaAulaId: string; enviada: boolean; whatsapp: string; criadoEm: string;
   agendaAula: {
     data: string; horaInicio: string | null; horaFim: string | null;
     aluno: { nome: string; responsavel: string | null };
@@ -70,6 +70,7 @@ type ContextMenuState = {
   registroId: string;
   canal: "whatsapp" | "email";
   jaEnviado: boolean;
+  tipo: "prova" | "aula";
 } | null;
 
 function ContextMenu({
@@ -101,7 +102,7 @@ function ContextMenu({
       const res  = await fetch("/api/notificacoes/reenviar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: menu.registroId, canal: menu.canal }),
+        body: JSON.stringify({ id: menu.registroId, canal: menu.canal, tipo: menu.tipo }),
       });
       const data = await res.json();
       setMsg({ ok: res.ok, txt: res.ok ? "Enviado com sucesso!" : (data.erro ?? "Erro ao enviar.") });
@@ -230,9 +231,9 @@ function AbaWhatsapp({
     setTimeout(() => { setMsgDisparoWpp(null); router.refresh(); }, 4000);
   }
 
-  function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean) {
+  function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean, tipo: "prova" | "aula" = "prova") {
     e.preventDefault();
-    setContextMenu({ x: e.clientX, y: e.clientY, registroId: id, canal: "whatsapp", jaEnviado });
+    setContextMenu({ x: e.clientX, y: e.clientY, registroId: id, canal: "whatsapp", jaEnviado, tipo });
   }
 
   const reenviar = useCallback(async (id: string, canal: "whatsapp" | "email") => {
@@ -337,7 +338,13 @@ function AbaWhatsapp({
                   return (
                     <tr key={`aula-${aula.id}`} className="hover:bg-slate-50">
                       <td className="py-2.5 px-4">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium">Aula</span>
+                        <span
+                          onContextMenu={(e) => abrirMenu(e, aula.id, aula.notificacaoEnviada, "aula")}
+                          title="Botão direito para enviar/reenviar via WhatsApp"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium cursor-context-menu select-none hover:opacity-80 transition-opacity"
+                        >
+                          Aula
+                        </span>
                       </td>
                       <td className="py-2.5 px-4 text-slate-700 text-xs font-medium">
                         {aula.aluno.nome}{aula.materia && <span className="text-slate-400 ml-1 font-normal">· {aula.materia.nome}</span>}
@@ -420,9 +427,9 @@ function AbaWhatsapp({
           descricao: (n.agendaAula.materia?.nome ?? "—") + (n.agendaAula.horaInicio ? ` · ${n.agendaAula.horaInicio}${n.agendaAula.horaFim ? `–${n.agendaAula.horaFim}` : ""}` : ""),
           detalhe: <span className="text-xs text-slate-400">{fmtData(n.agendaAula.data)}</span>,
           criadoEm: n.criadoEm,
-          enviada: n.enviada,
+          enviada: statusLocal[n.agendaAulaId] ?? n.enviada,
           searchText: `${n.agendaAula.aluno.nome} ${n.agendaAula.aluno.responsavel ?? ""} ${n.agendaAula.materia?.nome ?? ""}`.toLowerCase(),
-          onContextMenu: undefined as undefined | ((e: React.MouseEvent) => void),
+          onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.agendaAulaId, statusLocal[n.agendaAulaId] ?? n.enviada, "aula"),
         }));
         const todasLinhas = [...linhasProva, ...linhasAula].sort(
           (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
@@ -501,9 +508,9 @@ function AbaWhatsapp({
                           <tr key={l.key} className="hover:bg-slate-50">
                             <td className="py-2.5 px-4">
                               <span
-                                title={l.onContextMenu ? "Botão direito para enviar/reenviar via WhatsApp" : undefined}
+                                title="Botão direito para enviar/reenviar via WhatsApp"
                                 onContextMenu={l.onContextMenu}
-                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${l.tipo === "Prova" ? "bg-violet-100 text-violet-700" : "bg-indigo-100 text-indigo-700"} ${l.onContextMenu ? "cursor-context-menu select-none hover:opacity-80 transition-opacity" : ""}`}
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium cursor-context-menu select-none hover:opacity-80 transition-opacity ${l.tipo === "Prova" ? "bg-violet-100 text-violet-700" : "bg-indigo-100 text-indigo-700"}`}
                               >
                                 {l.tipo}
                               </span>
@@ -587,7 +594,7 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
 
   function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean) {
     e.preventDefault();
-    setContextMenu({ x: e.clientX, y: e.clientY, registroId: id, canal: "email", jaEnviado });
+    setContextMenu({ x: e.clientX, y: e.clientY, registroId: id, canal: "email", jaEnviado, tipo: "prova" });
   }
 
   const reenviar = useCallback(async (id: string, canal: "whatsapp" | "email") => {

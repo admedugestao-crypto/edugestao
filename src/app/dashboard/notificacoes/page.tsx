@@ -171,6 +171,7 @@ export default async function NotificacoesPage() {
         }))}
         historicoAulas={historicoAulas.map((n) => ({
           id: n.id,
+          agendaAulaId: n.agendaAulaId,
           enviada: n.enviada,
           whatsapp: n.whatsapp ?? "",
           criadoEm: n.criadoEm.toISOString(),
