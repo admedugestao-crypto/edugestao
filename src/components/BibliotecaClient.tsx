@@ -3,6 +3,58 @@
 import { useState } from "react";
 import { Plus, FileText, Download, Pencil, Trash2, Upload, Search } from "lucide-react";
 import { SERIES } from "@/lib/series";
+import { PDFDocument } from "pdf-lib";
+
+const TIPOS_WORD = [
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
+// pdf-lib só sabe embutir PNG/JPEG — webp (e qualquer outro formato de
+// imagem que o navegador aceite) precisa ser convertido antes via canvas.
+async function paraPng(bytes: ArrayBuffer): Promise<ArrayBuffer> {
+  const blob = new Blob([bytes]);
+  const bitmap = await createImageBitmap(blob);
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0);
+  const pngBlob: Blob = await new Promise((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Falha ao converter imagem."))), "image/png")
+  );
+  return pngBlob.arrayBuffer();
+}
+
+// Unifica varios arquivos (PDF e/ou imagem) num unico PDF, um por pagina, na
+// ordem em que foram selecionados. Se só vier 1 arquivo, retorna ele mesmo
+// sem conversao nenhuma.
+async function unificarArquivos(files: File[]): Promise<File> {
+  if (files.length === 1) return files[0];
+
+  const doc = await PDFDocument.create();
+
+  for (const file of files) {
+    const bytes = await file.arrayBuffer();
+
+    if (file.type === "application/pdf") {
+      const origem = await PDFDocument.load(bytes);
+      const paginas = await doc.copyPages(origem, origem.getPageIndices());
+      paginas.forEach((p) => doc.addPage(p));
+      continue;
+    }
+
+    const imagem = file.type === "image/png"
+      ? await doc.embedPng(bytes)
+      : file.type === "image/jpeg"
+      ? await doc.embedJpg(bytes)
+      : await doc.embedPng(await paraPng(bytes));
+    const pagina = doc.addPage([imagem.width, imagem.height]);
+    pagina.drawImage(imagem, { x: 0, y: 0, width: imagem.width, height: imagem.height });
+  }
+
+  const pdfBytes = new Uint8Array(await doc.save());
+  return new File([pdfBytes], "material-unificado.pdf", { type: "application/pdf" });
+}
 
 type Materia = { id: string; nome: string; cor: string };
 type MetodoEnsino = { id: string; nome: string };
@@ -49,6 +101,7 @@ export default function BibliotecaClient({
   const [novo, setNovo] = useState(formVazio);
   const [editando, setEditando] = useState<(typeof formVazio & { id: string }) | null>(null);
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
+  const [unificando, setUnificando] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; titulo: string } | null>(null);
@@ -82,6 +135,33 @@ export default function BibliotecaClient({
     } finally {
       setEnviandoArquivo(false);
     }
+  }
+
+  // Chamado pelo onChange dos dois campos de arquivo. Se mais de um arquivo
+  // for escolhido, unifica tudo num PDF só antes de enviar.
+  async function selecionarArquivos(fileList: FileList | null, aplicar: (url: string, nome: string) => void) {
+    const files = Array.from(fileList ?? []);
+    if (files.length === 0) return;
+
+    if (files.length > 1) {
+      if (files.some((f) => TIPOS_WORD.includes(f.type))) {
+        setErro("Não é possível unificar um arquivo Word com outros. Selecione só um arquivo Word por vez, ou combine apenas PDFs/imagens.");
+        return;
+      }
+      setUnificando(true);
+      setErro("");
+      try {
+        const unico = await unificarArquivos(files);
+        await enviarArquivo(unico, aplicar);
+      } catch {
+        setErro("Erro ao unificar os arquivos selecionados.");
+      } finally {
+        setUnificando(false);
+      }
+      return;
+    }
+
+    await enviarArquivo(files[0], aplicar);
   }
 
   function camposFaltando(m: typeof formVazio): string[] {
@@ -348,15 +428,16 @@ export default function BibliotecaClient({
                 <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo *</label>
                 <label className="flex items-center gap-2 border border-dashed border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
                   <Upload size={15} />
-                  {enviandoArquivo ? "Enviando..." : novo.arquivoNome || "Escolher arquivo (PDF, imagem ou Word)"}
+                  {unificando ? "Unificando arquivos..." : enviandoArquivo ? "Enviando..." : novo.arquivoNome || "Escolher arquivo (PDF, imagem ou Word)"}
                   <input
                     type="file"
                     accept=".pdf,.doc,.docx,image/*"
+                    multiple
                     className="hidden"
-                    disabled={enviandoArquivo}
+                    disabled={enviandoArquivo || unificando}
                     onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) enviarArquivo(file, (url, nome) => setNovo((p) => ({ ...p, arquivoUrl: url, arquivoNome: nome })));
+                      selecionarArquivos(e.target.files, (url, nome) => setNovo((p) => ({ ...p, arquivoUrl: url, arquivoNome: nome })));
+                      e.target.value = "";
                     }}
                   />
                 </label>
@@ -457,15 +538,16 @@ export default function BibliotecaClient({
                 <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo *</label>
                 <label className="flex items-center gap-2 border border-dashed border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
                   <Upload size={15} />
-                  {enviandoArquivo ? "Enviando..." : editando.arquivoNome || "Substituir arquivo"}
+                  {unificando ? "Unificando arquivos..." : enviandoArquivo ? "Enviando..." : editando.arquivoNome || "Substituir arquivo"}
                   <input
                     type="file"
                     accept=".pdf,.doc,.docx,image/*"
+                    multiple
                     className="hidden"
-                    disabled={enviandoArquivo}
+                    disabled={enviandoArquivo || unificando}
                     onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) enviarArquivo(file, (url, nome) => setEditando((p) => p && ({ ...p, arquivoUrl: url, arquivoNome: nome })));
+                      selecionarArquivos(e.target.files, (url, nome) => setEditando((p) => p && ({ ...p, arquivoUrl: url, arquivoNome: nome })));
+                      e.target.value = "";
                     }}
                   />
                 </label>
