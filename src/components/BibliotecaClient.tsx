@@ -25,6 +25,19 @@ async function paraPng(bytes: ArrayBuffer): Promise<ArrayBuffer> {
   return pngBlob.arrayBuffer();
 }
 
+// O navegador/SO às vezes não preenche file.type (comum com PDF vindo de
+// certos apps de scanner ou caminhos de rede/OneDrive) — nesse caso, usa a
+// extensão do nome do arquivo como pista.
+function tipoReal(file: File): string {
+  if (file.type) return file.type;
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  if (ext === "pdf") return "application/pdf";
+  if (ext === "png") return "image/png";
+  if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
+  if (ext === "webp") return "image/webp";
+  return "";
+}
+
 // Unifica varios arquivos (PDF e/ou imagem) num unico PDF, um por pagina, na
 // ordem em que foram selecionados. Se só vier 1 arquivo, retorna ele mesmo
 // sem conversao nenhuma.
@@ -34,22 +47,28 @@ async function unificarArquivos(files: File[]): Promise<File> {
   const doc = await PDFDocument.create();
 
   for (const file of files) {
-    const bytes = await file.arrayBuffer();
+    try {
+      const bytes = await file.arrayBuffer();
+      const tipo = tipoReal(file);
 
-    if (file.type === "application/pdf") {
-      const origem = await PDFDocument.load(bytes);
-      const paginas = await doc.copyPages(origem, origem.getPageIndices());
-      paginas.forEach((p) => doc.addPage(p));
-      continue;
+      if (tipo === "application/pdf") {
+        const origem = await PDFDocument.load(bytes, { ignoreEncryption: true });
+        const paginas = await doc.copyPages(origem, origem.getPageIndices());
+        paginas.forEach((p) => doc.addPage(p));
+        continue;
+      }
+
+      const imagem = tipo === "image/png"
+        ? await doc.embedPng(bytes)
+        : tipo === "image/jpeg"
+        ? await doc.embedJpg(bytes)
+        : await doc.embedPng(await paraPng(bytes));
+      const pagina = doc.addPage([imagem.width, imagem.height]);
+      pagina.drawImage(imagem, { x: 0, y: 0, width: imagem.width, height: imagem.height });
+    } catch (err) {
+      console.error(`Falha ao processar "${file.name}" na unificação:`, err);
+      throw new Error(`Não consegui processar o arquivo "${file.name}".`);
     }
-
-    const imagem = file.type === "image/png"
-      ? await doc.embedPng(bytes)
-      : file.type === "image/jpeg"
-      ? await doc.embedJpg(bytes)
-      : await doc.embedPng(await paraPng(bytes));
-    const pagina = doc.addPage([imagem.width, imagem.height]);
-    pagina.drawImage(imagem, { x: 0, y: 0, width: imagem.width, height: imagem.height });
   }
 
   const pdfBytes = new Uint8Array(await doc.save());
@@ -153,8 +172,8 @@ export default function BibliotecaClient({
       try {
         const unico = await unificarArquivos(files);
         await enviarArquivo(unico, aplicar);
-      } catch {
-        setErro("Erro ao unificar os arquivos selecionados.");
+      } catch (err) {
+        setErro(err instanceof Error ? err.message : "Erro ao unificar os arquivos selecionados.");
       } finally {
         setUnificando(false);
       }
