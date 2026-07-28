@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus, Pencil, Trash2, Paperclip, X, Loader2, Home, LogOut,
-  Search, FileText, Download,
+  Search, FileText, Download, Camera,
 } from "lucide-react";
 import { SERIES } from "@/lib/series";
 
@@ -316,13 +316,22 @@ export default function BibliotecaMobile({
                     </button>
                   </div>
                 ) : (
-                  <label className="flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
-                    {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
-                    {enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
-                    <input type="file" className="hidden" disabled={enviandoArquivo}
-                      accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-                      onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
-                  </label>
+                  <div className="flex gap-2">
+                    <label className="flex-1 flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
+                      {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
+                      {enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
+                      <input type="file" className="hidden" disabled={enviandoArquivo}
+                        accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
+                    </label>
+                    <label className="flex-1 flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
+                      {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Camera size={16}/>}
+                      {enviandoArquivo ? "Enviando..." : "Tirar foto"}
+                      <input type="file" className="hidden" disabled={enviandoArquivo}
+                        accept="image/*" capture="environment"
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
+                    </label>
+                  </div>
                 )}
               </div>
             </div>
