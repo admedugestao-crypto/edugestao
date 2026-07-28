@@ -149,12 +149,21 @@ export default function BibliotecaClient({
     setEnviandoArquivo(true);
     setErro("");
     try {
+      const tamanhoMb = (file.size / (1024 * 1024)).toFixed(1);
       const formData = new FormData();
       formData.append("arquivo", file);
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) {
-        setErro(data.erro ?? "Erro ao enviar arquivo.");
+
+      const textoResposta = await res.text();
+      let data: any = null;
+      try { data = JSON.parse(textoResposta); } catch { /* resposta nao-JSON tratada abaixo */ }
+
+      if (!res.ok || !data) {
+        if (res.status === 413 || !data) {
+          setErro(`Arquivo muito grande pra enviar (${tamanhoMb} MB). Tente com menos páginas por vez.`);
+        } else {
+          setErro(data.erro ?? `Erro ao enviar arquivo (status ${res.status}).`);
+        }
         return;
       }
       aplicar(data.url, data.nome);
@@ -178,6 +187,7 @@ export default function BibliotecaClient({
       setErro("");
       try {
         const unico = await unificarArquivos(files);
+        console.log(`PDF unificado: ${(unico.size / (1024 * 1024)).toFixed(2)} MB`);
         await enviarArquivo(unico, aplicar);
       } catch (err) {
         setErro(err instanceof Error ? err.message : "Erro ao unificar os arquivos selecionados.");
