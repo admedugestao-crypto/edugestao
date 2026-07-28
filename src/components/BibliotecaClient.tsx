@@ -10,19 +10,29 @@ const TIPOS_WORD = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
-// pdf-lib só sabe embutir PNG/JPEG — webp (e qualquer outro formato de
-// imagem que o navegador aceite) precisa ser convertido antes via canvas.
-async function paraPng(bytes: ArrayBuffer): Promise<ArrayBuffer> {
+// Fotos de celular costumam vir enormes (vários MB cada) — juntar 3-4 delas
+// num PDF facilmente estoura o limite de upload. Redimensiona pro maior lado
+// caber em MAX_LADO e reencoda como JPEG com qualidade reduzida, o que
+// derruba bastante o tamanho final sem comprometer a leitura do conteúdo.
+const MAX_LADO = 1800;
+const QUALIDADE_JPEG = 0.75;
+
+async function comprimirImagem(bytes: ArrayBuffer): Promise<{ bytes: ArrayBuffer; width: number; height: number }> {
   const blob = new Blob([bytes]);
   const bitmap = await createImageBitmap(blob);
+  const escala = Math.min(1, MAX_LADO / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * escala);
+  const height = Math.round(bitmap.height * escala);
+
   const canvas = document.createElement("canvas");
-  canvas.width = bitmap.width;
-  canvas.height = bitmap.height;
-  canvas.getContext("2d")!.drawImage(bitmap, 0, 0);
-  const pngBlob: Blob = await new Promise((resolve, reject) =>
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Falha ao converter imagem."))), "image/png")
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, width, height);
+
+  const jpegBlob: Blob = await new Promise((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Falha ao comprimir imagem."))), "image/jpeg", QUALIDADE_JPEG)
   );
-  return pngBlob.arrayBuffer();
+  return { bytes: await jpegBlob.arrayBuffer(), width, height };
 }
 
 // O navegador/SO às vezes não preenche file.type (comum com PDF vindo de
@@ -58,11 +68,8 @@ async function unificarArquivos(files: File[]): Promise<File> {
         continue;
       }
 
-      const imagem = tipo === "image/png"
-        ? await doc.embedPng(bytes)
-        : tipo === "image/jpeg"
-        ? await doc.embedJpg(bytes)
-        : await doc.embedPng(await paraPng(bytes));
+      const comprimida = await comprimirImagem(bytes);
+      const imagem = await doc.embedJpg(comprimida.bytes);
       const pagina = doc.addPage([imagem.width, imagem.height]);
       pagina.drawImage(imagem, { x: 0, y: 0, width: imagem.width, height: imagem.height });
     } catch (err) {
