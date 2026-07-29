@@ -714,7 +714,7 @@ export default function ConteudosMobile({
                   </div>
 
                   <p className="text-xs text-slate-500 mt-1">
-                    {c.aluno.nome}{c.materia ? ` · ${c.materia.nome}` : ""}
+                    {c.aluno.nome} · {c.materia ? c.materia.nome : "Todas as matérias"}
                     {!isProfessor && c.aluno.professora && <span className="text-slate-400"> · {c.aluno.professora}</span>}
                   </p>
 
