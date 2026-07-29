@@ -24,7 +24,7 @@ export default async function NotificacoesPage() {
   em7dias.setDate(em7dias.getDate() + 7);
   em7dias.setHours(23, 59, 59, 999);
 
-  const [avaliacoes, historicoWhatsapp, historicoEmail, aulasProximas, historicoAulas] =
+  const [avaliacoes, historicoWhatsapp, historicoEmail, aulasProximas, historicoAulas, empresa] =
     await Promise.all([
       // ── Dados WhatsApp ────────────────────────────────────────────────────
       prisma.avaliacao.findMany({
@@ -90,6 +90,11 @@ export default async function NotificacoesPage() {
         orderBy: { criadoEm: "desc" },
         take: 50,
       }),
+      // ── Configuração da empresa (pausa de envio WhatsApp) ────────────────────
+      prisma.empresa.findUniqueOrThrow({
+        where: { id: scope.empresaId },
+        select: { whatsappPausado: true },
+      }),
     ]);
 
   const fonnteConfigurada    = !!process.env.FONNTE_TOKEN;
@@ -138,6 +143,7 @@ export default async function NotificacoesPage() {
         }))}
         whatsappConfigurado={fonnteConfigurada || zapiConfigurada || evolutionConfigurada}
         provedor={provedor}
+        whatsappPausado={empresa.whatsappPausado}
         // E-mail
         historicoEmail={historicoEmail.map((n) => ({
           id: n.id,
