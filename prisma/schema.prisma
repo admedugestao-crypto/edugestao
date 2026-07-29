@@ -23,6 +23,7 @@ model Empresa {
   logoUrl          String?
   ativo            Boolean  @default(true)
   whatsappPausado  Boolean  @default(false)
+  emailPausado     Boolean  @default(false)
   criadoEm         DateTime @default(now())
 
   usuarios            Usuario[]

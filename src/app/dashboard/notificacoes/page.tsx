@@ -90,10 +90,10 @@ export default async function NotificacoesPage() {
         orderBy: { criadoEm: "desc" },
         take: 50,
       }),
-      // ── Configuração da empresa (pausa de envio WhatsApp) ────────────────────
+      // ── Configuração da empresa (pausa de envio WhatsApp/E-mail) ─────────────
       prisma.empresa.findUniqueOrThrow({
         where: { id: scope.empresaId },
-        select: { whatsappPausado: true },
+        select: { whatsappPausado: true, emailPausado: true },
       }),
     ]);
 
@@ -164,6 +164,7 @@ export default async function NotificacoesPage() {
           },
         }))}
         emailAtivo={emailConfigurado()}
+        emailPausado={empresa.emailPausado}
         aulasProximas={aulasProximas.map((a) => ({
           id: a.id,
           data: a.data.toISOString(),
