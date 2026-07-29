@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   Send, MessageCircle, CheckCircle2, Clock, RefreshCw,
-  AlertTriangle, MessageSquare, Mail, XCircle, Search, MailCheck, RotateCcw,
+  AlertTriangle, MessageSquare, Mail, XCircle, Search, MailCheck, RotateCcw, PauseCircle, PlayCircle,
 } from "lucide-react";
 import { montarMensagem, formatarWhatsapp } from "@/lib/notificacoes";
 
@@ -147,13 +147,14 @@ function ContextMenu({
 
 // ── Componente raiz ────────────────────────────────────────────────────────────
 export default function NotificacoesUnificadas({
-  avaliacoes, historicoWhatsapp, whatsappConfigurado, provedor,
+  avaliacoes, historicoWhatsapp, whatsappConfigurado, provedor, whatsappPausado,
   historicoEmail, emailAtivo, historicoAulas, aulasProximas,
 }: {
   avaliacoes: Avaliacao[];
   historicoWhatsapp: HistoricoWhatsapp[];
   whatsappConfigurado: boolean;
   provedor?: "fonnte" | "zapi" | "evolution" | null;
+  whatsappPausado: boolean;
   historicoEmail: HistoricoEmail[];
   emailAtivo: boolean;
   historicoAulas: HistoricoAula[];
@@ -191,6 +192,7 @@ export default function NotificacoesUnificadas({
           aulasProximas={aulasProximas}
           whatsappConfigurado={whatsappConfigurado}
           provedor={provedor}
+          whatsappPausadoInicial={whatsappPausado}
         />
       )}
       {aba === "email" && (
@@ -202,7 +204,7 @@ export default function NotificacoesUnificadas({
 
 // ── Aba WhatsApp ──────────────────────────────────────────────────────────────
 function AbaWhatsapp({
-  avaliacoes, historico, historicoAulas, aulasProximas, whatsappConfigurado, provedor,
+  avaliacoes, historico, historicoAulas, aulasProximas, whatsappConfigurado, provedor, whatsappPausadoInicial,
 }: {
   avaliacoes: Avaliacao[];
   historico: HistoricoWhatsapp[];
@@ -210,6 +212,7 @@ function AbaWhatsapp({
   aulasProximas: AulaProxima[];
   whatsappConfigurado: boolean;
   provedor?: "fonnte" | "zapi" | "evolution" | null;
+  whatsappPausadoInicial: boolean;
 }) {
   const router = useRouter();
   const [disparando, setDisparando]   = useState(false);
@@ -219,8 +222,25 @@ function AbaWhatsapp({
   const [statusLocal, setStatusLocal] = useState<Record<string, boolean>>({});
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState<"todos" | "enviado" | "falhou">("todos");
+  const [pausado, setPausado]           = useState(whatsappPausadoInicial);
+  const [alternandoPausa, setAlternandoPausa] = useState(false);
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+
+  async function alternarPausa() {
+    const novoValor = !pausado;
+    setAlternandoPausa(true);
+    try {
+      const res = await fetch("/api/notificacoes/whatsapp-pausado", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pausado: novoValor }),
+      });
+      if (res.ok) setPausado(novoValor);
+    } finally {
+      setAlternandoPausa(false);
+    }
+  }
 
   async function dispararNotificacoes() {
     setDisparando(true); setResultado(null); setMsgDisparoWpp(null);
@@ -302,14 +322,45 @@ function AbaWhatsapp({
           <p className={`text-xs mt-0.5 ${whatsappConfigurado ? "text-emerald-600" : "text-amber-600"}`}>
             {whatsappConfigurado
               ? "As notificações são enviadas automaticamente todo dia às 08:00."
-              : "Configure ZAPI_INSTANCE_ID e ZAPI_TOKEN no .env.local para envio automático."}
+              : "Configure FONNTE_TOKEN (ou EVOLUTION_API_URL/EVOLUTION_API_KEY/EVOLUTION_INSTANCE) no .env.local para envio automático."}
           </p>
         </div>
       </div>
 
+      {/* Pausa do envio automático */}
+      <div className={`rounded-xl border p-4 flex items-center justify-between gap-3 ${pausado ? "bg-red-50 border-red-200" : "bg-white border-slate-200"}`}>
+        <div className="flex items-start gap-3">
+          {pausado
+            ? <PauseCircle size={18} className="text-red-600 mt-0.5 shrink-0" />
+            : <PlayCircle size={18} className="text-slate-400 mt-0.5 shrink-0" />
+          }
+          <div>
+            <p className={`text-sm font-medium ${pausado ? "text-red-800" : "text-slate-700"}`}>
+              {pausado ? "Envio automático de WhatsApp pausado" : "Envio automático de WhatsApp ativo"}
+            </p>
+            <p className={`text-xs mt-0.5 ${pausado ? "text-red-600" : "text-slate-500"}`}>
+              {pausado
+                ? "O disparo diário das 08:00 e o botão \"Disparar agora\" não enviam mensagens enquanto pausado. Reenvio manual de um item específico continua funcionando."
+                : "Pause temporariamente o envio automático sem perder as configurações."}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={alternarPausa}
+          disabled={alternandoPausa}
+          className={`shrink-0 flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-60 ${
+            pausado ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200"
+          }`}
+        >
+          {alternandoPausa ? <RefreshCw size={13} className="animate-spin" /> : pausado ? <PlayCircle size={13} /> : <PauseCircle size={13} />}
+          {alternandoPausa ? "Salvando..." : pausado ? "Retomar envio" : "Pausar envio"}
+        </button>
+      </div>
+
       {/* Botão disparar + feedback */}
       <div className="flex items-center gap-4">
-        <button onClick={dispararNotificacoes} disabled={disparando}
+        <button onClick={dispararNotificacoes} disabled={disparando || pausado}
+          title={pausado ? "Retome o envio automático para disparar notificações" : undefined}
           className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
           {disparando ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
           {disparando ? "Verificando..." : "Disparar agora"}

@@ -183,7 +183,7 @@ export async function processarNotificacoes(): Promise<{
 }> {
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const resultado = { enviadas: 0, pendentes: [] as any[], erros: [] as string[] };
-  const empresas = await prisma.empresa.findMany({ where: { ativo: true }, select: { id: true, nome: true } });
+  const empresas = await prisma.empresa.findMany({ where: { ativo: true, whatsappPausado: false }, select: { id: true, nome: true } });
 
   for (const empresa of empresas) {
     const avaliacoes = await buscarAvaliacoes(empresa.id);
@@ -346,6 +346,7 @@ export async function processarNotificacoesAula(): Promise<{
       data: { gte: amanha, lte: fimAmanha },
       status: "AGENDADA",
       aluno: { telefoneResponsavel: { not: null } },
+      empresa: { whatsappPausado: false },
     },
     include: {
       aluno: true,
