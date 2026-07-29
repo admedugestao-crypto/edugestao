@@ -7,6 +7,7 @@ import {
   Search, FileText, Download, Camera,
 } from "lucide-react";
 import { SERIES } from "@/lib/series";
+import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 
 type Materia = { id: string; nome: string; cor: string };
 type MetodoEnsino = { id: string; nome: string };
@@ -59,6 +60,7 @@ export default function BibliotecaMobile({
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [form, setForm] = useState<Form>(formVazio);
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
+  const [unificando, setUnificando] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; titulo: string } | null>(null);
@@ -88,6 +90,34 @@ export default function BibliotecaMobile({
     } finally {
       setEnviandoArquivo(false);
     }
+  }
+
+  // Chamado pelo onChange do input "Anexar arquivo". Se mais de um arquivo
+  // for escolhido (ex: várias fotos da galeria), unifica tudo num PDF só
+  // antes de enviar — mesmo padrão usado no desktop (BibliotecaClient.tsx).
+  async function selecionarArquivos(fileList: FileList | null) {
+    const files = Array.from(fileList ?? []);
+    if (files.length === 0) return;
+
+    if (files.length > 1) {
+      if (files.some((f) => TIPOS_WORD.includes(f.type))) {
+        setErro("Não é possível unificar um arquivo Word com outros. Selecione só um arquivo Word por vez, ou combine apenas PDFs/imagens.");
+        return;
+      }
+      setUnificando(true);
+      setErro("");
+      try {
+        const unico = await unificarArquivos(files);
+        await onUpload(unico);
+      } catch (err) {
+        setErro(err instanceof Error ? err.message : "Erro ao unificar os arquivos selecionados.");
+      } finally {
+        setUnificando(false);
+      }
+      return;
+    }
+
+    await onUpload(files[0]);
   }
 
   function abrirNovo() {
@@ -318,16 +348,16 @@ export default function BibliotecaMobile({
                 ) : (
                   <div className="flex gap-2">
                     <label className="flex-1 flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
-                      {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
-                      {enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
-                      <input type="file" className="hidden" disabled={enviandoArquivo}
-                        accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-                        onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
+                      {unificando ? <Loader2 size={16} className="animate-spin"/> : enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
+                      {unificando ? "Unificando arquivos..." : enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
+                      <input type="file" className="hidden" disabled={enviandoArquivo || unificando}
+                        accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx" multiple
+                        onChange={(e) => selecionarArquivos(e.target.files)}/>
                     </label>
                     <label className="flex-1 flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
                       {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Camera size={16}/>}
                       {enviandoArquivo ? "Enviando..." : "Tirar foto"}
-                      <input type="file" className="hidden" disabled={enviandoArquivo}
+                      <input type="file" className="hidden" disabled={enviandoArquivo || unificando}
                         accept="image/*" capture="environment"
                         onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
                     </label>
@@ -335,13 +365,13 @@ export default function BibliotecaMobile({
                 )}
               </div>
             </div>
-            {!formCompleto(form) && !salvando && !enviandoArquivo && (
+            {!formCompleto(form) && !salvando && !enviandoArquivo && !unificando && (
               <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
                 Falta preencher: {camposFaltando(form).join(", ")}.
               </p>
             )}
             {erro && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erro}</p>}
-            <button onClick={salvar} disabled={!formCompleto(form) || salvando || enviandoArquivo}
+            <button onClick={salvar} disabled={!formCompleto(form) || salvando || enviandoArquivo || unificando}
               className="w-full bg-indigo-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl text-sm mt-4">
               {salvando ? "Salvando..." : editandoId ? "Salvar alterações" : "Criar material"}
             </button>
