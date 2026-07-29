@@ -7,6 +7,7 @@ import { ptBR } from "date-fns/locale";
 import {
   Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, Home, LogOut, Library, Search, FileText,
 } from "lucide-react";
+import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 
 type Materia = { id: string; nome: string; cor: string };
 type Aluno = {
@@ -241,7 +242,7 @@ function SeletorBibliotecaMobile({
 // ── Campos do formulário (criar/editar) — componente à parte evita remount a cada tecla ──
 function CamposFormMobile({
   form, setForm, alunos, professoras, isProfessor, filtroProfId, setFiltroProfId,
-  enviandoArquivo, onUpload, onCampoChave,
+  enviandoArquivo, unificando, onSelecionarArquivos, onCampoChave,
 }: {
   form: FormC;
   setForm: (f: FormC) => void;
@@ -251,7 +252,8 @@ function CamposFormMobile({
   filtroProfId: string;
   setFiltroProfId: (id: string) => void;
   enviandoArquivo: boolean;
-  onUpload: (file: File) => void;
+  unificando: boolean;
+  onSelecionarArquivos: (fileList: FileList | null) => void;
   onCampoChave?: () => void;
 }) {
   const alunosFiltrados = isProfessor ? alunos : (filtroProfId ? alunos.filter((a) => a.professoraId === filtroProfId) : []);
@@ -332,11 +334,11 @@ function CamposFormMobile({
         ) : (
           <div className="space-y-1.5">
             <label className="flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-500 cursor-pointer">
-              {enviandoArquivo ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
-              {enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
-              <input type="file" className="hidden" disabled={enviandoArquivo}
-                accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}/>
+              {enviandoArquivo || unificando ? <Loader2 size={16} className="animate-spin"/> : <Paperclip size={16}/>}
+              {unificando ? "Unificando arquivos..." : enviandoArquivo ? "Enviando..." : "Anexar arquivo"}
+              <input type="file" className="hidden" disabled={enviandoArquivo || unificando}
+                accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx" multiple
+                onChange={(e) => onSelecionarArquivos(e.target.files)}/>
             </label>
             <button
               type="button"
@@ -411,6 +413,7 @@ export default function ConteudosMobile({
   const [filtroProfId, setFiltroProfId]   = useState("");
   const [salvando, setSalvando]           = useState(false);
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
+  const [unificando, setUnificando] = useState(false);
   const [erroNovo, setErroNovo]     = useState("");
   const [avisoDuplicado, setAvisoDuplicado] = useState<string | null>(null);
   const [candidatasNovo, setCandidatasNovo] = useState<Candidata[] | null>(null);
@@ -435,6 +438,36 @@ export default function ConteudosMobile({
     } finally {
       setEnviandoArquivo(false);
     }
+  }
+
+  // Chamado pelo onChange do input "Anexar arquivo". Se mais de um arquivo for
+  // escolhido, unifica tudo num PDF só antes de enviar — mesmo padrão usado na
+  // Biblioteca de Apostilas (BibliotecaMobile.tsx).
+  async function selecionarArquivos(fileList: FileList | null, alvo: "novo" | "edit") {
+    const files = Array.from(fileList ?? []);
+    if (files.length === 0) return;
+
+    const setErro = alvo === "novo" ? setErroNovo : setErroEdit;
+
+    if (files.length > 1) {
+      if (files.some((f) => TIPOS_WORD.includes(f.type))) {
+        setErro("Não é possível unificar um arquivo Word com outros. Selecione só um arquivo Word por vez, ou combine apenas PDFs/imagens.");
+        return;
+      }
+      setUnificando(true);
+      setErro("");
+      try {
+        const unico = await unificarArquivos(files);
+        await uploadArquivo(unico, alvo);
+      } catch (err) {
+        setErro(err instanceof Error ? err.message : "Erro ao unificar os arquivos selecionados.");
+      } finally {
+        setUnificando(false);
+      }
+      return;
+    }
+
+    await uploadArquivo(files[0], alvo);
   }
 
   async function criarConteudo(forcar = false, aulaIdEscolhido?: string) {
@@ -723,8 +756,8 @@ export default function ConteudosMobile({
               form={novo} setForm={setNovo}
               alunos={alunos} professoras={professoras} isProfessor={isProfessor}
               filtroProfId={filtroProfId} setFiltroProfId={setFiltroProfId}
-              enviandoArquivo={enviandoArquivo}
-              onUpload={(f) => uploadArquivo(f, "novo")}
+              enviandoArquivo={enviandoArquivo} unificando={unificando}
+              onSelecionarArquivos={(fl) => selecionarArquivos(fl, "novo")}
               onCampoChave={() => { setErroNovo(""); setAvisoDuplicado(null); }}
             />
 
@@ -791,8 +824,8 @@ export default function ConteudosMobile({
               form={editConteudo} setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
               alunos={alunos} professoras={professoras} isProfessor={isProfessor}
               filtroProfId={filtroProfId} setFiltroProfId={setFiltroProfId}
-              enviandoArquivo={enviandoArquivo}
-              onUpload={(f) => uploadArquivo(f, "edit")}
+              enviandoArquivo={enviandoArquivo} unificando={unificando}
+              onSelecionarArquivos={(fl) => selecionarArquivos(fl, "edit")}
               onCampoChave={() => { setErroEdit(""); setCandidatasEdit(null); }}
             />
 
