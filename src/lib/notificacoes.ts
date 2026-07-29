@@ -357,20 +357,16 @@ export async function processarNotificacoesAula(): Promise<{
     },
   });
 
-  for (const aula of aulas) {
-    if (aula.notificacao?.enviada) continue;
+  type AulaComRelacoes = (typeof aulas)[number];
 
-    const numero = formatarWhatsapp(aula.aluno.telefoneResponsavel!);
-
-    const dataFormatada = new Date(aula.data).toLocaleDateString("pt-BR", {
-      weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
-    });
-
-    const horario = aula.horaInicio
+  function horarioDe(aula: AulaComRelacoes): string {
+    return aula.horaInicio
       ? aula.horaFim ? `${aula.horaInicio} – ${aula.horaFim}` : aula.horaInicio
       : "horário a confirmar";
+  }
 
-    const mensagem = [
+  function montarMensagemUnica(aula: AulaComRelacoes, dataFormatada: string): string {
+    return [
       `📚 *${aula.empresa.nome} – Lembrete de Aula*`,
       ``,
       `Olá${aula.aluno.responsavel ? `, *${aula.aluno.responsavel}*` : ""}!`,
@@ -379,25 +375,88 @@ export async function processarNotificacoesAula(): Promise<{
       ``,
       ...(aula.materia ? [`📖 *Disciplina:* ${aula.materia.nome}`] : []),
       `📆 *Data:* ${dataFormatada}`,
-      `🕐 *Horário:* ${horario}`,
+      `🕐 *Horário:* ${horarioDe(aula)}`,
       `👩‍🏫 *Professor(a):* ${aula.professora.usuario.nome}`,
       ``,
       `_Mensagem automática de ${aula.empresa.nome} via EduGestão_`,
     ].join("\n");
+  }
+
+  // Aluno com 2+ aulas seguidas no mesmo dia (horaFim de uma bate com
+  // horaInicio da próxima) recebe UMA mensagem só, listando cada aula — em
+  // vez de uma mensagem separada por aula, que soa repetitivo pro responsável.
+  function montarMensagemSequencia(bloco: AulaComRelacoes[], dataFormatada: string): string {
+    const primeira = bloco[0];
+    const linhasAulas = bloco.map((aula) =>
+      `🕐 *${horarioDe(aula)}* — ${aula.materia ? aula.materia.nome : "matéria não definida"} (Prof. ${aula.professora.usuario.nome})`
+    );
+    return [
+      `📚 *${primeira.empresa.nome} – Lembrete de Aula*`,
+      ``,
+      `Olá${primeira.aluno.responsavel ? `, *${primeira.aluno.responsavel}*` : ""}!`,
+      ``,
+      `⚠️ *Amanhã* a(o) *${primeira.aluno.nome}* tem ${bloco.length} aulas seguidas agendadas:`,
+      ``,
+      ...linhasAulas,
+      ``,
+      `📆 *Data:* ${dataFormatada}`,
+      ``,
+      `_Mensagem automática de ${primeira.empresa.nome} via EduGestão_`,
+    ].join("\n");
+  }
+
+  const pendentes = aulas.filter((a) => !a.notificacao?.enviada);
+
+  // Agrupa por aluno e depois junta em blocos as aulas consecutivas —
+  // é isso que decide quando manda 1 mensagem em vez de N.
+  const porAluno = new Map<string, AulaComRelacoes[]>();
+  for (const aula of pendentes) {
+    const lista = porAluno.get(aula.alunoId) ?? [];
+    lista.push(aula);
+    porAluno.set(aula.alunoId, lista);
+  }
+
+  const blocos: AulaComRelacoes[][] = [];
+  for (const lista of porAluno.values()) {
+    const ordenada = [...lista].sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
+    let atual: AulaComRelacoes[] = [];
+    for (const aula of ordenada) {
+      const anterior = atual[atual.length - 1];
+      const sequencial = !!anterior && !!anterior.horaFim && !!aula.horaInicio && anterior.horaFim === aula.horaInicio;
+      if (!sequencial && atual.length > 0) {
+        blocos.push(atual);
+        atual = [];
+      }
+      atual.push(aula);
+    }
+    if (atual.length > 0) blocos.push(atual);
+  }
+
+  for (const bloco of blocos) {
+    const primeira = bloco[0];
+    const numero = formatarWhatsapp(primeira.aluno.telefoneResponsavel!);
+    const dataFormatada = new Date(primeira.data).toLocaleDateString("pt-BR", {
+      weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
+    });
+    const mensagem = bloco.length === 1
+      ? montarMensagemUnica(primeira, dataFormatada)
+      : montarMensagemSequencia(bloco, dataFormatada);
 
     try {
       const envio = await enviarWhatsapp(numero, mensagem);
 
-      await prisma.notificacaoAula.upsert({
-        where: { agendaAulaId: aula.id },
-        update: { enviada: envio.ok, whatsapp: numero },
-        create: { empresaId: aula.empresaId, agendaAulaId: aula.id, enviada: envio.ok, whatsapp: numero },
-      });
+      await Promise.all(bloco.map((aula) =>
+        prisma.notificacaoAula.upsert({
+          where: { agendaAulaId: aula.id },
+          update: { enviada: envio.ok, whatsapp: numero },
+          create: { empresaId: aula.empresaId, agendaAulaId: aula.id, enviada: envio.ok, whatsapp: numero },
+        })
+      ));
 
       if (envio.ok) resultado.enviadas++;
-      else resultado.erros.push(`${aula.aluno.nome} (${numero}): ${envio.erro}`);
+      else resultado.erros.push(`${primeira.aluno.nome} (${numero}): ${envio.erro}`);
     } catch (err) {
-      resultado.erros.push(`${aula.aluno.nome}: ${String(err)}`);
+      resultado.erros.push(`${primeira.aluno.nome}: ${String(err)}`);
     }
   }
 
