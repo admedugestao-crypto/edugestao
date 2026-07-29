@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionScope } from "@/lib/tenant";
-import { Table2, ListChecks, ChevronRight } from "lucide-react";
+import { Table2, ListChecks, ClipboardList, ChevronRight } from "lucide-react";
 
 const tabelas = [
   {
@@ -9,6 +9,12 @@ const tabelas = [
     titulo: "Métodos de Ensino",
     descricao: "Lista de métodos usada nos materiais da Biblioteca.",
     icon: ListChecks,
+  },
+  {
+    href: "/dashboard/tabelas/tipos-avaliacao",
+    titulo: "Tipos de Avaliação",
+    descricao: "Lista de tipos usada no campo \"Tipo\" do Calendário de Provas.",
+    icon: ClipboardList,
   },
 ];
 
