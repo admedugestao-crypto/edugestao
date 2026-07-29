@@ -705,16 +705,24 @@ export default function AgendaMobile({
                 ? detalhe.materias.map((m) => m.materia)
                 : detalhe.aluno.materias.map((m) => m.materia);
               if (materiasOpcoes.length === 0) return null;
+              // Depois que um Conteúdo já foi vinculado a esta aula, a matéria
+              // não pode mais mudar — evita dessincronizar aula e conteúdo.
+              const materiaTravada = !!detalhe.conteudo;
               return (
                 <div>
                   <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
                   <select value={materiaDetalheId}
                     onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
+                    disabled={materiaTravada}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white disabled:opacity-60 disabled:cursor-not-allowed">
                     {materiasOpcoes.length > 1 && <option value="">Todas da aula</option>}
                     {materiasOpcoes.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
                   </select>
-                  {materiaSalva && <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>}
+                  {materiaTravada ? (
+                    <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
+                  ) : materiaSalva ? (
+                    <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>
+                  ) : null}
                 </div>
               );
             })()}

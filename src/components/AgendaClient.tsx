@@ -1389,22 +1389,31 @@ export default function AgendaClient({
                   ? aulaDetalhe.materias.map((m) => m.materia)
                   : (aulaDetalhe.aluno.materias ?? []).map((m) => m.materia);
                 if (materiasOpcoes.length === 0) return null;
+                // Depois que um Conteúdo já foi vinculado a esta aula (normalmente
+                // ao marcar Realizada), a matéria não pode mudar mais — o
+                // Conteúdo foi registrado pra essa matéria especificamente, e
+                // trocar aqui deixaria os dois dessincronizados.
+                const materiaTravada = !!aulaDetalhe.conteudo;
                 return (
                   <div className="flex-1 min-w-[140px]">
                     <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
                     <select
                       value={materiaDetalheId}
                       onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
-                      className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                      disabled={materiaTravada}
+                      title={materiaTravada ? "Não é possível trocar a matéria: já existe um Conteúdo vinculado a esta aula." : undefined}
+                      className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {materiasOpcoes.length > 1 && <option value="">Todas da aula</option>}
                       {materiasOpcoes.map((m) => (
                         <option key={m.id} value={m.id}>{m.nome}</option>
                       ))}
                     </select>
-                    {materiaSalva && (
+                    {materiaTravada ? (
+                      <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
+                    ) : materiaSalva ? (
                       <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>
-                    )}
+                    ) : null}
                   </div>
                 );
               })()}
