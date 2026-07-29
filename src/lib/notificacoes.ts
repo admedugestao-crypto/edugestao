@@ -259,7 +259,7 @@ export async function processarNotificacoesEmail(): Promise<{
   }
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const empresas = await prisma.empresa.findMany({ where: { ativo: true }, select: { id: true } });
+  const empresas = await prisma.empresa.findMany({ where: { ativo: true, emailPausado: false }, select: { id: true } });
 
   for (const empresa of empresas) {
     const avaliacoes = await buscarAvaliacoes(empresa.id);

@@ -148,7 +148,7 @@ function ContextMenu({
 // ── Componente raiz ────────────────────────────────────────────────────────────
 export default function NotificacoesUnificadas({
   avaliacoes, historicoWhatsapp, whatsappConfigurado, provedor, whatsappPausado,
-  historicoEmail, emailAtivo, historicoAulas, aulasProximas,
+  historicoEmail, emailAtivo, emailPausado, historicoAulas, aulasProximas,
 }: {
   avaliacoes: Avaliacao[];
   historicoWhatsapp: HistoricoWhatsapp[];
@@ -157,6 +157,7 @@ export default function NotificacoesUnificadas({
   whatsappPausado: boolean;
   historicoEmail: HistoricoEmail[];
   emailAtivo: boolean;
+  emailPausado: boolean;
   historicoAulas: HistoricoAula[];
   aulasProximas: AulaProxima[];
 }) {
@@ -196,7 +197,7 @@ export default function NotificacoesUnificadas({
         />
       )}
       {aba === "email" && (
-        <AbaEmail historico={historicoEmail} emailAtivo={emailAtivo} avaliacoes={avaliacoes} />
+        <AbaEmail historico={historicoEmail} emailAtivo={emailAtivo} avaliacoes={avaliacoes} emailPausadoInicial={emailPausado} />
       )}
     </div>
   );
@@ -605,7 +606,14 @@ function AbaWhatsapp({
 }
 
 // ── Aba E-mail ────────────────────────────────────────────────────────────────
-function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoEmail[]; emailAtivo: boolean; avaliacoes: Avaliacao[] }) {
+function AbaEmail({
+  historico, emailAtivo, avaliacoes, emailPausadoInicial,
+}: {
+  historico: HistoricoEmail[];
+  emailAtivo: boolean;
+  avaliacoes: Avaliacao[];
+  emailPausadoInicial: boolean;
+}) {
   const router = useRouter();
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState<"todos" | "enviado" | "falhou">("todos");
@@ -613,6 +621,23 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
   const [msgDisparo, setMsgDisparo]     = useState<{ ok: boolean; txt: string } | null>(null);
   const [contextMenu, setContextMenu]   = useState<ContextMenuState>(null);
   const [statusLocal, setStatusLocal]   = useState<Record<string, boolean>>({});
+  const [pausado, setPausado]           = useState(emailPausadoInicial);
+  const [alternandoPausa, setAlternandoPausa] = useState(false);
+
+  async function alternarPausa() {
+    const novoValor = !pausado;
+    setAlternandoPausa(true);
+    try {
+      const res = await fetch("/api/notificacoes/email-pausado", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pausado: novoValor }),
+      });
+      if (res.ok) setPausado(novoValor);
+    } finally {
+      setAlternandoPausa(false);
+    }
+  }
 
   const registros = useMemo(() => historico.filter((r) => {
     const emailOk = statusLocal[r.id] ?? r.emailEnviado;
@@ -676,6 +701,36 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
           </p>
         </div>
       )}
+
+      {/* Pausa do envio automático */}
+      <div className={`rounded-xl border p-4 flex items-center justify-between gap-3 ${pausado ? "bg-red-50 border-red-200" : "bg-white border-slate-200"}`}>
+        <div className="flex items-start gap-3">
+          {pausado
+            ? <PauseCircle size={18} className="text-red-600 mt-0.5 shrink-0" />
+            : <PlayCircle size={18} className="text-slate-400 mt-0.5 shrink-0" />
+          }
+          <div>
+            <p className={`text-sm font-medium ${pausado ? "text-red-800" : "text-slate-700"}`}>
+              {pausado ? "Envio automático de E-mail pausado" : "Envio automático de E-mail ativo"}
+            </p>
+            <p className={`text-xs mt-0.5 ${pausado ? "text-red-600" : "text-slate-500"}`}>
+              {pausado
+                ? "O disparo diário das 08:00 e o botão \"Disparar agora\" não enviam e-mails enquanto pausado. Reenvio manual de um item específico continua funcionando."
+                : "Pause temporariamente o envio automático sem perder as configurações."}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={alternarPausa}
+          disabled={alternandoPausa}
+          className={`shrink-0 flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-60 ${
+            pausado ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200"
+          }`}
+        >
+          {alternandoPausa ? <RefreshCw size={13} className="animate-spin" /> : pausado ? <PlayCircle size={13} /> : <PauseCircle size={13} />}
+          {alternandoPausa ? "Salvando..." : pausado ? "Retomar envio" : "Pausar envio"}
+        </button>
+      </div>
 
       {/* Provas próximos 7 dias */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -742,7 +797,8 @@ function AbaEmail({ historico, emailAtivo, avaliacoes }: { historico: HistoricoE
             </button>
           ))}
         </div>
-        <button onClick={dispararAgora} disabled={disparando || !emailAtivo}
+        <button onClick={dispararAgora} disabled={disparando || !emailAtivo || pausado}
+          title={pausado ? "Retome o envio automático para disparar notificações" : undefined}
           className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors">
           {disparando ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <MailCheck size={14} />}
           Disparar agora
