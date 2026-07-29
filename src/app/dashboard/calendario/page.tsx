@@ -11,7 +11,7 @@ export default async function CalendarioPage() {
   if (!scope) redirect("/login");
   const professoraId = scope.professoraId;
 
-  const [avaliacoes, escolas, materias] = await Promise.all([
+  const [avaliacoes, escolas, materias, tipos] = await Promise.all([
     prisma.avaliacao.findMany({
       where: {
         empresaId: scope.empresaId,
@@ -46,6 +46,11 @@ export default async function CalendarioPage() {
           orderBy: { nome: "asc" },
         })
       : prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
+    prisma.tipoAvaliacao.findMany({
+      where: { empresaId: scope.empresaId },
+      orderBy: { nome: "asc" },
+      select: { id: true, nome: true },
+    }),
   ]);
 
   const avaliacoesSerial = avaliacoes.map((a) => ({
@@ -71,7 +76,7 @@ export default async function CalendarioPage() {
         <Calendar size={20} className="text-indigo-600" />
         <h1 className="text-xl font-bold text-slate-800">Calendário de Provas</h1>
       </div>
-      <CalendarioClient avaliacoes={avaliacoesSerial as any} escolas={escolasSerial as any} materias={materias} />
+      <CalendarioClient avaliacoes={avaliacoesSerial as any} escolas={escolasSerial as any} materias={materias} tipos={tipos} />
     </div>
   );
 }

@@ -42,6 +42,7 @@ model Empresa {
   calendarios         CalendarioEscolar[]
   materiaisBiblioteca MaterialBiblioteca[]
   metodosEnsino       MetodoEnsino[]
+  tiposAvaliacao      TipoAvaliacao[]
 
   @@map("empresas")
 }
@@ -149,6 +150,24 @@ model MetodoEnsino {
   @@unique([empresaId, nome])
   @@index([empresaId])
   @@map("metodos_ensino")
+}
+
+// Lista editável de tipos de avaliação (Prova 1, Trabalho, etc.) usada como
+// opção no campo "Tipo" do Calendário de Provas. Sem relação direta com
+// Avaliacao — o valor escolhido é copiado como texto pra Avaliacao.nome no
+// momento da criação (mesmo padrão que já existia com a lista fixa). Editar
+// o nome aqui não muda avaliações já criadas; excluir é bloqueado (na API)
+// se já existir alguma avaliação usando esse tipo (checado por nome).
+model TipoAvaliacao {
+  id        String @id @default(cuid())
+  empresaId String
+  nome      String
+
+  empresa Empresa @relation(fields: [empresaId], references: [id])
+
+  @@unique([empresaId, nome])
+  @@index([empresaId])
+  @@map("tipos_avaliacao")
 }
 
 // ─── Escolas e Unidades ───────────────────────────────────────────────────────

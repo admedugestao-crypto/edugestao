@@ -28,6 +28,8 @@ type Escola = {
   unidades: { id: string; nome: string }[];
 };
 
+type TipoAvaliacao = { id: string; nome: string };
+
 type FormAv = {
   unidadeId: string;
   materiaId: string;
@@ -37,8 +39,6 @@ type FormAv = {
   notaMax: string;
   periodo: string;
 };
-
-const TIPOS = ["Prova 1", "Prova 2", "Prova de Recuperação", "Simulado"] as const;
 
 const PERIODOS_POR_TIPO: Record<string, string[]> = {
   Bimestral:  ["1º Bimestre",  "2º Bimestre",  "3º Bimestre",  "4º Bimestre"],
@@ -59,11 +59,13 @@ function CamposForm({
   setForm,
   unidades,
   materias,
+  tipos,
 }: {
   form: FormAv;
   setForm: (f: FormAv) => void;
   unidades: Unidade[];
   materias: Materia[];
+  tipos: TipoAvaliacao[];
 }) {
   return (
     <div className="space-y-3">
@@ -111,8 +113,11 @@ function CamposForm({
           <label className="block text-xs font-medium text-slate-600 mb-1">Tipo *</label>
           <select value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
             <option value="" disabled>Selecione...</option>
-            {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
+            {tipos.map((t) => <option key={t.id} value={t.nome}>{t.nome}</option>)}
           </select>
+          {tipos.length === 0 && (
+            <p className="text-xs text-amber-600 mt-1">Cadastre em Tabelas → Tipos de Avaliação.</p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Período *</label>
@@ -244,10 +249,12 @@ export default function CalendarioClient({
   avaliacoes,
   escolas,
   materias,
+  tipos,
 }: {
   avaliacoes: Avaliacao[];
   escolas: Escola[];
   materias: Materia[];
+  tipos: TipoAvaliacao[];
 }) {
   const [filtroEscola, setFiltroEscola] = useState("");
   const [filtroSerie, setFiltroSerie] = useState("");
@@ -425,7 +432,7 @@ export default function CalendarioClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Avaliação</h2>
-            <CamposForm form={nova} setForm={setNova} unidades={unidades} materias={materias} />
+            <CamposForm form={nova} setForm={setNova} unidades={unidades} materias={materias} tipos={tipos} />
             <div className="flex gap-3 mt-5">
               <button
                 onClick={criarAvaliacao}
@@ -445,7 +452,7 @@ export default function CalendarioClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Avaliação</h2>
-            <CamposForm form={editAv} setForm={(f) => setEditAv({ ...f, id: editAv.id })} unidades={unidades} materias={materias} />
+            <CamposForm form={editAv} setForm={(f) => setEditAv({ ...f, id: editAv.id })} unidades={unidades} materias={materias} tipos={tipos} />
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarAvaliacao}
