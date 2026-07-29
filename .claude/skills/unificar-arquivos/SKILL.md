@@ -54,8 +54,18 @@ O usuário pede para permitir selecionar/anexar vários arquivos num campo de up
 - **Word não pode ser misturado**: `pdf-lib` só sabe montar páginas de PDF/imagem. Se o usuário selecionar um `.doc`/`.docx` junto de outros arquivos, bloqueie antes de chamar `unificarArquivos` (veja `TIPOS_WORD` acima).
 - **1 arquivo só**: `unificarArquivos` retorna o próprio arquivo sem conversão se `files.length === 1` — não force conversão desnecessária de PDF único.
 - **Compressão de imagem**: fotos são redimensionadas para no máximo 1800px no maior lado e reencodadas em JPEG qualidade 0.75 antes de entrar no PDF (constantes `MAX_LADO`/`QUALIDADE_JPEG` em `unificarArquivos.ts`) — isso é o que evita estourar o limite de upload ao juntar várias fotos de celular.
-- **Paridade mobile**: hoje só o componente desktop (`BibliotecaClient.tsx`) tem essa unificação; `BibliotecaMobile.tsx` ainda aceita só 1 arquivo por vez (`e.target.files?.[0]`). Se o pedido for para habilitar unificação também no mobile, aplique o mesmo padrão lá e consulte o agente `paridade-mobile`.
 - **Erro de arquivo individual**: se um arquivo específico falhar ao processar (corrompido, PDF criptografado sem senha, etc.), `unificarArquivos` lança erro citando o nome do arquivo — não precisa de tratamento extra, só exiba `err.message`.
+- **Paridade desktop/mobile**: ambos `BibliotecaClient.tsx` (desktop) e `BibliotecaMobile.tsx` (mobile) já usam esse padrão hoje. Ao aplicar em uma tela nova que tenha as duas variantes (`*Client.tsx` e `*Mobile.tsx`), implemente nas duas de uma vez — não deixe uma versão pra trás, e consulte o agente `paridade-mobile` se tiver dúvida sobre onde a tela mobile equivalente vive.
+- **No mobile, cuidado com o botão errado**: telas mobile costumam ter dois botões de arquivo lado a lado — um pra anexar (com `multiple`) e outro "Tirar foto" (câmera, sempre 1 arquivo por vez, sem `multiple`). Se o teste mostrar seleção única mesmo com `multiple` no código, confirme qual botão foi tocado antes de desconfiar do código.
+
+## Como validar de verdade (não só o código compilar)
+
+Esta seção existe porque a primeira vez que essa unificação foi levada pro mobile, várias horas foram perdidas testando contra ambientes que não refletiam a mudança — o código estava certo desde o início. Antes de reportar "não funciona":
+
+1. **Confirme que o servidor que está sendo testado realmente serve o código editado.** Pode haver mais de um `next dev` rodando (branches/checkouts diferentes na mesma porta ou portas diferentes) — um deles pode ser um servidor de dev antigo do checkout principal, sem a sua mudança. Rode `curl`/abra a URL e confira, ou adicione um marcador visual temporário óbvio na tela pra confirmar visualmente qual versão está carregada.
+2. **No app nativo (Capacitor), reabrir o app NÃO recarrega o WebView** — Android só traz o processo de volta (resume) com o JS antigo já carregado em memória. É preciso `adb shell am force-stop <appId>` antes de reabrir para garantir que a página é buscada de novo do servidor.
+3. Pra apontar o app nativo pra um servidor de dev local durante o teste (em vez do deploy publicado), veja a skill `sincronizar-mobile` — tem o passo a passo completo (IP local, cleartext no Android, reverter depois).
+4. Teste selecionando 2+ arquivos de verdade (não simulação) num dispositivo real, tanto no navegador quanto no app nativo se a tela existir nos dois.
 
 ## Checklist final
 
@@ -63,4 +73,5 @@ O usuário pede para permitir selecionar/anexar vários arquivos num campo de up
 - [ ] Input com `multiple`.
 - [ ] Bloqueio de mistura com Word antes de chamar `unificarArquivos`.
 - [ ] Estado de loading (`unificando`) desabilitando o input durante o processamento.
-- [ ] Testado manualmente selecionando 2+ arquivos (PDF + imagem) e confirmando que gera um único PDF com todas as páginas na ordem certa.
+- [ ] Implementado tanto na versão desktop (`*Client.tsx`) quanto mobile (`*Mobile.tsx`) da tela, se ambas existirem.
+- [ ] Testado de verdade num dispositivo (não só compilado) selecionando 2+ arquivos (PDF + imagem), confirmando servidor/app corretos conforme a seção acima.
