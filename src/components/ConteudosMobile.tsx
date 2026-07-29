@@ -241,13 +241,14 @@ function SeletorBibliotecaMobile({
 
 // ── Campos do formulário (criar/editar) — componente à parte evita remount a cada tecla ──
 function CamposFormMobile({
-  form, setForm, alunos, professoras, isProfessor, filtroProfId, setFiltroProfId,
+  form, setForm, alunos, professoras, materias, isProfessor, filtroProfId, setFiltroProfId,
   enviandoArquivo, unificando, onSelecionarArquivos, onCampoChave,
 }: {
   form: FormC;
   setForm: (f: FormC) => void;
   alunos: Aluno[];
   professoras: Professora[];
+  materias: Materia[];
   isProfessor: boolean;
   filtroProfId: string;
   setFiltroProfId: (id: string) => void;
@@ -259,6 +260,14 @@ function CamposFormMobile({
   const alunosFiltrados = isProfessor ? alunos : (filtroProfId ? alunos.filter((a) => a.professoraId === filtroProfId) : []);
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
+  // Registros antigos podem apontar pra uma matéria que o aluno não tem mais
+  // vinculada — sem isso, o <select> não acha a opção e mostra "Todas as
+  // matérias" mesmo com o dado real salvo, arriscando perder a matéria
+  // original se o usuário salvar sem perceber.
+  const materiaAtualFaltando = form.materiaId && !materiasFiltradas.some((m) => m.id === form.materiaId)
+    ? materias.find((m) => m.id === form.materiaId)
+    : null;
+  const opcoesMateria = materiaAtualFaltando ? [...materiasFiltradas, materiaAtualFaltando] : materiasFiltradas;
   const [seletorBibliotecaAberto, setSeletorBibliotecaAberto] = useState(false);
 
   return (
@@ -291,7 +300,11 @@ function CamposFormMobile({
           onChange={(e) => setForm({ ...form, materiaId: e.target.value || null })}
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white disabled:opacity-50">
           <option value="">{form.alunoId ? "Todas as matérias" : "—"}</option>
-          {materiasFiltradas.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+          {opcoesMateria.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.nome}{m.id === materiaAtualFaltando?.id ? " (fora do vínculo atual do aluno)" : ""}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -395,10 +408,11 @@ function mapConteudo(raw: RawConteudo): Conteudo {
 }
 
 export default function ConteudosMobile({
-  alunos, professoras = [], conteudosIniciais, isProfessor, nomeUsuario,
+  alunos, professoras = [], materias = [], conteudosIniciais, isProfessor, nomeUsuario,
 }: {
   alunos: Aluno[];
   professoras?: Professora[];
+  materias?: Materia[];
   conteudosIniciais: Conteudo[];
   isProfessor: boolean;
   nomeUsuario: string;
@@ -754,7 +768,7 @@ export default function ConteudosMobile({
 
             <CamposFormMobile
               form={novo} setForm={setNovo}
-              alunos={alunos} professoras={professoras} isProfessor={isProfessor}
+              alunos={alunos} professoras={professoras} materias={materias} isProfessor={isProfessor}
               filtroProfId={filtroProfId} setFiltroProfId={setFiltroProfId}
               enviandoArquivo={enviandoArquivo} unificando={unificando}
               onSelecionarArquivos={(fl) => selecionarArquivos(fl, "novo")}
@@ -822,7 +836,7 @@ export default function ConteudosMobile({
 
             <CamposFormMobile
               form={editConteudo} setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
-              alunos={alunos} professoras={professoras} isProfessor={isProfessor}
+              alunos={alunos} professoras={professoras} materias={materias} isProfessor={isProfessor}
               filtroProfId={filtroProfId} setFiltroProfId={setFiltroProfId}
               enviandoArquivo={enviandoArquivo} unificando={unificando}
               onSelecionarArquivos={(fl) => selecionarArquivos(fl, "edit")}
