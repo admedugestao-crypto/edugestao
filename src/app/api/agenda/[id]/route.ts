@@ -25,6 +25,20 @@ export async function PATCH(
     return NextResponse.json({ erro: "Início e fim são obrigatórios" }, { status: 400 });
   }
 
+  // Uma vez que um Conteúdo já foi vinculado a esta aula, a matéria não pode
+  // mais mudar — o Conteúdo foi registrado pra essa matéria especificamente,
+  // e trocar aqui deixaria os dois dessincronizados. Checagem no servidor
+  // além da UI, já que a rota pode ser chamada diretamente.
+  if (materiaId || todasMaterias) {
+    const conteudoVinculado = await prisma.conteudo.findUnique({ where: { aulaId: id }, select: { id: true } });
+    if (conteudoVinculado) {
+      return NextResponse.json(
+        { erro: "Não é possível trocar a matéria: já existe um Conteúdo vinculado a esta aula." },
+        { status: 422 },
+      );
+    }
+  }
+
   // Troca para "Todas as matérias": restaura N:N com todas as matérias do aluno
   if (todasMaterias) {
     const alulaCheck = await prisma.agendaAula.findUnique({
