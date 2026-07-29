@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle, Library, Search } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 
 type Materia = { id: string; nome: string; cor: string };
 
@@ -255,13 +256,11 @@ function UploadArquivo({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
+  const [unificando, setUnificando] = useState(false);
   const [erro, setErro] = useState("");
   const [seletorAberto, setSeletorAberto] = useState(false);
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setErro("");
+  async function enviarArquivo(file: File) {
     setEnviando(true);
     const fd = new FormData();
     fd.append("arquivo", file);
@@ -275,6 +274,31 @@ function UploadArquivo({
     onChange(data.url, data.nome);
     setEnviando(false);
     if (inputRef.current) inputRef.current.value = "";
+  }
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setErro("");
+
+    if (files.length > 1) {
+      if (files.some((f) => TIPOS_WORD.includes(f.type))) {
+        setErro("Não é possível unificar um arquivo Word com outros. Selecione só um arquivo Word por vez, ou combine apenas PDFs/imagens.");
+        return;
+      }
+      setUnificando(true);
+      try {
+        const unico = await unificarArquivos(files);
+        await enviarArquivo(unico);
+      } catch (err) {
+        setErro(err instanceof Error ? err.message : "Erro ao unificar os arquivos selecionados.");
+      } finally {
+        setUnificando(false);
+      }
+      return;
+    }
+
+    await enviarArquivo(files[0]);
   }
 
   return (
@@ -304,20 +328,21 @@ function UploadArquivo({
       ) : (
         <div className="space-y-1.5">
           <label className="flex items-center gap-2 cursor-pointer border border-dashed border-slate-300 hover:border-indigo-400 rounded-lg px-3 py-2.5 transition-colors group">
-            {enviando ? (
+            {enviando || unificando ? (
               <Loader2 size={15} className="text-indigo-500 animate-spin" />
             ) : (
               <Paperclip size={15} className="text-slate-400 group-hover:text-indigo-500" />
             )}
             <span className="text-sm text-slate-500 group-hover:text-indigo-600">
-              {enviando ? "Enviando..." : "Clique para anexar PDF, imagem ou Word (máx. 10 MB)"}
+              {unificando ? "Unificando arquivos..." : enviando ? "Enviando..." : "Clique para anexar PDF, imagem ou Word (máx. 10 MB)"}
             </span>
             <input
               ref={inputRef}
               type="file"
               accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+              multiple
               onChange={handleFile}
-              disabled={enviando}
+              disabled={enviando || unificando}
               className="hidden"
             />
           </label>
