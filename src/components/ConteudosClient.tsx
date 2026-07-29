@@ -409,6 +409,15 @@ function CamposForm({
     : (filtroProfId ? alunos.filter((a) => a.professoraId === filtroProfId) : []);
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
+  // Registros antigos podem apontar pra uma matéria que o aluno não tem mais
+  // vinculada (ex: matéria removida do aluno depois do registro criado) — sem
+  // isso, o <select> não acha a opção e mostra "Todas as matérias" mesmo com
+  // o dado real salvo, arriscando perder a matéria original se o usuário
+  // salvar sem perceber.
+  const materiaAtualFaltando = form.materiaId && !materiasFiltradas.some((m) => m.id === form.materiaId)
+    ? materias.find((m) => m.id === form.materiaId)
+    : null;
+  const opcoesMateria = materiaAtualFaltando ? [...materiasFiltradas, materiaAtualFaltando] : materiasFiltradas;
 
   return (
     <div className="space-y-2">
@@ -471,8 +480,10 @@ function CamposForm({
             <option value="">
               {form.alunoId ? "Todas as matérias" : "—"}
             </option>
-            {materiasFiltradas.map((m) => (
-              <option key={m.id} value={m.id}>{m.nome}</option>
+            {opcoesMateria.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nome}{m.id === materiaAtualFaltando?.id ? " (fora do vínculo atual do aluno)" : ""}
+              </option>
             ))}
           </select>
         </div>
