@@ -143,7 +143,7 @@ function CamposForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
-          <input type="date" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input type="date" min="2020-01-01" max="2100-12-31" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Nota máx. *</label>
@@ -282,6 +282,7 @@ export default function CalendarioClient({
   const [editAv, setEditAv] = useState<(FormAv & { id: string }) | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; nome: string; materia: string } | null>(null);
   const [erroDelete, setErroDelete] = useState("");
+  const [erroForm, setErroForm] = useState("");
   const [salvando, setSalvando] = useState(false);
 
   const hoje = new Date();
@@ -301,6 +302,7 @@ export default function CalendarioClient({
   );
 
   async function criarAvaliacao() {
+    setErroForm("");
     setSalvando(true);
     try {
       const res = await fetch("/api/avaliacoes", {
@@ -309,6 +311,10 @@ export default function CalendarioClient({
         body: JSON.stringify({ ...nova, notaMax: parseFloat(nova.notaMax) }),
       });
       const av = await res.json();
+      if (!res.ok) {
+        setErroForm(av.erro ?? "Erro ao criar avaliação.");
+        return;
+      }
       setLista((prev) => [...prev, av]);
       setModal(false);
       setNova(formVazio);
@@ -319,6 +325,7 @@ export default function CalendarioClient({
 
   async function salvarAvaliacao() {
     if (!editAv) return;
+    setErroForm("");
     setSalvando(true);
     try {
       const res = await fetch(`/api/avaliacoes/${editAv.id}`, {
@@ -327,6 +334,10 @@ export default function CalendarioClient({
         body: JSON.stringify({ ...editAv, notaMax: parseFloat(editAv.notaMax) }),
       });
       const atualizada = await res.json();
+      if (!res.ok) {
+        setErroForm(atualizada.erro ?? "Erro ao salvar avaliação.");
+        return;
+      }
       setLista((prev) => prev.map((a) => (a.id === atualizada.id ? atualizada : a)));
       setEditAv(null);
     } finally {
@@ -451,6 +462,9 @@ export default function CalendarioClient({
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Avaliação</h2>
             <CamposForm form={nova} setForm={setNova} unidades={unidades} materias={materias} tipos={tipos} />
+            {erroForm && (
+              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erroForm}</p>
+            )}
             <div className="flex gap-3 mt-5">
               <button
                 onClick={criarAvaliacao}
@@ -459,7 +473,7 @@ export default function CalendarioClient({
               >
                 {salvando ? "Salvando..." : "Criar avaliação"}
               </button>
-              <button onClick={() => { setModal(false); setNova(formVazio); }} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">Cancelar</button>
+              <button onClick={() => { setModal(false); setNova(formVazio); setErroForm(""); }} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">Cancelar</button>
             </div>
           </div>
         </div>
@@ -471,6 +485,9 @@ export default function CalendarioClient({
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Avaliação</h2>
             <CamposForm form={editAv} setForm={(f) => setEditAv({ ...f, id: editAv.id })} unidades={unidades} materias={materias} tipos={tipos} />
+            {erroForm && (
+              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erroForm}</p>
+            )}
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarAvaliacao}
@@ -479,7 +496,7 @@ export default function CalendarioClient({
               >
                 {salvando ? "Salvando..." : "Salvar"}
               </button>
-              <button onClick={() => setEditAv(null)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">Cancelar</button>
+              <button onClick={() => { setEditAv(null); setErroForm(""); }} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">Cancelar</button>
             </div>
           </div>
         </div>
