@@ -16,6 +16,7 @@ type Avaliacao = {
   data: string;
   notaMax: number;
   periodo: string | null;
+  observacao: string | null;
   materiaId: string | null;
   materia: Materia | null;
   unidade: { nome: string; escola: { nome: string } };
@@ -38,6 +39,7 @@ type FormAv = {
   data: string;
   notaMax: string;
   periodo: string;
+  observacao: string;
 };
 
 const PERIODOS_POR_TIPO: Record<string, string[]> = {
@@ -50,7 +52,7 @@ function getPeriodos(periodoAvaliacao: string | null | undefined): string[] {
   return PERIODOS_POR_TIPO[periodoAvaliacao ?? ""] ?? PERIODOS_POR_TIPO["Trimestral"];
 }
 
-const formVazio: FormAv = { unidadeId: "", materiaId: "", serie: "", nome: "", data: "", notaMax: "5", periodo: "" };
+const formVazio: FormAv = { unidadeId: "", materiaId: "", serie: "", nome: "", data: "", notaMax: "5", periodo: "", observacao: "" };
 
 type Unidade = { id: string; nome: string; escola: string; periodoAvaliacao: string | null };
 
@@ -148,6 +150,16 @@ function CamposForm({
           <input type="number" value={form.notaMax} onChange={(e) => setForm({ ...form, notaMax: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
       </div>
+      <div>
+        <label className="block text-xs font-medium text-slate-600 mb-1">Observação</label>
+        <textarea
+          value={form.observacao}
+          onChange={(e) => setForm({ ...form, observacao: e.target.value })}
+          rows={2}
+          placeholder="Conteúdo, orientações, etc. (opcional)"
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+        />
+      </div>
     </div>
   );
 }
@@ -163,18 +175,23 @@ function AvaliacaoRow({
 }) {
   return (
     <div className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 group">
-      <div className="flex-1 min-w-0 flex items-center gap-2">
-        {av.materia && (
-          <span
-            className="px-2 py-0.5 rounded-full text-xs font-medium text-white shrink-0"
-            style={{ backgroundColor: av.materia.cor }}
-          >
-            {av.materia.nome}
-          </span>
-        )}
-        <p className="font-medium text-slate-800 text-sm">{av.nome}</p>
-        {av.periodo && (
-          <span className="text-xs text-slate-400">· {av.periodo}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          {av.materia && (
+            <span
+              className="px-2 py-0.5 rounded-full text-xs font-medium text-white shrink-0"
+              style={{ backgroundColor: av.materia.cor }}
+            >
+              {av.materia.nome}
+            </span>
+          )}
+          <p className="font-medium text-slate-800 text-sm">{av.nome}</p>
+          {av.periodo && (
+            <span className="text-xs text-slate-400">· {av.periodo}</span>
+          )}
+        </div>
+        {av.observacao && (
+          <p className="text-xs text-slate-500 mt-0.5 truncate" title={av.observacao}>{av.observacao}</p>
         )}
       </div>
       <p className="text-xs text-slate-500 truncate hidden sm:block">
@@ -343,6 +360,7 @@ export default function CalendarioClient({
       data: av.data.split("T")[0],
       notaMax: String(av.notaMax),
       periodo: av.periodo ?? "",
+      observacao: av.observacao ?? "",
     });
   }
 

@@ -26,6 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       data: new Date(body.data),
       notaMax: body.notaMax ?? 10.0,
       periodo: body.periodo || null,
+      observacao: body.observacao || null,
     },
     include: { unidade: { include: { escola: true } }, materia: true },
   });

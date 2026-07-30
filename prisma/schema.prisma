@@ -262,6 +262,7 @@ model Avaliacao {
   peso      Float    @default(1.0)
   notaMax   Float    @default(10.0)
   periodo   String?
+  observacao String?
   criadoEm  DateTime @default(now())
 
   empresa      Empresa            @relation(fields: [empresaId], references: [id])

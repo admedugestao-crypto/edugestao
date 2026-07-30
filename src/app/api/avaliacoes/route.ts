@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
       peso: body.peso ?? 1.0,
       notaMax: body.notaMax ?? 10.0,
       periodo: body.periodo || null,
+      observacao: body.observacao || null,
     },
     include: { unidade: { include: { escola: true } }, materia: true },
   });
