@@ -171,6 +171,7 @@ export default async function NotificacoesPage() {
           horaInicio: a.horaInicio,
           horaFim: a.horaFim,
           notificacaoEnviada: a.notificacao?.enviada ?? false,
+          notificacaoCriadoEm: a.notificacao?.criadoEm.toISOString() ?? null,
           aluno: a.aluno,
           professora: { usuario: { nome: a.professora.usuario.nome } },
           materia: a.materia,

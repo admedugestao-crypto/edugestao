@@ -28,6 +28,7 @@ type HistoricoWhatsapp = {
 type AulaProxima = {
   id: string; data: string; horaInicio: string | null; horaFim: string | null;
   notificacaoEnviada: boolean;
+  notificacaoCriadoEm: string | null;
   aluno: { nome: string; responsavel: string | null; telefoneResponsavel: string | null };
   professora: { usuario: { nome: string } };
   materia: { nome: string } | null;
@@ -448,7 +449,11 @@ function AbaWhatsapp({
                       </td>
                       <td className="py-2.5 px-4">
                         {aula.notificacaoEnviada
-                          ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
+                          ? (
+                            <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium" title={aula.notificacaoCriadoEm ? `Enviado em ${fmtDataHora(aula.notificacaoCriadoEm)}` : undefined}>
+                              <CheckCircle2 size={12}/> Enviado{aula.notificacaoCriadoEm && <span className="text-slate-400 font-normal">· {fmtDataHora(aula.notificacaoCriadoEm)}</span>}
+                            </span>
+                          )
                           : diasAula === 1
                             ? <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium"><Clock size={12}/> Pendente</span>
                             : <span className="text-slate-400 text-xs">—</span>
