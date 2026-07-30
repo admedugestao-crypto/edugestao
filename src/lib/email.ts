@@ -17,6 +17,10 @@ export function emailConfigurado() {
   return !!(process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS);
 }
 
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 // ── Template HTML ─────────────────────────────────────────────────────────────
 const MESES = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
@@ -410,10 +414,11 @@ function templateProva(params: {
   dataProva: Date;
   diasRestantes: number;
   nomesAlunos: string[];
+  observacao?: string | null;
 }) {
   const {
     nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola,
-    nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos,
+    nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos, observacao,
   } = params;
 
   const dataFmt = dataProva.toLocaleDateString("pt-BR", {
@@ -510,6 +515,10 @@ function templateProva(params: {
                       <td style="color:#6b7280;font-size:13px;">Data</td>
                       <td style="color:${corAviso};font-size:13px;font-weight:bold;">${dataFmt}</td>
                     </tr>
+                    ${observacao ? `<tr>
+                      <td style="color:#6b7280;font-size:13px;">Observação</td>
+                      <td style="color:#111827;font-size:13px;">${escapeHtml(observacao).replace(/\n/g, "<br>")}</td>
+                    </tr>` : ""}
                   </table>
                 </td>
               </tr>
