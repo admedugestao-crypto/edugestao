@@ -883,16 +883,14 @@ export default function PagamentosClient({
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Valor (R$) <span className="text-red-500">*</span></label>
                   <input type="number" min={0} step="0.01" value={formPag.valorCobrado} placeholder="0,00"
-                    readOnly={aulasSelecionadas.length > 0}
                     onChange={(e) => setFormPag((f) => f ? { ...f, valorCobrado: e.target.value } : f)}
-                    className={`w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${aulasSelecionadas.length > 0 ? "bg-slate-50 text-slate-500 cursor-not-allowed" : ""}`} />
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Qtd. aulas</label>
                   <input type="number" min={0} value={formPag.quantidadeAulas} placeholder="—"
-                    readOnly={aulasSelecionadas.length > 0}
                     onChange={(e) => setFormPag((f) => f ? { ...f, quantidadeAulas: e.target.value } : f)}
-                    className={`w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${aulasSelecionadas.length > 0 ? "bg-slate-50 text-slate-500 cursor-not-allowed" : ""}`} />
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
               </div>
 
