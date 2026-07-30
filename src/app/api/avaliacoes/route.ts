@@ -30,6 +30,12 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
 
+  const dataStr = String(body.data ?? "");
+  const anoData = Number(dataStr.slice(0, 4));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataStr) || anoData < 2000 || anoData > 2100) {
+    return NextResponse.json({ erro: "Data inválida." }, { status: 400 });
+  }
+
   const unidadeOk = await prisma.unidade.findFirst({
     where: { id: body.unidadeId, empresaId: scope.empresaId },
     select: { id: true },
@@ -43,7 +49,7 @@ export async function POST(req: NextRequest) {
       materiaId: body.materiaId || null,
       serie: body.serie,
       nome: body.nome,
-      data: new Date(body.data),
+      data: new Date(dataStr),
       peso: body.peso ?? 1.0,
       notaMax: body.notaMax ?? 10.0,
       periodo: body.periodo || null,
