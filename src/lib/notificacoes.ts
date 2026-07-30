@@ -22,8 +22,9 @@ export function montarMensagem(params: {
   dataProva: Date;
   diasRestantes: number;
   nomesAlunos: string[];
+  observacao?: string | null;
 }): string {
-  const { nomeEmpresa, nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola, nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos } = params;
+  const { nomeEmpresa, nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola, nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos, observacao } = params;
 
   const dataFormatada = dataProva.toLocaleDateString("pt-BR", {
     weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
@@ -56,6 +57,7 @@ export function montarMensagem(params: {
     `🏢 *Unidade:* ${nomeUnidade}`,
     `📖 *Série:* ${serie}`,
     `📆 *Data:* ${dataFormatada}`,
+    ...(observacao ? [`💬 *Observação:* ${observacao}`] : []),
     ...(linhasAlunos.length > 0 ? [``, ...linhasAlunos] : []),
     ``,
     `_Mensagem automática de ${nomeEmpresa} via EduGestão_`,
@@ -220,6 +222,7 @@ export async function processarNotificacoes(): Promise<{
             dataProva,
             diasRestantes,
             nomesAlunos,
+            observacao: av.observacao,
           });
 
           const envio = await enviarWhatsapp(numero, mensagem);
@@ -296,6 +299,7 @@ export async function processarNotificacoesEmail(): Promise<{
             dataProva,
             diasRestantes,
             nomesAlunos,
+            observacao:     av.observacao,
           });
 
           await prisma.notificacaoProva.upsert({
