@@ -112,6 +112,7 @@ export default async function NotificacoesPage() {
         criadoEm: a.unidade.criadoEm.toISOString(),
         escola: { ...a.unidade.escola, criadoEm: a.unidade.escola.criadoEm.toISOString() },
       },
+      notificacoes: a.notificacoes.map((n) => ({ ...n, criadoEm: n.criadoEm.toISOString() })),
     };
   }
 

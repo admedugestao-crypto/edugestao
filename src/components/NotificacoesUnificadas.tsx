@@ -15,7 +15,7 @@ type Avaliacao = {
   id: string; nome: string; serie: string; data: string; periodo: string | null;
   materia: { nome: string } | null;
   unidade: { nome: string; escola: { nome: string } };
-  notificacoes: { professoraId: string; diasAntes: number; enviada: boolean }[];
+  notificacoes: { professoraId: string; diasAntes: number; enviada: boolean; emailEnviado: boolean; criadoEm: string }[];
 };
 
 type HistoricoWhatsapp = {
@@ -399,6 +399,10 @@ function AbaWhatsapp({
                 {avaliacoes.map((av) => {
                   const dataProva = parseDataLocal(av.data);
                   const dias = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+                  const emailsEnviados = av.notificacoes
+                    .filter((n) => n.emailEnviado)
+                    .sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime());
+                  const ultimoEmail = emailsEnviados[0];
                   return (
                     <tr key={`av-${av.id}`} className="hover:bg-slate-50">
                       <td className="py-2.5 px-4">
@@ -414,7 +418,16 @@ function AbaWhatsapp({
                           {dias === 0 ? "Hoje" : dias === 1 ? "Amanhã" : `${dias} dias`}
                         </span>
                       </td>
-                      <td className="py-2.5 px-4 text-slate-400 text-xs">—</td>
+                      <td className="py-2.5 px-4">
+                        {ultimoEmail
+                          ? (
+                            <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium">
+                              <CheckCircle2 size={12}/> Enviado<span className="text-slate-400 font-normal">· {fmtDataHora(ultimoEmail.criadoEm)}</span>
+                            </span>
+                          )
+                          : <span className="text-slate-400 text-xs">—</span>
+                        }
+                      </td>
                     </tr>
                   );
                 })}
