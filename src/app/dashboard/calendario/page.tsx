@@ -33,19 +33,7 @@ export default async function CalendarioPage() {
       },
       orderBy: { nome: "asc" },
     }),
-    // Se for professor, traz só as disciplinas vinculadas aos seus alunos
-    // Se for admin, traz todas
-    professoraId
-      ? prisma.materia.findMany({
-          where: {
-            empresaId: scope.empresaId,
-            alunoMaterias: {
-              some: { aluno: { professoraId } },
-            },
-          },
-          orderBy: { nome: "asc" },
-        })
-      : prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
+    prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
     prisma.tipoAvaliacao.findMany({
       where: { empresaId: scope.empresaId },
       orderBy: { nome: "asc" },
