@@ -14,6 +14,13 @@ const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
 const TIPO_LABEL: Record<string, string> = {
   MENSAL: "Mensal", QUINZENAL: "Quinzenal", SEMANAL: "Semanal", POR_AULA: "Por aula",
 };
+const STATUS_AULA_LABEL: Record<string, { label: string; cor: string; bg: string }> = {
+  AGENDADA:        { label: "Agendada",          cor: "text-slate-600",  bg: "bg-slate-100" },
+  REALIZADA:       { label: "Realizada",         cor: "text-emerald-700", bg: "bg-emerald-100" },
+  CANCELADA:       { label: "Cancelada",         cor: "text-red-700",    bg: "bg-red-100" },
+  FALTA_ALUNO:     { label: "Falta do aluno",    cor: "text-amber-700",  bg: "bg-amber-100" },
+  FALTA_PROFESSOR: { label: "Falta do professor", cor: "text-orange-700", bg: "bg-orange-100" },
+};
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 type PagamentoItem = {
@@ -40,6 +47,14 @@ type PagamentoItem = {
     unidade:   { nome: string; escola: { nome: string } };
     professora: string | null;
   };
+  aulasVinculadas: {
+    id:         string;
+    data:       string;
+    horaInicio: string | null;
+    horaFim:    string | null;
+    status:     string;
+    materia:    string | null;
+  }[];
 };
 
 type AulaRealizada = {
@@ -908,6 +923,40 @@ export default function PagamentosClient({
                     className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 )}
               </div>
+
+              {/* Agendas vinculadas — apenas no modo editar */}
+              {formPag.modo === "editar" && (() => {
+                const item = pagamentos.find((p) => p.id === formPag.id);
+                const vinculadas = item?.aulasVinculadas ?? [];
+                if (vinculadas.length === 0) return null;
+                return (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                      Agendas vinculadas
+                      <span className="ml-1 text-slate-400 font-normal">({vinculadas.length})</span>
+                    </label>
+                    <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-36 overflow-y-auto">
+                      {vinculadas.map((a) => {
+                        const d = new Date(a.data);
+                        const dataFmt = `${String(d.getUTCDate()).padStart(2,"0")}/${String(d.getUTCMonth()+1).padStart(2,"0")}/${d.getUTCFullYear()}`;
+                        const st = STATUS_AULA_LABEL[a.status] ?? { label: a.status, cor: "text-slate-600", bg: "bg-slate-100" };
+                        return (
+                          <div key={a.id} className="flex items-center justify-between gap-2 px-3 py-2">
+                            <span className="text-xs text-slate-700">
+                              {dataFmt}
+                              {a.horaInicio && <span className="text-slate-400"> · {a.horaInicio}{a.horaFim ? `–${a.horaFim}` : ""}</span>}
+                              {a.materia && <span className="text-indigo-600 ml-1">· {a.materia}</span>}
+                            </span>
+                            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${st.cor} ${st.bg}`}>
+                              {st.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Aulas Realizadas — apenas no modo criar */}
               {formPag.modo === "criar" && formPag.alunoId && (

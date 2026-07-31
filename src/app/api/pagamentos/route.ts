@@ -37,6 +37,20 @@ export async function GET(req: NextRequest) {
           professora: { select: { usuario: { select: { nome: true } } } },
         },
       },
+      aulas: {
+        select: {
+          agendaAula: {
+            select: {
+              id:         true,
+              data:       true,
+              horaInicio: true,
+              horaFim:    true,
+              status:     true,
+              materia:    { select: { nome: true } },
+            },
+          },
+        },
+      },
     },
     orderBy: [
       { dataVencimento: "asc" },
@@ -73,6 +87,14 @@ export async function GET(req: NextRequest) {
       },
       professora: p.aluno.professora?.usuario?.nome ?? null,
     },
+    aulasVinculadas: p.aulas.map((pa) => ({
+      id:         pa.agendaAula.id,
+      data:       pa.agendaAula.data.toISOString(),
+      horaInicio: pa.agendaAula.horaInicio,
+      horaFim:    pa.agendaAula.horaFim,
+      status:     pa.agendaAula.status,
+      materia:    pa.agendaAula.materia?.nome ?? null,
+    })),
   }));
 
   return NextResponse.json(resultado);
