@@ -28,11 +28,7 @@ export default async function DashboardPage() {
   const professoraId = scope.professoraId;
   const isAdmin      = scope.isAdmin;
 
-  const agora    = new Date();
-  const mesAtual = agora.getUTCMonth() + 1;
-  const anoAtual = agora.getUTCFullYear();
-
-  const [totalAlunos, todasNotas, proximasProvas, pagamentosMes, totalEscolas] =
+  const [totalAlunos, todasNotas, proximasProvas, pagamentosAbertos, totalEscolas] =
     await Promise.all([
       prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
       isAdmin ? Promise.resolve([]) : prisma.nota.findMany({
@@ -57,11 +53,10 @@ export default async function DashboardPage() {
       prisma.pagamento.findMany({
         where: {
           empresaId: scope.empresaId,
-          mes: mesAtual,
-          ano: anoAtual,
+          pago: false,
           ...(professoraId ? { aluno: { professoraId } } : {}),
         },
-        select: { valorCobrado: true, pago: true },
+        select: { valorCobrado: true },
       }),
       prisma.escola.count({ where: { empresaId: scope.empresaId } }),
     ]);
@@ -70,9 +65,7 @@ export default async function DashboardPage() {
     .filter((n) => n.valor < n.avaliacao.notaMax / 2)
     .slice(0, 5);
 
-  const totalEsperado = pagamentosMes.reduce((s, p) => s + Number(p.valorCobrado), 0);
-  const totalRecebido = pagamentosMes.filter((p) => p.pago).reduce((s, p) => s + Number(p.valorCobrado), 0);
-  const totalPendente = totalEsperado - totalRecebido;
+  const totalPendente = pagamentosAbertos.reduce((s, p) => s + Number(p.valorCobrado), 0);
 
   function formatBRL(v: number) {
     return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -81,7 +74,7 @@ export default async function DashboardPage() {
   const cards = [
     { label: "Alunos ativos",       valor: totalAlunos,           icon: Users,         cor: "bg-indigo-50 text-indigo-600",  link: "/dashboard/alunos" },
     { label: "Escolas cadastradas", valor: totalEscolas,           icon: School,        cor: "bg-emerald-50 text-emerald-600", link: "/dashboard/escolas" },
-    { label: `A receber (${String(mesAtual).padStart(2,"0")}/${anoAtual})`, valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600", link: "/dashboard/pagamentos" },
+    { label: "A receber (em aberto)", valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600", link: "/dashboard/pagamentos" },
     ...(!isAdmin ? [{ label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600", link: "/dashboard/notas" } as const] : []),
   ];
 
