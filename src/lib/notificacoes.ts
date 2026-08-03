@@ -154,12 +154,15 @@ async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<
 }
 
 // ── Tenta, em cascata, os provedores de WhatsApp configurados ───────────────
-// Fonnte, depois Evolution como fallback — para no primeiro que funcionar, e
+// Evolution primeiro, Fonnte como fallback — para no primeiro que funcionar, e
 // reporta o motivo real de cada falha (visível nos logs da função e na
-// resposta da API). Z-API foi removido da cascata (assinatura da instância
-// expirada — ver histórico de commits).
+// resposta da API). Fonnte foi rebaixado a fallback porque retorna status
+// "OK" mesmo quando a mensagem não chega ao destinatário (número
+// provavelmente restrito pelo WhatsApp), então nunca acionava o fallback
+// antes dessa mudança. Z-API foi removido da cascata (assinatura da
+// instância expirada — ver histórico de commits).
 export async function enviarWhatsapp(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const tentativas = [enviarViaFonnte, enviarViaEvolutionAPI];
+  const tentativas = [enviarViaEvolutionAPI, enviarViaFonnte];
   const erros: string[] = [];
 
   for (const tentativa of tentativas) {
