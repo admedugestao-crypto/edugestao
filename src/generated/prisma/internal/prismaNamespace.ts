@@ -390,6 +390,7 @@ export const ModelName = {
   Materia: 'Materia',
   ProfessoraMateria: 'ProfessoraMateria',
   MetodoEnsino: 'MetodoEnsino',
+  TipoAvaliacao: 'TipoAvaliacao',
   Escola: 'Escola',
   Unidade: 'Unidade',
   CalendarioEscolar: 'CalendarioEscolar',
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "metodoEnsino" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "materialBiblioteca" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
+    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "metodoEnsino" | "tipoAvaliacao" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "materialBiblioteca" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -865,6 +866,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.MetodoEnsinoCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.MetodoEnsinoCountAggregateOutputType> | number
+        }
+      }
+    }
+    TipoAvaliacao: {
+      payload: Prisma.$TipoAvaliacaoPayload<ExtArgs>
+      fields: Prisma.TipoAvaliacaoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TipoAvaliacaoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TipoAvaliacaoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>
+        }
+        findFirst: {
+          args: Prisma.TipoAvaliacaoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TipoAvaliacaoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>
+        }
+        findMany: {
+          args: Prisma.TipoAvaliacaoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>[]
+        }
+        create: {
+          args: Prisma.TipoAvaliacaoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>
+        }
+        createMany: {
+          args: Prisma.TipoAvaliacaoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TipoAvaliacaoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>[]
+        }
+        delete: {
+          args: Prisma.TipoAvaliacaoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>
+        }
+        update: {
+          args: Prisma.TipoAvaliacaoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>
+        }
+        deleteMany: {
+          args: Prisma.TipoAvaliacaoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TipoAvaliacaoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TipoAvaliacaoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>[]
+        }
+        upsert: {
+          args: Prisma.TipoAvaliacaoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TipoAvaliacaoPayload>
+        }
+        aggregate: {
+          args: Prisma.TipoAvaliacaoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTipoAvaliacao>
+        }
+        groupBy: {
+          args: Prisma.TipoAvaliacaoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TipoAvaliacaoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TipoAvaliacaoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TipoAvaliacaoCountAggregateOutputType> | number
         }
       }
     }
@@ -2023,6 +2098,8 @@ export const EmpresaScalarFieldEnum = {
   slug: 'slug',
   logoUrl: 'logoUrl',
   ativo: 'ativo',
+  whatsappPausado: 'whatsappPausado',
+  emailPausado: 'emailPausado',
   criadoEm: 'criadoEm'
 } as const
 
@@ -2088,6 +2165,15 @@ export const MetodoEnsinoScalarFieldEnum = {
 export type MetodoEnsinoScalarFieldEnum = (typeof MetodoEnsinoScalarFieldEnum)[keyof typeof MetodoEnsinoScalarFieldEnum]
 
 
+export const TipoAvaliacaoScalarFieldEnum = {
+  id: 'id',
+  empresaId: 'empresaId',
+  nome: 'nome'
+} as const
+
+export type TipoAvaliacaoScalarFieldEnum = (typeof TipoAvaliacaoScalarFieldEnum)[keyof typeof TipoAvaliacaoScalarFieldEnum]
+
+
 export const EscolaScalarFieldEnum = {
   id: 'id',
   empresaId: 'empresaId',
@@ -2150,6 +2236,7 @@ export const AvaliacaoScalarFieldEnum = {
   peso: 'peso',
   notaMax: 'notaMax',
   periodo: 'periodo',
+  observacao: 'observacao',
   criadoEm: 'criadoEm'
 } as const
 
@@ -2645,6 +2732,7 @@ export type GlobalOmitConfig = {
   materia?: Prisma.MateriaOmit
   professoraMateria?: Prisma.ProfessoraMateriaOmit
   metodoEnsino?: Prisma.MetodoEnsinoOmit
+  tipoAvaliacao?: Prisma.TipoAvaliacaoOmit
   escola?: Prisma.EscolaOmit
   unidade?: Prisma.UnidadeOmit
   calendarioEscolar?: Prisma.CalendarioEscolarOmit

@@ -57,6 +57,7 @@ export const ModelName = {
   Materia: 'Materia',
   ProfessoraMateria: 'ProfessoraMateria',
   MetodoEnsino: 'MetodoEnsino',
+  TipoAvaliacao: 'TipoAvaliacao',
   Escola: 'Escola',
   Unidade: 'Unidade',
   CalendarioEscolar: 'CalendarioEscolar',
@@ -96,6 +97,8 @@ export const EmpresaScalarFieldEnum = {
   slug: 'slug',
   logoUrl: 'logoUrl',
   ativo: 'ativo',
+  whatsappPausado: 'whatsappPausado',
+  emailPausado: 'emailPausado',
   criadoEm: 'criadoEm'
 } as const
 
@@ -161,6 +164,15 @@ export const MetodoEnsinoScalarFieldEnum = {
 export type MetodoEnsinoScalarFieldEnum = (typeof MetodoEnsinoScalarFieldEnum)[keyof typeof MetodoEnsinoScalarFieldEnum]
 
 
+export const TipoAvaliacaoScalarFieldEnum = {
+  id: 'id',
+  empresaId: 'empresaId',
+  nome: 'nome'
+} as const
+
+export type TipoAvaliacaoScalarFieldEnum = (typeof TipoAvaliacaoScalarFieldEnum)[keyof typeof TipoAvaliacaoScalarFieldEnum]
+
+
 export const EscolaScalarFieldEnum = {
   id: 'id',
   empresaId: 'empresaId',
@@ -223,6 +235,7 @@ export const AvaliacaoScalarFieldEnum = {
   peso: 'peso',
   notaMax: 'notaMax',
   periodo: 'periodo',
+  observacao: 'observacao',
   criadoEm: 'criadoEm'
 } as const
 

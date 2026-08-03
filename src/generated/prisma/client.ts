@@ -72,6 +72,11 @@ export type ProfessoraMateria = Prisma.ProfessoraMateriaModel
  */
 export type MetodoEnsino = Prisma.MetodoEnsinoModel
 /**
+ * Model TipoAvaliacao
+ * 
+ */
+export type TipoAvaliacao = Prisma.TipoAvaliacaoModel
+/**
  * Model Escola
  * 
  */

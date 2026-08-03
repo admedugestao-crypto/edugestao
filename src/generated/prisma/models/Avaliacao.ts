@@ -47,6 +47,7 @@ export type AvaliacaoMinAggregateOutputType = {
   peso: number | null
   notaMax: number | null
   periodo: string | null
+  observacao: string | null
   criadoEm: Date | null
 }
 
@@ -61,6 +62,7 @@ export type AvaliacaoMaxAggregateOutputType = {
   peso: number | null
   notaMax: number | null
   periodo: string | null
+  observacao: string | null
   criadoEm: Date | null
 }
 
@@ -75,6 +77,7 @@ export type AvaliacaoCountAggregateOutputType = {
   peso: number
   notaMax: number
   periodo: number
+  observacao: number
   criadoEm: number
   _all: number
 }
@@ -101,6 +104,7 @@ export type AvaliacaoMinAggregateInputType = {
   peso?: true
   notaMax?: true
   periodo?: true
+  observacao?: true
   criadoEm?: true
 }
 
@@ -115,6 +119,7 @@ export type AvaliacaoMaxAggregateInputType = {
   peso?: true
   notaMax?: true
   periodo?: true
+  observacao?: true
   criadoEm?: true
 }
 
@@ -129,6 +134,7 @@ export type AvaliacaoCountAggregateInputType = {
   peso?: true
   notaMax?: true
   periodo?: true
+  observacao?: true
   criadoEm?: true
   _all?: true
 }
@@ -230,6 +236,7 @@ export type AvaliacaoGroupByOutputType = {
   peso: number
   notaMax: number
   periodo: string | null
+  observacao: string | null
   criadoEm: Date
   _count: AvaliacaoCountAggregateOutputType | null
   _avg: AvaliacaoAvgAggregateOutputType | null
@@ -267,6 +274,7 @@ export type AvaliacaoWhereInput = {
   peso?: Prisma.FloatFilter<"Avaliacao"> | number
   notaMax?: Prisma.FloatFilter<"Avaliacao"> | number
   periodo?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
+  observacao?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidade?: Prisma.XOR<Prisma.UnidadeScalarRelationFilter, Prisma.UnidadeWhereInput>
@@ -286,6 +294,7 @@ export type AvaliacaoOrderByWithRelationInput = {
   peso?: Prisma.SortOrder
   notaMax?: Prisma.SortOrder
   periodo?: Prisma.SortOrderInput | Prisma.SortOrder
+  observacao?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   empresa?: Prisma.EmpresaOrderByWithRelationInput
   unidade?: Prisma.UnidadeOrderByWithRelationInput
@@ -308,6 +317,7 @@ export type AvaliacaoWhereUniqueInput = Prisma.AtLeast<{
   peso?: Prisma.FloatFilter<"Avaliacao"> | number
   notaMax?: Prisma.FloatFilter<"Avaliacao"> | number
   periodo?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
+  observacao?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   unidade?: Prisma.XOR<Prisma.UnidadeScalarRelationFilter, Prisma.UnidadeWhereInput>
@@ -327,6 +337,7 @@ export type AvaliacaoOrderByWithAggregationInput = {
   peso?: Prisma.SortOrder
   notaMax?: Prisma.SortOrder
   periodo?: Prisma.SortOrderInput | Prisma.SortOrder
+  observacao?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   _count?: Prisma.AvaliacaoCountOrderByAggregateInput
   _avg?: Prisma.AvaliacaoAvgOrderByAggregateInput
@@ -349,6 +360,7 @@ export type AvaliacaoScalarWhereWithAggregatesInput = {
   peso?: Prisma.FloatWithAggregatesFilter<"Avaliacao"> | number
   notaMax?: Prisma.FloatWithAggregatesFilter<"Avaliacao"> | number
   periodo?: Prisma.StringNullableWithAggregatesFilter<"Avaliacao"> | string | null
+  observacao?: Prisma.StringNullableWithAggregatesFilter<"Avaliacao"> | string | null
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"Avaliacao"> | Date | string
 }
 
@@ -360,6 +372,7 @@ export type AvaliacaoCreateInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
@@ -379,6 +392,7 @@ export type AvaliacaoUncheckedCreateInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutAvaliacaoInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutAvaliacaoInput
@@ -392,6 +406,7 @@ export type AvaliacaoUpdateInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
@@ -411,6 +426,7 @@ export type AvaliacaoUncheckedUpdateInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notas?: Prisma.NotaUncheckedUpdateManyWithoutAvaliacaoNestedInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput
@@ -427,6 +443,7 @@ export type AvaliacaoCreateManyInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
 }
 
@@ -438,6 +455,7 @@ export type AvaliacaoUpdateManyMutationInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -452,6 +470,7 @@ export type AvaliacaoUncheckedUpdateManyInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -476,6 +495,7 @@ export type AvaliacaoCountOrderByAggregateInput = {
   peso?: Prisma.SortOrder
   notaMax?: Prisma.SortOrder
   periodo?: Prisma.SortOrder
+  observacao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -495,6 +515,7 @@ export type AvaliacaoMaxOrderByAggregateInput = {
   peso?: Prisma.SortOrder
   notaMax?: Prisma.SortOrder
   periodo?: Prisma.SortOrder
+  observacao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -509,6 +530,7 @@ export type AvaliacaoMinOrderByAggregateInput = {
   peso?: Prisma.SortOrder
   notaMax?: Prisma.SortOrder
   periodo?: Prisma.SortOrder
+  observacao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -692,6 +714,7 @@ export type AvaliacaoCreateWithoutEmpresaInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAvaliacoesInput
@@ -709,6 +732,7 @@ export type AvaliacaoUncheckedCreateWithoutEmpresaInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutAvaliacaoInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutAvaliacaoInput
@@ -754,6 +778,7 @@ export type AvaliacaoScalarWhereInput = {
   peso?: Prisma.FloatFilter<"Avaliacao"> | number
   notaMax?: Prisma.FloatFilter<"Avaliacao"> | number
   periodo?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
+  observacao?: Prisma.StringNullableFilter<"Avaliacao"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"Avaliacao"> | Date | string
 }
 
@@ -765,6 +790,7 @@ export type AvaliacaoCreateWithoutMateriaInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
@@ -782,6 +808,7 @@ export type AvaliacaoUncheckedCreateWithoutMateriaInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutAvaliacaoInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutAvaliacaoInput
@@ -821,6 +848,7 @@ export type AvaliacaoCreateWithoutUnidadeInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   materia?: Prisma.MateriaCreateNestedOneWithoutAvaliacoesInput
@@ -838,6 +866,7 @@ export type AvaliacaoUncheckedCreateWithoutUnidadeInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutAvaliacaoInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutAvaliacaoInput
@@ -877,6 +906,7 @@ export type AvaliacaoCreateWithoutNotificacoesInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
@@ -895,6 +925,7 @@ export type AvaliacaoUncheckedCreateWithoutNotificacoesInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   notas?: Prisma.NotaUncheckedCreateNestedManyWithoutAvaliacaoInput
 }
@@ -923,6 +954,7 @@ export type AvaliacaoUpdateWithoutNotificacoesInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
@@ -941,6 +973,7 @@ export type AvaliacaoUncheckedUpdateWithoutNotificacoesInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notas?: Prisma.NotaUncheckedUpdateManyWithoutAvaliacaoNestedInput
 }
@@ -953,6 +986,7 @@ export type AvaliacaoCreateWithoutNotasInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAvaliacoesInput
   unidade: Prisma.UnidadeCreateNestedOneWithoutAvaliacoesInput
@@ -971,6 +1005,7 @@ export type AvaliacaoUncheckedCreateWithoutNotasInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
   notificacoes?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutAvaliacaoInput
 }
@@ -999,6 +1034,7 @@ export type AvaliacaoUpdateWithoutNotasInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
@@ -1017,6 +1053,7 @@ export type AvaliacaoUncheckedUpdateWithoutNotasInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput
 }
@@ -1031,6 +1068,7 @@ export type AvaliacaoCreateManyEmpresaInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
 }
 
@@ -1042,6 +1080,7 @@ export type AvaliacaoUpdateWithoutEmpresaInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAvaliacoesNestedInput
@@ -1059,6 +1098,7 @@ export type AvaliacaoUncheckedUpdateWithoutEmpresaInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notas?: Prisma.NotaUncheckedUpdateManyWithoutAvaliacaoNestedInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput
@@ -1074,6 +1114,7 @@ export type AvaliacaoUncheckedUpdateManyWithoutEmpresaInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1087,6 +1128,7 @@ export type AvaliacaoCreateManyMateriaInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
 }
 
@@ -1098,6 +1140,7 @@ export type AvaliacaoUpdateWithoutMateriaInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   unidade?: Prisma.UnidadeUpdateOneRequiredWithoutAvaliacoesNestedInput
@@ -1115,6 +1158,7 @@ export type AvaliacaoUncheckedUpdateWithoutMateriaInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notas?: Prisma.NotaUncheckedUpdateManyWithoutAvaliacaoNestedInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput
@@ -1130,6 +1174,7 @@ export type AvaliacaoUncheckedUpdateManyWithoutMateriaInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1143,6 +1188,7 @@ export type AvaliacaoCreateManyUnidadeInput = {
   peso?: number
   notaMax?: number
   periodo?: string | null
+  observacao?: string | null
   criadoEm?: Date | string
 }
 
@@ -1154,6 +1200,7 @@ export type AvaliacaoUpdateWithoutUnidadeInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAvaliacoesNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutAvaliacoesNestedInput
@@ -1171,6 +1218,7 @@ export type AvaliacaoUncheckedUpdateWithoutUnidadeInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notas?: Prisma.NotaUncheckedUpdateManyWithoutAvaliacaoNestedInput
   notificacoes?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutAvaliacaoNestedInput
@@ -1186,6 +1234,7 @@ export type AvaliacaoUncheckedUpdateManyWithoutUnidadeInput = {
   peso?: Prisma.FloatFieldUpdateOperationsInput | number
   notaMax?: Prisma.FloatFieldUpdateOperationsInput | number
   periodo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1240,6 +1289,7 @@ export type AvaliacaoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   peso?: boolean
   notaMax?: boolean
   periodo?: boolean
+  observacao?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
@@ -1260,6 +1310,7 @@ export type AvaliacaoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   peso?: boolean
   notaMax?: boolean
   periodo?: boolean
+  observacao?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
@@ -1277,6 +1328,7 @@ export type AvaliacaoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   peso?: boolean
   notaMax?: boolean
   periodo?: boolean
+  observacao?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
@@ -1294,10 +1346,11 @@ export type AvaliacaoSelectScalar = {
   peso?: boolean
   notaMax?: boolean
   periodo?: boolean
+  observacao?: boolean
   criadoEm?: boolean
 }
 
-export type AvaliacaoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "unidadeId" | "materiaId" | "serie" | "nome" | "data" | "peso" | "notaMax" | "periodo" | "criadoEm", ExtArgs["result"]["avaliacao"]>
+export type AvaliacaoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "unidadeId" | "materiaId" | "serie" | "nome" | "data" | "peso" | "notaMax" | "periodo" | "observacao" | "criadoEm", ExtArgs["result"]["avaliacao"]>
 export type AvaliacaoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   unidade?: boolean | Prisma.UnidadeDefaultArgs<ExtArgs>
@@ -1337,6 +1390,7 @@ export type $AvaliacaoPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     peso: number
     notaMax: number
     periodo: string | null
+    observacao: string | null
     criadoEm: Date
   }, ExtArgs["result"]["avaliacao"]>
   composites: {}
@@ -1776,6 +1830,7 @@ export interface AvaliacaoFieldRefs {
   readonly peso: Prisma.FieldRef<"Avaliacao", 'Float'>
   readonly notaMax: Prisma.FieldRef<"Avaliacao", 'Float'>
   readonly periodo: Prisma.FieldRef<"Avaliacao", 'String'>
+  readonly observacao: Prisma.FieldRef<"Avaliacao", 'String'>
   readonly criadoEm: Prisma.FieldRef<"Avaliacao", 'DateTime'>
 }
     
