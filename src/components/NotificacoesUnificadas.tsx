@@ -15,7 +15,7 @@ type Avaliacao = {
   id: string; nome: string; serie: string; data: string; periodo: string | null;
   materia: { nome: string } | null;
   unidade: { nome: string; escola: { nome: string } };
-  notificacoes: { professoraId: string; diasAntes: number; enviada: boolean; emailEnviado: boolean; criadoEm: string }[];
+  notificacoes: { id: string; professoraId: string; diasAntes: number; enviada: boolean; emailEnviado: boolean; criadoEm: string }[];
 };
 
 type HistoricoWhatsapp = {
@@ -399,14 +399,26 @@ function AbaWhatsapp({
                 {avaliacoes.map((av) => {
                   const dataProva = parseDataLocal(av.data);
                   const dias = Math.round((dataProva.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-                  const emailsEnviados = av.notificacoes
-                    .filter((n) => n.emailEnviado)
+                  const registrosOrdenados = [...av.notificacoes]
                     .sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime());
-                  const ultimoEmail = emailsEnviados[0];
+                  const ultimoEmail    = registrosOrdenados.find((n) => n.emailEnviado);
+                  // Registro mais recente (qualquer professor/dias) — alvo do clique direito
+                  // pra enviar/reenviar via WhatsApp. Se a avaliação tiver mais de um
+                  // professor vinculado, age sobre o registro mais recente entre eles.
+                  const ultimoRegistro = registrosOrdenados[0];
+                  const wppEnviado = ultimoRegistro?.enviada ?? false;
                   return (
                     <tr key={`av-${av.id}`} className="hover:bg-slate-50">
                       <td className="py-2.5 px-4">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 text-xs font-medium">Prova</span>
+                        <span
+                          onContextMenu={ultimoRegistro ? (e) => abrirMenu(e, ultimoRegistro.id, wppEnviado, "prova") : undefined}
+                          title={ultimoRegistro ? "Botão direito para enviar/reenviar via WhatsApp" : "Ainda não processado pelo envio automático"}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 text-xs font-medium select-none transition-opacity ${
+                            ultimoRegistro ? "cursor-context-menu hover:opacity-80" : ""
+                          }`}
+                        >
+                          Prova
+                        </span>
                       </td>
                       <td className="py-2.5 px-4 text-slate-700 text-xs font-medium">
                         {av.nome}{av.materia && <span className="text-slate-400 ml-1 font-normal">· {av.materia.nome}</span>}
@@ -418,15 +430,21 @@ function AbaWhatsapp({
                           {dias === 0 ? "Hoje" : dias === 1 ? "Amanhã" : `${dias} dias`}
                         </span>
                       </td>
-                      <td className="py-2.5 px-4">
-                        {ultimoEmail
-                          ? (
-                            <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium">
-                              <CheckCircle2 size={12}/> Enviado<span className="text-slate-400 font-normal">· {fmtDataHora(ultimoEmail.criadoEm)}</span>
-                            </span>
-                          )
-                          : <span className="text-slate-400 text-xs">—</span>
-                        }
+                      <td className="py-2.5 px-4 space-y-0.5">
+                        <div className="flex items-center gap-1 text-xs">
+                          <MessageSquare size={11} className="text-slate-400 shrink-0"/>
+                          {wppEnviado
+                            ? <span className="inline-flex items-center gap-1 text-emerald-600 font-medium"><CheckCircle2 size={12}/> Enviado<span className="text-slate-400 font-normal">· {fmtDataHora(ultimoRegistro!.criadoEm)}</span></span>
+                            : <span className="text-slate-400">—</span>
+                          }
+                        </div>
+                        <div className="flex items-center gap-1 text-xs">
+                          <Mail size={11} className="text-slate-400 shrink-0"/>
+                          {ultimoEmail
+                            ? <span className="inline-flex items-center gap-1 text-emerald-600 font-medium"><CheckCircle2 size={12}/> Enviado<span className="text-slate-400 font-normal">· {fmtDataHora(ultimoEmail.criadoEm)}</span></span>
+                            : <span className="text-slate-400">—</span>
+                          }
+                        </div>
                       </td>
                     </tr>
                   );
