@@ -38,9 +38,6 @@ export default async function AgendaMobilePage() {
     slots: (p.disponibilidade as any) ?? [],
   }));
 
-  // Provas próximas dos alunos deste professor, para o aviso na agenda mobile
-  const provasProximas = isProfessor ? await buscarProvasProximas(scope.empresaId, scope.professoraId!) : [];
-
   return (
     <AgendaMobile
       isProfessor={isProfessor}
@@ -50,42 +47,6 @@ export default async function AgendaMobilePage() {
       professoras={professoras.map((p: any) => ({ id: p.id, nome: p.usuario.nome }))}
       disponibilidades={disponibilidades}
       alunos={alunos.map((a) => ({ ...a, materias: a.materias.map((m) => m.materia) }))}
-      provasProximas={provasProximas}
     />
   );
-}
-
-// ── Provas nos próximos 30 dias, nas turmas (unidade+série) deste professor ─
-async function buscarProvasProximas(empresaId: string, professoraId: string) {
-  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const em30dias = new Date(hoje); em30dias.setDate(em30dias.getDate() + 30); em30dias.setHours(23, 59, 59, 999);
-
-  const alunosProf = await prisma.aluno.findMany({
-    where: { professoraId, status: "ATIVO" },
-    select: { unidadeId: true, serie: true },
-  });
-  const combos = Array.from(new Set(alunosProf.map((a) => `${a.unidadeId}::${a.serie}`)))
-    .map((s) => { const [unidadeId, serie] = s.split("::"); return { unidadeId, serie }; });
-  if (combos.length === 0) return [];
-
-  const avaliacoes = await prisma.avaliacao.findMany({
-    where: { empresaId, data: { gte: hoje, lte: em30dias }, OR: combos },
-    select: {
-      id: true, nome: true, data: true, serie: true,
-      materia: { select: { nome: true, cor: true } },
-      unidade: { select: { nome: true, escola: { select: { nome: true } } } },
-    },
-    orderBy: { data: "asc" },
-  });
-
-  return avaliacoes.map((av) => ({
-    id: av.id,
-    nome: av.nome,
-    data: av.data.toISOString(),
-    serie: av.serie,
-    materiaNome: av.materia?.nome ?? null,
-    materiaCor: av.materia?.cor ?? null,
-    unidadeNome: av.unidade.nome,
-    escolaNome: av.unidade.escola.nome,
-  }));
 }

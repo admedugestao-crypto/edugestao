@@ -80,13 +80,12 @@ function subtrair(janelas: { inicio: number; fim: number }[], ocupados: { inicio
 // ── Componente ─────────────────────────────────────────────────────────────────
 export default function AgendaMobile({
   isProfessor, isAdmin, nomeUsuario,
-  professoraIdSessao, professoras, disponibilidades, alunos, provasProximas = [],
+  professoraIdSessao, professoras, disponibilidades, alunos,
 }: {
   isProfessor: boolean; isAdmin: boolean; nomeUsuario: string;
   professoraIdSessao: string;
   professoras: ProfOpt[]; disponibilidades: DispProf[];
   alunos: AlunoOpt[];
-  provasProximas?: Prova[];
 }) {
   const router = useRouter();
 
@@ -95,7 +94,18 @@ export default function AgendaMobile({
   const [aulas,     setAulas]     = useState<Aula[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
+  const [provasProximas, setProvasProximas] = useState<Prova[]>([]);
   const [provasAbertas, setProvasAbertas] = useState(false);
+
+  // ── Provas próximas do professor em foco (o próprio, ou o filtrado pelo admin) ──
+  const profIdProvas = isProfessor ? professoraIdSessao : filtroProfId;
+  useEffect(() => {
+    if (!profIdProvas) { setProvasProximas([]); return; }
+    fetch(`/api/provas-proximas?professoraId=${profIdProvas}`)
+      .then((res) => res.json())
+      .then((data) => setProvasProximas(Array.isArray(data) ? data : []))
+      .catch(() => setProvasProximas([]));
+  }, [profIdProvas]);
 
   // Modal nova aula
   const [modalAberto, setModalAberto] = useState(false);
@@ -465,7 +475,7 @@ export default function AgendaMobile({
       </div>
 
       {/* ── Aviso de provas próximas ─────────────────────────────────────── */}
-      {isProfessor && provasProximas.length > 0 && (
+      {provasProximas.length > 0 && (
         <div className="bg-amber-50 border-b border-amber-200 shrink-0">
           <button onClick={() => setProvasAbertas((v) => !v)}
             className="w-full flex items-center justify-between px-4 py-2.5 active:bg-amber-100 transition-colors">
