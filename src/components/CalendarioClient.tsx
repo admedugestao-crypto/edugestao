@@ -43,7 +43,7 @@ type FormAv = {
 };
 
 const PERIODOS_POR_TIPO: Record<string, string[]> = {
-  Bimestral:  ["1º Bimestre",  "2º Bimestre",  "3º Bimestre",  "4º Bimestre"],
+  Bimestral:  ["1º Bimestre",  "2º Bimestre"],
   Trimestral: ["1º Trimestre", "2º Trimestre", "3º Trimestre"],
   Semestral:  ["1º Semestre",  "2º Semestre"],
 };
