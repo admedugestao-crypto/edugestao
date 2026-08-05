@@ -499,6 +499,7 @@ model AgendaAula {
   horaInicio   String? // "14:00"
   horaFim      String? // "15:00"
   status       StatusAula @default(AGENDADA)
+  reposicao    Boolean    @default(false) // aula de reposição cuja cobrança já foi feita na aula original excluída
   observacao   String?
   criadoEm     DateTime   @default(now())
 

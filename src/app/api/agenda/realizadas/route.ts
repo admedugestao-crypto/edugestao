@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
       empresaId: scope.empresaId,
       alunoId,
       status: "REALIZADA",
+      reposicao: false, // reposição já foi cobrada na aula original excluída
       pagamentos: { none: {} },
     },
     select: {

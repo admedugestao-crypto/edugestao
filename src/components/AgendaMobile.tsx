@@ -126,6 +126,10 @@ export default function AgendaMobile({
   const [excluindoAula, setExcluindoAula] = useState(false);
   const [erroExcluirAula, setErroExcluirAula] = useState<string | null>(null);
 
+  // Reposição — ao excluir uma aula perguntando se ela será reposta
+  const [reposicaoOrigem, setReposicaoOrigem] = useState<{ id: string } | null>(null);
+  const [msgReposicao, setMsgReposicao] = useState<string | null>(null);
+
   // Modal conteúdo (ao marcar aula como Realizada)
   const [conteudoModal, setConteudoModal]     = useState<ConteudoModalState | null>(null);
   const [carregandoConteudo, setCarregandoConteudo] = useState(false);
@@ -170,10 +174,11 @@ export default function AgendaMobile({
     if (janelas.length === 0) return aulasD.map((a) => ({ tipo: "aula" as const, aula: a }));
     const ativos  = aulas.filter((a) => isSameDay(parseLocal(a.data), dia) && a.status !== "CANCELADA" && a.horaInicio && a.horaFim);
     const livres  = subtrair(janelas, ativos.map((a) => ({ inicio: toMin(a.horaInicio!), fim: toMin(a.horaFim!) })));
+    const passo = reposicaoOrigem ? 30 : 60;
     const chunks: { inicio: number; fim: number }[] = [];
     for (const l of livres) {
       let cur = l.inicio;
-      while (cur + 60 <= l.fim) { chunks.push({ inicio: cur, fim: cur + 60 }); cur += 60; }
+      while (cur + passo <= l.fim) { chunks.push({ inicio: cur, fim: cur + passo }); cur += passo; }
     }
     const items: ({ tipo: "aula"; aula: Aula; ini: number } | { tipo: "livre"; inicio: string; fim: string; ini: number })[] = [
       ...aulasD.map((a) => ({ tipo: "aula" as const, aula: a, ini: toMin(a.horaInicio ?? "00:00") })),
@@ -185,7 +190,8 @@ export default function AgendaMobile({
   // ── Disponibilidade do professor ─────────────────────────────────────────────
   function verificarDisponibilidade(): string | null {
     if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
+    const duracaoMinima = reposicaoOrigem ? 30 : 60;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) return null; // duração inválida, erro separado cuida disso
 
     const profId = isProfessor ? professoraIdSessao : profModal;
     if (!profId) return null;
@@ -219,8 +225,9 @@ export default function AgendaMobile({
     if (!novaAula.alunoId || !novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) {
       setErroModal("Preencha aluno, data e horário."); return;
     }
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) {
-      setErroModal("Duração mínima de 1 hora."); return;
+    const duracaoMinima = reposicaoOrigem ? 30 : 60;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) {
+      setErroModal(reposicaoOrigem ? "Duração mínima de 30 minutos." : "Duração mínima de 1 hora."); return;
     }
     if (!forcarDisp) {
       const aviso = verificarDisponibilidade();
@@ -229,7 +236,8 @@ export default function AgendaMobile({
     setAvisoDisp(null);
     setSalvando(true); setErroModal(null);
     try {
-      const res = await fetch("/api/agenda", {
+      const url = reposicaoOrigem ? `/api/agenda/${reposicaoOrigem.id}/repor` : "/api/agenda";
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...novaAula, ...(!isProfessor ? { professoraId: profModal } : {}) }),
@@ -238,6 +246,18 @@ export default function AgendaMobile({
         const j = await res.json().catch(() => ({}));
         setErroModal(j.erro ?? "Erro ao salvar.");
         return;
+      }
+      if (reposicaoOrigem) {
+        const j = await res.json();
+        setAulas((prev) => prev.filter((a) => a.id !== reposicaoOrigem.id));
+        setDetalhe(null);
+        setMsgReposicao(
+          j.pagamento
+            ? `Aula remarcada. Cobrança de R$ ${Number(j.pagamento.valorCobrado).toFixed(2)} criada para a aula excluída.`
+            : "Aula remarcada.",
+        );
+        setTimeout(() => setMsgReposicao(null), 6000);
+        setReposicaoOrigem(null);
       }
       setModalAberto(false);
       await carregar();
@@ -254,6 +274,18 @@ export default function AgendaMobile({
     });
     setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
     setDetalhe((p) => p && p.id === id ? { ...p, status } : p);
+  }
+
+  // ── Reposição ────────────────────────────────────────────────────────────
+  function abrirReposicao(aula: Aula) {
+    setConfirmExcluirAula(false);
+    setDetalhe(null);
+    setReposicaoOrigem({ id: aula.id });
+    setNovaAula({ alunoId: aula.alunoId, materiaId: aula.materiaId ?? "", data: "", horaInicio: "", horaFim: "", observacao: "" });
+    setProfModal(isAdmin ? filtroProfId : "");
+    setErroModal(null);
+    setAvisoDisp(null);
+    setModalAberto(true);
   }
 
   // ── Excluir aula ──────────────────────────────────────────────────────────
@@ -455,6 +487,13 @@ export default function AgendaMobile({
   return (
     <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
 
+      {/* ── Feedback reposição ───────────────────────────────────────────── */}
+      {msgReposicao && (
+        <div className="fixed top-4 inset-x-4 z-[60] text-sm font-medium px-4 py-2.5 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-800 shadow-lg">
+          {msgReposicao}
+        </div>
+      )}
+
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -611,6 +650,7 @@ export default function AgendaMobile({
           })() : (
             <button key={`livre-${j}`}
               onClick={() => {
+                setReposicaoOrigem(null);
                 setNovaAula({ alunoId: "", materiaId: "", data: dsAtivo, horaInicio: item.inicio, horaFim: item.fim, observacao: "" });
                 setProfModal(filtroProfId);
                 setErroModal(null);
@@ -629,6 +669,7 @@ export default function AgendaMobile({
       {/* ── Botão flutuante nova aula ──────────────────────────────────────── */}
       <button
         onClick={() => {
+          setReposicaoOrigem(null);
           setNovaAula({ alunoId: "", materiaId: "", data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
           setProfModal(isAdmin ? filtroProfId : "");
           setErroModal(null);
@@ -644,7 +685,7 @@ export default function AgendaMobile({
         <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setModalAberto(false)}>
           <div className="bg-white rounded-t-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-800">Nova Aula</h2>
+              <h2 className="text-base font-bold text-slate-800">{reposicaoOrigem ? "Repor Aula" : "Nova Aula"}</h2>
               <button onClick={() => setModalAberto(false)}><X size={20} className="text-slate-400"/></button>
             </div>
 
@@ -867,14 +908,18 @@ export default function AgendaMobile({
 
             {confirmExcluirAula ? (
               <div className="space-y-2">
-                <p className="text-sm text-slate-600">Tem certeza que deseja excluir esta aula?</p>
-                <div className="flex gap-2">
+                <p className="text-sm text-slate-600">Esta aula vai ser reposta em outro horário?</p>
+                <div className="flex flex-col gap-2">
+                  <button onClick={() => abrirReposicao(detalhe)}
+                    className="bg-indigo-600 text-white rounded-xl py-3 font-semibold text-sm">
+                    Sim, será reposta
+                  </button>
                   <button onClick={() => excluirAula(detalhe.id)} disabled={excluindoAula}
-                    className="flex-1 bg-red-600 text-white rounded-xl py-3 font-semibold text-sm disabled:opacity-50">
-                    {excluindoAula ? "Excluindo..." : "Excluir"}
+                    className="border border-red-200 text-red-600 rounded-xl py-3 font-semibold text-sm disabled:opacity-50">
+                    {excluindoAula ? "Excluindo..." : "Não, só excluir"}
                   </button>
                   <button onClick={() => setConfirmExcluirAula(false)}
-                    className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 font-semibold text-sm">
+                    className="border border-slate-200 text-slate-600 rounded-xl py-3 font-semibold text-sm">
                     Cancelar
                   </button>
                 </div>

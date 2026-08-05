@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
   const whereAula: any = {
     empresaId: scope.empresaId,
     status: { in: ["REALIZADA", "FALTA_ALUNO"] },
+    reposicao: false, // aula de reposição já foi cobrada manualmente na aula original excluída
     data:   { gte: inicioMes, lte: fimMes },
   };
   if (!scope.isAdmin && scope.professoraId) whereAula.professoraId = scope.professoraId;

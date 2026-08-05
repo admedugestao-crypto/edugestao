@@ -2395,6 +2395,7 @@ export const AgendaAulaScalarFieldEnum = {
   horaInicio: 'horaInicio',
   horaFim: 'horaFim',
   status: 'status',
+  reposicao: 'reposicao',
   observacao: 'observacao',
   criadoEm: 'criadoEm'
 } as const

@@ -146,6 +146,11 @@ export default function AgendaClient({
   const [erroModal, setErroModal] = useState<string | null>(null);
   const [avisoAgendamento, setAvisoAgendamento] = useState<{ msg: string; tipo: "disp" | "geral" } | null>(null);
 
+  // Reposição — ao excluir uma aula perguntando se ela será reposta
+  const [confirmExcluir, setConfirmExcluir] = useState<Aula | null>(null);
+  const [reposicaoOrigem, setReposicaoOrigem] = useState<{ id: string } | null>(null);
+  const [msgReposicao, setMsgReposicao] = useState<string | null>(null);
+
   // Alunos filtrados pela professora selecionada no modal (só para não-professores)
   const alunosFiltradosModal = !isProfessor && professoraIdModal
     ? alunos.filter((a) => a.professoraId === professoraIdModal)
@@ -354,14 +359,29 @@ export default function AgendaClient({
     setProfessoraIdModal("");
     setErroModal(null);
     setAvisoAgendamento(null);
+    setReposicaoOrigem(null);
     setNovaAula({ alunoId: "", materiaId: "", data: data ?? "", horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
+    setModalAberto(true);
+  }
+
+  /** Abre o modal de "nova aula" já em modo reposição, pré-preenchido a partir da aula excluída. */
+  function abrirReposicao(aula: Aula) {
+    setConfirmExcluir(null);
+    setAulaDetalhe(null);
+    setDataModal("");
+    setProfessoraIdModal(aula.professoraId);
+    setErroModal(null);
+    setAvisoAgendamento(null);
+    setReposicaoOrigem({ id: aula.id });
+    setNovaAula({ alunoId: aula.alunoId, materiaId: aula.materiaId ?? "", data: "", horaInicio: "", horaFim: "", observacao: "" });
     setModalAberto(true);
   }
 
   /** Verifica disponibilidade do professor — sempre rodada, mesmo ao forçar outros avisos. */
   function verificarDisponibilidade(): { msg: string } | null {
     if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
+    const duracaoMinima = reposicaoOrigem ? 30 : 60;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) return null; // duração inválida, erro separado cuida disso
 
     const profId = isProfessor ? professoraIdSessao : professoraIdModal;
     if (!profId) return null;
@@ -408,9 +428,10 @@ export default function AgendaClient({
 
     if (!novaAula.horaInicio || !novaAula.horaFim) return null;
 
-    // Duração mínima de 1 hora
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60)
-      return { tipo: "erro", msg: "A duração mínima da aula é de 1 hora." };
+    // Duração mínima: 1 hora normalmente, 30 minutos ao repor uma aula excluída
+    const duracaoMinima = reposicaoOrigem ? 30 : 60;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima)
+      return { tipo: "erro", msg: reposicaoOrigem ? "A duração mínima da aula de reposição é de 30 minutos." : "A duração mínima da aula é de 1 hora." };
 
     // Verificar conflito com aulas já existentes
     const aulasNaData = aulas.filter(
@@ -466,7 +487,8 @@ export default function AgendaClient({
     setSalvando(true);
     setErroModal(null);
     try {
-      const res = await fetch("/api/agenda", {
+      const url = reposicaoOrigem ? `/api/agenda/${reposicaoOrigem.id}/repor` : "/api/agenda";
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -478,6 +500,18 @@ export default function AgendaClient({
         const json = await res.json().catch(() => ({}));
         setErroModal(json.erro ?? "Erro ao salvar aula.");
         return;
+      }
+      if (reposicaoOrigem) {
+        const json = await res.json();
+        setAulas((prev) => prev.filter((a) => a.id !== reposicaoOrigem.id));
+        setAulaDetalhe(null);
+        setMsgReposicao(
+          json.pagamento
+            ? `Aula remarcada. Cobrança de R$ ${Number(json.pagamento.valorCobrado).toFixed(2)} criada para a aula excluída.`
+            : "Aula remarcada.",
+        );
+        setTimeout(() => setMsgReposicao(null), 6000);
+        setReposicaoOrigem(null);
       }
       setModalAberto(false);
       await carregar();
@@ -589,7 +623,7 @@ export default function AgendaClient({
   }
 
   async function excluirAula(id: string) {
-    if (!confirm("Excluir esta aula?")) return;
+    setConfirmExcluir(null);
     const res = await fetch(`/api/agenda/${id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json();
@@ -910,6 +944,13 @@ export default function AgendaClient({
         </div>
       )}
 
+      {/* Feedback reposição */}
+      {msgReposicao && (
+        <div className="text-sm font-medium px-4 py-2.5 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-800">
+          {msgReposicao}
+        </div>
+      )}
+
       {/* Feedback exclusão em lote */}
       {msgLimpar && (
         <div className={`text-sm font-medium px-4 py-2.5 rounded-xl border ${
@@ -1060,9 +1101,37 @@ export default function AgendaClient({
         </div>
       )}
 
+      {/* ── Modal confirmar exclusão / reposição ──────────────────────────── */}
+      {confirmExcluir && (
+        <Modal titulo="Excluir aula" onClose={() => setConfirmExcluir(null)} z="z-[60]">
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600">
+              Esta aula ({confirmExcluir.aluno.nome} — {confirmExcluir.horaInicio ?? "?"}) vai ser reposta em outro horário?
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => abrirReposicao(confirmExcluir)}
+                className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+                Sim, será reposta
+              </button>
+              <button
+                onClick={() => excluirAula(confirmExcluir.id)}
+                className="px-4 py-2 text-sm font-medium border border-red-200 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                Não, só excluir
+              </button>
+              <button
+                onClick={() => setConfirmExcluir(null)}
+                className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
       {/* ── Modal Nova Aula ────────────────────────────────────────────────── */}
       {modalAberto && (
-        <Modal titulo="Nova aula" onClose={() => setModalAberto(false)}>
+        <Modal titulo={reposicaoOrigem ? "Repor aula" : "Nova aula"} onClose={() => setModalAberto(false)}>
           <div className="space-y-3">
 
             {/* Seletor de professora (apenas para não-professores) */}
@@ -1541,7 +1610,7 @@ export default function AgendaClient({
 
             {/* Rodapé */}
             <div className="flex justify-between items-center flex-wrap gap-2">
-              <button onClick={() => excluirAula(aulaDetalhe.id)}
+              <button onClick={() => setConfirmExcluir(aulaDetalhe)}
                 className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-700 transition-colors">
                 <Trash2 size={13}/> Excluir aula
               </button>
@@ -1871,9 +1940,9 @@ function TelaConflitos({
   );
 }
 
-function Modal({ titulo, onClose, children }: { titulo: string; onClose: () => void; children: React.ReactNode }) {
+function Modal({ titulo, onClose, children, z = "z-50" }: { titulo: string; onClose: () => void; children: React.ReactNode; z?: string }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+    <div className={`fixed inset-0 ${z} flex items-center justify-center bg-black/30 backdrop-blur-sm p-4`}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <h3 className="font-semibold text-slate-800">{titulo}</h3>

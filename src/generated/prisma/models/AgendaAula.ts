@@ -34,6 +34,7 @@ export type AgendaAulaMinAggregateOutputType = {
   horaInicio: string | null
   horaFim: string | null
   status: $Enums.StatusAula | null
+  reposicao: boolean | null
   observacao: string | null
   criadoEm: Date | null
 }
@@ -48,6 +49,7 @@ export type AgendaAulaMaxAggregateOutputType = {
   horaInicio: string | null
   horaFim: string | null
   status: $Enums.StatusAula | null
+  reposicao: boolean | null
   observacao: string | null
   criadoEm: Date | null
 }
@@ -62,6 +64,7 @@ export type AgendaAulaCountAggregateOutputType = {
   horaInicio: number
   horaFim: number
   status: number
+  reposicao: number
   observacao: number
   criadoEm: number
   _all: number
@@ -78,6 +81,7 @@ export type AgendaAulaMinAggregateInputType = {
   horaInicio?: true
   horaFim?: true
   status?: true
+  reposicao?: true
   observacao?: true
   criadoEm?: true
 }
@@ -92,6 +96,7 @@ export type AgendaAulaMaxAggregateInputType = {
   horaInicio?: true
   horaFim?: true
   status?: true
+  reposicao?: true
   observacao?: true
   criadoEm?: true
 }
@@ -106,6 +111,7 @@ export type AgendaAulaCountAggregateInputType = {
   horaInicio?: true
   horaFim?: true
   status?: true
+  reposicao?: true
   observacao?: true
   criadoEm?: true
   _all?: true
@@ -193,6 +199,7 @@ export type AgendaAulaGroupByOutputType = {
   horaInicio: string | null
   horaFim: string | null
   status: $Enums.StatusAula
+  reposicao: boolean
   observacao: string | null
   criadoEm: Date
   _count: AgendaAulaCountAggregateOutputType | null
@@ -228,6 +235,7 @@ export type AgendaAulaWhereInput = {
   horaInicio?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   horaFim?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   status?: Prisma.EnumStatusAulaFilter<"AgendaAula"> | $Enums.StatusAula
+  reposicao?: Prisma.BoolFilter<"AgendaAula"> | boolean
   observacao?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"AgendaAula"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
@@ -250,6 +258,7 @@ export type AgendaAulaOrderByWithRelationInput = {
   horaInicio?: Prisma.SortOrderInput | Prisma.SortOrder
   horaFim?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  reposicao?: Prisma.SortOrder
   observacao?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   empresa?: Prisma.EmpresaOrderByWithRelationInput
@@ -275,6 +284,7 @@ export type AgendaAulaWhereUniqueInput = Prisma.AtLeast<{
   horaInicio?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   horaFim?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   status?: Prisma.EnumStatusAulaFilter<"AgendaAula"> | $Enums.StatusAula
+  reposicao?: Prisma.BoolFilter<"AgendaAula"> | boolean
   observacao?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"AgendaAula"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
@@ -297,6 +307,7 @@ export type AgendaAulaOrderByWithAggregationInput = {
   horaInicio?: Prisma.SortOrderInput | Prisma.SortOrder
   horaFim?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  reposicao?: Prisma.SortOrder
   observacao?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   _count?: Prisma.AgendaAulaCountOrderByAggregateInput
@@ -317,6 +328,7 @@ export type AgendaAulaScalarWhereWithAggregatesInput = {
   horaInicio?: Prisma.StringNullableWithAggregatesFilter<"AgendaAula"> | string | null
   horaFim?: Prisma.StringNullableWithAggregatesFilter<"AgendaAula"> | string | null
   status?: Prisma.EnumStatusAulaWithAggregatesFilter<"AgendaAula"> | $Enums.StatusAula
+  reposicao?: Prisma.BoolWithAggregatesFilter<"AgendaAula"> | boolean
   observacao?: Prisma.StringNullableWithAggregatesFilter<"AgendaAula"> | string | null
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"AgendaAula"> | Date | string
 }
@@ -327,6 +339,7 @@ export type AgendaAulaCreateInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -349,6 +362,7 @@ export type AgendaAulaUncheckedCreateInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -363,6 +377,7 @@ export type AgendaAulaUpdateInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -385,6 +400,7 @@ export type AgendaAulaUncheckedUpdateInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -403,6 +419,7 @@ export type AgendaAulaCreateManyInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
 }
@@ -413,6 +430,7 @@ export type AgendaAulaUpdateManyMutationInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -427,6 +445,7 @@ export type AgendaAulaUncheckedUpdateManyInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -461,6 +480,7 @@ export type AgendaAulaCountOrderByAggregateInput = {
   horaInicio?: Prisma.SortOrder
   horaFim?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  reposicao?: Prisma.SortOrder
   observacao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
@@ -475,6 +495,7 @@ export type AgendaAulaMaxOrderByAggregateInput = {
   horaInicio?: Prisma.SortOrder
   horaFim?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  reposicao?: Prisma.SortOrder
   observacao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
@@ -489,6 +510,7 @@ export type AgendaAulaMinOrderByAggregateInput = {
   horaInicio?: Prisma.SortOrder
   horaFim?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  reposicao?: Prisma.SortOrder
   observacao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
@@ -729,6 +751,7 @@ export type AgendaAulaCreateWithoutEmpresaInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   professora: Prisma.ProfessoraCreateNestedOneWithoutAulasInput
@@ -749,6 +772,7 @@ export type AgendaAulaUncheckedCreateWithoutEmpresaInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -796,6 +820,7 @@ export type AgendaAulaScalarWhereInput = {
   horaInicio?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   horaFim?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   status?: Prisma.EnumStatusAulaFilter<"AgendaAula"> | $Enums.StatusAula
+  reposicao?: Prisma.BoolFilter<"AgendaAula"> | boolean
   observacao?: Prisma.StringNullableFilter<"AgendaAula"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"AgendaAula"> | Date | string
 }
@@ -806,6 +831,7 @@ export type AgendaAulaCreateWithoutProfessoraInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -826,6 +852,7 @@ export type AgendaAulaUncheckedCreateWithoutProfessoraInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -866,6 +893,7 @@ export type AgendaAulaCreateWithoutMateriaInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -886,6 +914,7 @@ export type AgendaAulaUncheckedCreateWithoutMateriaInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -926,6 +955,7 @@ export type AgendaAulaCreateWithoutAlunoInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -946,6 +976,7 @@ export type AgendaAulaUncheckedCreateWithoutAlunoInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -986,6 +1017,7 @@ export type AgendaAulaCreateWithoutPagamentosInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -1007,6 +1039,7 @@ export type AgendaAulaUncheckedCreateWithoutPagamentosInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -1036,6 +1069,7 @@ export type AgendaAulaUpdateWithoutPagamentosInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -1057,6 +1091,7 @@ export type AgendaAulaUncheckedUpdateWithoutPagamentosInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1070,6 +1105,7 @@ export type AgendaAulaCreateWithoutConteudoInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -1091,6 +1127,7 @@ export type AgendaAulaUncheckedCreateWithoutConteudoInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -1120,6 +1157,7 @@ export type AgendaAulaUpdateWithoutConteudoInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -1141,6 +1179,7 @@ export type AgendaAulaUncheckedUpdateWithoutConteudoInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1154,6 +1193,7 @@ export type AgendaAulaCreateWithoutMateriasInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -1175,6 +1215,7 @@ export type AgendaAulaUncheckedCreateWithoutMateriasInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   pagamentos?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -1204,6 +1245,7 @@ export type AgendaAulaUpdateWithoutMateriasInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -1225,6 +1267,7 @@ export type AgendaAulaUncheckedUpdateWithoutMateriasInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pagamentos?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1238,6 +1281,7 @@ export type AgendaAulaCreateWithoutNotificacaoInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutAulasInput
@@ -1259,6 +1303,7 @@ export type AgendaAulaUncheckedCreateWithoutNotificacaoInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedCreateNestedManyWithoutAgendaAulaInput
@@ -1288,6 +1333,7 @@ export type AgendaAulaUpdateWithoutNotificacaoInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -1309,6 +1355,7 @@ export type AgendaAulaUncheckedUpdateWithoutNotificacaoInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1325,6 +1372,7 @@ export type AgendaAulaCreateManyEmpresaInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
 }
@@ -1335,6 +1383,7 @@ export type AgendaAulaUpdateWithoutEmpresaInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   professora?: Prisma.ProfessoraUpdateOneRequiredWithoutAulasNestedInput
@@ -1355,6 +1404,7 @@ export type AgendaAulaUncheckedUpdateWithoutEmpresaInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1372,6 +1422,7 @@ export type AgendaAulaUncheckedUpdateManyWithoutEmpresaInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1385,6 +1436,7 @@ export type AgendaAulaCreateManyProfessoraInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
 }
@@ -1395,6 +1447,7 @@ export type AgendaAulaUpdateWithoutProfessoraInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -1415,6 +1468,7 @@ export type AgendaAulaUncheckedUpdateWithoutProfessoraInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1432,6 +1486,7 @@ export type AgendaAulaUncheckedUpdateManyWithoutProfessoraInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1445,6 +1500,7 @@ export type AgendaAulaCreateManyMateriaInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
 }
@@ -1455,6 +1511,7 @@ export type AgendaAulaUpdateWithoutMateriaInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -1475,6 +1532,7 @@ export type AgendaAulaUncheckedUpdateWithoutMateriaInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1492,6 +1550,7 @@ export type AgendaAulaUncheckedUpdateManyWithoutMateriaInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1505,6 +1564,7 @@ export type AgendaAulaCreateManyAlunoInput = {
   horaInicio?: string | null
   horaFim?: string | null
   status?: $Enums.StatusAula
+  reposicao?: boolean
   observacao?: string | null
   criadoEm?: Date | string
 }
@@ -1515,6 +1575,7 @@ export type AgendaAulaUpdateWithoutAlunoInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutAulasNestedInput
@@ -1535,6 +1596,7 @@ export type AgendaAulaUncheckedUpdateWithoutAlunoInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.AgendaAulaMateriaUncheckedUpdateManyWithoutAgendaAulaNestedInput
@@ -1552,6 +1614,7 @@ export type AgendaAulaUncheckedUpdateManyWithoutAlunoInput = {
   horaInicio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   horaFim?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAulaFieldUpdateOperationsInput | $Enums.StatusAula
+  reposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   observacao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1606,6 +1669,7 @@ export type AgendaAulaSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   horaInicio?: boolean
   horaFim?: boolean
   status?: boolean
+  reposicao?: boolean
   observacao?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -1629,6 +1693,7 @@ export type AgendaAulaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   horaInicio?: boolean
   horaFim?: boolean
   status?: boolean
+  reposicao?: boolean
   observacao?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -1647,6 +1712,7 @@ export type AgendaAulaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   horaInicio?: boolean
   horaFim?: boolean
   status?: boolean
+  reposicao?: boolean
   observacao?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -1665,11 +1731,12 @@ export type AgendaAulaSelectScalar = {
   horaInicio?: boolean
   horaFim?: boolean
   status?: boolean
+  reposicao?: boolean
   observacao?: boolean
   criadoEm?: boolean
 }
 
-export type AgendaAulaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "professoraId" | "alunoId" | "materiaId" | "data" | "horaInicio" | "horaFim" | "status" | "observacao" | "criadoEm", ExtArgs["result"]["agendaAula"]>
+export type AgendaAulaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "professoraId" | "alunoId" | "materiaId" | "data" | "horaInicio" | "horaFim" | "status" | "reposicao" | "observacao" | "criadoEm", ExtArgs["result"]["agendaAula"]>
 export type AgendaAulaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   professora?: boolean | Prisma.ProfessoraDefaultArgs<ExtArgs>
@@ -1716,6 +1783,7 @@ export type $AgendaAulaPayload<ExtArgs extends runtime.Types.Extensions.Internal
     horaInicio: string | null
     horaFim: string | null
     status: $Enums.StatusAula
+    reposicao: boolean
     observacao: string | null
     criadoEm: Date
   }, ExtArgs["result"]["agendaAula"]>
@@ -2158,6 +2226,7 @@ export interface AgendaAulaFieldRefs {
   readonly horaInicio: Prisma.FieldRef<"AgendaAula", 'String'>
   readonly horaFim: Prisma.FieldRef<"AgendaAula", 'String'>
   readonly status: Prisma.FieldRef<"AgendaAula", 'StatusAula'>
+  readonly reposicao: Prisma.FieldRef<"AgendaAula", 'Boolean'>
   readonly observacao: Prisma.FieldRef<"AgendaAula", 'String'>
   readonly criadoEm: Prisma.FieldRef<"AgendaAula", 'DateTime'>
 }
