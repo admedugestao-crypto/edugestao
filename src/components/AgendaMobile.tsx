@@ -24,6 +24,7 @@ type Aula = {
   id: string; alunoId: string; materiaId: string | null;
   data: string; horaInicio: string | null; horaFim: string | null;
   status: StatusAula; observacao: string | null;
+  reposicao: boolean;
   aluno:     { id: string; nome: string; serie: string; turma: string | null; materias: { materia: Materia }[] };
   materia:   Materia | null;
   materias:  { materia: Materia }[];
@@ -634,6 +635,11 @@ export default function AgendaMobile({
                     {(a.horaInicio || a.horaFim) && (
                       <p className="text-sm text-slate-500 mt-0.5">{a.horaInicio}{a.horaFim ? ` – ${a.horaFim}` : ""}</p>
                     )}
+                    {a.reposicao && (
+                      <span className="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-700">
+                        ↺ Reposição
+                      </span>
+                    )}
                     <div className="flex flex-wrap gap-1 mt-1.5">
                       {(a.materia ? [a.materia] : a.aluno.materias?.map((m) => m.materia) ?? []).map((m) => (
                         <span key={m.id} className="text-[10px] text-white rounded-full px-2 py-0.5 font-medium"
@@ -790,6 +796,11 @@ export default function AgendaMobile({
                   {format(parseLocal(detalhe.data), "EEEE, dd/MM/yyyy", { locale: ptBR })}
                   {detalhe.horaInicio ? ` · ${detalhe.horaInicio}${detalhe.horaFim ? `–${detalhe.horaFim}` : ""}` : ""}
                 </p>
+                {detalhe.reposicao && (
+                  <span className="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-700">
+                    ↺ Aula de reposição — já cobrada na exclusão da original
+                  </span>
+                )}
               </div>
               <button onClick={() => setDetalhe(null)}><X size={20} className="text-slate-400"/></button>
             </div>

@@ -48,6 +48,7 @@ type Aula = {
   horaFim: string | null;
   status: StatusAula;
   observacao: string | null;
+  reposicao: boolean;
   aluno:      { id: string; nome: string; serie: string; turma: string | null; materias: { materia: Materia }[] };
   materia:    Materia | null;
   materias:   { materia: Materia }[];
@@ -1408,6 +1409,12 @@ export default function AgendaClient({
               {!isProfessor && (
                 <div className="col-span-2"><span className="text-slate-400">Professor(a):</span> <span className="font-medium">{aulaDetalhe.professora.usuario.nome}</span></div>
               )}
+              {aulaDetalhe.reposicao && (
+                <div className="col-span-2 flex items-center gap-1.5 pt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-700">↺ Aula de reposição</span>
+                  <span className="text-slate-400">cobrança lançada quando a aula original foi excluída — fica fora do "Gerar cobranças"</span>
+                </div>
+              )}
             </div>
 
             {/* Aviso de disponibilidade */}
@@ -1683,6 +1690,11 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
         <p className="text-[10px] font-medium mt-0.5" style={{ color: cores.text }}>
           {aula.horaInicio}{aula.horaFim ? ` – ${aula.horaFim}` : ""}
         </p>
+      )}
+      {aula.reposicao && (
+        <span className="inline-flex items-center mt-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-purple-100 text-purple-700 leading-none">
+          ↺ Reposição
+        </span>
       )}
       {/* Todas as matérias do aluno */}
       {todasMaterias.length > 0 && (
