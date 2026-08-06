@@ -575,8 +575,11 @@ export default function AgendaClient({
         setErroStatus(data.erro ?? "Não foi possível alterar o status.");
         return;
       }
-      setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
-      if (aulaDetalhe?.id === id) setAulaDetalhe((p) => p ? { ...p, status } : p);
+      // Sair de Realizada exclui o Conteúdo no servidor — reflete no estado
+      // local para o modal não continuar mostrando conteúdo/matéria travada.
+      const conteudoLocal = status === "REALIZADA";
+      setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status, conteudo: conteudoLocal ? a.conteudo : null } : a));
+      if (aulaDetalhe?.id === id) setAulaDetalhe((p) => p ? { ...p, status, conteudo: conteudoLocal ? p.conteudo : null } : p);
     } finally {
       setAtualizando(false);
     }

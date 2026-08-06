@@ -273,8 +273,11 @@ export default function AgendaMobile({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
-    setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
-    setDetalhe((p) => p && p.id === id ? { ...p, status } : p);
+    // Sair de Realizada exclui o Conteúdo no servidor — reflete no estado
+    // local para o modal não continuar mostrando conteúdo/matéria travada.
+    const conteudoLocal = status === "REALIZADA";
+    setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status, conteudo: conteudoLocal ? a.conteudo : null } : a));
+    setDetalhe((p) => p && p.id === id ? { ...p, status, conteudo: conteudoLocal ? p.conteudo : null } : p);
   }
 
   // ── Reposição ────────────────────────────────────────────────────────────
