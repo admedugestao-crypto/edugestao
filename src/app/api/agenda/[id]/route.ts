@@ -96,6 +96,26 @@ export async function PATCH(
     });
   }
 
+  // Voltar para AGENDADA → a aula deixa de ser cobrada (só REALIZADA e
+  // FALTA_ALUNO geram cobrança). Pagamentos vinculados ficam com quantidade/
+  // valor defasados, então são desmarcados como não pagos e excluídos — igual
+  // ao Conteúdo acima. O motor de cobrança regenera o período sem esta aula.
+  // FALTA_ALUNO não passa por aqui: falta do aluno continua sendo cobrada.
+  if (status === "AGENDADA" && aula.status !== "AGENDADA") {
+    const vinculos = await prisma.pagamentoAula.findMany({
+      where: { agendaAulaId: id },
+      select: { pagamentoId: true },
+    });
+    const pagamentoIds = [...new Set(vinculos.map((v) => v.pagamentoId))];
+    if (pagamentoIds.length > 0) {
+      await prisma.pagamento.updateMany({
+        where: { id: { in: pagamentoIds } },
+        data: { pago: false, dataPagamento: null },
+      });
+      await prisma.pagamento.deleteMany({ where: { id: { in: pagamentoIds } } });
+    }
+  }
+
   // Bloqueia mudança para CANCELADA ou FALTA_PROFESSOR quando o pagamento vinculado já foi pago.
   if (status === "CANCELADA" || status === "FALTA_PROFESSOR") {
     const vinculosPagos = await prisma.$queryRaw<{ count: bigint }[]>`
