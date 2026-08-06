@@ -27,7 +27,8 @@ function ocorrenciasDiaSemana(diaSemana: number, mes: number, ano: number): Date
 // Para cada aluno, conta aulas do mês (exceto CANCELADA e FALTA_PROFESSOR)
 // e gera registros de pagamento conforme o tipoCobranca:
 //   MENSAL/POR_AULA → 1 parcela (diaPagamento)
-//   QUINZENAL       → 2 parcelas (diaPagamento + diaPagamento2)
+//   QUINZENAL       → até 2 parcelas: aulas dos dias 1–15 na parcela 1
+//                     (diaPagamento) e dos dias 16+ na parcela 2 (diaPagamento2)
 //   SEMANAL         → N parcelas = ocorrências do diaSemanaCobranca no mês
 // Não sobrescreve registros já pagos.
 export async function POST(req: NextRequest) {
@@ -157,69 +158,71 @@ export async function POST(req: NextRequest) {
 
   await Promise.all(
     Array.from(porAluno.entries()).map(async ([alunoId, info]) => {
-      const totalQtd    = info.aulas.length;
-      const totalValor  = info.valorCobranca * totalQtd;
+      // Parcelas efetivamente geradas nesta rodada — usadas ao final para
+      // remover parcelas automáticas não pagas que sobraram de gerações
+      // anteriores (ex.: aula revertida ou movida de quinzena).
+      const geradas: number[] = [];
+      async function gerarParcela(parcela: number, vencimento: Date, aulasParcela: AulaInfo[]) {
+        await upsertParcela(
+          alunoId, parcela, vencimento,
+          info.valorCobranca * aulasParcela.length, aulasParcela.length,
+          aulasParcela.map((a) => a.id),
+        );
+        geradas.push(parcela);
+      }
+
+      const diaVenc1 = info.diaPagamento ?? diasNoMes(mes, ano);
 
       // ── SEMANAL: uma parcela por ocorrência do diaSemanaCobranca no mês ─────
       if (info.tipoCobranca === "SEMANAL" && info.diaSemanaCobranca !== null) {
         const ocorrencias = ocorrenciasDiaSemana(info.diaSemanaCobranca, mes, ano);
         if (ocorrencias.length === 0) {
           // fallback improvável: cria parcela única no último dia
-          await upsertParcela(
-            alunoId, 1,
-            new Date(ano, mes - 1, diasNoMes(mes, ano)),
-            totalValor, totalQtd,
-            info.aulas.map((a) => a.id),
-          );
-          return;
-        }
+          await gerarParcela(1, new Date(ano, mes - 1, diasNoMes(mes, ano)), info.aulas);
+        } else {
+          // Distribui aulas entre as ocorrências:
+          // cada aula vai para a ocorrência mais próxima igual ou posterior à data da aula.
+          // Se não houver próxima, vai para a última ocorrência.
+          const grupos: AulaInfo[][] = ocorrencias.map(() => []);
+          for (const aula of info.aulas) {
+            const aulaDate = new Date(aula.data);
+            aulaDate.setUTCHours(0, 0, 0, 0);
+            let idx = ocorrencias.findIndex((oc) => oc >= aulaDate);
+            if (idx === -1) idx = ocorrencias.length - 1;
+            grupos[idx].push(aula);
+          }
 
-        // Distribui aulas entre as ocorrências:
-        // cada aula vai para a ocorrência mais próxima igual ou posterior à data da aula.
-        // Se não houver próxima, vai para a última ocorrência.
-        const grupos: AulaInfo[][] = ocorrencias.map(() => []);
-        for (const aula of info.aulas) {
-          const aulaDate = new Date(aula.data);
-          aulaDate.setUTCHours(0, 0, 0, 0);
-          let idx = ocorrencias.findIndex((oc) => oc >= aulaDate);
-          if (idx === -1) idx = ocorrencias.length - 1;
-          grupos[idx].push(aula);
+          let parcela = 1;
+          for (let i = 0; i < ocorrencias.length; i++) {
+            const aulasDaSemana = grupos[i];
+            if (aulasDaSemana.length === 0) continue; // pula semanas sem aulas
+            await gerarParcela(parcela++, ocorrencias[i], aulasDaSemana);
+          }
         }
-
-        let parcela = 1;
-        for (let i = 0; i < ocorrencias.length; i++) {
-          const aulasDaSemana = grupos[i];
-          if (aulasDaSemana.length === 0) continue; // pula semanas sem aulas
-          const qtd   = aulasDaSemana.length;
-          const valor = info.valorCobranca * qtd;
-          await upsertParcela(
-            alunoId, parcela++,
-            ocorrencias[i],
-            valor, qtd,
-            aulasDaSemana.map((a) => a.id),
-          );
-        }
-        return;
+      } else if (info.tipoCobranca === "QUINZENAL" && info.diaPagamento2) {
+        // ── QUINZENAL: divide as aulas pela quinzena da data ──────────────────
+        // Dias 1–15 → parcela 1 (diaPagamento); dias 16+ → parcela 2
+        // (diaPagamento2). Quinzena sem aula não gera parcela — antes as duas
+        // parcelas repetiam o mês inteiro, cobrando cada aula em dobro.
+        const q1 = info.aulas.filter((a) => new Date(a.data).getUTCDate() <= 15);
+        const q2 = info.aulas.filter((a) => new Date(a.data).getUTCDate() > 15);
+        if (q1.length > 0) await gerarParcela(1, new Date(ano, mes - 1, diaVenc1), q1);
+        if (q2.length > 0) await gerarParcela(2, new Date(ano, mes - 1, info.diaPagamento2), q2);
+      } else {
+        // ── MENSAL / POR_AULA / demais casos → parcela única ───────────────────
+        await gerarParcela(1, new Date(ano, mes - 1, diaVenc1), info.aulas);
       }
 
-      // ── MENSAL / POR_AULA / SEMANAL sem diaSemanaCobranca → parcela única ───
-      const diaVenc1  = info.diaPagamento ?? diasNoMes(mes, ano);
-      await upsertParcela(
-        alunoId, 1,
-        new Date(ano, mes - 1, diaVenc1),
-        totalValor, totalQtd,
-        info.aulas.map((a) => a.id),
-      );
-
-      // ── QUINZENAL: parcela 2 ─────────────────────────────────────────────────
-      if (info.tipoCobranca === "QUINZENAL" && info.diaPagamento2) {
-        await upsertParcela(
-          alunoId, 2,
-          new Date(ano, mes - 1, info.diaPagamento2),
-          totalValor, totalQtd,
-          info.aulas.map((a) => a.id),
-        );
-      }
+      // Limpa parcelas automáticas não pagas que não foram regeradas nesta
+      // rodada. Parcelas pagas e lançamentos manuais/reposição são preservados.
+      await prisma.pagamento.deleteMany({
+        where: {
+          alunoId, mes, ano,
+          pago: false,
+          origemManual: false,
+          parcela: { notIn: geradas },
+        },
+      });
     }),
   );
 
