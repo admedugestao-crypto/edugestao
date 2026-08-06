@@ -58,6 +58,7 @@ export type PagamentoMinAggregateOutputType = {
   emailTipo: string | null
   emailEnviadoEm: Date | null
   origemManual: boolean | null
+  origemReposicao: boolean | null
   criadoEm: Date | null
   atualizadoEm: Date | null
 }
@@ -78,6 +79,7 @@ export type PagamentoMaxAggregateOutputType = {
   emailTipo: string | null
   emailEnviadoEm: Date | null
   origemManual: boolean | null
+  origemReposicao: boolean | null
   criadoEm: Date | null
   atualizadoEm: Date | null
 }
@@ -98,6 +100,7 @@ export type PagamentoCountAggregateOutputType = {
   emailTipo: number
   emailEnviadoEm: number
   origemManual: number
+  origemReposicao: number
   criadoEm: number
   atualizadoEm: number
   _all: number
@@ -136,6 +139,7 @@ export type PagamentoMinAggregateInputType = {
   emailTipo?: true
   emailEnviadoEm?: true
   origemManual?: true
+  origemReposicao?: true
   criadoEm?: true
   atualizadoEm?: true
 }
@@ -156,6 +160,7 @@ export type PagamentoMaxAggregateInputType = {
   emailTipo?: true
   emailEnviadoEm?: true
   origemManual?: true
+  origemReposicao?: true
   criadoEm?: true
   atualizadoEm?: true
 }
@@ -176,6 +181,7 @@ export type PagamentoCountAggregateInputType = {
   emailTipo?: true
   emailEnviadoEm?: true
   origemManual?: true
+  origemReposicao?: true
   criadoEm?: true
   atualizadoEm?: true
   _all?: true
@@ -283,6 +289,7 @@ export type PagamentoGroupByOutputType = {
   emailTipo: string | null
   emailEnviadoEm: Date | null
   origemManual: boolean
+  origemReposicao: boolean
   criadoEm: Date
   atualizadoEm: Date
   _count: PagamentoCountAggregateOutputType | null
@@ -326,6 +333,7 @@ export type PagamentoWhereInput = {
   emailTipo?: Prisma.StringNullableFilter<"Pagamento"> | string | null
   emailEnviadoEm?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
   origemManual?: Prisma.BoolFilter<"Pagamento"> | boolean
+  origemReposicao?: Prisma.BoolFilter<"Pagamento"> | boolean
   criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
@@ -349,6 +357,7 @@ export type PagamentoOrderByWithRelationInput = {
   emailTipo?: Prisma.SortOrderInput | Prisma.SortOrder
   emailEnviadoEm?: Prisma.SortOrderInput | Prisma.SortOrder
   origemManual?: Prisma.SortOrder
+  origemReposicao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   atualizadoEm?: Prisma.SortOrder
   empresa?: Prisma.EmpresaOrderByWithRelationInput
@@ -376,6 +385,7 @@ export type PagamentoWhereUniqueInput = Prisma.AtLeast<{
   emailTipo?: Prisma.StringNullableFilter<"Pagamento"> | string | null
   emailEnviadoEm?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
   origemManual?: Prisma.BoolFilter<"Pagamento"> | boolean
+  origemReposicao?: Prisma.BoolFilter<"Pagamento"> | boolean
   criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
@@ -399,6 +409,7 @@ export type PagamentoOrderByWithAggregationInput = {
   emailTipo?: Prisma.SortOrderInput | Prisma.SortOrder
   emailEnviadoEm?: Prisma.SortOrderInput | Prisma.SortOrder
   origemManual?: Prisma.SortOrder
+  origemReposicao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   atualizadoEm?: Prisma.SortOrder
   _count?: Prisma.PagamentoCountOrderByAggregateInput
@@ -427,6 +438,7 @@ export type PagamentoScalarWhereWithAggregatesInput = {
   emailTipo?: Prisma.StringNullableWithAggregatesFilter<"Pagamento"> | string | null
   emailEnviadoEm?: Prisma.DateTimeNullableWithAggregatesFilter<"Pagamento"> | Date | string | null
   origemManual?: Prisma.BoolWithAggregatesFilter<"Pagamento"> | boolean
+  origemReposicao?: Prisma.BoolWithAggregatesFilter<"Pagamento"> | boolean
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeWithAggregatesFilter<"Pagamento"> | Date | string
 }
@@ -445,6 +457,7 @@ export type PagamentoCreateInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutPagamentosInput
@@ -468,6 +481,7 @@ export type PagamentoUncheckedCreateInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   aulas?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutPagamentoInput
@@ -487,6 +501,7 @@ export type PagamentoUpdateInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutPagamentosNestedInput
@@ -510,6 +525,7 @@ export type PagamentoUncheckedUpdateInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aulas?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutPagamentoNestedInput
@@ -531,6 +547,7 @@ export type PagamentoCreateManyInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
 }
@@ -549,6 +566,7 @@ export type PagamentoUpdateManyMutationInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -569,6 +587,7 @@ export type PagamentoUncheckedUpdateManyInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -606,6 +625,7 @@ export type PagamentoCountOrderByAggregateInput = {
   emailTipo?: Prisma.SortOrder
   emailEnviadoEm?: Prisma.SortOrder
   origemManual?: Prisma.SortOrder
+  origemReposicao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   atualizadoEm?: Prisma.SortOrder
 }
@@ -634,6 +654,7 @@ export type PagamentoMaxOrderByAggregateInput = {
   emailTipo?: Prisma.SortOrder
   emailEnviadoEm?: Prisma.SortOrder
   origemManual?: Prisma.SortOrder
+  origemReposicao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   atualizadoEm?: Prisma.SortOrder
 }
@@ -654,6 +675,7 @@ export type PagamentoMinOrderByAggregateInput = {
   emailTipo?: Prisma.SortOrder
   emailEnviadoEm?: Prisma.SortOrder
   origemManual?: Prisma.SortOrder
+  origemReposicao?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   atualizadoEm?: Prisma.SortOrder
 }
@@ -791,6 +813,7 @@ export type PagamentoCreateWithoutEmpresaInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   aluno: Prisma.AlunoCreateNestedOneWithoutPagamentosInput
@@ -812,6 +835,7 @@ export type PagamentoUncheckedCreateWithoutEmpresaInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   aulas?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutPagamentoInput
@@ -862,6 +886,7 @@ export type PagamentoScalarWhereInput = {
   emailTipo?: Prisma.StringNullableFilter<"Pagamento"> | string | null
   emailEnviadoEm?: Prisma.DateTimeNullableFilter<"Pagamento"> | Date | string | null
   origemManual?: Prisma.BoolFilter<"Pagamento"> | boolean
+  origemReposicao?: Prisma.BoolFilter<"Pagamento"> | boolean
   criadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
   atualizadoEm?: Prisma.DateTimeFilter<"Pagamento"> | Date | string
 }
@@ -880,6 +905,7 @@ export type PagamentoCreateWithoutAlunoInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutPagamentosInput
@@ -901,6 +927,7 @@ export type PagamentoUncheckedCreateWithoutAlunoInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   aulas?: Prisma.PagamentoAulaUncheckedCreateNestedManyWithoutPagamentoInput
@@ -946,6 +973,7 @@ export type PagamentoCreateWithoutAulasInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutPagamentosInput
@@ -968,6 +996,7 @@ export type PagamentoUncheckedCreateWithoutAulasInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
 }
@@ -1002,6 +1031,7 @@ export type PagamentoUpdateWithoutAulasInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutPagamentosNestedInput
@@ -1024,6 +1054,7 @@ export type PagamentoUncheckedUpdateWithoutAulasInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1043,6 +1074,7 @@ export type PagamentoCreateManyEmpresaInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
 }
@@ -1061,6 +1093,7 @@ export type PagamentoUpdateWithoutEmpresaInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutPagamentosNestedInput
@@ -1082,6 +1115,7 @@ export type PagamentoUncheckedUpdateWithoutEmpresaInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aulas?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutPagamentoNestedInput
@@ -1102,6 +1136,7 @@ export type PagamentoUncheckedUpdateManyWithoutEmpresaInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1121,6 +1156,7 @@ export type PagamentoCreateManyAlunoInput = {
   emailTipo?: string | null
   emailEnviadoEm?: Date | string | null
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: Date | string
   atualizadoEm?: Date | string
 }
@@ -1139,6 +1175,7 @@ export type PagamentoUpdateWithoutAlunoInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutPagamentosNestedInput
@@ -1160,6 +1197,7 @@ export type PagamentoUncheckedUpdateWithoutAlunoInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aulas?: Prisma.PagamentoAulaUncheckedUpdateManyWithoutPagamentoNestedInput
@@ -1180,6 +1218,7 @@ export type PagamentoUncheckedUpdateManyWithoutAlunoInput = {
   emailTipo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailEnviadoEm?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origemManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  origemReposicao?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1231,6 +1270,7 @@ export type PagamentoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   emailTipo?: boolean
   emailEnviadoEm?: boolean
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -1255,6 +1295,7 @@ export type PagamentoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   emailTipo?: boolean
   emailEnviadoEm?: boolean
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -1277,6 +1318,7 @@ export type PagamentoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   emailTipo?: boolean
   emailEnviadoEm?: boolean
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -1299,11 +1341,12 @@ export type PagamentoSelectScalar = {
   emailTipo?: boolean
   emailEnviadoEm?: boolean
   origemManual?: boolean
+  origemReposicao?: boolean
   criadoEm?: boolean
   atualizadoEm?: boolean
 }
 
-export type PagamentoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "alunoId" | "mes" | "ano" | "parcela" | "dataVencimento" | "valorCobrado" | "quantidadeAulas" | "pago" | "dataPagamento" | "observacao" | "emailTipo" | "emailEnviadoEm" | "origemManual" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["pagamento"]>
+export type PagamentoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "alunoId" | "mes" | "ano" | "parcela" | "dataVencimento" | "valorCobrado" | "quantidadeAulas" | "pago" | "dataPagamento" | "observacao" | "emailTipo" | "emailEnviadoEm" | "origemManual" | "origemReposicao" | "criadoEm" | "atualizadoEm", ExtArgs["result"]["pagamento"]>
 export type PagamentoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
@@ -1342,6 +1385,7 @@ export type $PagamentoPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     emailTipo: string | null
     emailEnviadoEm: Date | null
     origemManual: boolean
+    origemReposicao: boolean
     criadoEm: Date
     atualizadoEm: Date
   }, ExtArgs["result"]["pagamento"]>
@@ -1785,6 +1829,7 @@ export interface PagamentoFieldRefs {
   readonly emailTipo: Prisma.FieldRef<"Pagamento", 'String'>
   readonly emailEnviadoEm: Prisma.FieldRef<"Pagamento", 'DateTime'>
   readonly origemManual: Prisma.FieldRef<"Pagamento", 'Boolean'>
+  readonly origemReposicao: Prisma.FieldRef<"Pagamento", 'Boolean'>
   readonly criadoEm: Prisma.FieldRef<"Pagamento", 'DateTime'>
   readonly atualizadoEm: Prisma.FieldRef<"Pagamento", 'DateTime'>
 }

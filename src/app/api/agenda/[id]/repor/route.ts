@@ -168,6 +168,7 @@ export async function POST(
         quantidadeAulas: 1,
         pago: false,
         origemManual: true,
+        origemReposicao: true,
         observacao: `Cobrança referente à aula de ${fmtBr(dataOriginalFmt)}${horarioOriginal} (remarcada para ${fmtBr(data as string)} ${horaInicio}–${horaFim}).`,
       },
     });

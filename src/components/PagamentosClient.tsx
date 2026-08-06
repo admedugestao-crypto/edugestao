@@ -14,6 +14,11 @@ const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
 const TIPO_LABEL: Record<string, string> = {
   MENSAL: "Mensal", QUINZENAL: "Quinzenal", SEMANAL: "Semanal", POR_AULA: "Por aula",
 };
+function geracaoPagamento(item: { origemManual: boolean; origemReposicao: boolean }) {
+  if (item.origemReposicao) return { label: "Rep. Aula",  title: "Gerado ao repor uma aula excluída", cor: "text-purple-700", bg: "bg-purple-100" };
+  if (item.origemManual)    return { label: "Manual",     title: "Digitado manualmente",              cor: "text-slate-600", bg: "bg-slate-100" };
+  return                           { label: "Automático", title: "Gerado por \"Gerar cobranças\"",     cor: "text-blue-700",  bg: "bg-blue-100" };
+}
 const STATUS_AULA_LABEL: Record<string, { label: string; cor: string; bg: string }> = {
   AGENDADA:        { label: "Agendada",          cor: "text-slate-600",  bg: "bg-slate-100" },
   REALIZADA:       { label: "Realizada",         cor: "text-emerald-700", bg: "bg-emerald-100" },
@@ -35,6 +40,8 @@ type PagamentoItem = {
   pago:            boolean;
   dataPagamento:   string | null;
   observacao:      string | null;
+  origemManual:    boolean;
+  origemReposicao: boolean;
   emailTipo:       string | null;
   emailEnviadoEm:  string | null;
   aluno: {
@@ -616,6 +623,7 @@ export default function PagamentosClient({
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Vencimento</th>
                   <th className="text-right px-4 py-3 text-xs font-medium text-slate-500">Valor</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Status</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Geração</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Pago em</th>
                   <th className="text-center px-4 py-3 text-xs font-medium text-slate-500">Ações</th>
                 </tr>
@@ -694,6 +702,18 @@ export default function PagamentosClient({
                         {st === "pago"     && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium"><CheckCircle2 size={12} /> Pago</span>}
                         {st === "avencer"  && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium"><Clock size={12} /> A vencer</span>}
                         {st === "atrasado" && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 text-red-700 text-xs font-medium"><AlertCircle size={12} /> Atrasado</span>}
+                      </td>
+
+                      {/* Geração */}
+                      <td className="px-4 py-3">
+                        {(() => {
+                          const g = geracaoPagamento(item);
+                          return (
+                            <span title={g.title} className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${g.bg} ${g.cor}`}>
+                              {g.label}
+                            </span>
+                          );
+                        })()}
                       </td>
 
                       {/* Pago em */}
@@ -1070,6 +1090,18 @@ export default function PagamentosClient({
               Tem certeza que deseja excluir este registro de pagamento de{" "}
               <strong>{pagamentos.find((p) => p.id === excluirId)?.aluno.nome}</strong>?
             </p>
+
+            {/* Aviso: pagamento gerado por reposição de aula */}
+            {pagamentos.find((p) => p.id === excluirId)?.origemReposicao && (
+              <div className="flex items-start gap-2 bg-purple-50 border border-purple-200 rounded-lg px-3 py-2.5 mb-4">
+                <AlertCircle size={15} className="text-purple-600 mt-0.5 shrink-0" />
+                <p className="text-xs text-purple-800">
+                  Este pagamento foi gerado pela reposição de uma aula excluída. Excluí-lo não desfaz a aula de
+                  reposição já agendada — ela continuará marcada para não entrar na próxima geração de cobrança,
+                  então essa aula ficará sem cobrança até você lançar outra manualmente.
+                </p>
+              </div>
+            )}
 
             {/* Erro de regra de negócio */}
             {erroExcluir && (

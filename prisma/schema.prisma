@@ -413,6 +413,7 @@ model Pagamento {
   emailTipo       String? // "lembrete" | "atraso" | "recibo" — último e-mail enviado
   emailEnviadoEm  DateTime? // data/hora do último envio
   origemManual    Boolean   @default(false) // true = criado manualmente pelo admin
+  origemReposicao Boolean   @default(false) // true = criado ao excluir uma aula marcada como "será reposta"
   criadoEm        DateTime  @default(now())
   atualizadoEm    DateTime  @updatedAt
 
