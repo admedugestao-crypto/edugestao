@@ -1453,10 +1453,14 @@ export default function AgendaClient({
             {/* Matéria + Status lado a lado quando possível */}
             <div className="flex flex-wrap gap-3 items-end">
               {(() => {
-                // Usa matérias da aula (N:N); fallback para matérias do aluno se aula não tiver nenhuma vinculada
-                const materiasOpcoes = (aulaDetalhe.materias?.length ?? 0) > 0
-                  ? aulaDetalhe.materias.map((m) => m.materia)
-                  : (aulaDetalhe.aluno.materias ?? []).map((m) => m.materia);
+                // União das matérias da aula (N:N) com as matérias atuais do aluno —
+                // matéria adicionada ao aluno depois da criação da aula também precisa
+                // aparecer como opção aqui.
+                const vistos = new Set<string>();
+                const materiasOpcoes = [
+                  ...(aulaDetalhe.materias ?? []).map((m) => m.materia),
+                  ...(aulaDetalhe.aluno.materias ?? []).map((m) => m.materia),
+                ].filter((m) => vistos.has(m.id) ? false : (vistos.add(m.id), true));
                 if (materiasOpcoes.length === 0) return null;
                 // Depois que um Conteúdo já foi vinculado a esta aula (normalmente
                 // ao marcar Realizada), a matéria não pode mudar mais — o

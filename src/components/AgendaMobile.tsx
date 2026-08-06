@@ -796,9 +796,14 @@ export default function AgendaMobile({
 
             {/* Matéria */}
             {(() => {
-              const materiasOpcoes = detalhe.materias.length > 0
-                ? detalhe.materias.map((m) => m.materia)
-                : detalhe.aluno.materias.map((m) => m.materia);
+              // União das matérias da aula (N:N) com as matérias atuais do aluno —
+              // matéria adicionada ao aluno depois da criação da aula também precisa
+              // aparecer como opção aqui.
+              const vistos = new Set<string>();
+              const materiasOpcoes = [
+                ...detalhe.materias.map((m) => m.materia),
+                ...detalhe.aluno.materias.map((m) => m.materia),
+              ].filter((m) => vistos.has(m.id) ? false : (vistos.add(m.id), true));
               if (materiasOpcoes.length === 0) return null;
               // Depois que um Conteúdo já foi vinculado a esta aula, a matéria
               // não pode mais mudar — evita dessincronizar aula e conteúdo.
