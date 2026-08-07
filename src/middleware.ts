@@ -8,6 +8,7 @@ export async function middleware(request: NextRequest) {
   const publicPaths = [
     "/login", "/plataforma/login",
     "/esqueci-senha", "/api/esqueci-senha",
+    "/plataforma/esqueci-senha", "/api/plataforma/esqueci-senha",
     "/redefinir-senha", "/api/redefinir-senha",
     "/api/auth",
     "/api/cron",
