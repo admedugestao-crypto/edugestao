@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ChevronLeft, ChevronRight, Plus, RefreshCw, X,
+  ChevronLeft, ChevronRight, ChevronDown, Plus, RefreshCw, X,
   CheckCircle2, XCircle, Clock, UserX, UserCheck,
   CalendarDays, List, Zap, Trash2, Printer, BookOpen,
 } from "lucide-react";
@@ -1658,6 +1658,7 @@ const STATUS_COR: Record<StatusAula, { bg: string; border: string; text: string 
 function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = "" }: {
   aula: Aula; onClick: () => void; mostrarProfessora?: boolean; filtroMateriaId?: string;
 }) {
+  const [materiasAbertas, setMateriasAbertas] = useState(false);
   const cfg    = STATUS_CONFIG[aula.status];
   const cores  = STATUS_COR[aula.status];
   const materiasCard = aula.materias?.length > 0
@@ -1665,8 +1666,9 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
     : (aula.materia ? [aula.materia] : []);
   const todasMaterias = materiasCard.filter((m) => !filtroMateriaId || m.id === filtroMateriaId);
   return (
-    <button onClick={onClick}
-      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm"
+    <div onClick={onClick} role="button" tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
+      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm cursor-pointer"
       style={{ backgroundColor: cores.bg, borderLeftColor: cores.border }}>
       {/* Nome + indicador de status */}
       <div className="flex items-start justify-between gap-1">
@@ -1680,17 +1682,36 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
           {aula.horaInicio}{aula.horaFim ? ` – ${aula.horaFim}` : ""}
         </p>
       )}
-      {/* Todas as matérias do aluno */}
-      {todasMaterias.length > 0 && (
+      {/* Matéria única: mostra direto. Mais de uma: link que expande sob demanda. */}
+      {todasMaterias.length === 1 && (
         <div className="flex flex-wrap gap-0.5 mt-1">
-          {todasMaterias.map((m) => (
-            <span key={m.id}
-              className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full text-white leading-none"
-              style={{ backgroundColor: m.cor }}>
-              {m.nome}
-            </span>
-          ))}
+          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full text-white leading-none"
+            style={{ backgroundColor: todasMaterias[0].cor }}>
+            {todasMaterias[0].nome}
+          </span>
         </div>
+      )}
+      {todasMaterias.length > 1 && (
+        <>
+          <button type="button"
+            onClick={(e) => { e.stopPropagation(); setMateriasAbertas((v) => !v); }}
+            aria-expanded={materiasAbertas}
+            className="flex items-center gap-0.5 mt-1 text-[9px] font-semibold text-slate-400 hover:text-indigo-500 transition-colors">
+            {materiasAbertas ? "ocultar" : `${todasMaterias.length} matérias`}
+            <ChevronDown size={9} className={`transition-transform ${materiasAbertas ? "rotate-180" : ""}`}/>
+          </button>
+          {materiasAbertas && (
+            <div className="flex flex-wrap gap-0.5 mt-1">
+              {todasMaterias.map((m) => (
+                <span key={m.id}
+                  className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full text-white leading-none"
+                  style={{ backgroundColor: m.cor }}>
+                  {m.nome}
+                </span>
+              ))}
+            </div>
+          )}
+        </>
       )}
       {/* Ministrado não é mostrado aqui: é redundante com o status Realizada da própria aula */}
       {aula.conteudo?.planejado && (
@@ -1704,7 +1725,7 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
           Prof. {aula.professora.usuario.nome}
         </p>
       )}
-    </button>
+    </div>
   );
 }
 
