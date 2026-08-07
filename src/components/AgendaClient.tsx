@@ -167,6 +167,19 @@ export default function AgendaClient({
   const [verConteudo, setVerConteudo]   = useState(false);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
+  // Altura real da barra de controles — usada para grudar o cabeçalho dos
+  // dias logo abaixo dela (a barra pode quebrar em 2 linhas em telas menores).
+  const barraRef = useRef<HTMLDivElement>(null);
+  const [barraAltura, setBarraAltura] = useState(0);
+  useEffect(() => {
+    function medir() {
+      if (barraRef.current) setBarraAltura(barraRef.current.offsetHeight);
+    }
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, [vista]); // a troca de vista muda quais botões aparecem, o que pode mudar a altura
+
   // Filtro de professora (admin) — inicia no primeiro professor
   const [filtroProfId, setFiltroProfId] = useState(() => isProfessor ? (professoras[0]?.id ?? "") : "");
   // Filtro de matéria (todos os perfis)
@@ -827,7 +840,7 @@ export default function AgendaClient({
     <div className="space-y-4 print:hidden">
 
       {/* ── Barra de controles ─────────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
+      <div ref={barraRef} className="sticky top-0 z-20 bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
         {/* Vista */}
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
           <button onClick={() => setVista("semana")}
@@ -968,8 +981,9 @@ export default function AgendaClient({
 
       {/* ── Vista Semana ───────────────────────────────────────────────────── */}
       {vista === "semana" && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="grid grid-cols-7 border-b border-slate-100">
+        <div className="bg-white rounded-xl border border-slate-200">
+          {/* Cabeçalho dos dias — gruda logo abaixo da barra de controles ao rolar */}
+          <div className="sticky z-10 bg-white rounded-t-xl grid grid-cols-7 border-b border-slate-100" style={{ top: barraAltura }}>
             {diasGrade.map((dia, i) => {
               const hoje = isToday(dia);
               return (
@@ -982,7 +996,7 @@ export default function AgendaClient({
               );
             })}
           </div>
-          <div className="grid grid-cols-7 min-h-[320px]">
+          <div className="grid grid-cols-7 min-h-[320px] rounded-b-xl overflow-hidden">
             {diasGrade.map((dia, i) => {
               const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
               const hoje     = isToday(dia);
