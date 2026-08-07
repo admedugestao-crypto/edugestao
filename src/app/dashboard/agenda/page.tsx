@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope, scopeWhere } from "@/lib/tenant";
-import { CalendarDays } from "lucide-react";
 import AgendaClient from "@/components/AgendaClient";
 
 export const dynamic = "force-dynamic";
@@ -51,23 +50,16 @@ export default async function AgendaPage() {
   }));
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-2">
-        <CalendarDays size={20} className="text-indigo-600" />
-        <h1 className="text-xl font-bold text-slate-800">Agenda de Aulas</h1>
-      </div>
-
-      <AgendaClient
-        alunos={alunos.map((a) => ({
-          ...a,
-          materias: a.materias.map((m) => m.materia),
-        }))}
-        materias={materias}
-        professoras={professorasRaw.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
-        isProfessor={isProfessor}
-        disponibilidades={disponibilidades}
-        professoraIdSessao={professoraId ?? ""}
-      />
-    </div>
+    <AgendaClient
+      alunos={alunos.map((a) => ({
+        ...a,
+        materias: a.materias.map((m) => m.materia),
+      }))}
+      materias={materias}
+      professoras={professorasRaw.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
+      isProfessor={isProfessor}
+      disponibilidades={disponibilidades}
+      professoraIdSessao={professoraId ?? ""}
+    />
   );
 }
