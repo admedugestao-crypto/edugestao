@@ -825,7 +825,7 @@ export default function AgendaClient({
       {/* ── Título + barra de controles + cabeçalho dos dias — um único bloco fixo,
           sem sticky independente/offset calculado por JS (isso causava um
           artefato visual: cartões "fantasmas" ao rolar) ── */}
-      <div className="sticky top-0 z-20 bg-slate-100 space-y-4" style={{ transform: "translateZ(0)" }}>
+      <div className="sticky top-0 z-20 bg-slate-100 space-y-4">
         <div className="flex items-center gap-2">
           <CalendarDays size={20} className="text-indigo-600" />
           <h1 className="text-xl font-bold text-slate-800">Agenda de Aulas</h1>
