@@ -8,6 +8,9 @@ function RedefinirSenhaForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
+  const daPlataforma = searchParams.get("plataforma") === "1";
+  const loginUrl = daPlataforma ? "/plataforma/login" : "/login";
+  const esqueciSenhaUrl = daPlataforma ? "/plataforma/esqueci-senha" : "/esqueci-senha";
 
   const [senha, setSenha] = useState("");
   const [confirmar, setConfirmar] = useState("");
@@ -39,7 +42,7 @@ function RedefinirSenhaForm() {
       }
 
       setSucesso(true);
-      setTimeout(() => router.push("/login"), 1500);
+      setTimeout(() => router.push(loginUrl), 1500);
     } catch {
       setErro("Erro ao redefinir a senha. Tente novamente.");
     } finally {
@@ -54,7 +57,7 @@ function RedefinirSenhaForm() {
           Link inválido. Solicite um novo link de redefinição.
         </p>
         <Link
-          href="/esqueci-senha"
+          href={esqueciSenhaUrl}
           className="block text-center w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
         >
           Solicitar novo link
