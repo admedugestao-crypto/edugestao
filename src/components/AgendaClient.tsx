@@ -1689,7 +1689,7 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
   return (
     <div onClick={onClick} role="button" tabIndex={0}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm cursor-pointer"
+      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-[filter,box-shadow] hover:brightness-95 hover:shadow-sm cursor-pointer"
       style={{ backgroundColor: cores.bg, borderLeftColor: cores.border }}>
       {/* Nome + indicador de status */}
       <div className="flex items-start justify-between gap-1">
