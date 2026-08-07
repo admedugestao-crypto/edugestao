@@ -839,8 +839,14 @@ export default function AgendaClient({
     {/* ── Interface normal (oculta ao imprimir) ─────────────────────────────── */}
     <div className="space-y-4 print:hidden">
 
-      {/* ── Barra de controles ─────────────────────────────────────────────── */}
-      <div ref={barraRef} className="sticky top-0 z-20 bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
+      {/* ── Título + barra de controles — gruda no topo junto, como um bloco só ── */}
+      <div ref={barraRef} className="sticky top-0 z-20 bg-slate-100 space-y-4">
+        <div className="flex items-center gap-2">
+          <CalendarDays size={20} className="text-indigo-600" />
+          <h1 className="text-xl font-bold text-slate-800">Agenda de Aulas</h1>
+        </div>
+
+        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
         {/* Vista */}
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
           <button onClick={() => setVista("semana")}
@@ -946,6 +952,7 @@ export default function AgendaClient({
           className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
           <Printer size={14} className="text-slate-500"/>
         </button>
+        </div>
       </div>
 
       {/* Feedback gerar */}
