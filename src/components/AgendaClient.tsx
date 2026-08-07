@@ -166,19 +166,6 @@ export default function AgendaClient({
   const [verConteudo, setVerConteudo]   = useState(false);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
-  // Altura real da barra de controles — usada para grudar o cabeçalho dos
-  // dias logo abaixo dela (a barra pode quebrar em 2 linhas em telas menores).
-  const barraRef = useRef<HTMLDivElement>(null);
-  const [barraAltura, setBarraAltura] = useState(0);
-  useEffect(() => {
-    function medir() {
-      if (barraRef.current) setBarraAltura(barraRef.current.offsetHeight);
-    }
-    medir();
-    window.addEventListener("resize", medir);
-    return () => window.removeEventListener("resize", medir);
-  }, [vista]); // a troca de vista muda quais botões aparecem, o que pode mudar a altura
-
   // Filtro de professora (admin) — inicia no primeiro professor
   const [filtroProfId, setFiltroProfId] = useState(() => isProfessor ? (professoras[0]?.id ?? "") : "");
   // Filtro de matéria (todos os perfis)
@@ -835,8 +822,10 @@ export default function AgendaClient({
     {/* ── Interface normal (oculta ao imprimir) ─────────────────────────────── */}
     <div className="space-y-4 print:hidden">
 
-      {/* ── Título + barra de controles — gruda no topo junto, como um bloco só ── */}
-      <div ref={barraRef} className="sticky top-0 z-20 bg-slate-100 space-y-4" style={{ transform: "translateZ(0)" }}>
+      {/* ── Título + barra de controles + cabeçalho dos dias — um único bloco fixo,
+          sem sticky independente/offset calculado por JS (isso causava um
+          artefato visual: cartões "fantasmas" ao rolar) ── */}
+      <div className="sticky top-0 z-20 bg-slate-100 space-y-4" style={{ transform: "translateZ(0)" }}>
         <div className="flex items-center gap-2">
           <CalendarDays size={20} className="text-indigo-600" />
           <h1 className="text-xl font-bold text-slate-800">Agenda de Aulas</h1>
@@ -949,6 +938,26 @@ export default function AgendaClient({
           <Printer size={14} className="text-slate-500"/>
         </button>
         </div>
+
+        {/* Cabeçalho dos dias — dentro do mesmo bloco fixo acima, não tem
+            sticky/top próprio (evita o bug de dois stickies interagindo).
+            Sem borda/arredondamento embaixo pra colar direto no cartão
+            dos cartões de aula logo abaixo, como se fosse uma peça só. */}
+        {vista === "semana" && (
+          <div className="bg-white rounded-t-xl border-t border-x border-slate-200 grid grid-cols-7">
+            {diasGrade.map((dia, i) => {
+              const hoje = isToday(dia);
+              return (
+                <div key={i} className={`py-3 px-2 text-center border-r last:border-r-0 border-b border-slate-100 ${hoje ? "bg-indigo-50" : ""}`}>
+                  <p className={`text-xs font-semibold ${hoje ? "text-indigo-600" : "text-slate-500"}`}>{DIAS_PT[dia.getDay()]}</p>
+                  <p className={`text-lg font-bold mt-0.5 leading-none ${hoje ? "text-indigo-700" : "text-slate-800"}`}>
+                    {format(dia, "dd")}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Feedback gerar */}
@@ -984,21 +993,7 @@ export default function AgendaClient({
 
       {/* ── Vista Semana ───────────────────────────────────────────────────── */}
       {vista === "semana" && (
-        <div className="bg-white rounded-xl border border-slate-200" style={{ isolation: "isolate" }}>
-          {/* Cabeçalho dos dias — gruda logo abaixo da barra de controles ao rolar */}
-          <div className="sticky z-10 bg-white rounded-t-xl grid grid-cols-7 border-b border-slate-100" style={{ top: barraAltura, transform: "translateZ(0)" }}>
-            {diasGrade.map((dia, i) => {
-              const hoje = isToday(dia);
-              return (
-                <div key={i} className={`py-3 px-2 text-center border-r last:border-r-0 border-slate-100 ${hoje ? "bg-indigo-50" : ""}`}>
-                  <p className={`text-xs font-semibold ${hoje ? "text-indigo-600" : "text-slate-500"}`}>{DIAS_PT[dia.getDay()]}</p>
-                  <p className={`text-lg font-bold mt-0.5 leading-none ${hoje ? "text-indigo-700" : "text-slate-800"}`}>
-                    {format(dia, "dd")}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+        <div className="bg-white rounded-b-xl border-b border-x border-slate-200">
           <div className="grid grid-cols-7 min-h-[320px] rounded-b-xl overflow-hidden">
             {diasGrade.map((dia, i) => {
               const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
