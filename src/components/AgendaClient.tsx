@@ -826,16 +826,8 @@ export default function AgendaClient({
     {/* ── Interface normal (oculta ao imprimir) ─────────────────────────────── */}
     <div className="space-y-4 print:hidden">
 
-      {/* ── Título + barra de controles + cabeçalho dos dias — um único bloco fixo,
-          sem sticky independente/offset calculado por JS (isso causava um
-          artefato visual: cartões "fantasmas" ao rolar) ── */}
-      <div className="sticky top-0 z-20 bg-slate-100 space-y-4">
-        <div className="flex items-center gap-2">
-          <CalendarDays size={20} className="text-indigo-600" />
-          <h1 className="text-xl font-bold text-slate-800">Agenda de Aulas</h1>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
+      {/* ── Barra de controles ─────────────────────────────────────────────── */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
         {/* Vista */}
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
           <button onClick={() => setVista("semana")}
@@ -941,27 +933,6 @@ export default function AgendaClient({
           className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
           <Printer size={14} className="text-slate-500"/>
         </button>
-        </div>
-
-        {/* Cabeçalho dos dias — dentro do mesmo bloco fixo acima, não tem
-            sticky/top próprio (evita o bug de dois stickies interagindo).
-            Sem borda/arredondamento embaixo pra colar direto no cartão
-            dos cartões de aula logo abaixo, como se fosse uma peça só. */}
-        {vista === "semana" && (
-          <div className="bg-white rounded-t-xl border-t border-x border-slate-200 grid grid-cols-7">
-            {diasGrade.map((dia, i) => {
-              const hoje = isToday(dia);
-              return (
-                <div key={i} className={`py-3 px-2 text-center border-r last:border-r-0 border-b border-slate-100 ${hoje ? "bg-indigo-50" : ""}`}>
-                  <p className={`text-xs font-semibold ${hoje ? "text-indigo-600" : "text-slate-500"}`}>{DIAS_PT[dia.getDay()]}</p>
-                  <p className={`text-lg font-bold mt-0.5 leading-none ${hoje ? "text-indigo-700" : "text-slate-800"}`}>
-                    {format(dia, "dd")}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       {/* Feedback gerar */}
@@ -997,8 +968,21 @@ export default function AgendaClient({
 
       {/* ── Vista Semana ───────────────────────────────────────────────────── */}
       {vista === "semana" && (
-        <div className="bg-white rounded-b-xl border-b border-x border-slate-200">
-          <div className="grid grid-cols-7 min-h-[320px] rounded-b-xl overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="grid grid-cols-7 border-b border-slate-100">
+            {diasGrade.map((dia, i) => {
+              const hoje = isToday(dia);
+              return (
+                <div key={i} className={`py-3 px-2 text-center border-r last:border-r-0 border-slate-100 ${hoje ? "bg-indigo-50" : ""}`}>
+                  <p className={`text-xs font-semibold ${hoje ? "text-indigo-600" : "text-slate-500"}`}>{DIAS_PT[dia.getDay()]}</p>
+                  <p className={`text-lg font-bold mt-0.5 leading-none ${hoje ? "text-indigo-700" : "text-slate-800"}`}>
+                    {format(dia, "dd")}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="grid grid-cols-7 min-h-[320px]">
             {diasGrade.map((dia, i) => {
               const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
               const hoje     = isToday(dia);
@@ -1698,7 +1682,7 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
   return (
     <div onClick={onClick} role="button" tabIndex={0}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-[filter,box-shadow] hover:brightness-95 hover:shadow-sm cursor-pointer"
+      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm cursor-pointer"
       style={{ backgroundColor: cores.bg, borderLeftColor: cores.border }}>
       {/* Nome + indicador de status */}
       <div className="flex items-start justify-between gap-1">
