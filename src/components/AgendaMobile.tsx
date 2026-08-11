@@ -6,6 +6,8 @@ import { format, addDays, startOfWeek, isSameDay, isToday, differenceInCalendarD
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
          CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home, BookOpen, Trash2, Bell, ChevronDown, ChevronUp } from "lucide-react";
+import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
+import PagamentoGeradoModal, { type ParcelaGerada } from "@/components/PagamentoGeradoModal";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -136,6 +138,7 @@ export default function AgendaMobile({
   const [carregandoConteudo, setCarregandoConteudo] = useState(false);
   const [salvandoConteudo, setSalvandoConteudo]     = useState(false);
   const [enviandoArquivo, setEnviandoArquivo]       = useState(false);
+  const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroConteudo, setErroConteudo]             = useState<string | null>(null);
 
   const diasSemana = Array.from({ length: 7 }, (_, i) => addDays(semana, i));
@@ -268,16 +271,18 @@ export default function AgendaMobile({
 
   // ── Atualizar status ────────────────────────────────────────────────────────
   async function atualizarStatus(id: string, status: StatusAula) {
-    await fetch(`/api/agenda/${id}`, {
+    const res = await fetch(`/api/agenda/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
+    const data = await res.json().catch(() => ({}));
     // Sair de Realizada exclui o Conteúdo no servidor — reflete no estado
     // local para o modal não continuar mostrando conteúdo/matéria travada.
     const conteudoLocal = status === "REALIZADA";
     setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status, conteudo: conteudoLocal ? a.conteudo : null } : a));
     setDetalhe((p) => p && p.id === id ? { ...p, status, conteudo: conteudoLocal ? p.conteudo : null } : p);
+    pagamentoInfo.mostrar(data.pagamentoGerado);
   }
 
   // ── Reposição ────────────────────────────────────────────────────────────
@@ -404,6 +409,7 @@ export default function AgendaMobile({
     setSalvandoConteudo(true);
     setErroConteudo(null);
     try {
+      let pagamentoGerado: ParcelaGerada[] | undefined;
       if (existente && form.id) {
         const resPut = await fetch(`/api/conteudos/${form.id}`, {
           method: "PUT",
@@ -423,13 +429,16 @@ export default function AgendaMobile({
             setErroConteudo(dMin.erro ?? "Erro ao marcar como Ministrado.");
             return;
           }
+          pagamentoGerado = dMin.pagamentoGerado;
         } else {
           // já estava Ministrado — só garante o status da agenda
-          await fetch(`/api/agenda/${aulaId}`, {
+          const resPatch = await fetch(`/api/agenda/${aulaId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "REALIZADA" }),
           });
+          const dPatch = await resPatch.json().catch(() => ({}));
+          pagamentoGerado = dPatch.pagamentoGerado;
         }
       } else {
         const resPost = await fetch("/api/conteudos", {
@@ -451,10 +460,13 @@ export default function AgendaMobile({
           setErroConteudo("Conteúdo salvo, mas não foi possível atualizar a agenda.");
           return;
         }
+        const dPatch = await resPatch.json().catch(() => ({}));
+        pagamentoGerado = dPatch.pagamentoGerado;
       }
 
       setAulas((prev) => prev.map((a) => a.id === aulaId ? { ...a, status: "REALIZADA" } : a));
       setConteudoModal(null);
+      pagamentoInfo.mostrar(pagamentoGerado);
     } catch {
       setErroConteudo("Erro de comunicação com o servidor.");
     } finally {
@@ -1030,6 +1042,10 @@ export default function AgendaMobile({
             </button>
           </div>
         </div>
+      )}
+
+      {pagamentoInfo.parcelas && (
+        <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
       )}
     </div>
   );

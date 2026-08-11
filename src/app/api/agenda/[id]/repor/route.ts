@@ -177,7 +177,23 @@ export async function POST(
     if (aulaOriginal.status === "REALIZADA") {
       await tx.conteudo.deleteMany({ where: { aulaId: id } });
     }
+
+    // Exclui o(s) pagamento(s) automáticos vinculados à aula original, igual
+    // ao Conteúdo — a cobrança da reposição já foi criada manualmente acima.
+    // O guard no início da rota já bloqueou se algum estivesse pago. Busca os
+    // vínculos ANTES de excluir a aula, porque a exclusão em cascata apaga a
+    // linha de vínculo junto.
+    const vinculos = await tx.pagamentoAula.findMany({
+      where: { agendaAulaId: id },
+      select: { pagamentoId: true },
+    });
+    const pagamentoIds = [...new Set(vinculos.map((v) => v.pagamentoId))];
+
     await tx.agendaAula.delete({ where: { id } });
+
+    if (pagamentoIds.length > 0) {
+      await tx.pagamento.deleteMany({ where: { id: { in: pagamentoIds } } });
+    }
 
     return { aulaReposicao, pagamentoCriado };
   });

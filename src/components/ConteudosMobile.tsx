@@ -8,6 +8,8 @@ import {
   Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, Home, LogOut, Library, Search, FileText,
 } from "lucide-react";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
+import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
+import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
 
 type Materia = { id: string; nome: string; cor: string };
 type Aluno = {
@@ -426,6 +428,7 @@ export default function ConteudosMobile({
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; topico: string } | null>(null);
   const [filtroProfId, setFiltroProfId]   = useState("");
   const [salvando, setSalvando]           = useState(false);
+  const pagamentoInfo = usePagamentoGeradoInfo();
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
   const [unificando, setUnificando] = useState(false);
   const [erroNovo, setErroNovo]     = useState("");
@@ -587,6 +590,7 @@ export default function ConteudosMobile({
         const dFresh = await resFresh.json();
         setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? mapConteudo(dFresh) : c));
         setEditConteudo(null);
+        pagamentoInfo.mostrar(dMin.pagamentoGerado);
         return;
       }
 
@@ -931,6 +935,10 @@ export default function ConteudosMobile({
             </div>
           </div>
         </div>
+      )}
+
+      {pagamentoInfo.parcelas && (
+        <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
       )}
     </div>
   );

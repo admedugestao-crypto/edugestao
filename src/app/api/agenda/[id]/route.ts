@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
+import { gerarPagamentosAluno, type ParcelaGerada } from "@/lib/motorCobranca";
 
 export const dynamic = "force-dynamic";
 
@@ -150,7 +151,43 @@ export async function PATCH(
     },
   });
 
-  return NextResponse.json(updated);
+  // Marcar como Realizada ou Falta do Aluno gera/atualiza a cobrança na hora —
+  // não depende mais de rodar "Gerar cobranças" em lote depois. Uma falha aqui
+  // não derruba a resposta: o status já foi salvo.
+  let avisoPagamento: string | undefined;
+  let pagamentoGerado: ParcelaGerada[] | undefined;
+  if (status === "REALIZADA" || status === "FALTA_ALUNO") {
+    try {
+      const resultado = await gerarPagamentosAluno(
+        scope.empresaId,
+        updated.alunoId,
+        updated.data.getUTCMonth() + 1,
+        updated.data.getUTCFullYear(),
+      );
+      if (!resultado.semCobranca) pagamentoGerado = resultado.parcelas;
+    } catch (e) {
+      console.error("Falha ao gerar pagamento automático:", e);
+      avisoPagamento = "Status salvo, mas não foi possível gerar a cobrança automaticamente.";
+    }
+  } else if (status === "CANCELADA" || status === "FALTA_PROFESSOR") {
+    // A aula deixou de ser cobrável → exclui o pagamento vinculado, igual ao
+    // Conteúdo. O guard acima já bloqueou essa transição se o pagamento
+    // vinculado estivesse pago, então aqui é sempre um pagamento em aberto.
+    const vinculos = await prisma.pagamentoAula.findMany({
+      where: { agendaAulaId: id },
+      select: { pagamentoId: true },
+    });
+    const pagamentoIds = [...new Set(vinculos.map((v) => v.pagamentoId))];
+    if (pagamentoIds.length > 0) {
+      await prisma.pagamento.deleteMany({ where: { id: { in: pagamentoIds } } });
+    }
+  }
+
+  return NextResponse.json({
+    ...updated,
+    ...(pagamentoGerado ? { pagamentoGerado } : {}),
+    ...(avisoPagamento ? { avisoPagamento } : {}),
+  });
 }
 
 // DELETE /api/agenda/[id]
@@ -189,6 +226,21 @@ export async function DELETE(
     });
   }
 
+  // Exclui o(s) pagamento(s) vinculados a esta aula, igual ao Conteúdo —
+  // o guard acima já bloqueou a exclusão se algum estivesse pago, então aqui
+  // é sempre um pagamento em aberto. Busca os vínculos ANTES de excluir a
+  // aula, porque a exclusão em cascata apaga a linha de vínculo junto.
+  const vinculos = await prisma.pagamentoAula.findMany({
+    where: { agendaAulaId: id },
+    select: { pagamentoId: true },
+  });
+  const pagamentoIds = [...new Set(vinculos.map((v) => v.pagamentoId))];
+
   await prisma.agendaAula.delete({ where: { id } });
+
+  if (pagamentoIds.length > 0) {
+    await prisma.pagamento.deleteMany({ where: { id: { in: pagamentoIds } } });
+  }
+
   return NextResponse.json({ ok: true });
 }

@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
+import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 type Materia = { id: string; nome: string; cor: string };
@@ -162,6 +164,7 @@ export default function AgendaClient({
   const [obsEdit, setObsEdit]         = useState("");
   const [materiaDetalheId, setMateriaDetalheId] = useState<string>("");
   const [atualizando, setAtualizando] = useState(false);
+  const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
   const [materiaSalva, setMateriaSalva] = useState(false);
   const [verConteudo, setVerConteudo]   = useState(false);
@@ -570,8 +573,8 @@ export default function AgendaClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json();
         setErroStatus(data.erro ?? "Não foi possível alterar o status.");
         return;
       }
@@ -580,6 +583,7 @@ export default function AgendaClient({
       const conteudoLocal = status === "REALIZADA";
       setAulas((prev) => prev.map((a) => a.id === id ? { ...a, status, conteudo: conteudoLocal ? a.conteudo : null } : a));
       if (aulaDetalhe?.id === id) setAulaDetalhe((p) => p ? { ...p, status, conteudo: conteudoLocal ? p.conteudo : null } : p);
+      pagamentoInfo.mostrar(data.pagamentoGerado);
     } finally {
       setAtualizando(false);
     }
@@ -1415,7 +1419,7 @@ export default function AgendaClient({
               {aulaDetalhe.reposicao && (
                 <div className="col-span-2 flex items-center gap-1.5 pt-1">
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-700">↺ Aula de reposição</span>
-                  <span className="text-slate-400">cobrança lançada quando a aula original foi excluída — fica fora do "Gerar cobranças"</span>
+                  <span className="text-slate-400">cobrança lançada quando a aula original foi excluída — não entra na cobrança automática de novo</span>
                 </div>
               )}
             </div>
@@ -1653,6 +1657,10 @@ export default function AgendaClient({
           <p className="text-xs text-slate-500">Isso pode levar alguns instantes. Não feche nem saia desta tela até terminar.</p>
         </div>
       </div>
+    )}
+
+    {pagamentoInfo.parcelas && (
+      <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
     )}
     </>
   );

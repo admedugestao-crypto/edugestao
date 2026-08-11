@@ -110,8 +110,6 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { alunoId, mes, ano, parcela = 1, pago, valorCobrado, dataVencimento, quantidadeAulas, observacao } = body;
 
-  const { aulaIds } = body; // array opcional de AgendaAula ids para vincular
-
   const alunoOk = await prisma.aluno.findFirst({ where: { id: alunoId, empresaId: scope.empresaId }, select: { id: true } });
   if (!alunoOk) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
 
@@ -136,14 +134,6 @@ export async function POST(req: NextRequest) {
       origemManual:    true,
     },
   });
-
-  // Vincula aulas REALIZADA ao pagamento
-  if (Array.isArray(aulaIds) && aulaIds.length > 0) {
-    await prisma.pagamentoAula.createMany({
-      data: aulaIds.map((agendaAulaId: string) => ({ pagamentoId: pagamento.id, agendaAulaId })),
-      skipDuplicates: true,
-    });
-  }
 
   return NextResponse.json({ ...pagamento, valorCobrado: Number(pagamento.valorCobrado) });
 }

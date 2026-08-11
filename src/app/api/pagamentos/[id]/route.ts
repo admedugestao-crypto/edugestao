@@ -63,9 +63,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 // DELETE /api/pagamentos/[id]
-// Pagamentos manuais (origemManual=true) podem sempre ser excluídos.
-// Pagamentos gerados automaticamente só podem ser excluídos se todas as
-// aulas do mês estiverem com status CANCELADA ou FALTA_PROFESSOR.
+// Pagamentos manuais (origemManual=true, o que inclui os de reposição) podem
+// sempre ser excluídos. Pagamentos gerados automaticamente (vinculados a
+// aulas via PagamentoAula) só podem ser excluídos se todas as aulas
+// vinculadas estiverem CANCELADA ou FALTA_PROFESSOR — normalmente isso já
+// nem chega a ser necessário, porque marcar a aula como Cancelada/Falta do
+// Professor (ou excluí-la) já exclui o pagamento vinculado automaticamente;
+// esta checagem é a rede de segurança pra quando isso não aconteceu.
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
@@ -77,29 +81,22 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ erro: "Pagamento não encontrado." }, { status: 404 });
   }
 
-  // Pagamentos criados manualmente pelo admin podem sempre ser excluídos
+  // Pagamentos criados manualmente pelo admin (inclusive os de reposição) podem sempre ser excluídos
   if (!pagamento.origemManual) {
-    // Intervalo UTC do mês de competência
-    const inicioMes = new Date(Date.UTC(pagamento.ano, pagamento.mes - 1, 1));
-    const fimMes    = new Date(Date.UTC(pagamento.ano, pagamento.mes,     1));
-
-    const aulasDoMes = await prisma.agendaAula.findMany({
-      where: {
-        alunoId: pagamento.alunoId,
-        data: { gte: inicioMes, lt: fimMes },
-      },
-      select: { status: true },
+    const vinculos = await prisma.pagamentoAula.findMany({
+      where: { pagamentoId: id },
+      select: { agendaAula: { select: { status: true } } },
     });
 
-    // Bloqueia se houver aula ativa (não cancelada / não falta do professor)
-    const aulaAtiva = aulasDoMes.find(
-      (a) => a.status !== "CANCELADA" && a.status !== "FALTA_PROFESSOR",
+    // Bloqueia se alguma aula vinculada ainda estiver ativa (não cancelada / não falta do professor)
+    const aulaAtiva = vinculos.find(
+      (v) => v.agendaAula.status !== "CANCELADA" && v.agendaAula.status !== "FALTA_PROFESSOR",
     );
 
     if (aulaAtiva) {
       return NextResponse.json(
         {
-          erro: "Exclusão não permitida: existem aulas deste mês que não estão com status Cancelada ou Falta do Professor.",
+          erro: "Exclusão não permitida: existem aulas vinculadas a este pagamento que não estão com status Cancelada ou Falta do Professor.",
           bloqueio: true,
         },
         { status: 422 },

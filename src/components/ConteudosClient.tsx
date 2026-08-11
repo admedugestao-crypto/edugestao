@@ -7,6 +7,8 @@ import { Plus, Pencil, Trash2, Paperclip, X, FileText, Loader2, AlertCircle, Lib
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
+import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
+import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
 
 type Materia = { id: string; nome: string; cor: string };
 
@@ -594,6 +596,7 @@ export default function ConteudosClient({
   const [filtroProfId, setFiltroProfId] = useState<string>("");
   // aulaId vindo da agenda (para marcar como Realizada após salvar)
   const [aulaIdPendente, setAulaIdPendente] = useState<string | null>(null);
+  const pagamentoInfo = usePagamentoGeradoInfo();
 
   // Alunos filtrados pelo professor selecionado (admin)
   const alunosFiltrados = filtroProfId
@@ -669,14 +672,15 @@ export default function ConteudosClient({
           headers: { "Content-Type": "application/json" },
           body:    JSON.stringify({ status: "REALIZADA" }),
         });
+        const patchJson = await patchRes.json().catch(() => ({}));
         if (!patchRes.ok) {
-          const patchJson = await patchRes.json().catch(() => ({}));
           setErroNovo(`Conteúdo salvo, mas não foi possível atualizar a agenda: ${patchJson.erro ?? "erro desconhecido"}`);
           setAulaIdPendente(null);
           return;
         }
         setAulaIdPendente(null);
-        router.push("/dashboard/agenda");
+        // Se gerou cobrança, avisa antes de sair da tela.
+        pagamentoInfo.mostrar(patchJson.pagamentoGerado, () => router.push("/dashboard/agenda"));
         return;
       }
 
@@ -760,6 +764,7 @@ export default function ConteudosClient({
         const dFresh = await resFresh.json();
         setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? mapConteudo(dFresh) : c));
         setEditConteudo(null);
+        pagamentoInfo.mostrar(dMin.pagamentoGerado);
         return;
       }
 
@@ -1198,6 +1203,10 @@ export default function ConteudosClient({
             </div>
           </div>
         </div>
+      )}
+
+      {pagamentoInfo.parcelas && (
+        <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
       )}
     </div>
   );

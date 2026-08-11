@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 // ── Garante DATABASE_URL antes de qualquer módulo ser avaliado ────────────────
 // O Prisma 7.x lê process.env.DATABASE_URL no momento em que
@@ -31,6 +32,13 @@ const nextConfig: NextConfig = {
   // mesmo Wi-Fi) — sem isso o Next 16 bloqueia HMR/fontes/recursos de dev
   // vindos de uma origem diferente de "localhost", quebrando a página.
   allowedDevOrigins: ["192.168.18.10"],
+  // Fixa a raiz do Turbopack neste diretório — sem isso, quando rodando num
+  // git worktree (que tem seu próprio package-lock.json além do da raiz do
+  // repo principal), o Turbopack infere a raiz errada e quebra o roteamento
+  // de rotas dinâmicas como /api/auth/[...nextauth] (tudo 404).
+  turbopack: {
+    root: path.join(__dirname),
+  },
 };
 
 export default nextConfig;

@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Clock, AlertCircle,
   DollarSign, TrendingUp, TrendingDown, Users, Check, X, MessageSquare,
-  ArrowLeft, Mail, RefreshCw, Send, Plus, Pencil, Trash2, Printer,
+  ArrowLeft, Mail, Send, Plus, Pencil, Trash2, Printer,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -17,7 +17,7 @@ const TIPO_LABEL: Record<string, string> = {
 function geracaoPagamento(item: { origemManual: boolean; origemReposicao: boolean }) {
   if (item.origemReposicao) return { label: "Rep. Aula",  title: "Gerado ao repor uma aula excluída", cor: "text-purple-700", bg: "bg-purple-100" };
   if (item.origemManual)    return { label: "Manual",     title: "Digitado manualmente",              cor: "text-slate-600", bg: "bg-slate-100" };
-  return                           { label: "Automático", title: "Gerado por \"Gerar cobranças\"",     cor: "text-blue-700",  bg: "bg-blue-100" };
+  return                           { label: "Automático", title: "Gerado automaticamente ao marcar a aula como Realizada ou Falta do Aluno", cor: "text-blue-700",  bg: "bg-blue-100" };
 }
 const STATUS_AULA_LABEL: Record<string, { label: string; cor: string; bg: string }> = {
   AGENDADA:        { label: "Agendada",          cor: "text-slate-600",  bg: "bg-slate-100" },
@@ -62,14 +62,6 @@ type PagamentoItem = {
     status:     string;
     materia:    string | null;
   }[];
-};
-
-type AulaRealizada = {
-  id:         string;
-  data:       string;
-  horaInicio: string | null;
-  horaFim:    string | null;
-  materia:    string | null;
 };
 
 type AlunoSimples = {
@@ -142,8 +134,6 @@ export default function PagamentosClient({
   const [ano,        setAno]        = useState(anoInicial);
   const [pagamentos, setPagamentos] = useState<PagamentoItem[]>(pagamentosIniciais);
   const [carregando, setCarregando] = useState(false);
-  const [gerando,    setGerando]    = useState(false);
-  const [resultadoGerar, setResultadoGerar] = useState<{ criadas: number; existentes: number } | null>(null);
   const [marcando,      setMarcando]      = useState<string | null>(null);
   const [erroBaixa,     setErroBaixa]     = useState<string | null>(null);
   const [enviandoEmail, setEnviandoEmail] = useState<string | null>(null);
@@ -159,9 +149,6 @@ export default function PagamentosClient({
   const [formPag,         setFormPag]         = useState<FormPag | null>(null);
   const [alunosLista,     setAlunosLista]      = useState<AlunoSimples[]>([]);
   const [carregandoAluno, setCarregandoAluno]  = useState(false);
-  const [aulasRealizadas, setAulasRealizadas]  = useState<AulaRealizada[]>([]);
-  const [aulasSelecionadas, setAulasSelecionadas] = useState<string[]>([]);
-  const [carregandoAulas, setCarregandoAulas]  = useState(false);
   const [salvando,        setSalvando]         = useState(false);
   const [excluirId,       setExcluirId]        = useState<string | null>(null);
   const [excluindo,       setExcluindo]        = useState(false);
@@ -206,16 +193,6 @@ export default function PagamentosClient({
     return res.json() as Promise<PagamentoItem[]>;
   }, [alunoFiltro]);
 
-  // ── Gerar cobranças do mês no servidor ──────────────────────────────────
-  const gerarCobranças = useCallback(async (m: number, a: number) => {
-    const res = await fetch("/api/pagamentos/gerar", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ mes: m, ano: a }),
-    });
-    return res.json() as Promise<{ criadas: number; existentes: number }>;
-  }, []);
-
   // ── Navegação de mês ────────────────────────────────────────────────────
   const navMes = useCallback(async (delta: number) => {
     let nm = mes + delta, na = ano;
@@ -227,16 +204,6 @@ export default function PagamentosClient({
     setPagamentos(data);
     setCarregando(false);
   }, [mes, ano, buscarPagamentos]);
-
-  // ── Gerar cobranças manualmente ─────────────────────────────────────────
-  const handleGerar = useCallback(async () => {
-    setGerando(true);
-    const resultado = await gerarCobranças(mes, ano);
-    const data = await buscarPagamentos(mes, ano);
-    setPagamentos(data);
-    setResultadoGerar(resultado);
-    setGerando(false);
-  }, [mes, ano, gerarCobranças, buscarPagamentos]);
 
   // ── Marcar/desmarcar pago ────────────────────────────────────────────────
   async function togglePago(item: PagamentoItem) {
@@ -325,24 +292,10 @@ export default function PagamentosClient({
     setAulasModal(null);
   }
 
-  async function carregarAulasRealizadas(alunoId: string) {
-    if (!alunoId) { setAulasRealizadas([]); setAulasSelecionadas([]); return; }
-    setCarregandoAulas(true);
-    try {
-      const res = await fetch(`/api/agenda/realizadas?alunoId=${alunoId}`);
-      if (res.ok) setAulasRealizadas(await res.json());
-    } finally {
-      setCarregandoAulas(false);
-    }
-    setAulasSelecionadas([]);
-  }
-
   // ── CRUD: abrir modal criar ───────────────────────────────────────────────
   async function abrirCriar() {
     setErroCrud(null);
     setCarregandoAluno(true);
-    setAulasRealizadas([]);
-    setAulasSelecionadas([]);
     setFormPag({
       modo: "criar", alunoId: "", parcela: "1",
       dataVencimento: dataVencimentoPadrao(mes, ano),
@@ -401,7 +354,6 @@ export default function PagamentosClient({
           pago:            formPag.pago,
           dataPagamento:   formPag.pago && formPag.dataPagamento ? formPag.dataPagamento : null,
           observacao:      formPag.observacao || null,
-          aulaIds:         aulasSelecionadas,
         };
         const res = await fetch("/api/pagamentos", {
           method:  "POST",
@@ -576,14 +528,6 @@ export default function PagamentosClient({
                 <div className="w-px h-4 bg-slate-300" />
               </>
             )}
-            <button
-              onClick={handleGerar}
-              disabled={gerando || carregando}
-              className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:opacity-40 transition-colors"
-            >
-              <RefreshCw size={13} className={gerando ? "animate-spin" : ""} />
-              {gerando ? "Gerando…" : "Gerar cobranças"}
-            </button>
             {(isAdmin || podeNovo) && (
               <>
                 <div className="w-px h-4 bg-slate-300" />
@@ -601,8 +545,8 @@ export default function PagamentosClient({
 
         {pagamentos.length === 0 ? (
           <div className="p-10 text-center text-slate-400 text-sm">
-            Clique em <strong>Gerar cobranças</strong> para criar os registros deste mês,
-            ou em <strong>Novo</strong> para adicionar manualmente.
+            A cobrança é gerada automaticamente ao marcar uma aula como Realizada ou Falta do Aluno na agenda,
+            ou você pode clicar em <strong>Novo</strong> para adicionar manualmente.
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -871,7 +815,6 @@ export default function PagamentosClient({
                           onChange={(e) => {
                             const aluno = alunosLista.find((a) => a.id === e.target.value);
                             setFormPag((f) => f ? { ...f, alunoId: e.target.value, valorCobrado: aluno?.valorCobranca != null ? String(aluno.valorCobranca) : f.valorCobrado } : f);
-                            carregarAulasRealizadas(e.target.value);
                           }}
                           className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
@@ -977,58 +920,6 @@ export default function PagamentosClient({
                   </div>
                 );
               })()}
-
-              {/* Aulas Realizadas — apenas no modo criar */}
-              {formPag.modo === "criar" && formPag.alunoId && (
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">
-                    Vincular Aulas Agendadas Realizadas
-                    {aulasRealizadas.length > 0 && (
-                      <span className="ml-1 text-slate-400 font-normal">({aulasRealizadas.length} disponíveis)</span>
-                    )}
-                  </label>
-                  {carregandoAulas ? (
-                    <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
-                      <div className="w-3 h-3 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                      Carregando aulas…
-                    </div>
-                  ) : aulasRealizadas.length === 0 ? (
-                    <p className="text-xs text-slate-400 py-1">Nenhuma Aula Agendada Realizada sem pagamento vinculado.</p>
-                  ) : (
-                    <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-36 overflow-y-auto">
-                      {aulasRealizadas.map((a) => {
-                        const sel = aulasSelecionadas.includes(a.id);
-                        const d = new Date(a.data);
-                        const dataFmt = `${String(d.getUTCDate()).padStart(2,"0")}/${String(d.getUTCMonth()+1).padStart(2,"0")}/${d.getUTCFullYear()}`;
-                        return (
-                          <label key={a.id} className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-slate-50 ${sel ? "bg-indigo-50" : ""}`}>
-                            <input
-                              type="checkbox"
-                              checked={sel}
-                              onChange={() => {
-                                const novas = sel ? aulasSelecionadas.filter((id) => id !== a.id) : [...aulasSelecionadas, a.id];
-                                setAulasSelecionadas(novas);
-                                setFormPag((f) => {
-                                  if (!f) return f;
-                                  const aluno = alunosLista.find((al) => al.id === f.alunoId);
-                                  const valorUnit = aluno?.valorCobranca ?? 0;
-                                  return { ...f, quantidadeAulas: String(novas.length), valorCobrado: String(novas.length * valorUnit) };
-                                });
-                              }}
-                              className="accent-indigo-600"
-                            />
-                            <span className="text-xs text-slate-700">
-                              {dataFmt}
-                              {a.horaInicio && <span className="text-slate-400"> · {a.horaInicio}{a.horaFim ? `–${a.horaFim}` : ""}</span>}
-                              {a.materia && <span className="text-indigo-600 ml-1">· {a.materia}</span>}
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
 
               {/* Observação */}
               <div>
@@ -1151,64 +1042,6 @@ export default function PagamentosClient({
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
             >
               Entendido
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── Modal Resultado Geração ──────────────────────────────────────────── */}
-      {resultadoGerar && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                resultadoGerar.criadas > 0 ? "bg-emerald-100" : "bg-amber-100"
-              }`}>
-                {resultadoGerar.criadas > 0
-                  ? <CheckCircle2 size={20} className="text-emerald-600" />
-                  : <AlertCircle  size={20} className="text-amber-600"   />
-                }
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-800">Resultado da geração</h2>
-                <p className="text-xs text-slate-500">{MESES[mes - 1]} / {ano}</p>
-              </div>
-            </div>
-
-            {resultadoGerar.criadas === 0 && resultadoGerar.existentes === 0 ? (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4">
-                <p className="text-sm font-medium text-amber-800 mb-1">Nenhuma cobrança gerada</p>
-                <p className="text-xs text-amber-700 leading-relaxed">
-                  Não foram encontradas aulas com status <strong>Realizada</strong> ou <strong>Falta do aluno</strong>
-                  {" "}neste mês. Lance as aulas na agenda antes de gerar cobranças.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2 mb-4">
-                {resultadoGerar.criadas > 0 && (
-                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                    <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
-                    <p className="text-sm text-emerald-800">
-                      <strong>{resultadoGerar.criadas}</strong> cobrança(s) criada(s) com sucesso
-                    </p>
-                  </div>
-                )}
-                {resultadoGerar.existentes > 0 && (
-                  <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-                    <Clock size={14} className="text-slate-500 shrink-0" />
-                    <p className="text-sm text-slate-600">
-                      <strong>{resultadoGerar.existentes}</strong> cobrança(s) já existiam e foram mantidas
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <button
-              onClick={() => setResultadoGerar(null)}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
-            >
-              Fechar
             </button>
           </div>
         </div>
