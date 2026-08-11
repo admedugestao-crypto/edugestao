@@ -65,14 +65,14 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(aulasComConteudo);
 }
 
-// DELETE /api/agenda  — excluir aulas em lote por aluno + período
-// Body: { alunoId, inicio?: "YYYY-MM-DD", fim?: "YYYY-MM-DD" }
+// DELETE /api/agenda  — excluir aulas em lote por aluno + período + horário
+// Body: { alunoId, inicio?: "YYYY-MM-DD", fim?: "YYYY-MM-DD", horaInicio?: "HH:MM" }
 export async function DELETE(req: NextRequest) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
-  const { alunoId, inicio, fim, professoraId: bodyProfId } = await req.json() as {
-    alunoId?: string; inicio?: string; fim?: string; professoraId?: string;
+  const { alunoId, inicio, fim, horaInicio, professoraId: bodyProfId } = await req.json() as {
+    alunoId?: string; inicio?: string; fim?: string; horaInicio?: string; professoraId?: string;
   };
 
   // Admin pode excluir sem filtrar por aluno; professora exige alunoId
@@ -84,6 +84,7 @@ export async function DELETE(req: NextRequest) {
 
   const where: any = { empresaId: scope.empresaId };
   if (alunoId) where.alunoId = alunoId;
+  if (horaInicio) where.horaInicio = horaInicio;
 
   if (scope.isAdmin) {
     if (bodyProfId) where.professoraId = bodyProfId;

@@ -203,6 +203,7 @@ export default function AgendaClient({
   const [limparAlunoId, setLimparAlunoId] = useState("");
   const [limparInicio, setLimparInicio] = useState("");
   const [limparFim, setLimparFim]       = useState("");
+  const [limparHorario, setLimparHorario] = useState("");
   const [excluindo, setExcluindo]       = useState(false);
   const [msgLimpar, setMsgLimpar]       = useState<string | null>(null);
 
@@ -317,6 +318,7 @@ export default function AgendaClient({
     setLimparAlunoId("");
     setLimparInicio("");
     setLimparFim("");
+    setLimparHorario("");
     setMsgLimpar(null);
     setModalLimpar(true);
   }
@@ -330,6 +332,7 @@ export default function AgendaClient({
       const body: Record<string, string> = { alunoId: limparAlunoId };
       if (limparInicio)  body.inicio      = limparInicio;
       if (limparFim)     body.fim         = limparFim;
+      if (limparHorario) body.horaInicio  = limparHorario;
       if (!isProfessor && limparProfId) body.professoraId = limparProfId;
       const res  = await fetch("/api/agenda", {
         method: "DELETE",
@@ -342,7 +345,9 @@ export default function AgendaClient({
         return;
       }
       setMsgLimpar(
-        `${data.excluidas} aula(s) excluída(s).${data.avisoPagamento ? ` ${data.avisoPagamento}` : ""}`,
+        data.excluidas > 0
+          ? `${data.excluidas} aula(s) excluída(s).${data.avisoPagamento ? ` ${data.avisoPagamento}` : ""}`
+          : `Nenhuma aula excluída — não havia aulas correspondentes aos filtros selecionados.${data.avisoPagamento ? ` ${data.avisoPagamento}` : ""}`,
       );
       setModalLimpar(false);
       await carregar();
@@ -955,6 +960,19 @@ export default function AgendaClient({
         </div>
       )}
 
+      {/* Feedback exclusão em lote (exibido após o modal fechar) */}
+      {msgLimpar && !modalLimpar && (
+        <div className={`text-sm font-medium px-4 py-2.5 rounded-xl border ${
+          msgLimpar.startsWith("Erro")
+            ? "bg-red-50 border-red-200 text-red-800"
+            : msgLimpar.startsWith("Nenhuma")
+              ? "bg-amber-50 border-amber-200 text-amber-800"
+              : "bg-emerald-50 border-emerald-200 text-emerald-800"
+        }`}>
+          {msgLimpar}
+        </div>
+      )}
+
       {/* Feedback exclusão em lote */}
       {msgLimpar && (
         <div className={`text-sm font-medium px-4 py-2.5 rounded-xl border ${
@@ -1355,6 +1373,15 @@ export default function AgendaClient({
               </div>
             </div>
 
+            {/* Horário */}
+            <div>
+              <label className="text-xs font-medium text-slate-600">
+                Horário <span className="text-slate-400">(opcional — deixe em branco para todos os horários)</span>
+              </label>
+              <input type="time" value={limparHorario} onChange={(e) => setLimparHorario(e.target.value)}
+                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"/>
+            </div>
+
             {/* Feedback exclusão em lote */}
             {msgLimpar && (
               <div className={`text-sm font-medium px-3 py-2 rounded-lg border ${
@@ -1373,10 +1400,10 @@ export default function AgendaClient({
                 {limparAlunoId
                   ? (!limparInicio && !limparFim
                       ? " Todas as aulas do aluno serão excluídas."
-                      : ` Aulas do aluno${limparInicio ? ` a partir de ${limparInicio}` : ""}${limparFim ? ` até ${limparFim}` : ""} serão excluídas.`)
+                      : ` Aulas do aluno${limparInicio ? ` a partir de ${limparInicio}` : ""}${limparFim ? ` até ${limparFim}` : ""}${limparHorario ? ` no horário ${limparHorario}` : ""} serão excluídas.`)
                   : (!limparInicio && !limparFim
                       ? " Todas as aulas de todos os alunos serão excluídas."
-                      : ` Todas as aulas${limparInicio ? ` a partir de ${limparInicio}` : ""}${limparFim ? ` até ${limparFim}` : ""} serão excluídas.`)
+                      : ` Todas as aulas${limparInicio ? ` a partir de ${limparInicio}` : ""}${limparFim ? ` até ${limparFim}` : ""}${limparHorario ? ` no horário ${limparHorario}` : ""} serão excluídas.`)
                 }
               </div>
             )}
