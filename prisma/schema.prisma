@@ -403,10 +403,10 @@ model Pagamento {
   alunoId         String
   mes             Int // 1-12
   ano             Int
-  parcela         Int       @default(1) // 1 para MENSAL/POR_AULA; 1-2 QUINZENAL; 1-5 SEMANAL
+  parcela         Int       @default(1) // sequencial por aluno/mes/ano — cada pagamento automático cobre exatamente 1 aula (ver PagamentoAula); tipoCobranca só define dataVencimento, nunca agrupa aulas
   dataVencimento  DateTime // data exata do vencimento
   valorCobrado    Decimal   @db.Decimal(10, 2)
-  quantidadeAulas Int? // apenas POR_AULA
+  quantidadeAulas Int? // pagamentos automáticos: sempre 1. Pagamentos manuais podem ter outro valor.
   pago            Boolean   @default(false)
   dataPagamento   DateTime?
   observacao      String?

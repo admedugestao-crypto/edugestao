@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
-import { gerarPagamentosAluno, type ParcelaGerada } from "@/lib/motorCobranca";
+import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 
 export const dynamic = "force-dynamic";
 
@@ -158,13 +158,8 @@ export async function PATCH(
   let pagamentoGerado: ParcelaGerada[] | undefined;
   if (status === "REALIZADA" || status === "FALTA_ALUNO") {
     try {
-      const resultado = await gerarPagamentosAluno(
-        scope.empresaId,
-        updated.alunoId,
-        updated.data.getUTCMonth() + 1,
-        updated.data.getUTCFullYear(),
-      );
-      if (!resultado.semCobranca) pagamentoGerado = resultado.parcelas;
+      const resultado = await gerarPagamentoAula(scope.empresaId, updated.id);
+      if (!resultado.semCobranca) pagamentoGerado = [resultado.parcela];
     } catch (e) {
       console.error("Falha ao gerar pagamento automático:", e);
       avisoPagamento = "Status salvo, mas não foi possível gerar a cobrança automaticamente.";

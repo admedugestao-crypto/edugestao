@@ -609,12 +609,6 @@ export default function PagamentosClient({
                         <span className="text-xs text-slate-500">
                           {TIPO_LABEL[item.aluno.tipoCobranca] ?? item.aluno.tipoCobranca}
                         </span>
-                        {item.aluno.tipoCobranca === "QUINZENAL" && (
-                          <span className="text-xs text-slate-400 ml-1">({item.parcela}ª)</span>
-                        )}
-                        {item.aluno.tipoCobranca === "SEMANAL" && (
-                          <span className="text-xs text-slate-400 ml-1">(sem. {item.parcela})</span>
-                        )}
                         {item.aluno.tipoCobranca === "POR_AULA" && (
                           <button
                             onClick={() => setAulasModal({

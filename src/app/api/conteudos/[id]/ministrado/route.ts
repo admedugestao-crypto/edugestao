@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { buscarAulaVinculada } from "@/lib/conteudoAgenda";
-import { gerarPagamentosAluno, type ParcelaGerada } from "@/lib/motorCobranca";
+import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 
 export const dynamic = "force-dynamic";
 
@@ -129,13 +129,8 @@ export async function POST(
   let avisoPagamento: string | undefined;
   let pagamentoGerado: ParcelaGerada[] | undefined;
   try {
-    const resultado = await gerarPagamentosAluno(
-      scope.empresaId,
-      conteudo.alunoId,
-      conteudo.data.getUTCMonth() + 1,
-      conteudo.data.getUTCFullYear(),
-    );
-    if (!resultado.semCobranca) pagamentoGerado = resultado.parcelas;
+    const resultado = await gerarPagamentoAula(scope.empresaId, aula.id);
+    if (!resultado.semCobranca) pagamentoGerado = [resultado.parcela];
   } catch (e) {
     console.error("Falha ao gerar pagamento automático:", e);
     avisoPagamento = "Ministrado salvo, mas não foi possível gerar a cobrança automaticamente.";
