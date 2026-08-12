@@ -873,90 +873,95 @@ export default function AgendaClient({
 
         <div className="flex-1" />
 
-        {/* Filtro por professora (apenas admin) */}
-        {!isProfessor && professoras.length > 0 && (
+        {/* Filtros — agrupados pra sempre quebrar linha juntos, nunca misturar com as ações */}
+        <div className="flex items-center gap-3 flex-wrap justify-end">
+          {/* Filtro por professora (apenas admin) */}
+          {!isProfessor && professoras.length > 0 && (
+            <select
+              value={filtroProfId}
+              onChange={(e) => setFiltroProfId(e.target.value)}
+              className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
+            >
+              <option value="">Todas as professoras</option>
+              {professoras.map((p) => (
+                <option key={p.id} value={p.id}>{p.nome}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Filtro por matéria */}
+          {materiasDisponiveis.length > 0 && (
+            <select
+              value={filtroMateriaId}
+              onChange={(e) => setFiltroMateriaId(e.target.value)}
+              className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
+            >
+              <option value="">Todas as matérias</option>
+              {materiasDisponiveis.map((m) => (
+                <option key={m.id} value={m.id}>{m.nome}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Filtro por aluno */}
+          {alunosDisponiveisFiltro.length > 0 && (
+            <select
+              value={filtroAlunoId}
+              onChange={(e) => setFiltroAlunoId(e.target.value)}
+              className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
+            >
+              <option value="">Todos os alunos</option>
+              {alunosDisponiveisFiltro.map((a) => (
+                <option key={a.id} value={a.id}>{a.nome}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Filtro por status */}
           <select
-            value={filtroProfId}
-            onChange={(e) => setFiltroProfId(e.target.value)}
+            value={filtroStatus}
+            onChange={(e) => setFiltroStatus(e.target.value as StatusAula | "")}
             className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
           >
-            <option value="">Todas as professoras</option>
-            {professoras.map((p) => (
-              <option key={p.id} value={p.id}>{p.nome}</option>
+            <option value="">Todos os status</option>
+            {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => (
+              <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
             ))}
           </select>
-        )}
-
-        {/* Filtro por matéria */}
-        {materiasDisponiveis.length > 0 && (
-          <select
-            value={filtroMateriaId}
-            onChange={(e) => setFiltroMateriaId(e.target.value)}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
-          >
-            <option value="">Todas as matérias</option>
-            {materiasDisponiveis.map((m) => (
-              <option key={m.id} value={m.id}>{m.nome}</option>
-            ))}
-          </select>
-        )}
-
-        {/* Filtro por aluno */}
-        {alunosDisponiveisFiltro.length > 0 && (
-          <select
-            value={filtroAlunoId}
-            onChange={(e) => setFiltroAlunoId(e.target.value)}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
-          >
-            <option value="">Todos os alunos</option>
-            {alunosDisponiveisFiltro.map((a) => (
-              <option key={a.id} value={a.id}>{a.nome}</option>
-            ))}
-          </select>
-        )}
-
-        {/* Filtro por status */}
-        <select
-          value={filtroStatus}
-          onChange={(e) => setFiltroStatus(e.target.value as StatusAula | "")}
-          className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
-        >
-          <option value="">Todos os status</option>
-          {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => (
-            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-          ))}
-        </select>
+        </div>
 
         {/* Ações */}
-        {vista === "semana" && (
-          <button onClick={abrirModalGerar} disabled={gerando}
-            title="Gera todas as aulas recorrentes a partir de hoje até 31/12"
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-              gerando
-                ? "border border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-200 cursor-wait"
-                : "border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
-            }`}>
-            {gerando ? <RefreshCw size={13} className="animate-spin"/> : <Zap size={13}/>}
-            {gerando ? "Gerando..." : "Gerar agenda"}
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          {vista === "semana" && (
+            <button onClick={abrirModalGerar} disabled={gerando}
+              title="Gera todas as aulas recorrentes a partir de hoje até 31/12"
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                gerando
+                  ? "border border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-200 cursor-wait"
+                  : "border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+              }`}>
+              {gerando ? <RefreshCw size={13} className="animate-spin"/> : <Zap size={13}/>}
+              {gerando ? "Gerando..." : "Gerar agenda"}
+            </button>
+          )}
+          <button onClick={abrirModalLimpar}
+            title="Excluir aulas em lote por aluno e período"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+            <Trash2 size={13}/> Excluir período
           </button>
-        )}
-        <button onClick={abrirModalLimpar}
-          title="Excluir aulas em lote por aluno e período"
-          className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
-          <Trash2 size={13}/> Excluir período
-        </button>
-        <button onClick={() => abrirModal(vista === "dia" ? diaRef.toISOString().split("T")[0] : "")}
-          className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
-          <Plus size={13}/> Nova aula
-        </button>
-        <button onClick={carregar} disabled={carregando}
-          className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors disabled:opacity-50">
-          <RefreshCw size={14} className={carregando ? "animate-spin text-indigo-500" : "text-slate-500"}/>
-        </button>
-        <button onClick={() => window.print()} title="Imprimir agenda semanal"
-          className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-          <Printer size={14} className="text-slate-500"/>
-        </button>
+          <button onClick={() => abrirModal(vista === "dia" ? diaRef.toISOString().split("T")[0] : "")}
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+            <Plus size={13}/> Nova aula
+          </button>
+          <button onClick={carregar} disabled={carregando}
+            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <RefreshCw size={14} className={carregando ? "animate-spin text-indigo-500" : "text-slate-500"}/>
+          </button>
+          <button onClick={() => window.print()} title="Imprimir agenda semanal"
+            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+            <Printer size={14} className="text-slate-500"/>
+          </button>
+        </div>
       </div>
 
       {/* Feedback gerar */}
