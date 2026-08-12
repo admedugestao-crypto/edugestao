@@ -871,9 +871,42 @@ export default function AgendaClient({
           </button>
         </div>
 
+        {/* Ações — lado esquerdo, junto da vista/navegação */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {vista === "semana" && (
+            <button onClick={abrirModalGerar} disabled={gerando}
+              title="Gera todas as aulas recorrentes a partir de hoje até 31/12"
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                gerando
+                  ? "border border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-200 cursor-wait"
+                  : "border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+              }`}>
+              {gerando ? <RefreshCw size={13} className="animate-spin"/> : <Zap size={13}/>}
+              {gerando ? "Gerando..." : "Gerar agenda"}
+            </button>
+          )}
+          <button onClick={abrirModalLimpar}
+            title="Excluir aulas em lote por aluno e período"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+            <Trash2 size={13}/> Excluir período
+          </button>
+          <button onClick={() => abrirModal(vista === "dia" ? diaRef.toISOString().split("T")[0] : "")}
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+            <Plus size={13}/> Nova aula
+          </button>
+          <button onClick={carregar} disabled={carregando}
+            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <RefreshCw size={14} className={carregando ? "animate-spin text-indigo-500" : "text-slate-500"}/>
+          </button>
+          <button onClick={() => window.print()} title="Imprimir agenda semanal"
+            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+            <Printer size={14} className="text-slate-500"/>
+          </button>
+        </div>
+
         <div className="flex-1" />
 
-        {/* Filtros — agrupados pra sempre quebrar linha juntos, nunca misturar com as ações */}
+        {/* Filtros — lado direito */}
         <div className="flex items-center gap-3 flex-wrap justify-end">
           {/* Filtro por professora (apenas admin) */}
           {!isProfessor && professoras.length > 0 && (
@@ -928,39 +961,6 @@ export default function AgendaClient({
               <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
             ))}
           </select>
-        </div>
-
-        {/* Ações */}
-        <div className="flex items-center gap-2 flex-wrap justify-end">
-          {vista === "semana" && (
-            <button onClick={abrirModalGerar} disabled={gerando}
-              title="Gera todas as aulas recorrentes a partir de hoje até 31/12"
-              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                gerando
-                  ? "border border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-200 cursor-wait"
-                  : "border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
-              }`}>
-              {gerando ? <RefreshCw size={13} className="animate-spin"/> : <Zap size={13}/>}
-              {gerando ? "Gerando..." : "Gerar agenda"}
-            </button>
-          )}
-          <button onClick={abrirModalLimpar}
-            title="Excluir aulas em lote por aluno e período"
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
-            <Trash2 size={13}/> Excluir período
-          </button>
-          <button onClick={() => abrirModal(vista === "dia" ? diaRef.toISOString().split("T")[0] : "")}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
-            <Plus size={13}/> Nova aula
-          </button>
-          <button onClick={carregar} disabled={carregando}
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors disabled:opacity-50">
-            <RefreshCw size={14} className={carregando ? "animate-spin text-indigo-500" : "text-slate-500"}/>
-          </button>
-          <button onClick={() => window.print()} title="Imprimir agenda semanal"
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-            <Printer size={14} className="text-slate-500"/>
-          </button>
         </div>
       </div>
 
