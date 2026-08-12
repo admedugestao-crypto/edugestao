@@ -176,6 +176,8 @@ export default function AgendaClient({
   const [filtroMateriaId, setFiltroMateriaId] = useState("");
   // Filtro de aluno (todos os perfis)
   const [filtroAlunoId, setFiltroAlunoId] = useState("");
+  // Filtro de status (todos os perfis)
+  const [filtroStatus, setFiltroStatus] = useState<StatusAula | "">("");
 
   // Gerar semana
   const [gerando, setGerando]             = useState(false);
@@ -664,12 +666,13 @@ export default function AgendaClient({
     ? alunos.filter((a) => a.professoraId === filtroProfId)
     : alunos;
 
-  // Aulas filtradas pela matéria e/ou aluno selecionados
+  // Aulas filtradas pela matéria, aluno e/ou status selecionados
   const aulasFiltradas = useMemo(
     () => aulas
       .filter((a) => !filtroMateriaId || a.materiaId === filtroMateriaId)
-      .filter((a) => !filtroAlunoId || a.alunoId === filtroAlunoId),
-    [aulas, filtroMateriaId, filtroAlunoId],
+      .filter((a) => !filtroAlunoId || a.alunoId === filtroAlunoId)
+      .filter((a) => !filtroStatus || a.status === filtroStatus),
+    [aulas, filtroMateriaId, filtroAlunoId, filtroStatus],
   );
 
   function aulasNoDia(dia: Date) {
@@ -911,6 +914,18 @@ export default function AgendaClient({
             ))}
           </select>
         )}
+
+        {/* Filtro por status */}
+        <select
+          value={filtroStatus}
+          onChange={(e) => setFiltroStatus(e.target.value as StatusAula | "")}
+          className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
+        >
+          <option value="">Todos os status</option>
+          {(Object.keys(STATUS_CONFIG) as StatusAula[]).map((s) => (
+            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+          ))}
+        </select>
 
         {/* Ações */}
         {vista === "semana" && (
