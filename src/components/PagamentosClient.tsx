@@ -413,16 +413,39 @@ export default function PagamentosClient({
     setExcluindo(false);
   }
 
-  // ── Resumo ───────────────────────────────────────────────────────────────
+  // ── Filtro por aluno + status (Recebido/Pendente/Atrasados) ────────────────
+  const [filtroAlunoId, setFiltroAlunoId] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState<"pago" | "pendente" | "atrasado" | null>(null);
+
+  const alunosDoMes = useMemo(() => {
+    const mapa = new Map<string, string>();
+    for (const p of pagamentos) mapa.set(p.alunoId, p.aluno.nome);
+    return Array.from(mapa, ([id, nome]) => ({ id, nome })).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  }, [pagamentos]);
+
+  const pagamentosDoAluno = useMemo(() => (
+    filtroAlunoId ? pagamentos.filter((p) => p.alunoId === filtroAlunoId) : pagamentos
+  ), [pagamentos, filtroAlunoId]);
+
+  const pagamentosExibidos = useMemo(() => (
+    pagamentosDoAluno.filter((p) => {
+      if (filtroStatus === "pago")      return p.pago;
+      if (filtroStatus === "pendente")  return !p.pago;
+      if (filtroStatus === "atrasado")  return !p.pago && status(p) === "atrasado";
+      return true;
+    })
+  ), [pagamentosDoAluno, filtroStatus]);
+
+  // ── Resumo (respeita o filtro de aluno, não o de status) ───────────────────
   const { totalEsperado, totalRecebido, totalPendente, qtdAtrasados } = useMemo(() => {
     let esperado = 0, recebido = 0, atrasados = 0;
-    for (const p of pagamentos) {
+    for (const p of pagamentosDoAluno) {
       esperado += p.valorCobrado;
       if (p.pago) recebido += p.valorCobrado;
       else if (status(p) === "atrasado") atrasados++;
     }
     return { totalEsperado: esperado, totalRecebido: recebido, totalPendente: esperado - recebido, qtdAtrasados: atrasados };
-  }, [pagamentos]);
+  }, [pagamentosDoAluno]);
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
@@ -447,23 +470,36 @@ export default function PagamentosClient({
         </div>
       )}
 
-      {/* Navegação de mês */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between">
+      {/* Navegação de mês + filtro por aluno */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-4">
         <button onClick={() => navMes(-1)} disabled={carregando}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40">
+          className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 shrink-0">
           <ChevronLeft size={18} className="text-slate-600" />
         </button>
         <div className="text-center">
           <p className="font-semibold text-slate-800 text-lg">{MESES[mes - 1]} {ano}</p>
-          <p className="text-xs text-slate-400">{pagamentos.length} parcela(s)</p>
+          <p className="text-xs text-slate-400">
+            {pagamentosDoAluno.length} parcela(s){filtroAlunoId ? ` de ${pagamentos.length}` : ""}
+          </p>
         </div>
         <button onClick={() => navMes(1)} disabled={carregando}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40">
+          className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 shrink-0">
           <ChevronRight size={18} className="text-slate-600" />
         </button>
+        <div className="w-px h-8 bg-slate-200 shrink-0" />
+        <select
+          value={filtroAlunoId}
+          onChange={(e) => setFiltroAlunoId(e.target.value)}
+          className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 max-w-[200px]"
+        >
+          <option value="">Todos os alunos</option>
+          {alunosDoMes.map((a) => (
+            <option key={a.id} value={a.id}>{a.nome}</option>
+          ))}
+        </select>
       </div>
 
-      {/* Cards resumo */}
+      {/* Cards resumo — clique em Recebido/Pendente/Atrasados filtra a tabela */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -472,28 +508,54 @@ export default function PagamentosClient({
           </div>
           <p className="text-lg font-bold text-slate-800">{moeda(totalEsperado)}</p>
         </div>
-        <div className="bg-white rounded-xl border border-emerald-200 p-4">
+        <button
+          onClick={() => setFiltroStatus((f) => f === "pago" ? null : "pago")}
+          className={`text-left bg-white rounded-xl border p-4 transition-colors ${
+            filtroStatus === "pago" ? "border-emerald-500 ring-2 ring-emerald-200" : "border-emerald-200 hover:border-emerald-400"
+          }`}
+        >
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp size={16} className="text-emerald-500" />
             <p className="text-xs font-medium text-emerald-600">Recebido</p>
           </div>
           <p className="text-lg font-bold text-emerald-700">{moeda(totalRecebido)}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-amber-200 p-4">
+        </button>
+        <button
+          onClick={() => setFiltroStatus((f) => f === "pendente" ? null : "pendente")}
+          className={`text-left bg-white rounded-xl border p-4 transition-colors ${
+            filtroStatus === "pendente" ? "border-amber-500 ring-2 ring-amber-200" : "border-amber-200 hover:border-amber-400"
+          }`}
+        >
           <div className="flex items-center gap-2 mb-2">
             <TrendingDown size={16} className="text-amber-500" />
             <p className="text-xs font-medium text-amber-600">Pendente</p>
           </div>
           <p className="text-lg font-bold text-amber-700">{moeda(totalPendente)}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-red-200 p-4">
+        </button>
+        <button
+          onClick={() => setFiltroStatus((f) => f === "atrasado" ? null : "atrasado")}
+          className={`text-left bg-white rounded-xl border p-4 transition-colors ${
+            filtroStatus === "atrasado" ? "border-red-500 ring-2 ring-red-200" : "border-red-200 hover:border-red-400"
+          }`}
+        >
           <div className="flex items-center gap-2 mb-2">
             <Users size={16} className="text-red-500" />
             <p className="text-xs font-medium text-red-600">Atrasados</p>
           </div>
           <p className="text-lg font-bold text-red-700">{qtdAtrasados}</p>
-        </div>
+        </button>
       </div>
+
+      {filtroStatus && (
+        <div className="flex items-center gap-2 -mt-2">
+          <span className="text-xs text-slate-500">
+            Filtrando por: <strong>{{ pago: "Recebido", pendente: "Pendente", atrasado: "Atrasados" }[filtroStatus]}</strong>
+          </span>
+          <button onClick={() => setFiltroStatus(null)} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">
+            Limpar
+          </button>
+        </div>
+      )}
 
       {/* Tabela */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -502,13 +564,15 @@ export default function PagamentosClient({
           <p className="text-xs font-medium text-slate-500">
             {pagamentos.length === 0
               ? "Nenhuma cobrança gerada para este mês"
-              : `${pagamentos.length} cobrança(s)`}
+              : pagamentosExibidos.length === 0
+              ? "Nenhuma cobrança para esse filtro"
+              : `${pagamentosExibidos.length} cobrança(s)`}
           </p>
           <div className="flex items-center gap-3">
             {selecionados.length > 0 && (
               <>
                 {(() => {
-                  const pagos = selecionados.filter((id) => pagamentos.find((p) => p.id === id)?.pago);
+                  const pagos = selecionados.filter((id) => pagamentosExibidos.find((p) => p.id === id)?.pago);
                   return pagos.length > 0 ? (
                     <button
                       onClick={() => setReciboIds(pagos)}
@@ -548,6 +612,10 @@ export default function PagamentosClient({
             A cobrança é gerada automaticamente ao marcar uma aula como Realizada ou Falta do Aluno na agenda,
             ou você pode clicar em <strong>Novo</strong> para adicionar manualmente.
           </div>
+        ) : pagamentosExibidos.length === 0 ? (
+          <div className="p-10 text-center text-slate-400 text-sm">
+            Nenhuma cobrança encontrada com os filtros selecionados.
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -557,8 +625,8 @@ export default function PagamentosClient({
                     <input
                       type="checkbox"
                       className="accent-indigo-600 w-4 h-4"
-                      checked={selecionados.length === pagamentos.length && pagamentos.length > 0}
-                      onChange={(e) => setSelecionados(e.target.checked ? pagamentos.map((p) => p.id) : [])}
+                      checked={selecionados.length === pagamentosExibidos.length && pagamentosExibidos.length > 0}
+                      onChange={(e) => setSelecionados(e.target.checked ? pagamentosExibidos.map((p) => p.id) : [])}
                     />
                   </th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Aluno</th>
@@ -573,7 +641,7 @@ export default function PagamentosClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {pagamentos.map((item) => {
+                {pagamentosExibidos.map((item) => {
                   const st      = status(item);
                   const loading = marcando === item.id;
                   return (
