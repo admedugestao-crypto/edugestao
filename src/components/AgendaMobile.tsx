@@ -124,7 +124,6 @@ export default function AgendaMobile({
   const [verConteudo, setVerConteudo] = useState(false);
   const [materiaDetalheIds, setMateriaDetalheIds] = useState<string[]>([]);
   const [materiaSalva, setMateriaSalva] = useState(false);
-  const [salvandoMateria, setSalvandoMateria] = useState(false);
   const [obsEdit, setObsEdit] = useState("");
   const [salvandoObs, setSalvandoObs] = useState(false);
   const [confirmExcluirAula, setConfirmExcluirAula] = useState(false);
@@ -318,52 +317,41 @@ export default function AgendaMobile({
     }
   }
 
-  // ── Matéria da aula (detalhe) ────────────────────────────────────────────────
-  async function salvarMateria(materiaIds: string[]) {
+  // ── Matéria + Observação da aula (detalhe) ───────────────────────────────────
+  async function salvarDetalhes() {
     if (!detalhe) return;
-    setSalvandoMateria(true);
-    try {
-      await fetch(`/api/agenda/${detalhe.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ materiaIds }),
-      });
-      let idsFinais = materiaIds;
-      let materiasFinais: { materia: Materia }[];
-      if (idsFinais.length === 0) {
-        materiasFinais = detalhe.aluno.materias.map((m) => ({ materia: m.materia }));
-        idsFinais = materiasFinais.map((m) => m.materia.id);
-      } else {
-        materiasFinais = idsFinais.map((mid) => {
-          const materia = detalhe.aluno.materias.find((m) => m.materia.id === mid)?.materia
-            ?? detalhe.materias.find((m) => m.materia.id === mid)?.materia ?? null;
-          return { materia: materia! };
-        }).filter((m) => !!m.materia);
-      }
-      const primeiraMateria = materiasFinais[0]?.materia ?? null;
-      setAulas((prev) => prev.map((a) => a.id === detalhe.id
-        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : a));
-      setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : p);
-      setMateriaDetalheIds(idsFinais);
-      setMateriaSalva(true);
-      setTimeout(() => setMateriaSalva(false), 2000);
-    } finally {
-      setSalvandoMateria(false);
-    }
-  }
-
-  // ── Observação da aula (detalhe) ─────────────────────────────────────────────
-  async function salvarObservacao() {
-    if (!detalhe) return;
+    const materiaTravada = !!detalhe.conteudo;
+    const body: { observacao: string; materiaIds?: string[] } = { observacao: obsEdit };
+    if (!materiaTravada) body.materiaIds = materiaDetalheIds;
     setSalvandoObs(true);
     try {
       await fetch(`/api/agenda/${detalhe.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ observacao: obsEdit }),
+        body: JSON.stringify(body),
       });
-      setAulas((prev) => prev.map((a) => a.id === detalhe.id ? { ...a, observacao: obsEdit } : a));
-      setDetalhe((p) => p ? { ...p, observacao: obsEdit } : p);
+      let materiasFinais = detalhe.materias;
+      let primeiraMateria = detalhe.materia;
+      if (!materiaTravada) {
+        let idsFinais = materiaDetalheIds;
+        if (idsFinais.length === 0) {
+          materiasFinais = detalhe.aluno.materias.map((m) => ({ materia: m.materia }));
+          idsFinais = materiasFinais.map((m) => m.materia.id);
+        } else {
+          materiasFinais = idsFinais.map((mid) => {
+            const materia = detalhe.aluno.materias.find((m) => m.materia.id === mid)?.materia
+              ?? detalhe.materias.find((m) => m.materia.id === mid)?.materia ?? null;
+            return { materia: materia! };
+          }).filter((m) => !!m.materia);
+        }
+        primeiraMateria = materiasFinais[0]?.materia ?? null;
+        setMateriaDetalheIds(idsFinais);
+      }
+      setAulas((prev) => prev.map((a) => a.id === detalhe.id
+        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais, observacao: obsEdit } : a));
+      setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais, observacao: obsEdit } : p);
+      setMateriaSalva(true);
+      setTimeout(() => setMateriaSalva(false), 2000);
     } finally {
       setSalvandoObs(false);
     }
@@ -841,11 +829,6 @@ export default function AgendaMobile({
               // Depois que um Conteúdo já foi vinculado a esta aula, a matéria
               // não pode mais mudar — evita dessincronizar aula e conteúdo.
               const materiaTravada = !!detalhe.conteudo;
-              const idsComprometidos = detalhe.materias.map((m) => m.materia.id);
-              const materiaAlterada = !materiaTravada && (
-                materiaDetalheIds.length !== idsComprometidos.length ||
-                materiaDetalheIds.some((id) => !idsComprometidos.includes(id))
-              );
               return (
                 <div>
                   <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
@@ -855,21 +838,8 @@ export default function AgendaMobile({
                     onChange={(ids) => setMateriaDetalheIds(ids)}
                     disabled={materiaTravada}
                   />
-                  {materiaTravada ? (
+                  {materiaTravada && (
                     <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
-                  ) : (
-                    <div className="mt-1.5 flex items-center gap-2">
-                      <button
-                        onClick={() => salvarMateria(materiaDetalheIds)}
-                        disabled={!materiaAlterada || salvandoMateria}
-                        className="text-xs font-medium bg-indigo-600 text-white px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed active:bg-indigo-700"
-                      >
-                        {salvandoMateria ? "Salvando..." : "Salvar matéria"}
-                      </button>
-                      {!materiaAlterada && materiaSalva && (
-                        <p className="text-xs text-emerald-600">✓ Matéria salva</p>
-                      )}
-                    </div>
                   )}
                 </div>
               );
@@ -945,10 +915,27 @@ export default function AgendaMobile({
               <textarea value={obsEdit} onChange={(e) => setObsEdit(e.target.value)} rows={2}
                 placeholder="O que foi trabalhado na aula..."
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
-              <button onClick={salvarObservacao} disabled={salvandoObs || obsEdit === (detalhe.observacao ?? "")}
-                className="mt-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg disabled:opacity-40">
-                {salvandoObs ? "Salvando..." : "Salvar observação"}
-              </button>
+              {(() => {
+                const materiaTravada = !!detalhe.conteudo;
+                const idsComprometidos = detalhe.materias.map((m) => m.materia.id);
+                const materiaAlterada = !materiaTravada && (
+                  materiaDetalheIds.length !== idsComprometidos.length ||
+                  materiaDetalheIds.some((id) => !idsComprometidos.includes(id))
+                );
+                const obsAlterada = obsEdit !== (detalhe.observacao ?? "");
+                const semAlteracao = !materiaAlterada && !obsAlterada;
+                return (
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <button onClick={salvarDetalhes} disabled={salvandoObs || semAlteracao}
+                      className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg disabled:opacity-40">
+                      {salvandoObs ? "Salvando..." : "Salvar"}
+                    </button>
+                    {semAlteracao && materiaSalva && (
+                      <p className="text-xs text-emerald-600">✓ Salvo</p>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             {!conteudoModal && erroConteudo && (

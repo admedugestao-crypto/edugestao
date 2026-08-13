@@ -168,7 +168,6 @@ export default function AgendaClient({
   const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
   const [materiaSalva, setMateriaSalva] = useState(false);
-  const [salvandoMateria, setSalvandoMateria] = useState(false);
   const [verConteudo, setVerConteudo]   = useState(false);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
@@ -599,45 +598,36 @@ export default function AgendaClient({
     }
   }
 
-  async function salvarMateria(materiaIds: string[]) {
+  async function salvarDetalhes() {
     if (!aulaDetalhe) return;
-    setSalvandoMateria(true);
-    try {
-      await fetch(`/api/agenda/${aulaDetalhe.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ materiaIds }),
-      });
-      // Vazio = "todas as matérias" do aluno — resolve pro estado local aqui
-      // também, já que o backend faz o mesmo snapshot.
-      const ids = materiaIds.length > 0 ? materiaIds : aulaDetalhe.aluno.materias.map((m) => m.materia.id);
-      const materiasObjs = ids
-        .map((id) => aulaDetalhe.aluno.materias.find((m) => m.materia.id === id)?.materia)
-        .filter((m): m is Materia => !!m);
-      const novasMaterias = materiasObjs.map((materia) => ({ materia }));
-      const primeiraMateria = materiasObjs[0] ?? null;
-      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
-        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
-      setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
-      setMateriaDetalheIds(ids);
-      setMateriaSalva(true);
-      setTimeout(() => setMateriaSalva(false), 2500);
-    } finally {
-      setSalvandoMateria(false);
-    }
-  }
-
-  async function salvarObservacao() {
-    if (!aulaDetalhe) return;
+    const materiaTravada = !!aulaDetalhe.conteudo;
+    const body: { observacao: string; materiaIds?: string[] } = { observacao: obsEdit };
+    if (!materiaTravada) body.materiaIds = materiaDetalheIds;
     setAtualizando(true);
     try {
       await fetch(`/api/agenda/${aulaDetalhe.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ observacao: obsEdit }),
+        body: JSON.stringify(body),
       });
-      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id ? { ...a, observacao: obsEdit } : a));
-      setAulaDetalhe((p) => p ? { ...p, observacao: obsEdit } : p);
+      let novasMaterias = aulaDetalhe.materias;
+      let primeiraMateria = aulaDetalhe.materia;
+      if (!materiaTravada) {
+        // Vazio = "todas as matérias" do aluno — resolve pro estado local aqui
+        // também, já que o backend faz o mesmo snapshot.
+        const ids = materiaDetalheIds.length > 0 ? materiaDetalheIds : aulaDetalhe.aluno.materias.map((m) => m.materia.id);
+        const materiasObjs = ids
+          .map((id) => aulaDetalhe.aluno.materias.find((m) => m.materia.id === id)?.materia)
+          .filter((m): m is Materia => !!m);
+        novasMaterias = materiasObjs.map((materia) => ({ materia }));
+        primeiraMateria = materiasObjs[0] ?? null;
+        setMateriaDetalheIds(ids);
+      }
+      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
+        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias, observacao: obsEdit } : a));
+      setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias, observacao: obsEdit } : p);
+      setMateriaSalva(true);
+      setTimeout(() => setMateriaSalva(false), 2500);
     } finally {
       setAtualizando(false);
     }
@@ -1535,11 +1525,6 @@ export default function AgendaClient({
                 // Conteúdo foi registrado pra essa matéria especificamente, e
                 // trocar aqui deixaria os dois dessincronizados.
                 const materiaTravada = !!aulaDetalhe.conteudo;
-                const idsComprometidos = (aulaDetalhe.materias ?? []).map((m) => m.materia.id);
-                const materiaAlterada = !materiaTravada && (
-                  materiaDetalheIds.length !== idsComprometidos.length ||
-                  materiaDetalheIds.some((id) => !idsComprometidos.includes(id))
-                );
                 return (
                   <div className="flex-1 min-w-[140px]">
                     <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
@@ -1549,21 +1534,8 @@ export default function AgendaClient({
                       onChange={(ids) => setMateriaDetalheIds(ids)}
                       disabled={materiaTravada}
                     />
-                    {materiaTravada ? (
+                    {materiaTravada && (
                       <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
-                    ) : (
-                      <div className="mt-1.5 flex items-center gap-2">
-                        <button
-                          onClick={() => salvarMateria(materiaDetalheIds)}
-                          disabled={!materiaAlterada || salvandoMateria}
-                          className="text-xs font-medium bg-indigo-600 text-white px-3 py-1 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors"
-                        >
-                          {salvandoMateria ? "Salvando..." : "Salvar matéria"}
-                        </button>
-                        {!materiaAlterada && materiaSalva && (
-                          <p className="text-xs text-emerald-600">✓ Matéria salva</p>
-                        )}
-                      </div>
                     )}
                   </div>
                 );
@@ -1696,11 +1668,28 @@ export default function AgendaClient({
                 className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-700 transition-colors">
                 <Trash2 size={13}/> Excluir aula
               </button>
-              <div className="flex gap-2">
-                <button onClick={salvarObservacao} disabled={atualizando || obsEdit === (aulaDetalhe.observacao ?? "")}
-                  className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-40 transition-colors">
-                  Salvar observação
-                </button>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const materiaTravada = !!aulaDetalhe.conteudo;
+                  const idsComprometidos = (aulaDetalhe.materias ?? []).map((m) => m.materia.id);
+                  const materiaAlterada = !materiaTravada && (
+                    materiaDetalheIds.length !== idsComprometidos.length ||
+                    materiaDetalheIds.some((id) => !idsComprometidos.includes(id))
+                  );
+                  const obsAlterada = obsEdit !== (aulaDetalhe.observacao ?? "");
+                  const semAlteracao = !materiaAlterada && !obsAlterada;
+                  return (
+                    <>
+                      {semAlteracao && materiaSalva && (
+                        <p className="text-xs text-emerald-600">✓ Salvo</p>
+                      )}
+                      <button onClick={salvarDetalhes} disabled={atualizando || semAlteracao}
+                        className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-40 transition-colors">
+                        {atualizando ? "Salvando..." : "Salvar"}
+                      </button>
+                    </>
+                  );
+                })()}
                 <button onClick={() => setAulaDetalhe(null)}
                   className="px-4 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                   Fechar
