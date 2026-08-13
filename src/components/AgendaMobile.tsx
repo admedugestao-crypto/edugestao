@@ -124,6 +124,7 @@ export default function AgendaMobile({
   const [verConteudo, setVerConteudo] = useState(false);
   const [materiaDetalheIds, setMateriaDetalheIds] = useState<string[]>([]);
   const [materiaSalva, setMateriaSalva] = useState(false);
+  const [salvandoMateria, setSalvandoMateria] = useState(false);
   const [obsEdit, setObsEdit] = useState("");
   const [salvandoObs, setSalvandoObs] = useState(false);
   const [confirmExcluirAula, setConfirmExcluirAula] = useState(false);
@@ -320,29 +321,35 @@ export default function AgendaMobile({
   // ── Matéria da aula (detalhe) ────────────────────────────────────────────────
   async function salvarMateria(materiaIds: string[]) {
     if (!detalhe) return;
-    await fetch(`/api/agenda/${detalhe.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ materiaIds }),
-    });
-    let idsFinais = materiaIds;
-    let materiasFinais: { materia: Materia }[];
-    if (idsFinais.length === 0) {
-      materiasFinais = detalhe.aluno.materias.map((m) => ({ materia: m.materia }));
-      idsFinais = materiasFinais.map((m) => m.materia.id);
-    } else {
-      materiasFinais = idsFinais.map((mid) => {
-        const materia = detalhe.aluno.materias.find((m) => m.materia.id === mid)?.materia
-          ?? detalhe.materias.find((m) => m.materia.id === mid)?.materia ?? null;
-        return { materia: materia! };
-      }).filter((m) => !!m.materia);
+    setSalvandoMateria(true);
+    try {
+      await fetch(`/api/agenda/${detalhe.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ materiaIds }),
+      });
+      let idsFinais = materiaIds;
+      let materiasFinais: { materia: Materia }[];
+      if (idsFinais.length === 0) {
+        materiasFinais = detalhe.aluno.materias.map((m) => ({ materia: m.materia }));
+        idsFinais = materiasFinais.map((m) => m.materia.id);
+      } else {
+        materiasFinais = idsFinais.map((mid) => {
+          const materia = detalhe.aluno.materias.find((m) => m.materia.id === mid)?.materia
+            ?? detalhe.materias.find((m) => m.materia.id === mid)?.materia ?? null;
+          return { materia: materia! };
+        }).filter((m) => !!m.materia);
+      }
+      const primeiraMateria = materiasFinais[0]?.materia ?? null;
+      setAulas((prev) => prev.map((a) => a.id === detalhe.id
+        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : a));
+      setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : p);
+      setMateriaDetalheIds(idsFinais);
+      setMateriaSalva(true);
+      setTimeout(() => setMateriaSalva(false), 2000);
+    } finally {
+      setSalvandoMateria(false);
     }
-    const primeiraMateria = materiasFinais[0]?.materia ?? null;
-    setAulas((prev) => prev.map((a) => a.id === detalhe.id
-      ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : a));
-    setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : p);
-    setMateriaSalva(true);
-    setTimeout(() => setMateriaSalva(false), 2000);
   }
 
   // ── Observação da aula (detalhe) ─────────────────────────────────────────────
@@ -834,20 +841,36 @@ export default function AgendaMobile({
               // Depois que um Conteúdo já foi vinculado a esta aula, a matéria
               // não pode mais mudar — evita dessincronizar aula e conteúdo.
               const materiaTravada = !!detalhe.conteudo;
+              const idsComprometidos = detalhe.materias.map((m) => m.materia.id);
+              const materiaAlterada = !materiaTravada && (
+                materiaDetalheIds.length !== idsComprometidos.length ||
+                materiaDetalheIds.some((id) => !idsComprometidos.includes(id))
+              );
               return (
                 <div>
                   <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
                   <SeletorMaterias
                     materiasDisponiveis={materiasOpcoes}
                     selecionadas={materiaDetalheIds}
-                    onChange={(ids) => { setMateriaDetalheIds(ids); salvarMateria(ids); }}
+                    onChange={(ids) => setMateriaDetalheIds(ids)}
                     disabled={materiaTravada}
                   />
                   {materiaTravada ? (
                     <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
-                  ) : materiaSalva ? (
-                    <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>
-                  ) : null}
+                  ) : (
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <button
+                        onClick={() => salvarMateria(materiaDetalheIds)}
+                        disabled={!materiaAlterada || salvandoMateria}
+                        className="text-xs font-medium bg-indigo-600 text-white px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed active:bg-indigo-700"
+                      >
+                        {salvandoMateria ? "Salvando..." : "Salvar matéria"}
+                      </button>
+                      {!materiaAlterada && materiaSalva && (
+                        <p className="text-xs text-emerald-600">✓ Matéria salva</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })()}

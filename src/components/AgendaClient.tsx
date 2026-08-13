@@ -168,6 +168,7 @@ export default function AgendaClient({
   const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
   const [materiaSalva, setMateriaSalva] = useState(false);
+  const [salvandoMateria, setSalvandoMateria] = useState(false);
   const [verConteudo, setVerConteudo]   = useState(false);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
@@ -600,24 +601,30 @@ export default function AgendaClient({
 
   async function salvarMateria(materiaIds: string[]) {
     if (!aulaDetalhe) return;
-    await fetch(`/api/agenda/${aulaDetalhe.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ materiaIds }),
-    });
-    // Vazio = "todas as matérias" do aluno — resolve pro estado local aqui
-    // também, já que o backend faz o mesmo snapshot.
-    const ids = materiaIds.length > 0 ? materiaIds : aulaDetalhe.aluno.materias.map((m) => m.materia.id);
-    const materiasObjs = ids
-      .map((id) => aulaDetalhe.aluno.materias.find((m) => m.materia.id === id)?.materia)
-      .filter((m): m is Materia => !!m);
-    const novasMaterias = materiasObjs.map((materia) => ({ materia }));
-    const primeiraMateria = materiasObjs[0] ?? null;
-    setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
-      ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
-    setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
-    setMateriaSalva(true);
-    setTimeout(() => setMateriaSalva(false), 2500);
+    setSalvandoMateria(true);
+    try {
+      await fetch(`/api/agenda/${aulaDetalhe.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ materiaIds }),
+      });
+      // Vazio = "todas as matérias" do aluno — resolve pro estado local aqui
+      // também, já que o backend faz o mesmo snapshot.
+      const ids = materiaIds.length > 0 ? materiaIds : aulaDetalhe.aluno.materias.map((m) => m.materia.id);
+      const materiasObjs = ids
+        .map((id) => aulaDetalhe.aluno.materias.find((m) => m.materia.id === id)?.materia)
+        .filter((m): m is Materia => !!m);
+      const novasMaterias = materiasObjs.map((materia) => ({ materia }));
+      const primeiraMateria = materiasObjs[0] ?? null;
+      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
+        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
+      setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
+      setMateriaDetalheIds(ids);
+      setMateriaSalva(true);
+      setTimeout(() => setMateriaSalva(false), 2500);
+    } finally {
+      setSalvandoMateria(false);
+    }
   }
 
   async function salvarObservacao() {
@@ -1528,20 +1535,36 @@ export default function AgendaClient({
                 // Conteúdo foi registrado pra essa matéria especificamente, e
                 // trocar aqui deixaria os dois dessincronizados.
                 const materiaTravada = !!aulaDetalhe.conteudo;
+                const idsComprometidos = (aulaDetalhe.materias ?? []).map((m) => m.materia.id);
+                const materiaAlterada = !materiaTravada && (
+                  materiaDetalheIds.length !== idsComprometidos.length ||
+                  materiaDetalheIds.some((id) => !idsComprometidos.includes(id))
+                );
                 return (
                   <div className="flex-1 min-w-[140px]">
                     <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
                     <SeletorMaterias
                       materiasDisponiveis={materiasOpcoes}
                       selecionadas={materiaDetalheIds}
-                      onChange={(ids) => { setMateriaDetalheIds(ids); salvarMateria(ids); }}
+                      onChange={(ids) => setMateriaDetalheIds(ids)}
                       disabled={materiaTravada}
                     />
                     {materiaTravada ? (
                       <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
-                    ) : materiaSalva ? (
-                      <p className="mt-1 text-xs text-emerald-600">✓ Matéria salva</p>
-                    ) : null}
+                    ) : (
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <button
+                          onClick={() => salvarMateria(materiaDetalheIds)}
+                          disabled={!materiaAlterada || salvandoMateria}
+                          className="text-xs font-medium bg-indigo-600 text-white px-3 py-1 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors"
+                        >
+                          {salvandoMateria ? "Salvando..." : "Salvar matéria"}
+                        </button>
+                        {!materiaAlterada && materiaSalva && (
+                          <p className="text-xs text-emerald-600">✓ Matéria salva</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })()}
