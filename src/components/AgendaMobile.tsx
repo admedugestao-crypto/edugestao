@@ -786,10 +786,16 @@ export default function AgendaMobile({
                 </div>
               </div>
             ) : (
-              <button onClick={() => salvar()} disabled={salvando}
-                className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
-                {salvando ? "Salvando..." : "Salvar aula"}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={() => setModalAberto(false)}
+                  className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3.5 font-semibold text-sm">
+                  Cancelar
+                </button>
+                <button onClick={() => salvar()} disabled={salvando}
+                  className="flex-[2] bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+                  {salvando ? "Salvando..." : "Salvar aula"}
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -972,7 +978,7 @@ export default function AgendaMobile({
                 </button>
                 <button onClick={() => setDetalhe(null)}
                   className="flex-1 border border-slate-200 rounded-xl py-3 text-sm text-slate-600">
-                  Fechar
+                  Cancelar
                 </button>
               </div>
             )}
@@ -1042,10 +1048,16 @@ export default function AgendaMobile({
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">⚠️ {erroConteudo}</p>
             )}
 
-            <button onClick={salvarConteudoRealizada} disabled={salvandoConteudo || !conteudoModal.form.topico}
-              className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
-              {salvandoConteudo ? "Salvando..." : "Salvar e marcar Realizada"}
-            </button>
+            <div className="flex gap-2">
+              <button onClick={() => setConteudoModal(null)}
+                className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3.5 font-semibold text-sm">
+                Cancelar
+              </button>
+              <button onClick={salvarConteudoRealizada} disabled={salvandoConteudo || !conteudoModal.form.topico}
+                className="flex-[2] bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+                {salvandoConteudo ? "Salvando..." : "Salvar e marcar Realizada"}
+              </button>
+            </div>
           </div>
         </div>
       )}

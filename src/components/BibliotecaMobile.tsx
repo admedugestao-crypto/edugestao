@@ -373,10 +373,16 @@ export default function BibliotecaMobile({
               </p>
             )}
             {erro && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erro}</p>}
-            <button onClick={salvar} disabled={!formCompleto(form) || salvando || enviandoArquivo || unificando}
-              className="w-full bg-indigo-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl text-sm mt-4">
-              {salvando ? "Salvando..." : editandoId ? "Salvar alterações" : "Criar material"}
-            </button>
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => { setModalAberto(false); setForm(formVazio); setEditandoId(null); }}
+                className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">
+                Cancelar
+              </button>
+              <button onClick={salvar} disabled={!formCompleto(form) || salvando || enviandoArquivo || unificando}
+                className="flex-[2] bg-indigo-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl text-sm">
+                {salvando ? "Salvando..." : editandoId ? "Salvar alterações" : "Criar material"}
+              </button>
+            </div>
           </div>
         </div>
       )}

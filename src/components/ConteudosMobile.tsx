@@ -826,10 +826,16 @@ export default function ConteudosMobile({
                 </button>
               </div>
             ) : (
-              <button onClick={() => criarConteudo()} disabled={!podeSalvarNovo || salvando}
-                className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
-                {salvando ? "Salvando..." : "Registrar"}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={() => setModal(false)}
+                  className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3.5 font-semibold text-sm">
+                  Cancelar
+                </button>
+                <button onClick={() => criarConteudo()} disabled={!podeSalvarNovo || salvando}
+                  className="flex-[2] bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+                  {salvando ? "Salvando..." : "Registrar"}
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -905,10 +911,16 @@ export default function ConteudosMobile({
                 </button>
               </div>
             ) : (
-              <button onClick={() => salvarConteudo()} disabled={!podeSalvarEdit || salvando}
-                className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
-                {salvando ? "Salvando..." : "Salvar"}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={() => setEditConteudo(null)}
+                  className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3.5 font-semibold text-sm">
+                  Cancelar
+                </button>
+                <button onClick={() => salvarConteudo()} disabled={!podeSalvarEdit || salvando}
+                  className="flex-[2] bg-indigo-600 text-white rounded-xl py-3.5 font-semibold text-sm disabled:opacity-50 active:scale-[0.98] transition-transform">
+                  {salvando ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
             )}
           </div>
         </div>

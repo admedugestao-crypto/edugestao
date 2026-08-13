@@ -1692,7 +1692,7 @@ export default function AgendaClient({
                 })()}
                 <button onClick={() => setAulaDetalhe(null)}
                   className="px-4 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-                  Fechar
+                  Cancelar
                 </button>
               </div>
             </div>
