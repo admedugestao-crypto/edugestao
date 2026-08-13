@@ -167,7 +167,6 @@ export default function AgendaClient({
   const [atualizando, setAtualizando] = useState(false);
   const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
-  const [materiaSalva, setMateriaSalva] = useState(false);
   const [verConteudo, setVerConteudo]   = useState(false);
   const obsRef = useRef<HTMLTextAreaElement>(null);
 
@@ -625,9 +624,9 @@ export default function AgendaClient({
       }
       setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
         ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias, observacao: obsEdit } : a));
-      setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias, observacao: obsEdit } : p);
-      setMateriaSalva(true);
-      setTimeout(() => setMateriaSalva(false), 2500);
+      // Fecha o modal ao salvar — sinaliza claramente que a alteração foi
+      // persistida, em vez de deixar a tela parada só com o botão desabilitado.
+      setAulaDetalhe(null);
     } finally {
       setAtualizando(false);
     }
@@ -1679,15 +1678,10 @@ export default function AgendaClient({
                   const obsAlterada = obsEdit !== (aulaDetalhe.observacao ?? "");
                   const semAlteracao = !materiaAlterada && !obsAlterada;
                   return (
-                    <>
-                      {semAlteracao && materiaSalva && (
-                        <p className="text-xs text-emerald-600">✓ Salvo</p>
-                      )}
-                      <button onClick={salvarDetalhes} disabled={atualizando || semAlteracao}
-                        className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-40 transition-colors">
-                        {atualizando ? "Salvando..." : "Salvar"}
-                      </button>
-                    </>
+                    <button onClick={salvarDetalhes} disabled={atualizando || semAlteracao}
+                      className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-40 transition-colors">
+                      {atualizando ? "Salvando..." : "Salvar"}
+                    </button>
                   );
                 })()}
                 <button onClick={() => setAulaDetalhe(null)}

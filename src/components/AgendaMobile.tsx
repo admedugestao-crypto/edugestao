@@ -123,7 +123,6 @@ export default function AgendaMobile({
   const [detalhe, setDetalhe] = useState<Aula | null>(null);
   const [verConteudo, setVerConteudo] = useState(false);
   const [materiaDetalheIds, setMateriaDetalheIds] = useState<string[]>([]);
-  const [materiaSalva, setMateriaSalva] = useState(false);
   const [obsEdit, setObsEdit] = useState("");
   const [salvandoObs, setSalvandoObs] = useState(false);
   const [confirmExcluirAula, setConfirmExcluirAula] = useState(false);
@@ -349,9 +348,9 @@ export default function AgendaMobile({
       }
       setAulas((prev) => prev.map((a) => a.id === detalhe.id
         ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais, observacao: obsEdit } : a));
-      setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais, observacao: obsEdit } : p);
-      setMateriaSalva(true);
-      setTimeout(() => setMateriaSalva(false), 2000);
+      // Fecha o modal ao salvar — sinaliza claramente que a alteração foi
+      // persistida, em vez de deixar a tela parada só com o botão desabilitado.
+      setDetalhe(null);
     } finally {
       setSalvandoObs(false);
     }
@@ -931,14 +930,11 @@ export default function AgendaMobile({
                 const obsAlterada = obsEdit !== (detalhe.observacao ?? "");
                 const semAlteracao = !materiaAlterada && !obsAlterada;
                 return (
-                  <div className="mt-1.5 flex items-center gap-2">
+                  <div className="mt-1.5">
                     <button onClick={salvarDetalhes} disabled={salvandoObs || semAlteracao}
                       className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg disabled:opacity-40">
                       {salvandoObs ? "Salvando..." : "Salvar"}
                     </button>
-                    {semAlteracao && materiaSalva && (
-                      <p className="text-xs text-emerald-600">✓ Salvo</p>
-                    )}
                   </div>
                 );
               })()}
