@@ -13,7 +13,11 @@ export async function GET() {
   }
   const empresas = await prisma.empresa.findMany({
     orderBy: { criadoEm: "desc" },
-    select: { id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true, _count: { select: { usuarios: true } } },
+    select: {
+      id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true,
+      fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
+      _count: { select: { usuarios: true } },
+    },
   });
   return NextResponse.json(empresas);
 }

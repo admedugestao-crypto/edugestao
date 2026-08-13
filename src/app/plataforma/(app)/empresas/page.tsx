@@ -9,11 +9,18 @@ type Empresa = {
   logoUrl: string | null;
   ativo: boolean;
   criadoEm: string;
+  fonnteToken: string | null;
+  evolutionApiUrl: string | null;
+  evolutionApiKey: string | null;
+  evolutionApiInstance: string | null;
   _count: { usuarios: number };
 };
 
 const formVazio = { empresaNome: "", nome: "", email: "", senha: "" };
-const formEdicaoVazio = { nome: "", slug: "", ativo: true };
+const formEdicaoVazio = {
+  nome: "", slug: "", ativo: true,
+  fonnteToken: "", evolutionApiUrl: "", evolutionApiKey: "", evolutionApiInstance: "",
+};
 const formAdminVazio = { nome: "", email: "", senha: "" };
 
 export default function PlataformaEmpresasPage() {
@@ -30,6 +37,7 @@ export default function PlataformaEmpresasPage() {
   const [logoFileEdicao, setLogoFileEdicao] = useState<File | null>(null);
   const [erroEdicao, setErroEdicao] = useState("");
   const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+  const [abaEdicao, setAbaEdicao] = useState<"geral" | "whatsapp">("geral");
 
   const [empresaNovoAdmin, setEmpresaNovoAdmin] = useState<Empresa | null>(null);
   const [formAdmin, setFormAdmin] = useState(formAdminVazio);
@@ -93,9 +101,16 @@ export default function PlataformaEmpresasPage() {
 
   function abrirEdicao(empresa: Empresa) {
     setEmpresaEditando(empresa);
-    setFormEdicao({ nome: empresa.nome, slug: empresa.slug, ativo: empresa.ativo });
+    setFormEdicao({
+      nome: empresa.nome, slug: empresa.slug, ativo: empresa.ativo,
+      fonnteToken: empresa.fonnteToken ?? "",
+      evolutionApiUrl: empresa.evolutionApiUrl ?? "",
+      evolutionApiKey: empresa.evolutionApiKey ?? "",
+      evolutionApiInstance: empresa.evolutionApiInstance ?? "",
+    });
     setLogoFileEdicao(null);
     setErroEdicao("");
+    setAbaEdicao("geral");
   }
 
   async function salvarEdicao(e: React.FormEvent) {
@@ -322,68 +337,141 @@ export default function PlataformaEmpresasPage() {
 
       {empresaEditando && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
+          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar empresa</h2>
+
+            <div className="flex gap-1 border-b border-slate-200 mb-4">
+              <button
+                type="button"
+                onClick={() => setAbaEdicao("geral")}
+                className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                  abaEdicao === "geral" ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                Geral
+              </button>
+              <button
+                type="button"
+                onClick={() => setAbaEdicao("whatsapp")}
+                className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                  abaEdicao === "whatsapp" ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                WhatsApp (APIs)
+              </button>
+            </div>
+
             <form onSubmit={salvarEdicao} method="post" action="#" className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nome da empresa</label>
-                <input
-                  type="text"
-                  value={formEdicao.nome}
-                  onChange={(e) => setFormEdicao({ ...formEdicao, nome: e.target.value })}
-                  required
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Código (usado no login)</label>
-                <input
-                  type="text"
-                  value={formEdicao.slug}
-                  onChange={(e) => setFormEdicao({ ...formEdicao, slug: e.target.value })}
-                  required
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <p className="text-xs text-slate-400 mt-1">
-                  Alterar o código muda o link de login usado pela empresa.
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Logo</label>
-                {empresaEditando.logoUrl && !logoFileEdicao && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={empresaEditando.logoUrl} alt="" className="h-10 w-10 rounded object-contain border border-slate-200 mb-2" />
-                )}
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                  onChange={(e) => setLogoFileEdicao(e.target.files?.[0] ?? null)}
-                  className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-slate-100 file:text-slate-700 file:text-sm hover:file:bg-slate-200"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
-                <select
-                  value={formEdicao.ativo ? "ativa" : "inativa"}
-                  onChange={(e) => setFormEdicao({ ...formEdicao, ativo: e.target.value === "ativa" })}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="ativa">Ativa</option>
-                  <option value="inativa">Inativa</option>
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-                <div>
-                  <p className="text-xs text-slate-400">Usuários vinculados</p>
-                  <p className="font-medium text-slate-700">{empresaEditando._count.usuarios}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-400">Criada em</p>
-                  <p className="font-medium text-slate-700">
-                    {new Date(empresaEditando.criadoEm).toLocaleDateString("pt-BR")}
+              {abaEdicao === "geral" ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Nome da empresa</label>
+                    <input
+                      type="text"
+                      value={formEdicao.nome}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, nome: e.target.value })}
+                      required
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Código (usado no login)</label>
+                    <input
+                      type="text"
+                      value={formEdicao.slug}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, slug: e.target.value })}
+                      required
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <p className="text-xs text-slate-400 mt-1">
+                      Alterar o código muda o link de login usado pela empresa.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Logo</label>
+                    {empresaEditando.logoUrl && !logoFileEdicao && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={empresaEditando.logoUrl} alt="" className="h-10 w-10 rounded object-contain border border-slate-200 mb-2" />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      onChange={(e) => setLogoFileEdicao(e.target.files?.[0] ?? null)}
+                      className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-slate-100 file:text-slate-700 file:text-sm hover:file:bg-slate-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                    <select
+                      value={formEdicao.ativo ? "ativa" : "inativa"}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, ativo: e.target.value === "ativa" })}
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="ativa">Ativa</option>
+                      <option value="inativa">Inativa</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                    <div>
+                      <p className="text-xs text-slate-400">Usuários vinculados</p>
+                      <p className="font-medium text-slate-700">{empresaEditando._count.usuarios}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400">Criada em</p>
+                      <p className="font-medium text-slate-700">
+                        {new Date(empresaEditando.criadoEm).toLocaleDateString("pt-BR")}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-slate-500 -mt-1">
+                    Conta própria desta empresa nas APIs de WhatsApp. Sem token cadastrado, essa empresa não
+                    consegue enviar notificações por WhatsApp.
                   </p>
-                </div>
-              </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Token Fonnte</label>
+                    <input
+                      type="text"
+                      value={formEdicao.fonnteToken}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, fonnteToken: e.target.value })}
+                      placeholder="Token do device conectado no painel da Fonnte"
+                      autoComplete="off"
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                  <div className="pt-2 border-t border-slate-100">
+                    <p className="text-xs font-medium text-slate-500 mb-2">Evolution API (opcional)</p>
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        value={formEdicao.evolutionApiUrl}
+                        onChange={(e) => setFormEdicao({ ...formEdicao, evolutionApiUrl: e.target.value })}
+                        placeholder="URL da instância (ex: https://evolution.exemplo.com)"
+                        autoComplete="off"
+                        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <input
+                        type="text"
+                        value={formEdicao.evolutionApiKey}
+                        onChange={(e) => setFormEdicao({ ...formEdicao, evolutionApiKey: e.target.value })}
+                        placeholder="API Key"
+                        autoComplete="off"
+                        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <input
+                        type="text"
+                        value={formEdicao.evolutionApiInstance}
+                        onChange={(e) => setFormEdicao({ ...formEdicao, evolutionApiInstance: e.target.value })}
+                        placeholder="Nome da instância"
+                        autoComplete="off"
+                        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
               {erroEdicao && (
                 <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroEdicao}</p>

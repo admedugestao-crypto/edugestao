@@ -105,23 +105,32 @@ async function corpoErro(res: Response): Promise<string> {
 }
 
 // Remove BOM (U+FEFF) e espaços que às vezes vêm junto ao colar a variável de
-// ambiente no painel da Vercel — sem isso, fetch() lança TypeError ao usar o
-// valor como header HTTP.
+// ambiente no painel da Vercel (ou o valor no banco) — sem isso, fetch()
+// lança TypeError ao usar o valor como header HTTP.
 const BOM = String.fromCharCode(65279);
-function limparEnv(v: string | undefined): string | undefined {
-  if (!v) return v;
+function limparEnv(v: string | null | undefined): string | undefined {
+  if (!v) return undefined;
   const limpo = (v.startsWith(BOM) ? v.slice(BOM.length) : v).trim();
   return limpo || undefined;
 }
 
+// ── Credenciais de WhatsApp de UMA empresa (cada empresa tem sua própria
+// conta nos provedores homologados — sem fallback pra credencial global). ──
+export type WhatsappCredenciais = {
+  fonnteToken?: string | null;
+  evolutionApiUrl?: string | null;
+  evolutionApiKey?: string | null;
+  evolutionApiInstance?: string | null;
+};
+
 // ── Envia via Fonnte ──────────────────────────────────────────────────────────
-async function enviarViaFonnte(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const token = limparEnv(process.env.FONNTE_TOKEN);
-  if (!token) return { ok: false, provedor: "fonnte", erro: "não configurado" };
+async function enviarViaFonnte(numero: string, mensagem: string, token: string | null | undefined): Promise<EnvioResultado> {
+  const tokenLimpo = limparEnv(token);
+  if (!tokenLimpo) return { ok: false, provedor: "fonnte", erro: "não configurado" };
   try {
     const res = await fetch("https://api.fonnte.com/send", {
       method: "POST",
-      headers: { Authorization: token, "Content-Type": "application/x-www-form-urlencoded" },
+      headers: { Authorization: tokenLimpo, "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ target: numero, message: mensagem, countryCode: "55" }).toString(),
     });
     const texto = await res.text();
@@ -135,10 +144,10 @@ async function enviarViaFonnte(numero: string, mensagem: string): Promise<EnvioR
 }
 
 // ── Envia via Evolution API ──────────────────────────────────────────────────
-async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const url = limparEnv(process.env.EVOLUTION_API_URL);
-  const apiKey = limparEnv(process.env.EVOLUTION_API_KEY);
-  const instance = limparEnv(process.env.EVOLUTION_INSTANCE);
+async function enviarViaEvolutionAPI(numero: string, mensagem: string, credenciais: WhatsappCredenciais): Promise<EnvioResultado> {
+  const url = limparEnv(credenciais.evolutionApiUrl);
+  const apiKey = limparEnv(credenciais.evolutionApiKey);
+  const instance = limparEnv(credenciais.evolutionApiInstance);
   if (!url || !apiKey || !instance) return { ok: false, provedor: "evolution", erro: "não configurado" };
   try {
     const res = await fetch(`${url}/message/sendText/${instance}`, {
@@ -153,20 +162,25 @@ async function enviarViaEvolutionAPI(numero: string, mensagem: string): Promise<
   }
 }
 
-// ── Tenta, em cascata, os provedores de WhatsApp configurados ───────────────
-// Evolution primeiro, Fonnte como fallback — para no primeiro que funcionar, e
-// reporta o motivo real de cada falha (visível nos logs da função e na
+// ── Tenta, em cascata, os provedores de WhatsApp configurados PARA ESSA
+// EMPRESA — cada empresa usa sua própria conta nos provedores homologados
+// (Fonnte/Evolution), sem fallback para credencial global (ver "Fase 3").
+// Evolution primeiro, Fonnte como fallback — para no primeiro que funcionar,
+// e reporta o motivo real de cada falha (visível nos logs da função e na
 // resposta da API). Fonnte foi rebaixado a fallback porque retorna status
 // "OK" mesmo quando a mensagem não chega ao destinatário (número
 // provavelmente restrito pelo WhatsApp), então nunca acionava o fallback
 // antes dessa mudança. Z-API foi removido da cascata (assinatura da
 // instância expirada — ver histórico de commits).
-export async function enviarWhatsapp(numero: string, mensagem: string): Promise<EnvioResultado> {
-  const tentativas = [enviarViaEvolutionAPI, enviarViaFonnte];
+export async function enviarWhatsapp(numero: string, mensagem: string, credenciais: WhatsappCredenciais): Promise<EnvioResultado> {
+  const tentativas: (() => Promise<EnvioResultado>)[] = [
+    () => enviarViaEvolutionAPI(numero, mensagem, credenciais),
+    () => enviarViaFonnte(numero, mensagem, credenciais.fonnteToken),
+  ];
   const erros: string[] = [];
 
   for (const tentativa of tentativas) {
-    const resultado = await tentativa(numero, mensagem);
+    const resultado = await tentativa();
     if (resultado.ok) return resultado;
     if (resultado.erro !== "não configurado") {
       console.error(`[WhatsApp] Falha via ${resultado.provedor} para ${numero}: ${resultado.erro}`);
@@ -188,7 +202,10 @@ export async function processarNotificacoes(): Promise<{
 }> {
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const resultado = { enviadas: 0, pendentes: [] as any[], erros: [] as string[] };
-  const empresas = await prisma.empresa.findMany({ where: { ativo: true, whatsappPausado: false }, select: { id: true, nome: true } });
+  const empresas = await prisma.empresa.findMany({
+    where: { ativo: true, whatsappPausado: false },
+    select: { id: true, nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true },
+  });
 
   for (const empresa of empresas) {
     const avaliacoes = await buscarAvaliacoes(empresa.id);
@@ -228,7 +245,7 @@ export async function processarNotificacoes(): Promise<{
             observacao: av.observacao,
           });
 
-          const envio = await enviarWhatsapp(numero, mensagem);
+          const envio = await enviarWhatsapp(numero, mensagem, empresa);
 
           await prisma.notificacaoProva.upsert({
             where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },
@@ -335,10 +352,6 @@ export async function processarNotificacoesAula(): Promise<{
   erros: string[];
 }> {
   const resultado = { enviadas: 0, erros: [] as string[] };
-  const fonnteConfigurada = !!process.env.FONNTE_TOKEN;
-  const evolutionConfigurada = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
-
-  if (!fonnteConfigurada && !evolutionConfigurada) return resultado;
 
   const amanha = new Date();
   amanha.setDate(amanha.getDate() + 1);
@@ -360,7 +373,7 @@ export async function processarNotificacoesAula(): Promise<{
       professora: { include: { usuario: { select: { nome: true } } } },
       materia: true,
       notificacao: true,
-      empresa: { select: { nome: true } },
+      empresa: { select: { nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true } },
     },
   });
 
@@ -450,7 +463,7 @@ export async function processarNotificacoesAula(): Promise<{
       : montarMensagemSequencia(bloco, dataFormatada);
 
     try {
-      const envio = await enviarWhatsapp(numero, mensagem);
+      const envio = await enviarWhatsapp(numero, mensagem, primeira.empresa);
 
       await Promise.all(bloco.map((aula) =>
         prisma.notificacaoAula.upsert({

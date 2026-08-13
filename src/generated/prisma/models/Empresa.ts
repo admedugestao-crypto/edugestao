@@ -33,6 +33,10 @@ export type EmpresaMinAggregateOutputType = {
   whatsappPausado: boolean | null
   emailPausado: boolean | null
   criadoEm: Date | null
+  fonnteToken: string | null
+  evolutionApiUrl: string | null
+  evolutionApiKey: string | null
+  evolutionApiInstance: string | null
 }
 
 export type EmpresaMaxAggregateOutputType = {
@@ -44,6 +48,10 @@ export type EmpresaMaxAggregateOutputType = {
   whatsappPausado: boolean | null
   emailPausado: boolean | null
   criadoEm: Date | null
+  fonnteToken: string | null
+  evolutionApiUrl: string | null
+  evolutionApiKey: string | null
+  evolutionApiInstance: string | null
 }
 
 export type EmpresaCountAggregateOutputType = {
@@ -55,6 +63,10 @@ export type EmpresaCountAggregateOutputType = {
   whatsappPausado: number
   emailPausado: number
   criadoEm: number
+  fonnteToken: number
+  evolutionApiUrl: number
+  evolutionApiKey: number
+  evolutionApiInstance: number
   _all: number
 }
 
@@ -68,6 +80,10 @@ export type EmpresaMinAggregateInputType = {
   whatsappPausado?: true
   emailPausado?: true
   criadoEm?: true
+  fonnteToken?: true
+  evolutionApiUrl?: true
+  evolutionApiKey?: true
+  evolutionApiInstance?: true
 }
 
 export type EmpresaMaxAggregateInputType = {
@@ -79,6 +95,10 @@ export type EmpresaMaxAggregateInputType = {
   whatsappPausado?: true
   emailPausado?: true
   criadoEm?: true
+  fonnteToken?: true
+  evolutionApiUrl?: true
+  evolutionApiKey?: true
+  evolutionApiInstance?: true
 }
 
 export type EmpresaCountAggregateInputType = {
@@ -90,6 +110,10 @@ export type EmpresaCountAggregateInputType = {
   whatsappPausado?: true
   emailPausado?: true
   criadoEm?: true
+  fonnteToken?: true
+  evolutionApiUrl?: true
+  evolutionApiKey?: true
+  evolutionApiInstance?: true
   _all?: true
 }
 
@@ -174,6 +198,10 @@ export type EmpresaGroupByOutputType = {
   whatsappPausado: boolean
   emailPausado: boolean
   criadoEm: Date
+  fonnteToken: string | null
+  evolutionApiUrl: string | null
+  evolutionApiKey: string | null
+  evolutionApiInstance: string | null
   _count: EmpresaCountAggregateOutputType | null
   _min: EmpresaMinAggregateOutputType | null
   _max: EmpresaMaxAggregateOutputType | null
@@ -206,6 +234,10 @@ export type EmpresaWhereInput = {
   whatsappPausado?: Prisma.BoolFilter<"Empresa"> | boolean
   emailPausado?: Prisma.BoolFilter<"Empresa"> | boolean
   criadoEm?: Prisma.DateTimeFilter<"Empresa"> | Date | string
+  fonnteToken?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  evolutionApiKey?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  evolutionApiInstance?: Prisma.StringNullableFilter<"Empresa"> | string | null
   usuarios?: Prisma.UsuarioListRelationFilter
   professoras?: Prisma.ProfessoraListRelationFilter
   materias?: Prisma.MateriaListRelationFilter
@@ -234,6 +266,10 @@ export type EmpresaOrderByWithRelationInput = {
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+  fonnteToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  evolutionApiKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  evolutionApiInstance?: Prisma.SortOrderInput | Prisma.SortOrder
   usuarios?: Prisma.UsuarioOrderByRelationAggregateInput
   professoras?: Prisma.ProfessoraOrderByRelationAggregateInput
   materias?: Prisma.MateriaOrderByRelationAggregateInput
@@ -265,6 +301,10 @@ export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
   whatsappPausado?: Prisma.BoolFilter<"Empresa"> | boolean
   emailPausado?: Prisma.BoolFilter<"Empresa"> | boolean
   criadoEm?: Prisma.DateTimeFilter<"Empresa"> | Date | string
+  fonnteToken?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  evolutionApiKey?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  evolutionApiInstance?: Prisma.StringNullableFilter<"Empresa"> | string | null
   usuarios?: Prisma.UsuarioListRelationFilter
   professoras?: Prisma.ProfessoraListRelationFilter
   materias?: Prisma.MateriaListRelationFilter
@@ -293,6 +333,10 @@ export type EmpresaOrderByWithAggregationInput = {
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+  fonnteToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  evolutionApiKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  evolutionApiInstance?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EmpresaCountOrderByAggregateInput
   _max?: Prisma.EmpresaMaxOrderByAggregateInput
   _min?: Prisma.EmpresaMinOrderByAggregateInput
@@ -310,6 +354,10 @@ export type EmpresaScalarWhereWithAggregatesInput = {
   whatsappPausado?: Prisma.BoolWithAggregatesFilter<"Empresa"> | boolean
   emailPausado?: Prisma.BoolWithAggregatesFilter<"Empresa"> | boolean
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"Empresa"> | Date | string
+  fonnteToken?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  evolutionApiUrl?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  evolutionApiKey?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  evolutionApiInstance?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
 }
 
 export type EmpresaCreateInput = {
@@ -321,6 +369,10 @@ export type EmpresaCreateInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -349,6 +401,10 @@ export type EmpresaUncheckedCreateInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -377,6 +433,10 @@ export type EmpresaUpdateInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -405,6 +465,10 @@ export type EmpresaUncheckedUpdateInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -433,6 +497,10 @@ export type EmpresaCreateManyInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
 }
 
 export type EmpresaUpdateManyMutationInput = {
@@ -444,6 +512,10 @@ export type EmpresaUpdateManyMutationInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EmpresaUncheckedUpdateManyInput = {
@@ -455,6 +527,10 @@ export type EmpresaUncheckedUpdateManyInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EmpresaCountOrderByAggregateInput = {
@@ -466,6 +542,10 @@ export type EmpresaCountOrderByAggregateInput = {
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+  fonnteToken?: Prisma.SortOrder
+  evolutionApiUrl?: Prisma.SortOrder
+  evolutionApiKey?: Prisma.SortOrder
+  evolutionApiInstance?: Prisma.SortOrder
 }
 
 export type EmpresaMaxOrderByAggregateInput = {
@@ -477,6 +557,10 @@ export type EmpresaMaxOrderByAggregateInput = {
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+  fonnteToken?: Prisma.SortOrder
+  evolutionApiUrl?: Prisma.SortOrder
+  evolutionApiKey?: Prisma.SortOrder
+  evolutionApiInstance?: Prisma.SortOrder
 }
 
 export type EmpresaMinOrderByAggregateInput = {
@@ -488,6 +572,10 @@ export type EmpresaMinOrderByAggregateInput = {
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+  fonnteToken?: Prisma.SortOrder
+  evolutionApiUrl?: Prisma.SortOrder
+  evolutionApiKey?: Prisma.SortOrder
+  evolutionApiInstance?: Prisma.SortOrder
 }
 
 export type EmpresaNullableScalarRelationFilter = {
@@ -765,6 +853,10 @@ export type EmpresaCreateWithoutUsuariosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
@@ -792,6 +884,10 @@ export type EmpresaUncheckedCreateWithoutUsuariosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -835,6 +931,10 @@ export type EmpresaUpdateWithoutUsuariosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
@@ -862,6 +962,10 @@ export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -889,6 +993,10 @@ export type EmpresaCreateWithoutProfessorasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
@@ -916,6 +1024,10 @@ export type EmpresaUncheckedCreateWithoutProfessorasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -959,6 +1071,10 @@ export type EmpresaUpdateWithoutProfessorasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
@@ -986,6 +1102,10 @@ export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1013,6 +1133,10 @@ export type EmpresaCreateWithoutMateriasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
@@ -1040,6 +1164,10 @@ export type EmpresaUncheckedCreateWithoutMateriasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1083,6 +1211,10 @@ export type EmpresaUpdateWithoutMateriasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
@@ -1110,6 +1242,10 @@ export type EmpresaUncheckedUpdateWithoutMateriasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1137,6 +1273,10 @@ export type EmpresaCreateWithoutMetodosEnsinoInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1164,6 +1304,10 @@ export type EmpresaUncheckedCreateWithoutMetodosEnsinoInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1207,6 +1351,10 @@ export type EmpresaUpdateWithoutMetodosEnsinoInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1234,6 +1382,10 @@ export type EmpresaUncheckedUpdateWithoutMetodosEnsinoInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1261,6 +1413,10 @@ export type EmpresaCreateWithoutTiposAvaliacaoInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1288,6 +1444,10 @@ export type EmpresaUncheckedCreateWithoutTiposAvaliacaoInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1331,6 +1491,10 @@ export type EmpresaUpdateWithoutTiposAvaliacaoInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1358,6 +1522,10 @@ export type EmpresaUncheckedUpdateWithoutTiposAvaliacaoInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1385,6 +1553,10 @@ export type EmpresaCreateWithoutEscolasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1412,6 +1584,10 @@ export type EmpresaUncheckedCreateWithoutEscolasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1455,6 +1631,10 @@ export type EmpresaUpdateWithoutEscolasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1482,6 +1662,10 @@ export type EmpresaUncheckedUpdateWithoutEscolasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1509,6 +1693,10 @@ export type EmpresaCreateWithoutUnidadesInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1536,6 +1724,10 @@ export type EmpresaUncheckedCreateWithoutUnidadesInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1579,6 +1771,10 @@ export type EmpresaUpdateWithoutUnidadesInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1606,6 +1802,10 @@ export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1633,6 +1833,10 @@ export type EmpresaCreateWithoutCalendariosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1660,6 +1864,10 @@ export type EmpresaUncheckedCreateWithoutCalendariosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1703,6 +1911,10 @@ export type EmpresaUpdateWithoutCalendariosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1730,6 +1942,10 @@ export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1757,6 +1973,10 @@ export type EmpresaCreateWithoutAvaliacoesInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1784,6 +2004,10 @@ export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1827,6 +2051,10 @@ export type EmpresaUpdateWithoutAvaliacoesInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1854,6 +2082,10 @@ export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1881,6 +2113,10 @@ export type EmpresaCreateWithoutNotificacoesProvaInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1908,6 +2144,10 @@ export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1951,6 +2191,10 @@ export type EmpresaUpdateWithoutNotificacoesProvaInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1978,6 +2222,10 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2005,6 +2253,10 @@ export type EmpresaCreateWithoutAlunosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2032,6 +2284,10 @@ export type EmpresaUncheckedCreateWithoutAlunosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2075,6 +2331,10 @@ export type EmpresaUpdateWithoutAlunosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2102,6 +2362,10 @@ export type EmpresaUncheckedUpdateWithoutAlunosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2129,6 +2393,10 @@ export type EmpresaCreateWithoutNotasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2156,6 +2424,10 @@ export type EmpresaUncheckedCreateWithoutNotasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2199,6 +2471,10 @@ export type EmpresaUpdateWithoutNotasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2226,6 +2502,10 @@ export type EmpresaUncheckedUpdateWithoutNotasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2253,6 +2533,10 @@ export type EmpresaCreateWithoutPagamentosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2280,6 +2564,10 @@ export type EmpresaUncheckedCreateWithoutPagamentosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2323,6 +2611,10 @@ export type EmpresaUpdateWithoutPagamentosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2350,6 +2642,10 @@ export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2377,6 +2673,10 @@ export type EmpresaCreateWithoutConteudosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2404,6 +2704,10 @@ export type EmpresaUncheckedCreateWithoutConteudosInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2447,6 +2751,10 @@ export type EmpresaUpdateWithoutConteudosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2474,6 +2782,10 @@ export type EmpresaUncheckedUpdateWithoutConteudosInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2501,6 +2813,10 @@ export type EmpresaCreateWithoutMateriaisBibliotecaInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2528,6 +2844,10 @@ export type EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2571,6 +2891,10 @@ export type EmpresaUpdateWithoutMateriaisBibliotecaInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2598,6 +2922,10 @@ export type EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2625,6 +2953,10 @@ export type EmpresaCreateWithoutAulasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2652,6 +2984,10 @@ export type EmpresaUncheckedCreateWithoutAulasInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2695,6 +3031,10 @@ export type EmpresaUpdateWithoutAulasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2722,6 +3062,10 @@ export type EmpresaUncheckedUpdateWithoutAulasInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2749,6 +3093,10 @@ export type EmpresaCreateWithoutNotificacoesAulaInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2776,6 +3124,10 @@ export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2819,6 +3171,10 @@ export type EmpresaUpdateWithoutNotificacoesAulaInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2846,6 +3202,10 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -3048,6 +3408,10 @@ export type EmpresaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: boolean
+  fonnteToken?: boolean
+  evolutionApiUrl?: boolean
+  evolutionApiKey?: boolean
+  evolutionApiInstance?: boolean
   usuarios?: boolean | Prisma.Empresa$usuariosArgs<ExtArgs>
   professoras?: boolean | Prisma.Empresa$professorasArgs<ExtArgs>
   materias?: boolean | Prisma.Empresa$materiasArgs<ExtArgs>
@@ -3077,6 +3441,10 @@ export type EmpresaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: boolean
+  fonnteToken?: boolean
+  evolutionApiUrl?: boolean
+  evolutionApiKey?: boolean
+  evolutionApiInstance?: boolean
 }, ExtArgs["result"]["empresa"]>
 
 export type EmpresaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -3088,6 +3456,10 @@ export type EmpresaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: boolean
+  fonnteToken?: boolean
+  evolutionApiUrl?: boolean
+  evolutionApiKey?: boolean
+  evolutionApiInstance?: boolean
 }, ExtArgs["result"]["empresa"]>
 
 export type EmpresaSelectScalar = {
@@ -3099,9 +3471,13 @@ export type EmpresaSelectScalar = {
   whatsappPausado?: boolean
   emailPausado?: boolean
   criadoEm?: boolean
+  fonnteToken?: boolean
+  evolutionApiUrl?: boolean
+  evolutionApiKey?: boolean
+  evolutionApiInstance?: boolean
 }
 
-export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "ativo" | "whatsappPausado" | "emailPausado" | "criadoEm", ExtArgs["result"]["empresa"]>
+export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "ativo" | "whatsappPausado" | "emailPausado" | "criadoEm" | "fonnteToken" | "evolutionApiUrl" | "evolutionApiKey" | "evolutionApiInstance", ExtArgs["result"]["empresa"]>
 export type EmpresaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | Prisma.Empresa$usuariosArgs<ExtArgs>
   professoras?: boolean | Prisma.Empresa$professorasArgs<ExtArgs>
@@ -3155,6 +3531,10 @@ export type $EmpresaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     whatsappPausado: boolean
     emailPausado: boolean
     criadoEm: Date
+    fonnteToken: string | null
+    evolutionApiUrl: string | null
+    evolutionApiKey: string | null
+    evolutionApiInstance: string | null
   }, ExtArgs["result"]["empresa"]>
   composites: {}
 }
@@ -3603,6 +3983,10 @@ export interface EmpresaFieldRefs {
   readonly whatsappPausado: Prisma.FieldRef<"Empresa", 'Boolean'>
   readonly emailPausado: Prisma.FieldRef<"Empresa", 'Boolean'>
   readonly criadoEm: Prisma.FieldRef<"Empresa", 'DateTime'>
+  readonly fonnteToken: Prisma.FieldRef<"Empresa", 'String'>
+  readonly evolutionApiUrl: Prisma.FieldRef<"Empresa", 'String'>
+  readonly evolutionApiKey: Prisma.FieldRef<"Empresa", 'String'>
+  readonly evolutionApiInstance: Prisma.FieldRef<"Empresa", 'String'>
 }
     
 

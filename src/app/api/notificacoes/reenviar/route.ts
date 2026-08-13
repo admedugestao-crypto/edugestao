@@ -30,7 +30,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Registro não encontrado" }, { status: 404 });
   }
 
-  const empresa = await prisma.empresa.findUniqueOrThrow({ where: { id: scope.empresaId }, select: { nome: true } });
+  const empresa = await prisma.empresa.findUniqueOrThrow({
+    where: { id: scope.empresaId },
+    select: { nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true },
+  });
 
   const av   = registro.avaliacao;
   const prof = registro.professora;
@@ -64,7 +67,7 @@ export async function POST(req: NextRequest) {
       nomesAlunos,
     });
 
-    const envio = await enviarWhatsapp(numero, mensagem);
+    const envio = await enviarWhatsapp(numero, mensagem, empresa);
 
     if (!envio.ok) return NextResponse.json({ erro: `Falha ao enviar via WhatsApp: ${envio.erro}` }, { status: 500 });
 
@@ -114,7 +117,7 @@ async function reenviarAula(agendaAulaId: string, canal: "whatsapp" | "email", e
       aluno: true,
       professora: { include: { usuario: { select: { nome: true } } } },
       materia: true,
-      empresa: { select: { nome: true } },
+      empresa: { select: { nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true } },
     },
   });
 
@@ -150,7 +153,7 @@ async function reenviarAula(agendaAulaId: string, canal: "whatsapp" | "email", e
     `_Mensagem automática de ${aula.empresa.nome} via EduGestão_`,
   ].join("\n");
 
-  const envio = await enviarWhatsapp(numero, mensagem);
+  const envio = await enviarWhatsapp(numero, mensagem, aula.empresa);
   if (!envio.ok) return NextResponse.json({ erro: `Falha ao enviar via WhatsApp: ${envio.erro}` }, { status: 500 });
 
   await prisma.notificacaoAula.upsert({

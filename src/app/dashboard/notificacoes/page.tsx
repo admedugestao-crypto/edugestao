@@ -90,17 +90,21 @@ export default async function NotificacoesPage() {
         orderBy: { criadoEm: "desc" },
         take: 50,
       }),
-      // ── Configuração da empresa (pausa de envio WhatsApp/E-mail) ─────────────
+      // ── Configuração da empresa (pausa de envio WhatsApp/E-mail + credenciais) ──
       prisma.empresa.findUniqueOrThrow({
         where: { id: scope.empresaId },
-        select: { whatsappPausado: true, emailPausado: true },
+        select: {
+          whatsappPausado: true, emailPausado: true,
+          fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
+        },
       }),
     ]);
 
-  const fonnteConfigurada    = !!process.env.FONNTE_TOKEN;
-  const zapiConfigurada      = !!(process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN);
-  const evolutionConfigurada = !!(process.env.EVOLUTION_API_URL && process.env.EVOLUTION_API_KEY && process.env.EVOLUTION_INSTANCE);
-  const provedor: "fonnte" | "zapi" | "evolution" | null = fonnteConfigurada ? "fonnte" : zapiConfigurada ? "zapi" : evolutionConfigurada ? "evolution" : null;
+  // Cada empresa usa sua própria conta nos provedores homologados — sem
+  // fallback pra variável de ambiente global (ver "Fase 3" no histórico).
+  const fonnteConfigurada    = !!empresa.fonnteToken;
+  const evolutionConfigurada = !!(empresa.evolutionApiUrl && empresa.evolutionApiKey && empresa.evolutionApiInstance);
+  const provedor: "fonnte" | "evolution" | null = fonnteConfigurada ? "fonnte" : evolutionConfigurada ? "evolution" : null;
 
   function serAvaliacao(a: (typeof avaliacoes)[0]) {
     return {
@@ -142,7 +146,7 @@ export default async function NotificacoesPage() {
             unidade: { nome: n.avaliacao.unidade.nome, escola: { nome: n.avaliacao.unidade.escola.nome } },
           },
         }))}
-        whatsappConfigurado={fonnteConfigurada || zapiConfigurada || evolutionConfigurada}
+        whatsappConfigurado={fonnteConfigurada || evolutionConfigurada}
         provedor={provedor}
         whatsappPausado={empresa.whatsappPausado}
         // E-mail

@@ -26,6 +26,15 @@ model Empresa {
   emailPausado     Boolean  @default(false)
   criadoEm         DateTime @default(now())
 
+  // Credenciais de envio de WhatsApp, uma conta própria por empresa (sem
+  // fallback para variável de ambiente global — ver commit que reabriu a
+  // "Fase 3", cancelada anteriormente). Preenchido pela plataforma na tela
+  // de edição de empresa.
+  fonnteToken          String?
+  evolutionApiUrl      String?
+  evolutionApiKey      String?
+  evolutionApiInstance String?
+
   usuarios            Usuario[]
   professoras         Professora[]
   materias            Materia[]

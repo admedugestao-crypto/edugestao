@@ -154,7 +154,7 @@ export default function NotificacoesUnificadas({
   avaliacoes: Avaliacao[];
   historicoWhatsapp: HistoricoWhatsapp[];
   whatsappConfigurado: boolean;
-  provedor?: "fonnte" | "zapi" | "evolution" | null;
+  provedor?: "fonnte" | "evolution" | null;
   whatsappPausado: boolean;
   historicoEmail: HistoricoEmail[];
   emailAtivo: boolean;
@@ -213,7 +213,7 @@ function AbaWhatsapp({
   historicoAulas: HistoricoAula[];
   aulasProximas: AulaProxima[];
   whatsappConfigurado: boolean;
-  provedor?: "fonnte" | "zapi" | "evolution" | null;
+  provedor?: "fonnte" | "evolution" | null;
   whatsappPausadoInicial: boolean;
 }) {
   const router = useRouter();
@@ -316,15 +316,14 @@ function AbaWhatsapp({
         <div>
           <p className={`text-sm font-medium ${whatsappConfigurado ? "text-emerald-800" : "text-amber-800"}`}>
             {whatsappConfigurado
-              ? provedor === "zapi" ? "Z-API configurada — envio automático ativo"
-              : provedor === "fonnte" ? "Fonnte configurada — envio automático ativo"
+              ? provedor === "fonnte" ? "Fonnte configurada — envio automático ativo"
               : "Evolution API configurada — envio automático ativo"
               : "Nenhuma API configurada — envio manual via WhatsApp"}
           </p>
           <p className={`text-xs mt-0.5 ${whatsappConfigurado ? "text-emerald-600" : "text-amber-600"}`}>
             {whatsappConfigurado
               ? "As notificações são enviadas automaticamente todo dia às 08:00."
-              : "Configure FONNTE_TOKEN (ou EVOLUTION_API_URL/EVOLUTION_API_KEY/EVOLUTION_INSTANCE) no .env.local para envio automático."}
+              : "Cadastre o token da conta de WhatsApp desta empresa na Plataforma → Empresas → Editar → aba WhatsApp (APIs) para ativar o envio automático."}
           </p>
         </div>
       </div>

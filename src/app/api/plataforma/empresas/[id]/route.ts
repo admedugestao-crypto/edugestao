@@ -14,7 +14,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   const body = await req.json();
 
-  const data: { ativo?: boolean; nome?: string; slug?: string; logoUrl?: string | null } = {};
+  const data: {
+    ativo?: boolean; nome?: string; slug?: string; logoUrl?: string | null;
+    fonnteToken?: string | null;
+    evolutionApiUrl?: string | null; evolutionApiKey?: string | null; evolutionApiInstance?: string | null;
+  } = {};
 
   if (typeof body.ativo === "boolean") data.ativo = body.ativo;
 
@@ -36,6 +40,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (typeof body.logoUrl === "string" || body.logoUrl === null) {
     data.logoUrl = body.logoUrl;
   }
+
+  // Credenciais de WhatsApp — string vazia é normalizada pra null (campo
+  // "desmarcado"), já que o front sempre manda string mesmo quando limpo.
+  if (typeof body.fonnteToken === "string") data.fonnteToken = body.fonnteToken.trim() || null;
+  if (typeof body.evolutionApiUrl === "string") data.evolutionApiUrl = body.evolutionApiUrl.trim() || null;
+  if (typeof body.evolutionApiKey === "string") data.evolutionApiKey = body.evolutionApiKey.trim() || null;
+  if (typeof body.evolutionApiInstance === "string") data.evolutionApiInstance = body.evolutionApiInstance.trim() || null;
 
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ erro: "Nenhum campo para atualizar." }, { status: 400 });

@@ -101,7 +101,11 @@ export const EmpresaScalarFieldEnum = {
   ativo: 'ativo',
   whatsappPausado: 'whatsappPausado',
   emailPausado: 'emailPausado',
-  criadoEm: 'criadoEm'
+  criadoEm: 'criadoEm',
+  fonnteToken: 'fonnteToken',
+  evolutionApiUrl: 'evolutionApiUrl',
+  evolutionApiKey: 'evolutionApiKey',
+  evolutionApiInstance: 'evolutionApiInstance'
 } as const
 
 export type EmpresaScalarFieldEnum = (typeof EmpresaScalarFieldEnum)[keyof typeof EmpresaScalarFieldEnum]
