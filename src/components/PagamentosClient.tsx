@@ -140,10 +140,14 @@ export default function PagamentosClient({
   const [emailMsg,      setEmailMsg]      = useState<{ id: string; ok: boolean; msg: string } | null>(null);
   const [emailModal,    setEmailModal]    = useState<PagamentoItem | null>(null);
   const [obsModal,   setObsModal]   = useState<{ id: string; obs: string } | null>(null);
+  const [salvandoObs, setSalvandoObs] = useState(false);
+  const [erroObs,      setErroObs]     = useState<string | null>(null);
   const [aulasModal, setAulasModal] = useState<{
     id: string; alunoNome: string; valorCobranca: number;
     qtd: string; aulasRegistradas: number;
   } | null>(null);
+  const [salvandoAulas, setSalvandoAulas] = useState(false);
+  const [erroAulas,      setErroAulas]     = useState<string | null>(null);
 
   // ── Estados CRUD ─────────────────────────────────────────────────────────
   const [formPag,         setFormPag]         = useState<FormPag | null>(null);
@@ -261,35 +265,53 @@ export default function PagamentosClient({
   // ── Salvar observação ────────────────────────────────────────────────────
   async function salvarObs() {
     if (!obsModal) return;
-    const res = await fetch(`/api/pagamentos/${obsModal.id}`, {
-      method:  "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ observacao: obsModal.obs }),
-    });
-    if (res.ok) {
+    setSalvandoObs(true);
+    setErroObs(null);
+    try {
+      const res = await fetch(`/api/pagamentos/${obsModal.id}`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ observacao: obsModal.obs }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setErroObs(err.erro ?? "Erro ao salvar observação.");
+        return;
+      }
       setPagamentos((prev) => prev.map((p) =>
         p.id === obsModal.id ? { ...p, observacao: obsModal.obs } : p,
       ));
+      setObsModal(null);
+    } finally {
+      setSalvandoObs(false);
     }
-    setObsModal(null);
   }
 
   // ── Salvar qtd aulas (POR_AULA) ──────────────────────────────────────────
   async function salvarAulas() {
     if (!aulasModal) return;
-    const qtd   = parseInt(aulasModal.qtd) || 0;
-    const valor = qtd * aulasModal.valorCobranca;
-    const res = await fetch(`/api/pagamentos/${aulasModal.id}`, {
-      method:  "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ quantidadeAulas: qtd, valorCobrado: valor }),
-    });
-    if (res.ok) {
+    setSalvandoAulas(true);
+    setErroAulas(null);
+    try {
+      const qtd   = parseInt(aulasModal.qtd) || 0;
+      const valor = qtd * aulasModal.valorCobranca;
+      const res = await fetch(`/api/pagamentos/${aulasModal.id}`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ quantidadeAulas: qtd, valorCobrado: valor }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setErroAulas(err.erro ?? "Erro ao salvar quantidade de aulas.");
+        return;
+      }
       setPagamentos((prev) => prev.map((p) =>
         p.id === aulasModal.id ? { ...p, quantidadeAulas: qtd, valorCobrado: valor } : p,
       ));
+      setAulasModal(null);
+    } finally {
+      setSalvandoAulas(false);
     }
-    setAulasModal(null);
   }
 
   // ── CRUD: abrir modal criar ───────────────────────────────────────────────
@@ -679,13 +701,13 @@ export default function PagamentosClient({
                         </span>
                         {item.aluno.tipoCobranca === "POR_AULA" && (
                           <button
-                            onClick={() => setAulasModal({
+                            onClick={() => { setErroAulas(null); setAulasModal({
                               id:               item.id,
                               alunoNome:        item.aluno.nome,
                               valorCobranca:    item.aluno.valorCobranca,
                               qtd:              String(item.quantidadeAulas ?? 0),
                               aulasRegistradas: item.quantidadeAulas ?? 0,
-                            })}
+                            }); }}
                             className="block text-xs text-indigo-500 hover:underline mt-0.5"
                           >
                             {item.quantidadeAulas ?? 0} aula(s)
@@ -749,7 +771,7 @@ export default function PagamentosClient({
 
                           {/* Observação */}
                           <button
-                            onClick={() => setObsModal({ id: item.id, obs: item.observacao ?? "" })}
+                            onClick={() => { setErroObs(null); setObsModal({ id: item.id, obs: item.observacao ?? "" }); }}
                             title="Observação"
                             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                               item.observacao
@@ -1188,12 +1210,17 @@ export default function PagamentosClient({
               rows={4} placeholder="Ex: Pagou com cheque, aguardando compensação..."
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
             />
+            {erroObs && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-3">
+                {erroObs}
+              </p>
+            )}
             <div className="flex gap-3 mt-4">
-              <button onClick={salvarObs}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-sm transition-colors">
-                Salvar
+              <button onClick={salvarObs} disabled={salvandoObs}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+                {salvandoObs ? "Salvando..." : "Salvar"}
               </button>
-              <button onClick={() => setObsModal(null)}
+              <button onClick={() => { setObsModal(null); setErroObs(null); }}
                 className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
                 Cancelar
               </button>
@@ -1348,12 +1375,17 @@ export default function PagamentosClient({
               <p className="text-sm font-semibold text-indigo-700 mb-4">
                 Total: {moeda(qtd * aulasModal.valorCobranca)}
               </p>
+              {erroAulas && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-4">
+                  {erroAulas}
+                </p>
+              )}
               <div className="flex gap-3">
-                <button onClick={salvarAulas}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-sm transition-colors">
-                  Salvar
+                <button onClick={salvarAulas} disabled={salvandoAulas}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+                  {salvandoAulas ? "Salvando..." : "Salvar"}
                 </button>
-                <button onClick={() => setAulasModal(null)}
+                <button onClick={() => { setAulasModal(null); setErroAulas(null); }}
                   className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
                   Cancelar
                 </button>
