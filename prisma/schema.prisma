@@ -119,6 +119,8 @@ model Materia {
   aulas               AgendaAula[]
   aulasMaterias       AgendaAulaMateria[]
   materiaisBiblioteca MaterialBiblioteca[]
+  conteudoMaterias        ConteudoMateria[]
+  materiaisBibliotecaMaterias MaterialBibliotecaMateria[]
 
   @@unique([empresaId, nome])
   @@index([empresaId])
@@ -456,11 +458,28 @@ model Conteudo {
   aluno   Aluno       @relation(fields: [alunoId], references: [id], onDelete: Cascade)
   materia Materia?    @relation(fields: [materiaId], references: [id])
   aula    AgendaAula? @relation(fields: [aulaId], references: [id], onDelete: SetNull)
+  materias ConteudoMateria[]
 
   @@index([empresaId])
   @@index([alunoId])
   @@index([materiaId])
   @@map("conteudos")
+}
+
+// Vínculo N:N de matérias por Conteúdo — permite marcar várias matérias num
+// mesmo registro. `Conteudo.materiaId` continua existindo como "matéria
+// primária" (a primeira escolhida), só pra compatibilidade de exibição; esta
+// tabela é a fonte de verdade pra "quais matérias" (mesmo padrão de
+// AgendaAulaMateria). Conjunto vazio = "todas as matérias" (coringa).
+model ConteudoMateria {
+  conteudoId String
+  materiaId  String
+
+  conteudo Conteudo @relation(fields: [conteudoId], references: [id], onDelete: Cascade)
+  materia  Materia  @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@id([conteudoId, materiaId])
+  @@map("conteudo_materias")
 }
 
 // ─── Biblioteca de Materiais ────────────────────────────────────────────────
@@ -481,11 +500,26 @@ model MaterialBiblioteca {
   empresa      Empresa       @relation(fields: [empresaId], references: [id])
   materia      Materia?      @relation(fields: [materiaId], references: [id])
   metodoEnsino MetodoEnsino? @relation(fields: [metodoId], references: [id])
+  materias     MaterialBibliotecaMateria[]
 
   @@index([empresaId])
   @@index([materiaId])
   @@index([metodoId])
   @@map("biblioteca_materiais")
+}
+
+// Vínculo N:N de matérias por Material da Biblioteca — mesmo padrão de
+// ConteudoMateria. `MaterialBiblioteca.materiaId` continua sendo a "matéria
+// primária" pra compatibilidade de exibição.
+model MaterialBibliotecaMateria {
+  materialId String
+  materiaId  String
+
+  material MaterialBiblioteca @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  materia  Materia            @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@id([materialId, materiaId])
+  @@map("biblioteca_material_materias")
 }
 
 // ─── Agenda de Aulas ──────────────────────────────────────────────────────────

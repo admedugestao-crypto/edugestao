@@ -9,7 +9,7 @@ export type ParcelaGerada = {
 };
 
 type Props = {
-  parcelas: ParcelaGerada[];
+  pagamento: ParcelaGerada;
   onFechar: () => void;
 };
 
@@ -23,33 +23,28 @@ function formatarValor(v: number) {
 }
 
 // Aviso informativo (sem opção de cancelar) — a cobrança já foi gerada quando
-// esse modal aparece, ele só comunica o resultado.
-export default function PagamentoGeradoModal({ parcelas, onFechar }: Props) {
+// esse modal aparece, ele só comunica o resultado. Cada pagamento cobre
+// exatamente 1 aula — não existe mais "Parcela N" pra mostrar (esse número
+// hoje é só um contador interno, sem significado pro usuário).
+export default function PagamentoGeradoModal({ pagamento, onFechar }: Props) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
         <h2 className="text-lg font-bold text-slate-800 mb-2">Cobrança gerada</h2>
         <p className="text-sm text-slate-600">
-          A cobrança a seguir foi gerada ou atualizada:
+          A cobrança desta aula foi gerada ou atualizada:
         </p>
 
-        <div className="space-y-3 mt-3">
-          {parcelas.map((p) => (
-            <div key={p.parcela} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
-              <div className="flex justify-between text-slate-700">
-                <span>Parcela {p.parcela} — venc. {formatarData(p.dataVencimento)}</span>
-                <strong>{formatarValor(p.valorCobrado)}</strong>
-              </div>
-              <div className="text-slate-500 text-xs mt-0.5">
-                {p.quantidadeAulas} aula{p.quantidadeAulas === 1 ? "" : "s"}
-              </div>
-              {p.pagoAnteriormente !== null && (
-                <p className="text-amber-700 bg-amber-50 rounded px-2 py-1 mt-2 text-xs">
-                  Atenção: esta parcela já estava paga ({formatarValor(p.pagoAnteriormente)}) e o valor cobrado foi atualizado para {formatarValor(p.valorCobrado)}.
-                </p>
-              )}
-            </div>
-          ))}
+        <div className="rounded-lg border border-slate-200 px-3 py-2 text-sm mt-3">
+          <div className="flex justify-between text-slate-700">
+            <span>Vencimento: {formatarData(pagamento.dataVencimento)}</span>
+            <strong>{formatarValor(pagamento.valorCobrado)}</strong>
+          </div>
+          {pagamento.pagoAnteriormente !== null && (
+            <p className="text-amber-700 bg-amber-50 rounded px-2 py-1 mt-2 text-xs">
+              Atenção: este pagamento já estava marcado como pago ({formatarValor(pagamento.pagoAnteriormente)}) e o valor foi atualizado para {formatarValor(pagamento.valorCobrado)}.
+            </p>
+          )}
         </div>
 
         <button

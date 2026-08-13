@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
          CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home, BookOpen, Trash2, Bell, ChevronDown, ChevronUp } from "lucide-react";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal, { type ParcelaGerada } from "@/components/PagamentoGeradoModal";
+import SeletorMaterias from "@/components/SeletorMaterias";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -38,7 +39,7 @@ type Aula = {
 type ConteudoForm = {
   id?: string;
   alunoId: string;
-  materiaId: string | null;
+  materiaIds: string[];
   topico: string;
   descricao: string;
   arquivoUrl: string;
@@ -112,7 +113,7 @@ export default function AgendaMobile({
 
   // Modal nova aula
   const [modalAberto, setModalAberto] = useState(false);
-  const [novaAula, setNovaAula] = useState({ alunoId: "", materiaId: "", data: "", horaInicio: "", horaFim: "", observacao: "" });
+  const [novaAula, setNovaAula] = useState({ alunoId: "", materiaIds: [] as string[], data: "", horaInicio: "", horaFim: "", observacao: "" });
   const [profModal, setProfModal] = useState("");
   const [salvando, setSalvando]   = useState(false);
   const [erroModal, setErroModal] = useState<string | null>(null);
@@ -121,7 +122,7 @@ export default function AgendaMobile({
   // Modal detalhe
   const [detalhe, setDetalhe] = useState<Aula | null>(null);
   const [verConteudo, setVerConteudo] = useState(false);
-  const [materiaDetalheId, setMateriaDetalheId] = useState("");
+  const [materiaDetalheIds, setMateriaDetalheIds] = useState<string[]>([]);
   const [materiaSalva, setMateriaSalva] = useState(false);
   const [obsEdit, setObsEdit] = useState("");
   const [salvandoObs, setSalvandoObs] = useState(false);
@@ -290,7 +291,7 @@ export default function AgendaMobile({
     setConfirmExcluirAula(false);
     setDetalhe(null);
     setReposicaoOrigem({ id: aula.id });
-    setNovaAula({ alunoId: aula.alunoId, materiaId: aula.materiaId ?? "", data: "", horaInicio: "", horaFim: "", observacao: "" });
+    setNovaAula({ alunoId: aula.alunoId, materiaIds: aula.materias?.map((m) => m.materia.id) ?? (aula.materiaId ? [aula.materiaId] : []), data: "", horaInicio: "", horaFim: "", observacao: "" });
     setProfModal(isAdmin ? filtroProfId : "");
     setErroModal(null);
     setAvisoDisp(null);
@@ -317,27 +318,29 @@ export default function AgendaMobile({
   }
 
   // ── Matéria da aula (detalhe) ────────────────────────────────────────────────
-  async function salvarMateria(materiaId: string) {
+  async function salvarMateria(materiaIds: string[]) {
     if (!detalhe) return;
-    const todas = !materiaId; // "" = todas as matérias do aluno
     await fetch(`/api/agenda/${detalhe.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(todas ? { todasMaterias: true } : { materiaId }),
+      body: JSON.stringify({ materiaIds }),
     });
-    if (todas) {
-      const novasMaterias = detalhe.aluno.materias.map((m) => ({ materia: m.materia }));
-      const primeiraMateria = detalhe.aluno.materias[0]?.materia ?? null;
-      setAulas((prev) => prev.map((a) => a.id === detalhe.id
-        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
-      setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
+    let idsFinais = materiaIds;
+    let materiasFinais: { materia: Materia }[];
+    if (idsFinais.length === 0) {
+      materiasFinais = detalhe.aluno.materias.map((m) => ({ materia: m.materia }));
+      idsFinais = materiasFinais.map((m) => m.materia.id);
     } else {
-      const materiaEscolhida = detalhe.aluno.materias.find((m) => m.materia.id === materiaId)?.materia
-        ?? detalhe.materias.find((m) => m.materia.id === materiaId)?.materia ?? null;
-      setAulas((prev) => prev.map((a) => a.id === detalhe.id
-        ? { ...a, materia: materiaEscolhida, materiaId, materias: [{ materia: materiaEscolhida! }] } : a));
-      setDetalhe((p) => p ? { ...p, materia: materiaEscolhida, materiaId, materias: [{ materia: materiaEscolhida! }] } : p);
+      materiasFinais = idsFinais.map((mid) => {
+        const materia = detalhe.aluno.materias.find((m) => m.materia.id === mid)?.materia
+          ?? detalhe.materias.find((m) => m.materia.id === mid)?.materia ?? null;
+        return { materia: materia! };
+      }).filter((m) => !!m.materia);
     }
+    const primeiraMateria = materiasFinais[0]?.materia ?? null;
+    setAulas((prev) => prev.map((a) => a.id === detalhe.id
+      ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : a));
+    setDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: materiasFinais } : p);
     setMateriaSalva(true);
     setTimeout(() => setMateriaSalva(false), 2000);
   }
@@ -377,7 +380,7 @@ export default function AgendaMobile({
         form: existente ? {
           id: existente.id,
           alunoId: existente.alunoId,
-          materiaId: existente.materiaId,
+          materiaIds: existente.materias.map((m: any) => m.materia.id),
           topico: existente.topico,
           descricao: existente.descricao ?? "",
           arquivoUrl: existente.arquivoUrl ?? "",
@@ -386,7 +389,7 @@ export default function AgendaMobile({
           planejadoOriginal: existente.planejado,
         } : {
           alunoId: aula.alunoId,
-          materiaId: aula.materiaId,
+          materiaIds: aula.materias?.map((m) => m.materia.id) ?? (aula.materiaId ? [aula.materiaId] : []),
           topico: "",
           descricao: "",
           arquivoUrl: "",
@@ -409,7 +412,7 @@ export default function AgendaMobile({
     setSalvandoConteudo(true);
     setErroConteudo(null);
     try {
-      let pagamentoGerado: ParcelaGerada[] | undefined;
+      let pagamentoGerado: ParcelaGerada | undefined;
       if (existente && form.id) {
         const resPut = await fetch(`/api/conteudos/${form.id}`, {
           method: "PUT",
@@ -633,7 +636,7 @@ export default function AgendaMobile({
                 setErroConteudo(null);
                 setVerConteudo(false);
                 setObsEdit(a.observacao ?? "");
-                setMateriaDetalheId(a.materias?.length === 1 ? a.materias[0].materia.id : (a.materias?.length === 0 ? (a.materiaId ?? "") : ""));
+                setMateriaDetalheIds(a.materias?.map((m) => m.materia.id) ?? (a.materiaId ? [a.materiaId] : []));
                 setConfirmExcluirAula(false);
                 setErroExcluirAula(null);
               }}
@@ -672,7 +675,7 @@ export default function AgendaMobile({
             <button key={`livre-${j}`}
               onClick={() => {
                 setReposicaoOrigem(null);
-                setNovaAula({ alunoId: "", materiaId: "", data: dsAtivo, horaInicio: item.inicio, horaFim: item.fim, observacao: "" });
+                setNovaAula({ alunoId: "", materiaIds: [], data: dsAtivo, horaInicio: item.inicio, horaFim: item.fim, observacao: "" });
                 setProfModal(filtroProfId);
                 setErroModal(null);
                 setAvisoDisp(null);
@@ -691,7 +694,7 @@ export default function AgendaMobile({
       <button
         onClick={() => {
           setReposicaoOrigem(null);
-          setNovaAula({ alunoId: "", materiaId: "", data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
+          setNovaAula({ alunoId: "", materiaIds: [], data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
           setProfModal(isAdmin ? filtroProfId : "");
           setErroModal(null);
           setAvisoDisp(null);
@@ -713,7 +716,7 @@ export default function AgendaMobile({
             {isAdmin && (
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Professor(a) *</label>
-                <select value={profModal} onChange={(e) => { setProfModal(e.target.value); setNovaAula((p) => ({ ...p, alunoId: "", materiaId: "" })); }}
+                <select value={profModal} onChange={(e) => { setProfModal(e.target.value); setNovaAula((p) => ({ ...p, alunoId: "", materiaIds: [] })); }}
                   className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
                   <option value="">Selecione...</option>
                   {professoras.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
@@ -725,8 +728,7 @@ export default function AgendaMobile({
               <label className="text-xs font-medium text-slate-500 block mb-1">Aluno *</label>
               <select value={novaAula.alunoId}
                 onChange={(e) => {
-                  const al = alunosFiltrados.find((a) => a.id === e.target.value);
-                  setNovaAula((p) => ({ ...p, alunoId: e.target.value, materiaId: al?.materias[0]?.id ?? "" }));
+                  setNovaAula((p) => ({ ...p, alunoId: e.target.value, materiaIds: [] }));
                 }}
                 className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
                 <option value="">Selecione...</option>
@@ -736,14 +738,12 @@ export default function AgendaMobile({
 
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
-              <select value={novaAula.materiaId} disabled={!novaAula.alunoId}
-                onChange={(e) => setNovaAula((p) => ({ ...p, materiaId: e.target.value }))}
-                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white disabled:opacity-50">
-                <option value="">Todas as matérias</option>
-                {(alunosFiltrados.find((a) => a.id === novaAula.alunoId)?.materias ?? []).map((m) => (
-                  <option key={m.id} value={m.id}>{m.nome}</option>
-                ))}
-              </select>
+              <SeletorMaterias
+                materiasDisponiveis={alunosFiltrados.find((a) => a.id === novaAula.alunoId)?.materias ?? []}
+                selecionadas={novaAula.materiaIds}
+                onChange={(ids) => setNovaAula((p) => ({ ...p, materiaIds: ids }))}
+                disabled={!novaAula.alunoId}
+              />
             </div>
 
             <div>
@@ -837,13 +837,12 @@ export default function AgendaMobile({
               return (
                 <div>
                   <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
-                  <select value={materiaDetalheId}
-                    onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
+                  <SeletorMaterias
+                    materiasDisponiveis={materiasOpcoes}
+                    selecionadas={materiaDetalheIds}
+                    onChange={(ids) => { setMateriaDetalheIds(ids); salvarMateria(ids); }}
                     disabled={materiaTravada}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white disabled:opacity-60 disabled:cursor-not-allowed">
-                    {materiasOpcoes.length > 1 && <option value="">Todas da aula</option>}
-                    {materiasOpcoes.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
-                  </select>
+                  />
                   {materiaTravada ? (
                     <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
                   ) : materiaSalva ? (
@@ -987,14 +986,11 @@ export default function AgendaMobile({
 
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
-              <select value={conteudoModal.form.materiaId ?? ""}
-                onChange={(e) => setConteudoModal((p) => p && ({ ...p, form: { ...p.form, materiaId: e.target.value || null } }))}
-                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
-                <option value="">Todas as matérias</option>
-                {(alunos.find((a) => a.id === conteudoModal.form.alunoId)?.materias ?? []).map((m) => (
-                  <option key={m.id} value={m.id}>{m.nome}</option>
-                ))}
-              </select>
+              <SeletorMaterias
+                materiasDisponiveis={alunos.find((a) => a.id === conteudoModal.form.alunoId)?.materias ?? []}
+                selecionadas={conteudoModal.form.materiaIds}
+                onChange={(ids) => setConteudoModal((p) => p && ({ ...p, form: { ...p.form, materiaIds: ids } }))}
+              />
             </div>
 
             <div>
@@ -1044,8 +1040,8 @@ export default function AgendaMobile({
         </div>
       )}
 
-      {pagamentoInfo.parcelas && (
-        <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
+      {pagamentoInfo.pagamento && (
+        <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
     </div>
   );

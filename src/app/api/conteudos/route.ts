@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
-import { validarAgenda } from "@/lib/conteudoAgenda";
+import { validarAgenda, materiasCompativeis } from "@/lib/conteudoAgenda";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { aulaId },
-    include: { materia: true },
+    include: { materia: true, materias: { select: { materia: true } } },
   });
 
   if (conteudo && conteudo.empresaId !== scope.empresaId) {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   const dataAula = new Date(body.data);
   const planejado = body.planejado ?? false;
   const aulaId: string | null = body.aulaId || null;
-  const materiaId: string | null = body.materiaId || null;
+  const materiaIds: string[] = Array.isArray(body.materiaIds) ? body.materiaIds : [];
   const forcar   = body.forcar === true;
   // aulaIdEscolhido: usuário resolveu manualmente uma ambiguidade (aluno com
   // +1 aula candidata) escolhendo qual aula vincular.
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após
   // Ministrado avulso: exige aula com status REALIZADA
   if (!planejado && !aulaId) {
-    const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdEscolhido, materiaId);
+    const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdEscolhido, materiaIds);
     if (!validacao.ok) return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
   }
 
@@ -65,10 +65,13 @@ export async function POST(req: NextRequest) {
   if (!forcar && !aulaId) {
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
     if (dataAula <= hoje) {
-      const existente = await prisma.conteudo.findFirst({
-        where: { alunoId: body.alunoId, materiaId, data: dataAula, planejado: false },
-        select: { topico: true },
+      const candidatosMesmoDia = await prisma.conteudo.findMany({
+        where: { alunoId: body.alunoId, data: dataAula, planejado: false },
+        select: { topico: true, materias: { select: { materiaId: true } } },
       });
+      const existente = candidatosMesmoDia.find((c) =>
+        materiasCompativeis(c.materias.map((m) => m.materiaId), materiaIds),
+      );
       if (existente) {
         return NextResponse.json(
           { aviso: `Já existe conteúdo Ministrado para este aluno/matéria nesta data (tópico: "${existente.topico}"). Deseja criar mesmo assim?` },
@@ -83,13 +86,16 @@ export async function POST(req: NextRequest) {
       data: {
         empresaId:  scope.empresaId,
         alunoId:    body.alunoId,
-        materiaId,
+        materiaId:  materiaIds[0] ?? null,
         aulaId: aulaId || (!planejado ? aulaIdEscolhido : null),
         topico:     body.topico,
         descricao:  body.descricao  || null,
         arquivoUrl: body.arquivoUrl || null,
         data:       dataAula,
         planejado,
+        materias: materiaIds.length > 0
+          ? { create: materiaIds.map((materiaId) => ({ materiaId })) }
+          : undefined,
       },
       include: {
         aluno: {
@@ -99,6 +105,7 @@ export async function POST(req: NextRequest) {
           },
         },
         materia: true,
+        materias: { select: { materia: true } },
         aula: {
           select: {
             id: true, horaInicio: true, horaFim: true, status: true,

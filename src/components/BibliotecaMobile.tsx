@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { SERIES } from "@/lib/series";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
+import SeletorMaterias from "@/components/SeletorMaterias";
 
 type Materia = { id: string; nome: string; cor: string };
 type MetodoEnsino = { id: string; nome: string };
@@ -21,6 +22,7 @@ type Material = {
   serie: string | null;
   materiaId: string | null;
   materia: Materia | null;
+  materias: { materia: Materia }[];
   arquivoUrl: string;
   arquivoNome: string | null;
 };
@@ -30,13 +32,13 @@ type Form = {
   descricao: string;
   metodoId: string;
   serie: string;
-  materiaId: string;
+  materiaIds: string[];
   arquivoUrl: string;
   arquivoNome: string;
 };
 
 const formVazio: Form = {
-  titulo: "", descricao: "", metodoId: "", serie: "", materiaId: "", arquivoUrl: "", arquivoNome: "",
+  titulo: "", descricao: "", metodoId: "", serie: "", materiaIds: [], arquivoUrl: "", arquivoNome: "",
 };
 
 export default function BibliotecaMobile({
@@ -67,7 +69,7 @@ export default function BibliotecaMobile({
 
   const materiaisFiltrados = materiais.filter((m) => {
     if (filtroSerie && m.serie !== filtroSerie) return false;
-    if (filtroMateriaId && m.materiaId !== filtroMateriaId) return false;
+    if (filtroMateriaId && !m.materias.some((x) => x.materia.id === filtroMateriaId)) return false;
     if (busca) {
       const termo = busca.trim().toLowerCase();
       const noTitulo = m.titulo.toLowerCase().includes(termo);
@@ -135,7 +137,7 @@ export default function BibliotecaMobile({
       descricao: m.descricao ?? "",
       metodoId: m.metodoId ?? "",
       serie: m.serie ?? "",
-      materiaId: m.materiaId ?? "",
+      materiaIds: m.materias.map((x) => x.materia.id),
       arquivoUrl: m.arquivoUrl,
       arquivoNome: m.arquivoNome ?? "",
     });
@@ -148,7 +150,7 @@ export default function BibliotecaMobile({
     if (!f.descricao) faltando.push("Descrição");
     if (!f.metodoId) faltando.push("Método");
     if (!f.serie) faltando.push("Série");
-    if (!f.materiaId) faltando.push("Disciplina");
+    if (f.materiaIds.length === 0) faltando.push("Disciplina");
     if (!f.arquivoUrl) faltando.push("Arquivo");
     return faltando;
   }
@@ -250,7 +252,7 @@ export default function BibliotecaMobile({
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-800 text-sm truncate">{m.titulo}</p>
                   <p className="text-xs text-slate-500 truncate">
-                    {[m.metodoEnsino?.nome, m.serie, m.materia?.nome].filter(Boolean).join(" · ") || "Sem categorização"}
+                    {[m.metodoEnsino?.nome, m.serie, m.materias.map((x) => x.materia.nome).join(", ") || null].filter(Boolean).join(" · ") || "Sem categorização"}
                   </p>
                 </div>
               </div>
@@ -328,11 +330,11 @@ export default function BibliotecaMobile({
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Disciplina *</label>
-                <select value={form.materiaId} onChange={(e) => setForm({ ...form, materiaId: e.target.value })}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white">
-                  <option value="">Selecione...</option>
-                  {materias.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
-                </select>
+                <SeletorMaterias
+                  materiasDisponiveis={materias}
+                  selecionadas={form.materiaIds}
+                  onChange={(ids) => setForm({ ...form, materiaIds: ids })}
+                />
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Arquivo *</label>

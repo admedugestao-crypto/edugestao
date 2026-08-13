@@ -15,7 +15,7 @@ export async function PATCH(
 
   const { id } = await params;
   const body   = await req.json();
-  const { status, horaInicio, horaFim, observacao, materiaId, todasMaterias, data } = body;
+  const { status, horaInicio, horaFim, observacao, materiaIds, data } = body;
 
   const aulaEmpresa = await prisma.agendaAula.findUnique({ where: { id }, select: { empresaId: true } });
   if (!aulaEmpresa || aulaEmpresa.empresaId !== scope.empresaId) {
@@ -30,7 +30,7 @@ export async function PATCH(
   // mais mudar — o Conteúdo foi registrado pra essa matéria especificamente,
   // e trocar aqui deixaria os dois dessincronizados. Checagem no servidor
   // além da UI, já que a rota pode ser chamada diretamente.
-  if (materiaId || todasMaterias) {
+  if (materiaIds !== undefined) {
     const conteudoVinculado = await prisma.conteudo.findUnique({ where: { aulaId: id }, select: { id: true } });
     if (conteudoVinculado) {
       return NextResponse.json(
@@ -38,34 +38,27 @@ export async function PATCH(
         { status: 422 },
       );
     }
-  }
 
-  // Troca para "Todas as matérias": restaura N:N com todas as matérias do aluno
-  if (todasMaterias) {
-    const alulaCheck = await prisma.agendaAula.findUnique({
-      where: { id },
-      select: { alunoId: true, aluno: { select: { materias: { select: { materiaId: true } } } } },
-    });
-    if (alulaCheck) {
-      const ids = alulaCheck.aluno.materias.map((m) => m.materiaId);
-      await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: id } });
-      if (ids.length > 0) {
-        await prisma.agendaAulaMateria.createMany({
-          data: ids.map((mid) => ({ agendaAulaId: id, materiaId: mid })),
-          skipDuplicates: true,
-        });
-      }
-      await prisma.agendaAula.update({
+    // Vazio = "todas as matérias" do aluno; não-vazio = exatamente essa lista.
+    let ids: string[] = Array.isArray(materiaIds) ? materiaIds : [];
+    if (ids.length === 0) {
+      const alulaCheck = await prisma.agendaAula.findUnique({
         where: { id },
-        data: { materiaId: ids[0] ?? null },
+        select: { aluno: { select: { materias: { select: { materiaId: true } } } } },
+      });
+      ids = alulaCheck?.aluno.materias.map((m) => m.materiaId) ?? [];
+    }
+    await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: id } });
+    if (ids.length > 0) {
+      await prisma.agendaAulaMateria.createMany({
+        data: ids.map((mid) => ({ agendaAulaId: id, materiaId: mid })),
+        skipDuplicates: true,
       });
     }
-  }
-
-  // Troca para matéria específica: atualiza N:N para só essa matéria
-  if (materiaId) {
-    await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: id } });
-    await prisma.agendaAulaMateria.create({ data: { agendaAulaId: id, materiaId } });
+    await prisma.agendaAula.update({
+      where: { id },
+      data: { materiaId: ids[0] ?? null },
+    });
   }
 
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
@@ -141,7 +134,6 @@ export async function PATCH(
       ...(horaInicio !== undefined ? { horaInicio }           : {}),
       ...(horaFim    !== undefined ? { horaFim }              : {}),
       ...(observacao !== undefined ? { observacao }           : {}),
-      ...(materiaId  !== undefined ? { materiaId: materiaId || null } : {}),
       ...(data       !== undefined ? { data: new Date(data) } : {}),
     },
     include: {
@@ -155,11 +147,11 @@ export async function PATCH(
   // não depende mais de rodar "Gerar cobranças" em lote depois. Uma falha aqui
   // não derruba a resposta: o status já foi salvo.
   let avisoPagamento: string | undefined;
-  let pagamentoGerado: ParcelaGerada[] | undefined;
+  let pagamentoGerado: ParcelaGerada | undefined;
   if (status === "REALIZADA" || status === "FALTA_ALUNO") {
     try {
       const resultado = await gerarPagamentoAula(scope.empresaId, updated.id);
-      if (!resultado.semCobranca) pagamentoGerado = [resultado.parcela];
+      if (!resultado.semCobranca) pagamentoGerado = resultado.parcela;
     } catch (e) {
       console.error("Falha ao gerar pagamento automático:", e);
       avisoPagamento = "Status salvo, mas não foi possível gerar a cobrança automaticamente.";

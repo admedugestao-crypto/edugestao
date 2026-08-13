@@ -234,6 +234,7 @@ export type ConteudoWhereInput = {
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
   aula?: Prisma.XOR<Prisma.AgendaAulaNullableScalarRelationFilter, Prisma.AgendaAulaWhereInput> | null
+  materias?: Prisma.ConteudoMateriaListRelationFilter
 }
 
 export type ConteudoOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type ConteudoOrderByWithRelationInput = {
   aluno?: Prisma.AlunoOrderByWithRelationInput
   materia?: Prisma.MateriaOrderByWithRelationInput
   aula?: Prisma.AgendaAulaOrderByWithRelationInput
+  materias?: Prisma.ConteudoMateriaOrderByRelationAggregateInput
 }
 
 export type ConteudoWhereUniqueInput = Prisma.AtLeast<{
@@ -273,6 +275,7 @@ export type ConteudoWhereUniqueInput = Prisma.AtLeast<{
   aluno?: Prisma.XOR<Prisma.AlunoScalarRelationFilter, Prisma.AlunoWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
   aula?: Prisma.XOR<Prisma.AgendaAulaNullableScalarRelationFilter, Prisma.AgendaAulaWhereInput> | null
+  materias?: Prisma.ConteudoMateriaListRelationFilter
 }, "id" | "aulaId">
 
 export type ConteudoOrderByWithAggregationInput = {
@@ -321,6 +324,7 @@ export type ConteudoCreateInput = {
   aluno: Prisma.AlunoCreateNestedOneWithoutConteudosInput
   materia?: Prisma.MateriaCreateNestedOneWithoutConteudosInput
   aula?: Prisma.AgendaAulaCreateNestedOneWithoutConteudoInput
+  materias?: Prisma.ConteudoMateriaCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoUncheckedCreateInput = {
@@ -335,6 +339,7 @@ export type ConteudoUncheckedCreateInput = {
   arquivoUrl?: string | null
   planejado?: boolean
   criadoEm?: Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoUpdateInput = {
@@ -349,6 +354,7 @@ export type ConteudoUpdateInput = {
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutConteudosNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutConteudosNestedInput
   aula?: Prisma.AgendaAulaUpdateOneWithoutConteudoNestedInput
+  materias?: Prisma.ConteudoMateriaUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateInput = {
@@ -363,6 +369,7 @@ export type ConteudoUncheckedUpdateInput = {
   arquivoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   planejado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoCreateManyInput = {
@@ -453,6 +460,11 @@ export type ConteudoMinOrderByAggregateInput = {
   arquivoUrl?: Prisma.SortOrder
   planejado?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+}
+
+export type ConteudoScalarRelationFilter = {
+  is?: Prisma.ConteudoWhereInput
+  isNot?: Prisma.ConteudoWhereInput
 }
 
 export type ConteudoNullableScalarRelationFilter = {
@@ -586,6 +598,20 @@ export type ConteudoUncheckedUpdateManyWithoutAlunoNestedInput = {
   deleteMany?: Prisma.ConteudoScalarWhereInput | Prisma.ConteudoScalarWhereInput[]
 }
 
+export type ConteudoCreateNestedOneWithoutMateriasInput = {
+  create?: Prisma.XOR<Prisma.ConteudoCreateWithoutMateriasInput, Prisma.ConteudoUncheckedCreateWithoutMateriasInput>
+  connectOrCreate?: Prisma.ConteudoCreateOrConnectWithoutMateriasInput
+  connect?: Prisma.ConteudoWhereUniqueInput
+}
+
+export type ConteudoUpdateOneRequiredWithoutMateriasNestedInput = {
+  create?: Prisma.XOR<Prisma.ConteudoCreateWithoutMateriasInput, Prisma.ConteudoUncheckedCreateWithoutMateriasInput>
+  connectOrCreate?: Prisma.ConteudoCreateOrConnectWithoutMateriasInput
+  upsert?: Prisma.ConteudoUpsertWithoutMateriasInput
+  connect?: Prisma.ConteudoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConteudoUpdateToOneWithWhereWithoutMateriasInput, Prisma.ConteudoUpdateWithoutMateriasInput>, Prisma.ConteudoUncheckedUpdateWithoutMateriasInput>
+}
+
 export type ConteudoCreateNestedOneWithoutAulaInput = {
   create?: Prisma.XOR<Prisma.ConteudoCreateWithoutAulaInput, Prisma.ConteudoUncheckedCreateWithoutAulaInput>
   connectOrCreate?: Prisma.ConteudoCreateOrConnectWithoutAulaInput
@@ -629,6 +655,7 @@ export type ConteudoCreateWithoutEmpresaInput = {
   aluno: Prisma.AlunoCreateNestedOneWithoutConteudosInput
   materia?: Prisma.MateriaCreateNestedOneWithoutConteudosInput
   aula?: Prisma.AgendaAulaCreateNestedOneWithoutConteudoInput
+  materias?: Prisma.ConteudoMateriaCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoUncheckedCreateWithoutEmpresaInput = {
@@ -642,6 +669,7 @@ export type ConteudoUncheckedCreateWithoutEmpresaInput = {
   arquivoUrl?: string | null
   planejado?: boolean
   criadoEm?: Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoCreateOrConnectWithoutEmpresaInput = {
@@ -698,6 +726,7 @@ export type ConteudoCreateWithoutMateriaInput = {
   empresa: Prisma.EmpresaCreateNestedOneWithoutConteudosInput
   aluno: Prisma.AlunoCreateNestedOneWithoutConteudosInput
   aula?: Prisma.AgendaAulaCreateNestedOneWithoutConteudoInput
+  materias?: Prisma.ConteudoMateriaCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoUncheckedCreateWithoutMateriaInput = {
@@ -711,6 +740,7 @@ export type ConteudoUncheckedCreateWithoutMateriaInput = {
   arquivoUrl?: string | null
   planejado?: boolean
   criadoEm?: Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoCreateOrConnectWithoutMateriaInput = {
@@ -750,6 +780,7 @@ export type ConteudoCreateWithoutAlunoInput = {
   empresa: Prisma.EmpresaCreateNestedOneWithoutConteudosInput
   materia?: Prisma.MateriaCreateNestedOneWithoutConteudosInput
   aula?: Prisma.AgendaAulaCreateNestedOneWithoutConteudoInput
+  materias?: Prisma.ConteudoMateriaCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoUncheckedCreateWithoutAlunoInput = {
@@ -763,6 +794,7 @@ export type ConteudoUncheckedCreateWithoutAlunoInput = {
   arquivoUrl?: string | null
   planejado?: boolean
   criadoEm?: Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoCreateOrConnectWithoutAlunoInput = {
@@ -791,6 +823,78 @@ export type ConteudoUpdateManyWithWhereWithoutAlunoInput = {
   data: Prisma.XOR<Prisma.ConteudoUpdateManyMutationInput, Prisma.ConteudoUncheckedUpdateManyWithoutAlunoInput>
 }
 
+export type ConteudoCreateWithoutMateriasInput = {
+  id?: string
+  data: Date | string
+  topico: string
+  descricao?: string | null
+  arquivoUrl?: string | null
+  planejado?: boolean
+  criadoEm?: Date | string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutConteudosInput
+  aluno: Prisma.AlunoCreateNestedOneWithoutConteudosInput
+  materia?: Prisma.MateriaCreateNestedOneWithoutConteudosInput
+  aula?: Prisma.AgendaAulaCreateNestedOneWithoutConteudoInput
+}
+
+export type ConteudoUncheckedCreateWithoutMateriasInput = {
+  id?: string
+  empresaId: string
+  alunoId: string
+  materiaId?: string | null
+  aulaId?: string | null
+  data: Date | string
+  topico: string
+  descricao?: string | null
+  arquivoUrl?: string | null
+  planejado?: boolean
+  criadoEm?: Date | string
+}
+
+export type ConteudoCreateOrConnectWithoutMateriasInput = {
+  where: Prisma.ConteudoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConteudoCreateWithoutMateriasInput, Prisma.ConteudoUncheckedCreateWithoutMateriasInput>
+}
+
+export type ConteudoUpsertWithoutMateriasInput = {
+  update: Prisma.XOR<Prisma.ConteudoUpdateWithoutMateriasInput, Prisma.ConteudoUncheckedUpdateWithoutMateriasInput>
+  create: Prisma.XOR<Prisma.ConteudoCreateWithoutMateriasInput, Prisma.ConteudoUncheckedCreateWithoutMateriasInput>
+  where?: Prisma.ConteudoWhereInput
+}
+
+export type ConteudoUpdateToOneWithWhereWithoutMateriasInput = {
+  where?: Prisma.ConteudoWhereInput
+  data: Prisma.XOR<Prisma.ConteudoUpdateWithoutMateriasInput, Prisma.ConteudoUncheckedUpdateWithoutMateriasInput>
+}
+
+export type ConteudoUpdateWithoutMateriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  data?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topico?: Prisma.StringFieldUpdateOperationsInput | string
+  descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  arquivoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planejado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutConteudosNestedInput
+  aluno?: Prisma.AlunoUpdateOneRequiredWithoutConteudosNestedInput
+  materia?: Prisma.MateriaUpdateOneWithoutConteudosNestedInput
+  aula?: Prisma.AgendaAulaUpdateOneWithoutConteudoNestedInput
+}
+
+export type ConteudoUncheckedUpdateWithoutMateriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
+  alunoId?: Prisma.StringFieldUpdateOperationsInput | string
+  materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aulaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  data?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topico?: Prisma.StringFieldUpdateOperationsInput | string
+  descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  arquivoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planejado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ConteudoCreateWithoutAulaInput = {
   id?: string
   data: Date | string
@@ -802,6 +906,7 @@ export type ConteudoCreateWithoutAulaInput = {
   empresa: Prisma.EmpresaCreateNestedOneWithoutConteudosInput
   aluno: Prisma.AlunoCreateNestedOneWithoutConteudosInput
   materia?: Prisma.MateriaCreateNestedOneWithoutConteudosInput
+  materias?: Prisma.ConteudoMateriaCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoUncheckedCreateWithoutAulaInput = {
@@ -815,6 +920,7 @@ export type ConteudoUncheckedCreateWithoutAulaInput = {
   arquivoUrl?: string | null
   planejado?: boolean
   criadoEm?: Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedCreateNestedManyWithoutConteudoInput
 }
 
 export type ConteudoCreateOrConnectWithoutAulaInput = {
@@ -844,6 +950,7 @@ export type ConteudoUpdateWithoutAulaInput = {
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutConteudosNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutConteudosNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutConteudosNestedInput
+  materias?: Prisma.ConteudoMateriaUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateWithoutAulaInput = {
@@ -857,6 +964,7 @@ export type ConteudoUncheckedUpdateWithoutAulaInput = {
   arquivoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   planejado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoCreateManyEmpresaInput = {
@@ -883,6 +991,7 @@ export type ConteudoUpdateWithoutEmpresaInput = {
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutConteudosNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutConteudosNestedInput
   aula?: Prisma.AgendaAulaUpdateOneWithoutConteudoNestedInput
+  materias?: Prisma.ConteudoMateriaUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateWithoutEmpresaInput = {
@@ -896,6 +1005,7 @@ export type ConteudoUncheckedUpdateWithoutEmpresaInput = {
   arquivoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   planejado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateManyWithoutEmpresaInput = {
@@ -935,6 +1045,7 @@ export type ConteudoUpdateWithoutMateriaInput = {
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutConteudosNestedInput
   aluno?: Prisma.AlunoUpdateOneRequiredWithoutConteudosNestedInput
   aula?: Prisma.AgendaAulaUpdateOneWithoutConteudoNestedInput
+  materias?: Prisma.ConteudoMateriaUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateWithoutMateriaInput = {
@@ -948,6 +1059,7 @@ export type ConteudoUncheckedUpdateWithoutMateriaInput = {
   arquivoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   planejado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateManyWithoutMateriaInput = {
@@ -987,6 +1099,7 @@ export type ConteudoUpdateWithoutAlunoInput = {
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutConteudosNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutConteudosNestedInput
   aula?: Prisma.AgendaAulaUpdateOneWithoutConteudoNestedInput
+  materias?: Prisma.ConteudoMateriaUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateWithoutAlunoInput = {
@@ -1000,6 +1113,7 @@ export type ConteudoUncheckedUpdateWithoutAlunoInput = {
   arquivoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   planejado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.ConteudoMateriaUncheckedUpdateManyWithoutConteudoNestedInput
 }
 
 export type ConteudoUncheckedUpdateManyWithoutAlunoInput = {
@@ -1015,6 +1129,35 @@ export type ConteudoUncheckedUpdateManyWithoutAlunoInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type ConteudoCountOutputType
+ */
+
+export type ConteudoCountOutputType = {
+  materias: number
+}
+
+export type ConteudoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  materias?: boolean | ConteudoCountOutputTypeCountMateriasArgs
+}
+
+/**
+ * ConteudoCountOutputType without action
+ */
+export type ConteudoCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConteudoCountOutputType
+   */
+  select?: Prisma.ConteudoCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ConteudoCountOutputType without action
+ */
+export type ConteudoCountOutputTypeCountMateriasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConteudoMateriaWhereInput
+}
 
 
 export type ConteudoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1033,6 +1176,8 @@ export type ConteudoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Conteudo$materiaArgs<ExtArgs>
   aula?: boolean | Prisma.Conteudo$aulaArgs<ExtArgs>
+  materias?: boolean | Prisma.Conteudo$materiasArgs<ExtArgs>
+  _count?: boolean | Prisma.ConteudoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["conteudo"]>
 
 export type ConteudoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1091,6 +1236,8 @@ export type ConteudoInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   aluno?: boolean | Prisma.AlunoDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.Conteudo$materiaArgs<ExtArgs>
   aula?: boolean | Prisma.Conteudo$aulaArgs<ExtArgs>
+  materias?: boolean | Prisma.Conteudo$materiasArgs<ExtArgs>
+  _count?: boolean | Prisma.ConteudoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConteudoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -1112,6 +1259,7 @@ export type $ConteudoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     aluno: Prisma.$AlunoPayload<ExtArgs>
     materia: Prisma.$MateriaPayload<ExtArgs> | null
     aula: Prisma.$AgendaAulaPayload<ExtArgs> | null
+    materias: Prisma.$ConteudoMateriaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1523,6 +1671,7 @@ export interface Prisma__ConteudoClient<T, Null = never, ExtArgs extends runtime
   aluno<T extends Prisma.AlunoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlunoDefaultArgs<ExtArgs>>): Prisma.Prisma__AlunoClient<runtime.Types.Result.GetResult<Prisma.$AlunoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   materia<T extends Prisma.Conteudo$materiaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conteudo$materiaArgs<ExtArgs>>): Prisma.Prisma__MateriaClient<runtime.Types.Result.GetResult<Prisma.$MateriaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   aula<T extends Prisma.Conteudo$aulaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conteudo$aulaArgs<ExtArgs>>): Prisma.Prisma__AgendaAulaClient<runtime.Types.Result.GetResult<Prisma.$AgendaAulaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  materias<T extends Prisma.Conteudo$materiasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conteudo$materiasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConteudoMateriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1999,6 +2148,30 @@ export type Conteudo$aulaArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.AgendaAulaInclude<ExtArgs> | null
   where?: Prisma.AgendaAulaWhereInput
+}
+
+/**
+ * Conteudo.materias
+ */
+export type Conteudo$materiasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConteudoMateria
+   */
+  select?: Prisma.ConteudoMateriaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConteudoMateria
+   */
+  omit?: Prisma.ConteudoMateriaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConteudoMateriaInclude<ExtArgs> | null
+  where?: Prisma.ConteudoMateriaWhereInput
+  orderBy?: Prisma.ConteudoMateriaOrderByWithRelationInput | Prisma.ConteudoMateriaOrderByWithRelationInput[]
+  cursor?: Prisma.ConteudoMateriaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConteudoMateriaScalarFieldEnum | Prisma.ConteudoMateriaScalarFieldEnum[]
 }
 
 /**

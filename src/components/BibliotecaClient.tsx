@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, FileText, Download, Pencil, Trash2, Upload, Search } from "lucide-react";
 import { SERIES } from "@/lib/series";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
+import SeletorMaterias from "@/components/SeletorMaterias";
 
 type Materia = { id: string; nome: string; cor: string };
 type MetodoEnsino = { id: string; nome: string };
@@ -17,6 +18,7 @@ type Material = {
   serie: string | null;
   materiaId: string | null;
   materia: Materia | null;
+  materias: { materia: Materia }[];
   arquivoUrl: string;
   arquivoNome: string | null;
 };
@@ -26,7 +28,7 @@ const formVazio = {
   descricao: "",
   metodoId: "",
   serie: "",
-  materiaId: "",
+  materiaIds: [] as string[],
   arquivoUrl: "",
   arquivoNome: "",
 };
@@ -58,7 +60,7 @@ export default function BibliotecaClient({
   const materiaisFiltrados = materiais.filter((m) => {
     if (filtroMetodo && m.metodoId !== filtroMetodo) return false;
     if (filtroSerie && m.serie !== filtroSerie) return false;
-    if (filtroMateriaId && m.materiaId !== filtroMateriaId) return false;
+    if (filtroMateriaId && !m.materias.some((x) => x.materia.id === filtroMateriaId)) return false;
     if (busca) {
       const termo = busca.trim().toLowerCase();
       const noTitulo = m.titulo.toLowerCase().includes(termo);
@@ -129,7 +131,7 @@ export default function BibliotecaClient({
     if (!m.descricao) faltando.push("Descrição");
     if (!m.metodoId) faltando.push("Método");
     if (!m.serie) faltando.push("Série");
-    if (!m.materiaId) faltando.push("Disciplina");
+    if (m.materiaIds.length === 0) faltando.push("Disciplina");
     if (!m.arquivoUrl) faltando.push("Arquivo");
     return faltando;
   }
@@ -265,7 +267,7 @@ export default function BibliotecaClient({
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-800 text-sm truncate">{m.titulo}</p>
                   <p className="text-xs text-slate-500 truncate">
-                    {[m.metodoEnsino?.nome, m.serie, m.materia?.nome].filter(Boolean).join(" · ") || "Sem categorização"}
+                    {[m.metodoEnsino?.nome, m.serie, m.materias.map((x) => x.materia.nome).join(", ") || null].filter(Boolean).join(" · ") || "Sem categorização"}
                   </p>
                 </div>
               </div>
@@ -288,7 +290,7 @@ export default function BibliotecaClient({
                       descricao: m.descricao ?? "",
                       metodoId: m.metodoId ?? "",
                       serie: m.serie ?? "",
-                      materiaId: m.materiaId ?? "",
+                      materiaIds: m.materias.map((x) => x.materia.id),
                       arquivoUrl: m.arquivoUrl,
                       arquivoNome: m.arquivoNome ?? "",
                     });
@@ -372,16 +374,11 @@ export default function BibliotecaClient({
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
-                <select
-                  value={novo.materiaId}
-                  onChange={(e) => setNovo({ ...novo, materiaId: e.target.value })}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                >
-                  <option value="">Selecione...</option>
-                  {materias.map((m) => (
-                    <option key={m.id} value={m.id}>{m.nome}</option>
-                  ))}
-                </select>
+                <SeletorMaterias
+                  materiasDisponiveis={materias}
+                  selecionadas={novo.materiaIds}
+                  onChange={(ids) => setNovo({ ...novo, materiaIds: ids })}
+                />
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo *</label>
@@ -482,16 +479,11 @@ export default function BibliotecaClient({
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
-                <select
-                  value={editando.materiaId}
-                  onChange={(e) => setEditando({ ...editando, materiaId: e.target.value })}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                >
-                  <option value="">Selecione...</option>
-                  {materias.map((m) => (
-                    <option key={m.id} value={m.id}>{m.nome}</option>
-                  ))}
-                </select>
+                <SeletorMaterias
+                  materiasDisponiveis={materias}
+                  selecionadas={editando.materiaIds}
+                  onChange={(ids) => setEditando({ ...editando, materiaIds: ids })}
+                />
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo *</label>

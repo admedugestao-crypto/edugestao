@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
-import { buscarAulaVinculada } from "@/lib/conteudoAgenda";
+import { buscarAulaVinculada, materiasCompativeis } from "@/lib/conteudoAgenda";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,11 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, empresaId: true, alunoId: true, data: true, planejado: true, materiaId: true, aulaId: true, materia: { select: { nome: true } } },
+    select: {
+      id: true, empresaId: true, alunoId: true, data: true, planejado: true, materiaId: true, aulaId: true,
+      materia: { select: { nome: true } },
+      materias: { select: { materiaId: true } },
+    },
   });
 
   if (!conteudo || conteudo.empresaId !== scope.empresaId) {
@@ -36,12 +40,14 @@ export async function POST(
   // Prioriza o vínculo exato (aulaId gravado, ou escolhido manualmente pelo
   // usuário) — só cai para a busca por aluno+data (materia-aware, segura
   // contra ambiguidade) quando nenhum dos dois está disponível.
+  const conteudoMateriaIds = conteudo.materias.map((m) => m.materiaId);
+
   const { aula, ambigua, candidatas } = await buscarAulaVinculada({
     empresaId: scope.empresaId,
     aulaId: conteudo.aulaId || aulaIdEscolhido,
     alunoId: conteudo.alunoId,
     data: conteudo.data,
-    materiaId: conteudo.materiaId,
+    materiaIds: conteudoMateriaIds,
   });
 
   if (!aula) {
@@ -56,8 +62,9 @@ export async function POST(
     );
   }
 
-  // Valida que a matéria do conteúdo é a mesma da Aula Agendada (null = Todas as matérias, sempre compatível)
-  if (aula.materiaId && conteudo.materiaId && aula.materiaId !== conteudo.materiaId) {
+  // Valida que há pelo menos 1 matéria em comum entre o conteúdo e a Aula
+  // Agendada (conjunto vazio de qualquer lado = "Todas as matérias", sempre compatível)
+  if (!materiasCompativeis(aula.materiaIds, conteudoMateriaIds)) {
     return NextResponse.json(
       {
         erro: `A matéria do conteúdo (${conteudo.materia?.nome ?? conteudo.materiaId}) não corresponde à matéria da Aula Agendada (${aula.materia?.nome ?? aula.materiaId}).`,
@@ -127,10 +134,10 @@ export async function POST(
   // Gera/atualiza a cobrança na hora — uma falha aqui não derruba a resposta,
   // já que o conteúdo e o status já foram salvos com sucesso.
   let avisoPagamento: string | undefined;
-  let pagamentoGerado: ParcelaGerada[] | undefined;
+  let pagamentoGerado: ParcelaGerada | undefined;
   try {
     const resultado = await gerarPagamentoAula(scope.empresaId, aula.id);
-    if (!resultado.semCobranca) pagamentoGerado = [resultado.parcela];
+    if (!resultado.semCobranca) pagamentoGerado = resultado.parcela;
   } catch (e) {
     console.error("Falha ao gerar pagamento automático:", e);
     avisoPagamento = "Ministrado salvo, mas não foi possível gerar a cobrança automaticamente.";

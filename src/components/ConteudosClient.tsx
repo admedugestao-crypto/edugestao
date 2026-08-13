@@ -9,6 +9,7 @@ import { ptBR } from "date-fns/locale";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
+import SeletorMaterias from "@/components/SeletorMaterias";
 
 type Materia = { id: string; nome: string; cor: string };
 
@@ -51,12 +52,13 @@ type Conteudo = {
   planejado: boolean;
   aluno: { nome: string; professora: string | null };
   materia: Materia | null;
+  materias: Materia[];
   agenda: AgendaInfo | null;
 };
 
 type FormC = {
   alunoId: string;
-  materiaId: string | null;
+  materiaIds: string[];
   topico: string;
   descricao: string;
   arquivoUrl: string;
@@ -76,6 +78,7 @@ type MaterialBiblioteca = {
   serie: string | null;
   materiaId: string | null;
   materia: Materia | null;
+  materias: { materia: Materia }[];
   arquivoUrl: string;
   arquivoNome: string | null;
 };
@@ -87,7 +90,7 @@ function parseDataLocal(iso: string) {
 
 const formVazio = (): FormC => ({
   alunoId: "",
-  materiaId: "",
+  materiaIds: [],
   topico: "",
   descricao: "",
   arquivoUrl: "",
@@ -98,13 +101,13 @@ const formVazio = (): FormC => ({
 
 // ── Seletor de material da Biblioteca ────────────────────────────────────────
 function SeletorBiblioteca({
-  materiaIdInicial,
+  materiaIds,
   serieInicial,
   metodoInicial,
   onSelecionar,
   onFechar,
 }: {
-  materiaIdInicial: string | null;
+  materiaIds: string[];
   serieInicial: string | null;
   metodoInicial: MetodoEnsino | null;
   onSelecionar: (material: MaterialBiblioteca) => void;
@@ -113,7 +116,7 @@ function SeletorBiblioteca({
   const [materiais, setMateriais] = useState<MaterialBiblioteca[] | null>(null);
   const [erro, setErro] = useState("");
   const [busca, setBusca] = useState("");
-  const [filtroMateriaId, setFiltroMateriaId] = useState(materiaIdInicial ?? "");
+  const [filtroMateriaId, setFiltroMateriaId] = useState("");
   const [filtroMetodo, setFiltroMetodo] = useState(metodoInicial?.id ?? "");
   const [filtroSerie, setFiltroSerie] = useState(serieInicial ?? "");
 
@@ -140,11 +143,15 @@ function SeletorBiblioteca({
     new Set([...lista.map((m) => m.serie).filter((s): s is string => !!s), ...(serieInicial ? [serieInicial] : [])])
   ).sort();
   const materiasDisponiveis = Array.from(
-    new Map(lista.filter((m) => m.materia).map((m) => [m.materia!.id, m.materia!])).values()
+    new Map(lista.flatMap((m) => m.materias.map((x) => x.materia)).map((m) => [m.id, m])).values()
   );
 
   const filtrados = lista.filter((m) => {
-    if (filtroMateriaId && m.materiaId !== filtroMateriaId) return false;
+    const idsDoMaterial = m.materias.map((x) => x.materia.id);
+    // Pré-filtro automático: mostra só materiais com pelo menos 1 matéria em
+    // comum com o que já foi escolhido no Conteúdo (nada escolhido = mostra tudo).
+    if (materiaIds.length > 0 && !idsDoMaterial.some((id) => materiaIds.includes(id))) return false;
+    if (filtroMateriaId && !idsDoMaterial.includes(filtroMateriaId)) return false;
     if (filtroMetodo && m.metodoId !== filtroMetodo) return false;
     if (filtroSerie && m.serie !== filtroSerie) return false;
     if (busca) {
@@ -225,7 +232,7 @@ function SeletorBiblioteca({
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-slate-700 truncate">{m.titulo}</p>
                 <p className="text-xs text-slate-400 truncate">
-                  {m.materia?.nome ?? "Sem matéria"}
+                  {m.materias.length > 0 ? m.materias.map((x) => x.materia.nome).join(", ") : "Sem matéria"}
                   {m.serie ? ` · ${m.serie}` : ""}
                   {m.arquivoNome ? ` · ${m.arquivoNome}` : ""}
                 </p>
@@ -242,7 +249,7 @@ function SeletorBiblioteca({
 function UploadArquivo({
   arquivoUrl,
   arquivoNome,
-  materiaId,
+  materiaIds,
   serie,
   metodoEscola,
   onChange,
@@ -250,7 +257,7 @@ function UploadArquivo({
 }: {
   arquivoUrl: string;
   arquivoNome: string;
-  materiaId?: string | null;
+  materiaIds?: string[];
   serie?: string | null;
   metodoEscola?: MetodoEnsino | null;
   onChange: (url: string, nome: string) => void;
@@ -362,7 +369,7 @@ function UploadArquivo({
 
       {seletorAberto && (
         <SeletorBiblioteca
-          materiaIdInicial={materiaId ?? null}
+          materiaIds={materiaIds ?? []}
           serieInicial={serie ?? null}
           metodoInicial={metodoEscola ?? null}
           onFechar={() => setSeletorAberto(false)}
@@ -411,15 +418,15 @@ function CamposForm({
     : (filtroProfId ? alunos.filter((a) => a.professoraId === filtroProfId) : []);
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
-  // Registros antigos podem apontar pra uma matéria que o aluno não tem mais
-  // vinculada (ex: matéria removida do aluno depois do registro criado) — sem
-  // isso, o <select> não acha a opção e mostra "Todas as matérias" mesmo com
-  // o dado real salvo, arriscando perder a matéria original se o usuário
-  // salvar sem perceber.
-  const materiaAtualFaltando = form.materiaId && !materiasFiltradas.some((m) => m.id === form.materiaId)
-    ? materias.find((m) => m.id === form.materiaId)
-    : null;
-  const opcoesMateria = materiaAtualFaltando ? [...materiasFiltradas, materiaAtualFaltando] : materiasFiltradas;
+  // Registros antigos podem apontar pra matérias que o aluno não tem mais
+  // vinculadas (ex: matéria removida do aluno depois do registro criado) — sem
+  // isso, o seletor não acha a opção pra exibir marcada, arriscando perder a
+  // matéria original se o usuário salvar sem perceber.
+  const materiasFaltando = form.materiaIds
+    .filter((id) => !materiasFiltradas.some((m) => m.id === id))
+    .map((id) => materias.find((m) => m.id === id))
+    .filter((m): m is Materia => !!m);
+  const opcoesMateria = [...materiasFiltradas, ...materiasFaltando];
 
   return (
     <div className="space-y-2">
@@ -430,7 +437,7 @@ function CamposForm({
             <label className="block text-xs font-medium text-slate-600 mb-1">Professor(a)</label>
             <select
               value={filtroProfId}
-              onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaId: "" }); onCampoChave?.(); }}
+              onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaIds: [] }); onCampoChave?.(); }}
               className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
               <option value="" disabled>Selecione...</option>
@@ -443,7 +450,7 @@ function CamposForm({
             <label className="block text-xs font-medium text-slate-600 mb-1">Aluno *</label>
             <select
               value={form.alunoId}
-              onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaId: "" }); onCampoChave?.(); }}
+              onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaIds: [] }); onCampoChave?.(); }}
               className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
               <option value="">Selecione...</option>
@@ -458,7 +465,7 @@ function CamposForm({
           <label className="block text-xs font-medium text-slate-600 mb-1">Aluno *</label>
           <select
             value={form.alunoId}
-            onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaId: "" }); onCampoChave?.(); }}
+            onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaIds: [] }); onCampoChave?.(); }}
             className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
           >
             <option value="">Selecione...</option>
@@ -469,40 +476,34 @@ function CamposForm({
         </div>
       )}
 
-      {/* Disciplina + Data — mesma linha */}
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina</label>
-          <select
-            value={form.materiaId ?? ""}
-            onChange={(e) => setForm({ ...form, materiaId: e.target.value || null })}
-            disabled={!form.alunoId}
-            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
-          >
-            <option value="">
-              {form.alunoId ? "Todas as matérias" : "—"}
-            </option>
-            {opcoesMateria.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.nome}{m.id === materiaAtualFaltando?.id ? " (fora do vínculo atual do aluno)" : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
-          <input
-            type="date"
-            value={form.data}
-            onChange={(e) => {
-              const hoje = new Date().toISOString().split("T")[0];
-              const futuro = e.target.value > hoje;
-              setForm({ ...form, data: e.target.value, planejado: futuro ? true : form.planejado });
-              onCampoChave?.();
-            }}
-            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      {/* Disciplina */}
+      <div>
+        <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina</label>
+        {form.alunoId ? (
+          <SeletorMaterias
+            materiasDisponiveis={opcoesMateria}
+            selecionadas={form.materiaIds}
+            onChange={(ids) => setForm({ ...form, materiaIds: ids })}
           />
-        </div>
+        ) : (
+          <p className="text-xs text-slate-400">Selecione o aluno primeiro.</p>
+        )}
+      </div>
+
+      {/* Data */}
+      <div>
+        <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
+        <input
+          type="date"
+          value={form.data}
+          onChange={(e) => {
+            const hoje = new Date().toISOString().split("T")[0];
+            const futuro = e.target.value > hoje;
+            setForm({ ...form, data: e.target.value, planejado: futuro ? true : form.planejado });
+            onCampoChave?.();
+          }}
+          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
       </div>
 
       {/* Tópico */}
@@ -531,7 +532,7 @@ function CamposForm({
       <UploadArquivo
         arquivoUrl={form.arquivoUrl}
         arquivoNome={form.arquivoNome}
-        materiaId={form.materiaId}
+        materiaIds={form.materiaIds}
         serie={alunoSel?.serie}
         metodoEscola={alunoSel?.escolaMetodo}
         onChange={(url, nome) => setForm({ ...form, arquivoUrl: url, arquivoNome: nome })}
@@ -551,14 +552,15 @@ function CamposForm({
 
 
 // Formato cru retornado pela API (aluno.professora aninhado, aula em vez de agenda)
-type RawConteudo = Omit<Conteudo, "aluno" | "agenda"> & {
+type RawConteudo = Omit<Conteudo, "aluno" | "agenda" | "materias"> & {
   aluno: { nome: string; professora: { usuario: { nome: string } } | null };
   aula: AgendaInfo | null;
+  materias: { materia: Materia }[];
 };
 
 // Converte a resposta crua da API para o formato usado no grid (aluno.professora
-// como string, agenda) — usado ao criar/editar conteúdo para manter o grid
-// atualizado sem precisar de F5.
+// como string, agenda, matérias achatadas) — usado ao criar/editar conteúdo
+// para manter o grid atualizado sem precisar de F5.
 function mapConteudo(raw: RawConteudo): Conteudo {
   return {
     ...raw,
@@ -567,6 +569,7 @@ function mapConteudo(raw: RawConteudo): Conteudo {
       professora: raw.aluno.professora?.usuario?.nome ?? null,
     },
     agenda: raw.aula ?? null,
+    materias: raw.materias.map((m) => m.materia),
   };
 }
 
@@ -605,11 +608,11 @@ export default function ConteudosClient({
 
   // Abre form pré-preenchido quando vindo da agenda
   useEffect(() => {
-    const aulaId    = searchParams.get("aulaId");
-    const alunoId   = searchParams.get("alunoId")   ?? "";
-    const materiaId = searchParams.get("materiaId") ?? "";
-    const data      = searchParams.get("data")      ?? new Date().toISOString().split("T")[0];
-    const descricao = searchParams.get("descricao") ?? "";
+    const aulaId     = searchParams.get("aulaId");
+    const alunoId    = searchParams.get("alunoId")    ?? "";
+    const materiaIds = (searchParams.get("materiaIds") ?? "").split(",").filter(Boolean);
+    const data       = searchParams.get("data")       ?? new Date().toISOString().split("T")[0];
+    const descricao  = searchParams.get("descricao")  ?? "";
     if (aulaId) {
       // Pré-seleciona o professor do aluno (admin)
       const aluno = alunos.find((a) => a.id === alunoId);
@@ -622,7 +625,7 @@ export default function ConteudosClient({
         abrirEdit(existente);
       } else {
         setAulaIdPendente(aulaId);
-        setNovo({ ...formVazio(), alunoId, materiaId, data, descricao, planejado: false });
+        setNovo({ ...formVazio(), alunoId, materiaIds, data, descricao, planejado: false });
         setModal(true);
       }
       window.history.replaceState(null, "", "/dashboard/conteudos");
@@ -811,7 +814,7 @@ export default function ConteudosClient({
     setEditConteudo({
       id: c.id,
       alunoId: c.alunoId,
-      materiaId: c.materiaId,
+      materiaIds: c.materias.map((m) => m.id),
       topico: c.topico,
       descricao: c.descricao ?? "",
       arquivoUrl: c.arquivoUrl ?? "",
@@ -850,7 +853,7 @@ export default function ConteudosClient({
             >
               <div
                 className="w-2 self-stretch rounded-full mt-1 shrink-0"
-                style={{ backgroundColor: c.materia?.cor ?? "#94a3b8" }}
+                style={{ backgroundColor: c.materias[0]?.cor ?? "#94a3b8" }}
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -882,7 +885,7 @@ export default function ConteudosClient({
                 </div>
 
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {c.aluno.nome} · {c.materia ? c.materia.nome : "Todas as matérias"}
+                  {c.aluno.nome} · {c.materias.length > 0 ? c.materias.map((m) => m.nome).join(", ") : "Todas as matérias"}
                   {!isProfessor && c.aluno.professora && (
                     <span className="text-slate-400"> · {c.aluno.professora}</span>
                   )}
@@ -1205,8 +1208,8 @@ export default function ConteudosClient({
         </div>
       )}
 
-      {pagamentoInfo.parcelas && (
-        <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
+      {pagamentoInfo.pagamento && (
+        <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
     </div>
   );

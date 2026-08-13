@@ -233,6 +233,7 @@ export type MaterialBibliotecaWhereInput = {
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
   metodoEnsino?: Prisma.XOR<Prisma.MetodoEnsinoNullableScalarRelationFilter, Prisma.MetodoEnsinoWhereInput> | null
+  materias?: Prisma.MaterialBibliotecaMateriaListRelationFilter
 }
 
 export type MaterialBibliotecaOrderByWithRelationInput = {
@@ -250,6 +251,7 @@ export type MaterialBibliotecaOrderByWithRelationInput = {
   empresa?: Prisma.EmpresaOrderByWithRelationInput
   materia?: Prisma.MateriaOrderByWithRelationInput
   metodoEnsino?: Prisma.MetodoEnsinoOrderByWithRelationInput
+  materias?: Prisma.MaterialBibliotecaMateriaOrderByRelationAggregateInput
 }
 
 export type MaterialBibliotecaWhereUniqueInput = Prisma.AtLeast<{
@@ -270,6 +272,7 @@ export type MaterialBibliotecaWhereUniqueInput = Prisma.AtLeast<{
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
   metodoEnsino?: Prisma.XOR<Prisma.MetodoEnsinoNullableScalarRelationFilter, Prisma.MetodoEnsinoWhereInput> | null
+  materias?: Prisma.MaterialBibliotecaMateriaListRelationFilter
 }, "id">
 
 export type MaterialBibliotecaOrderByWithAggregationInput = {
@@ -318,6 +321,7 @@ export type MaterialBibliotecaCreateInput = {
   empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
   materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
   metodoEnsino?: Prisma.MetodoEnsinoCreateNestedOneWithoutMateriaisBibliotecaInput
+  materias?: Prisma.MaterialBibliotecaMateriaCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaUncheckedCreateInput = {
@@ -332,6 +336,7 @@ export type MaterialBibliotecaUncheckedCreateInput = {
   arquivoUrl: string
   arquivoNome?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaUpdateInput = {
@@ -346,6 +351,7 @@ export type MaterialBibliotecaUpdateInput = {
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
   metodoEnsino?: Prisma.MetodoEnsinoUpdateOneWithoutMateriaisBibliotecaNestedInput
+  materias?: Prisma.MaterialBibliotecaMateriaUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaUncheckedUpdateInput = {
@@ -360,6 +366,7 @@ export type MaterialBibliotecaUncheckedUpdateInput = {
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaCreateManyInput = {
@@ -451,6 +458,11 @@ export type MaterialBibliotecaMinOrderByAggregateInput = {
   arquivoUrl?: Prisma.SortOrder
   arquivoNome?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
+}
+
+export type MaterialBibliotecaScalarRelationFilter = {
+  is?: Prisma.MaterialBibliotecaWhereInput
+  isNot?: Prisma.MaterialBibliotecaWhereInput
 }
 
 export type MaterialBibliotecaCreateNestedManyWithoutEmpresaInput = {
@@ -579,6 +591,20 @@ export type MaterialBibliotecaUncheckedUpdateManyWithoutMetodoEnsinoNestedInput 
   deleteMany?: Prisma.MaterialBibliotecaScalarWhereInput | Prisma.MaterialBibliotecaScalarWhereInput[]
 }
 
+export type MaterialBibliotecaCreateNestedOneWithoutMateriasInput = {
+  create?: Prisma.XOR<Prisma.MaterialBibliotecaCreateWithoutMateriasInput, Prisma.MaterialBibliotecaUncheckedCreateWithoutMateriasInput>
+  connectOrCreate?: Prisma.MaterialBibliotecaCreateOrConnectWithoutMateriasInput
+  connect?: Prisma.MaterialBibliotecaWhereUniqueInput
+}
+
+export type MaterialBibliotecaUpdateOneRequiredWithoutMateriasNestedInput = {
+  create?: Prisma.XOR<Prisma.MaterialBibliotecaCreateWithoutMateriasInput, Prisma.MaterialBibliotecaUncheckedCreateWithoutMateriasInput>
+  connectOrCreate?: Prisma.MaterialBibliotecaCreateOrConnectWithoutMateriasInput
+  upsert?: Prisma.MaterialBibliotecaUpsertWithoutMateriasInput
+  connect?: Prisma.MaterialBibliotecaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MaterialBibliotecaUpdateToOneWithWhereWithoutMateriasInput, Prisma.MaterialBibliotecaUpdateWithoutMateriasInput>, Prisma.MaterialBibliotecaUncheckedUpdateWithoutMateriasInput>
+}
+
 export type MaterialBibliotecaCreateWithoutEmpresaInput = {
   id?: string
   titulo: string
@@ -590,6 +616,7 @@ export type MaterialBibliotecaCreateWithoutEmpresaInput = {
   criadoEm?: Date | string
   materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
   metodoEnsino?: Prisma.MetodoEnsinoCreateNestedOneWithoutMateriaisBibliotecaInput
+  materias?: Prisma.MaterialBibliotecaMateriaCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaUncheckedCreateWithoutEmpresaInput = {
@@ -603,6 +630,7 @@ export type MaterialBibliotecaUncheckedCreateWithoutEmpresaInput = {
   arquivoUrl: string
   arquivoNome?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaCreateOrConnectWithoutEmpresaInput = {
@@ -659,6 +687,7 @@ export type MaterialBibliotecaCreateWithoutMateriaInput = {
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
   metodoEnsino?: Prisma.MetodoEnsinoCreateNestedOneWithoutMateriaisBibliotecaInput
+  materias?: Prisma.MaterialBibliotecaMateriaCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaUncheckedCreateWithoutMateriaInput = {
@@ -672,6 +701,7 @@ export type MaterialBibliotecaUncheckedCreateWithoutMateriaInput = {
   arquivoUrl: string
   arquivoNome?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaCreateOrConnectWithoutMateriaInput = {
@@ -711,6 +741,7 @@ export type MaterialBibliotecaCreateWithoutMetodoEnsinoInput = {
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
   materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
+  materias?: Prisma.MaterialBibliotecaMateriaCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaUncheckedCreateWithoutMetodoEnsinoInput = {
@@ -724,6 +755,7 @@ export type MaterialBibliotecaUncheckedCreateWithoutMetodoEnsinoInput = {
   arquivoUrl: string
   arquivoNome?: string | null
   criadoEm?: Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
 
 export type MaterialBibliotecaCreateOrConnectWithoutMetodoEnsinoInput = {
@@ -752,6 +784,78 @@ export type MaterialBibliotecaUpdateManyWithWhereWithoutMetodoEnsinoInput = {
   data: Prisma.XOR<Prisma.MaterialBibliotecaUpdateManyMutationInput, Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutMetodoEnsinoInput>
 }
 
+export type MaterialBibliotecaCreateWithoutMateriasInput = {
+  id?: string
+  titulo: string
+  descricao?: string | null
+  metodoTexto?: string | null
+  serie?: string | null
+  arquivoUrl: string
+  arquivoNome?: string | null
+  criadoEm?: Date | string
+  empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
+  materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
+  metodoEnsino?: Prisma.MetodoEnsinoCreateNestedOneWithoutMateriaisBibliotecaInput
+}
+
+export type MaterialBibliotecaUncheckedCreateWithoutMateriasInput = {
+  id?: string
+  empresaId: string
+  titulo: string
+  descricao?: string | null
+  metodoTexto?: string | null
+  metodoId?: string | null
+  serie?: string | null
+  materiaId?: string | null
+  arquivoUrl: string
+  arquivoNome?: string | null
+  criadoEm?: Date | string
+}
+
+export type MaterialBibliotecaCreateOrConnectWithoutMateriasInput = {
+  where: Prisma.MaterialBibliotecaWhereUniqueInput
+  create: Prisma.XOR<Prisma.MaterialBibliotecaCreateWithoutMateriasInput, Prisma.MaterialBibliotecaUncheckedCreateWithoutMateriasInput>
+}
+
+export type MaterialBibliotecaUpsertWithoutMateriasInput = {
+  update: Prisma.XOR<Prisma.MaterialBibliotecaUpdateWithoutMateriasInput, Prisma.MaterialBibliotecaUncheckedUpdateWithoutMateriasInput>
+  create: Prisma.XOR<Prisma.MaterialBibliotecaCreateWithoutMateriasInput, Prisma.MaterialBibliotecaUncheckedCreateWithoutMateriasInput>
+  where?: Prisma.MaterialBibliotecaWhereInput
+}
+
+export type MaterialBibliotecaUpdateToOneWithWhereWithoutMateriasInput = {
+  where?: Prisma.MaterialBibliotecaWhereInput
+  data: Prisma.XOR<Prisma.MaterialBibliotecaUpdateWithoutMateriasInput, Prisma.MaterialBibliotecaUncheckedUpdateWithoutMateriasInput>
+}
+
+export type MaterialBibliotecaUpdateWithoutMateriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  titulo?: Prisma.StringFieldUpdateOperationsInput | string
+  descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metodoTexto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
+  materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
+  metodoEnsino?: Prisma.MetodoEnsinoUpdateOneWithoutMateriaisBibliotecaNestedInput
+}
+
+export type MaterialBibliotecaUncheckedUpdateWithoutMateriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.StringFieldUpdateOperationsInput | string
+  titulo?: Prisma.StringFieldUpdateOperationsInput | string
+  descricao?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metodoTexto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metodoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type MaterialBibliotecaCreateManyEmpresaInput = {
   id?: string
   titulo: string
@@ -776,6 +880,7 @@ export type MaterialBibliotecaUpdateWithoutEmpresaInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
   metodoEnsino?: Prisma.MetodoEnsinoUpdateOneWithoutMateriaisBibliotecaNestedInput
+  materias?: Prisma.MaterialBibliotecaMateriaUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaUncheckedUpdateWithoutEmpresaInput = {
@@ -789,6 +894,7 @@ export type MaterialBibliotecaUncheckedUpdateWithoutEmpresaInput = {
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaInput = {
@@ -828,6 +934,7 @@ export type MaterialBibliotecaUpdateWithoutMateriaInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
   metodoEnsino?: Prisma.MetodoEnsinoUpdateOneWithoutMateriaisBibliotecaNestedInput
+  materias?: Prisma.MaterialBibliotecaMateriaUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaUncheckedUpdateWithoutMateriaInput = {
@@ -841,6 +948,7 @@ export type MaterialBibliotecaUncheckedUpdateWithoutMateriaInput = {
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaUncheckedUpdateManyWithoutMateriaInput = {
@@ -880,6 +988,7 @@ export type MaterialBibliotecaUpdateWithoutMetodoEnsinoInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
+  materias?: Prisma.MaterialBibliotecaMateriaUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaUncheckedUpdateWithoutMetodoEnsinoInput = {
@@ -893,6 +1002,7 @@ export type MaterialBibliotecaUncheckedUpdateWithoutMetodoEnsinoInput = {
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
 
 export type MaterialBibliotecaUncheckedUpdateManyWithoutMetodoEnsinoInput = {
@@ -908,6 +1018,35 @@ export type MaterialBibliotecaUncheckedUpdateManyWithoutMetodoEnsinoInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type MaterialBibliotecaCountOutputType
+ */
+
+export type MaterialBibliotecaCountOutputType = {
+  materias: number
+}
+
+export type MaterialBibliotecaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  materias?: boolean | MaterialBibliotecaCountOutputTypeCountMateriasArgs
+}
+
+/**
+ * MaterialBibliotecaCountOutputType without action
+ */
+export type MaterialBibliotecaCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaterialBibliotecaCountOutputType
+   */
+  select?: Prisma.MaterialBibliotecaCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MaterialBibliotecaCountOutputType without action
+ */
+export type MaterialBibliotecaCountOutputTypeCountMateriasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaterialBibliotecaMateriaWhereInput
+}
 
 
 export type MaterialBibliotecaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -925,6 +1064,8 @@ export type MaterialBibliotecaSelect<ExtArgs extends runtime.Types.Extensions.In
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MaterialBiblioteca$materiaArgs<ExtArgs>
   metodoEnsino?: boolean | Prisma.MaterialBiblioteca$metodoEnsinoArgs<ExtArgs>
+  materias?: boolean | Prisma.MaterialBiblioteca$materiasArgs<ExtArgs>
+  _count?: boolean | Prisma.MaterialBibliotecaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["materialBiblioteca"]>
 
 export type MaterialBibliotecaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -980,6 +1121,8 @@ export type MaterialBibliotecaInclude<ExtArgs extends runtime.Types.Extensions.I
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MaterialBiblioteca$materiaArgs<ExtArgs>
   metodoEnsino?: boolean | Prisma.MaterialBiblioteca$metodoEnsinoArgs<ExtArgs>
+  materias?: boolean | Prisma.MaterialBiblioteca$materiasArgs<ExtArgs>
+  _count?: boolean | Prisma.MaterialBibliotecaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MaterialBibliotecaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
@@ -998,6 +1141,7 @@ export type $MaterialBibliotecaPayload<ExtArgs extends runtime.Types.Extensions.
     empresa: Prisma.$EmpresaPayload<ExtArgs>
     materia: Prisma.$MateriaPayload<ExtArgs> | null
     metodoEnsino: Prisma.$MetodoEnsinoPayload<ExtArgs> | null
+    materias: Prisma.$MaterialBibliotecaMateriaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1408,6 +1552,7 @@ export interface Prisma__MaterialBibliotecaClient<T, Null = never, ExtArgs exten
   empresa<T extends Prisma.EmpresaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmpresaDefaultArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   materia<T extends Prisma.MaterialBiblioteca$materiaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MaterialBiblioteca$materiaArgs<ExtArgs>>): Prisma.Prisma__MateriaClient<runtime.Types.Result.GetResult<Prisma.$MateriaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   metodoEnsino<T extends Prisma.MaterialBiblioteca$metodoEnsinoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MaterialBiblioteca$metodoEnsinoArgs<ExtArgs>>): Prisma.Prisma__MetodoEnsinoClient<runtime.Types.Result.GetResult<Prisma.$MetodoEnsinoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  materias<T extends Prisma.MaterialBiblioteca$materiasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MaterialBiblioteca$materiasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaterialBibliotecaMateriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1884,6 +2029,30 @@ export type MaterialBiblioteca$metodoEnsinoArgs<ExtArgs extends runtime.Types.Ex
    */
   include?: Prisma.MetodoEnsinoInclude<ExtArgs> | null
   where?: Prisma.MetodoEnsinoWhereInput
+}
+
+/**
+ * MaterialBiblioteca.materias
+ */
+export type MaterialBiblioteca$materiasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaterialBibliotecaMateria
+   */
+  select?: Prisma.MaterialBibliotecaMateriaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaterialBibliotecaMateria
+   */
+  omit?: Prisma.MaterialBibliotecaMateriaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaterialBibliotecaMateriaInclude<ExtArgs> | null
+  where?: Prisma.MaterialBibliotecaMateriaWhereInput
+  orderBy?: Prisma.MaterialBibliotecaMateriaOrderByWithRelationInput | Prisma.MaterialBibliotecaMateriaOrderByWithRelationInput[]
+  cursor?: Prisma.MaterialBibliotecaMateriaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaterialBibliotecaMateriaScalarFieldEnum | Prisma.MaterialBibliotecaMateriaScalarFieldEnum[]
 }
 
 /**

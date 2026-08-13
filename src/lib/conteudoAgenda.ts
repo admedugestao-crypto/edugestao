@@ -5,14 +5,32 @@ export type AulaCandidata = {
   horaInicio: string | null;
   horaFim: string | null;
   status: string;
-  materiaId: string | null;
+  materiaId: string | null; // legado — só pra exibição ("qual matéria" na lista de candidatas)
   materia: { nome: string; cor: string } | null;
+  materiaIds: string[]; // matérias vinculadas via AgendaAulaMateria — vazio = "todas as matérias"
 };
 
 const selectCandidata = {
   id: true, horaInicio: true, horaFim: true, status: true, materiaId: true,
   materia: { select: { nome: true, cor: true } },
+  materias: { select: { materiaId: true } },
 } as const;
+
+function normalizarCandidata(raw: {
+  id: string; horaInicio: string | null; horaFim: string | null; status: string;
+  materiaId: string | null; materia: { nome: string; cor: string } | null;
+  materias: { materiaId: string }[];
+}): AulaCandidata {
+  const { materias, ...resto } = raw;
+  return { ...resto, materiaIds: materias.map((m) => m.materiaId) };
+}
+
+// Conjunto vazio (de qualquer lado) = "todas as matérias", compatível com tudo.
+// Senão, precisa ter ao menos 1 matéria em comum.
+export function materiasCompativeis(aId: string[], bId: string[] | undefined | null): boolean {
+  if (aId.length === 0 || !bId || bId.length === 0) return true;
+  return aId.some((id) => bId.includes(id));
+}
 
 // Busca a Aula Agendada vinculada a um conteúdo.
 // Prioriza o vínculo exato (aulaId) — só cai para a busca por aluno+data
@@ -29,19 +47,19 @@ export async function buscarAulaVinculada(params: {
   aulaId?: string | null;
   alunoId: string;
   data: Date;
-  materiaId?: string | null;
+  materiaIds?: string[];
 }): Promise<{ aula: AulaCandidata | null; ambigua: boolean; candidatas: AulaCandidata[] }> {
   if (params.aulaId) {
     const aula = await prisma.agendaAula.findUnique({
       where: { id: params.aulaId, empresaId: params.empresaId },
       select: selectCandidata,
     });
-    return { aula, ambigua: false, candidatas: [] };
+    return { aula: aula ? normalizarCandidata(aula) : null, ambigua: false, candidatas: [] };
   }
   const dY = params.data.getUTCFullYear();
   const dM = params.data.getUTCMonth();
   const dD = params.data.getUTCDate();
-  const candidatas = await prisma.agendaAula.findMany({
+  const candidatasRaw = await prisma.agendaAula.findMany({
     where: {
       empresaId: params.empresaId,
       alunoId: params.alunoId,
@@ -52,13 +70,12 @@ export async function buscarAulaVinculada(params: {
     },
     select: selectCandidata,
   });
+  const candidatas = candidatasRaw.map(normalizarCandidata);
   // Sem vínculo direto: só considera match se sobrar exatamente uma aula
-  // compatível com a matéria do conteúdo (matéria diferente = não é a
+  // compatível com as matérias do conteúdo (matéria diferente = não é a
   // mesma aula, mesmo que seja a única do dia — evita juntar conteúdo de
   // uma matéria com a aula de outra matéria no mesmo dia).
-  const compativeis = candidatas.filter(
-    (a) => !a.materiaId || !params.materiaId || a.materiaId === params.materiaId,
-  );
+  const compativeis = candidatas.filter((a) => materiasCompativeis(a.materiaIds, params.materiaIds));
   if (compativeis.length === 1) return { aula: compativeis[0], ambigua: false, candidatas: [] };
   return { aula: null, ambigua: compativeis.length > 1, candidatas: compativeis };
 }
@@ -72,9 +89,9 @@ export async function validarAgenda(
   data:      Date,
   planejado: boolean,
   aulaId?:   string | null,
-  materiaId?: string | null,
+  materiaIds?: string[],
 ): Promise<{ ok: true } | { ok: false; erro: string; candidatas?: AulaCandidata[] }> {
-  const { aula, ambigua, candidatas } = await buscarAulaVinculada({ empresaId, aulaId, alunoId, data, materiaId });
+  const { aula, ambigua, candidatas } = await buscarAulaVinculada({ empresaId, aulaId, alunoId, data, materiaIds });
 
   if (!aula) {
     return {

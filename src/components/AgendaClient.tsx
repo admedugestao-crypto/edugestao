@@ -11,6 +11,7 @@ import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
+import SeletorMaterias from "@/components/SeletorMaterias";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 type Materia = { id: string; nome: string; cor: string };
@@ -143,7 +144,7 @@ export default function AgendaClient({
   const [dataModal, setDataModal]             = useState("");
   const [professoraIdModal, setProfessoraIdModal] = useState("");
   const [novaAula, setNovaAula]               = useState({
-    alunoId: "", materiaId: "", data: "", horaInicio: "", horaFim: "", observacao: "",
+    alunoId: "", materiaIds: [] as string[], data: "", horaInicio: "", horaFim: "", observacao: "",
   });
   const [salvando, setSalvando]   = useState(false);
   const [erroModal, setErroModal] = useState<string | null>(null);
@@ -162,7 +163,7 @@ export default function AgendaClient({
   // Modal detalhes / edição
   const [aulaDetalhe, setAulaDetalhe] = useState<Aula | null>(null);
   const [obsEdit, setObsEdit]         = useState("");
-  const [materiaDetalheId, setMateriaDetalheId] = useState<string>("");
+  const [materiaDetalheIds, setMateriaDetalheIds] = useState<string[]>([]);
   const [atualizando, setAtualizando] = useState(false);
   const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroStatus, setErroStatus]   = useState<string | null>(null);
@@ -371,7 +372,7 @@ export default function AgendaClient({
     setErroModal(null);
     setAvisoAgendamento(null);
     setReposicaoOrigem(null);
-    setNovaAula({ alunoId: "", materiaId: "", data: data ?? "", horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
+    setNovaAula({ alunoId: "", materiaIds: [], data: data ?? "", horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
     setModalAberto(true);
   }
 
@@ -384,7 +385,10 @@ export default function AgendaClient({
     setErroModal(null);
     setAvisoAgendamento(null);
     setReposicaoOrigem({ id: aula.id });
-    setNovaAula({ alunoId: aula.alunoId, materiaId: aula.materiaId ?? "", data: "", horaInicio: "", horaFim: "", observacao: "" });
+    const materiaIdsAulaExcluida = aula.materias?.length
+      ? aula.materias.map((m) => m.materia.id)
+      : (aula.materiaId ? [aula.materiaId] : []);
+    setNovaAula({ alunoId: aula.alunoId, materiaIds: materiaIdsAulaExcluida, data: "", horaInicio: "", horaFim: "", observacao: "" });
     setModalAberto(true);
   }
 
@@ -536,12 +540,12 @@ export default function AgendaClient({
   // Ao selecionar professora, limpa aluno/matéria
   function onSelectProfessora(id: string) {
     setProfessoraIdModal(id);
-    setNovaAula((p) => ({ ...p, alunoId: "", materiaId: "" }));
+    setNovaAula((p) => ({ ...p, alunoId: "", materiaIds: [] }));
   }
 
-  // Ao selecionar aluno, inicia com "Todas as matérias" (materiaId vazio)
+  // Ao selecionar aluno, inicia com "Todas as matérias" (nada marcado)
   function onSelectAluno(alunoId: string) {
-    setNovaAula((p) => ({ ...p, alunoId, materiaId: "" }));
+    setNovaAula((p) => ({ ...p, alunoId, materiaIds: [] }));
   }
 
   // ── Atualizar status ───────────────────────────────────────────────────────
@@ -557,17 +561,15 @@ export default function AgendaClient({
     }
     // "Realizada" → abre tela de Conteúdos pré-preenchida com dados da aula
     if (status === "REALIZADA" && aulaDetalhe) {
-      // Usa matéria selecionada no detalhe; se "Todas", usa a primária da aula; senão a primeira N:N
-      const materiaParaConteudo =
-        materiaDetalheId ||
-        aulaDetalhe.materiaId ||
-        aulaDetalhe.materias?.[0]?.materia?.id ||
-        "";
+      // Usa as matérias selecionadas no detalhe; se "Todas", usa o conjunto N:N da aula
+      const materiaIdsParaConteudo = materiaDetalheIds.length > 0
+        ? materiaDetalheIds
+        : (aulaDetalhe.materias ?? []).map((m) => m.materia.id);
       const params = new URLSearchParams({
-        aulaId:    aulaDetalhe.id,
-        alunoId:   aulaDetalhe.aluno.id,
-        materiaId: materiaParaConteudo,
-        data:      aulaDetalhe.data.split("T")[0],
+        aulaId:     aulaDetalhe.id,
+        alunoId:    aulaDetalhe.aluno.id,
+        materiaIds: materiaIdsParaConteudo.join(","),
+        data:       aulaDetalhe.data.split("T")[0],
       });
       router.push(`/dashboard/conteudos?${params.toString()}`);
       return;
@@ -596,27 +598,24 @@ export default function AgendaClient({
     }
   }
 
-  async function salvarMateria(materiaId: string) {
+  async function salvarMateria(materiaIds: string[]) {
     if (!aulaDetalhe) return;
-    const todas = !materiaId; // "" = todas as matérias do aluno
     await fetch(`/api/agenda/${aulaDetalhe.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(todas ? { todasMaterias: true } : { materiaId }),
+      body: JSON.stringify({ materiaIds }),
     });
-    // Atualiza estado local
-    if (todas) {
-      const novasMaterias = aulaDetalhe.aluno.materias.map((m) => ({ materia: m.materia }));
-      const primeiraMateria = aulaDetalhe.aluno.materias[0]?.materia ?? null;
-      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
-        ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
-      setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
-    } else {
-      const materia = aulaDetalhe.aluno.materias.find((m) => m.materia.id === materiaId)?.materia ?? null;
-      setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
-        ? { ...a, materia, materiaId: materiaId, materias: materia ? [{ materia }] : [] } : a));
-      setAulaDetalhe((p) => p ? { ...p, materia, materiaId: materiaId, materias: materia ? [{ materia }] : [] } : p);
-    }
+    // Vazio = "todas as matérias" do aluno — resolve pro estado local aqui
+    // também, já que o backend faz o mesmo snapshot.
+    const ids = materiaIds.length > 0 ? materiaIds : aulaDetalhe.aluno.materias.map((m) => m.materia.id);
+    const materiasObjs = ids
+      .map((id) => aulaDetalhe.aluno.materias.find((m) => m.materia.id === id)?.materia)
+      .filter((m): m is Materia => !!m);
+    const novasMaterias = materiasObjs.map((materia) => ({ materia }));
+    const primeiraMateria = materiasObjs[0] ?? null;
+    setAulas((prev) => prev.map((a) => a.id === aulaDetalhe.id
+      ? { ...a, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : a));
+    setAulaDetalhe((p) => p ? { ...p, materia: primeiraMateria, materiaId: primeiraMateria?.id ?? null, materias: novasMaterias } : p);
     setMateriaSalva(true);
     setTimeout(() => setMateriaSalva(false), 2500);
   }
@@ -1035,7 +1034,7 @@ export default function AgendaClient({
                   {timeline.map((item, j) =>
                     item.tipo === "aula" ? (
                       <CardAula key={item.aula.id} aula={item.aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
-                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheId(item.aula.materias?.length === 1 ? item.aula.materias[0].materia.id : (item.aula.materias?.length === 0 ? (item.aula.materiaId ?? "") : "")); setErroStatus(null); setVerConteudo(false);
+                        setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheIds(item.aula.materias?.map((m) => m.materia.id) ?? (item.aula.materiaId ? [item.aula.materiaId] : [])); setErroStatus(null); setVerConteudo(false);
                         if (item.aula.status === "REALIZADA" && !item.aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}/>
                     ) : (
@@ -1132,7 +1131,7 @@ export default function AgendaClient({
                     <div className="flex items-center gap-2 shrink-0 pr-5 py-4">
                       <BadgeStatus status={aula.status}/>
                       <button onClick={() => {
-                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheId(aula.materias?.length === 1 ? (aula.materias[0].materia.id) : ""); setErroStatus(null); setVerConteudo(false);
+                        setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheIds(aula.materias?.map((m) => m.materia.id) ?? (aula.materiaId ? [aula.materiaId] : [])); setErroStatus(null); setVerConteudo(false);
                         if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}
                         className="text-xs text-slate-400 hover:text-indigo-600 transition-colors underline">
@@ -1209,14 +1208,15 @@ export default function AgendaClient({
             </div>
             <div>
               <label className="text-xs font-medium text-slate-600">Matéria</label>
-              <select value={novaAula.materiaId} onChange={(e) => setNovaAula((p) => ({ ...p, materiaId: e.target.value }))}
-                disabled={!novaAula.alunoId}
-                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                <option value="">Todas as matérias</option>
-                {(alunosFiltradosModal.find((a) => a.id === novaAula.alunoId)?.materias ?? []).map((m) => (
-                  <option key={m.id} value={m.id}>{m.nome}</option>
-                ))}
-              </select>
+              {novaAula.alunoId ? (
+                <SeletorMaterias
+                  materiasDisponiveis={alunosFiltradosModal.find((a) => a.id === novaAula.alunoId)?.materias ?? []}
+                  selecionadas={novaAula.materiaIds}
+                  onChange={(ids) => setNovaAula((p) => ({ ...p, materiaIds: ids }))}
+                />
+              ) : (
+                <p className="text-xs text-slate-400 mt-1">Selecione o aluno primeiro.</p>
+              )}
             </div>
             <div>
               <label className="text-xs font-medium text-slate-600">Data *</label>
@@ -1531,18 +1531,12 @@ export default function AgendaClient({
                 return (
                   <div className="flex-1 min-w-[140px]">
                     <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
-                    <select
-                      value={materiaDetalheId}
-                      onChange={(e) => { setMateriaDetalheId(e.target.value); salvarMateria(e.target.value); }}
+                    <SeletorMaterias
+                      materiasDisponiveis={materiasOpcoes}
+                      selecionadas={materiaDetalheIds}
+                      onChange={(ids) => { setMateriaDetalheIds(ids); salvarMateria(ids); }}
                       disabled={materiaTravada}
-                      title={materiaTravada ? "Não é possível trocar a matéria: já existe um Conteúdo vinculado a esta aula." : undefined}
-                      className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {materiasOpcoes.length > 1 && <option value="">Todas da aula</option>}
-                      {materiasOpcoes.map((m) => (
-                        <option key={m.id} value={m.id}>{m.nome}</option>
-                      ))}
-                    </select>
+                    />
                     {materiaTravada ? (
                       <p className="mt-1 text-xs text-slate-500">🔒 Conteúdo já vinculado — matéria travada</p>
                     ) : materiaSalva ? (
@@ -1706,8 +1700,8 @@ export default function AgendaClient({
       </div>
     )}
 
-    {pagamentoInfo.parcelas && (
-      <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
+    {pagamentoInfo.pagamento && (
+      <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
     )}
     </>
   );

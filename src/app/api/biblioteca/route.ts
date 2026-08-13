@@ -18,9 +18,9 @@ export async function GET(req: NextRequest) {
       empresaId: scope.empresaId,
       ...(metodoId ? { metodoId } : {}),
       ...(serie ? { serie } : {}),
-      ...(materiaId ? { materiaId } : {}),
+      ...(materiaId ? { materias: { some: { materiaId } } } : {}),
     },
-    include: { materia: true, metodoEnsino: true },
+    include: { materia: true, metodoEnsino: true, materias: { select: { materia: true } } },
     orderBy: { criadoEm: "desc" },
   });
   return NextResponse.json(materiais);
@@ -31,9 +31,10 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
-  if (!body.titulo || !body.descricao || !body.metodoId || !body.serie || !body.materiaId || !body.arquivoUrl) {
+  const materiaIds: string[] = Array.isArray(body.materiaIds) ? body.materiaIds : [];
+  if (!body.titulo || !body.descricao || !body.metodoId || !body.serie || materiaIds.length === 0 || !body.arquivoUrl) {
     return NextResponse.json(
-      { erro: "Título, descrição, método, série, disciplina e arquivo são obrigatórios." },
+      { erro: "Título, descrição, método, série, disciplina(s) e arquivo são obrigatórios." },
       { status: 400 }
     );
   }
@@ -50,11 +51,12 @@ export async function POST(req: NextRequest) {
       descricao: body.descricao,
       metodoId: body.metodoId,
       serie: body.serie,
-      materiaId: body.materiaId,
+      materiaId: materiaIds[0],
       arquivoUrl: body.arquivoUrl,
       arquivoNome: body.arquivoNome || null,
+      materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
     },
-    include: { materia: true, metodoEnsino: true },
+    include: { materia: true, metodoEnsino: true, materias: { select: { materia: true } } },
   });
   return NextResponse.json(material, { status: 201 });
 }

@@ -132,10 +132,20 @@ export type PagamentoAula = Prisma.PagamentoAulaModel
  */
 export type Conteudo = Prisma.ConteudoModel
 /**
+ * Model ConteudoMateria
+ * 
+ */
+export type ConteudoMateria = Prisma.ConteudoMateriaModel
+/**
  * Model MaterialBiblioteca
  * 
  */
 export type MaterialBiblioteca = Prisma.MaterialBibliotecaModel
+/**
+ * Model MaterialBibliotecaMateria
+ * 
+ */
+export type MaterialBibliotecaMateria = Prisma.MaterialBibliotecaMateriaModel
 /**
  * Model AgendaAula
  * 

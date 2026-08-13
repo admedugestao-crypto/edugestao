@@ -16,9 +16,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Material não encontrado." }, { status: 404 });
   }
 
-  if (!body.titulo || !body.descricao || !body.metodoId || !body.serie || !body.materiaId) {
+  const materiaIds: string[] = Array.isArray(body.materiaIds) ? body.materiaIds : [];
+  if (!body.titulo || !body.descricao || !body.metodoId || !body.serie || materiaIds.length === 0) {
     return NextResponse.json(
-      { erro: "Título, descrição, método, série e disciplina são obrigatórios." },
+      { erro: "Título, descrição, método, série e disciplina(s) são obrigatórios." },
       { status: 400 }
     );
   }
@@ -28,6 +29,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Método inválido." }, { status: 400 });
   }
 
+  await prisma.materialBibliotecaMateria.deleteMany({ where: { materialId: id } });
   const material = await prisma.materialBiblioteca.update({
     where: { id },
     data: {
@@ -35,10 +37,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       descricao: body.descricao,
       metodoId: body.metodoId,
       serie: body.serie,
-      materiaId: body.materiaId,
+      materiaId: materiaIds[0],
       ...(body.arquivoUrl ? { arquivoUrl: body.arquivoUrl, arquivoNome: body.arquivoNome || null } : {}),
+      materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
     },
-    include: { materia: true, metodoEnsino: true },
+    include: { materia: true, metodoEnsino: true, materias: { select: { materia: true } } },
   });
   return NextResponse.json(material);
 }

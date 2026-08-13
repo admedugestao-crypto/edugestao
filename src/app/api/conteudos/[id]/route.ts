@@ -13,6 +13,7 @@ const includeCompleto = {
     },
   },
   materia: true,
+  materias: { select: { materia: true } },
   aula: {
     select: {
       id: true, horaInicio: true, horaFim: true, status: true,
@@ -51,24 +52,30 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
 
+  const materiaIds: string[] = Array.isArray(body.materiaIds) ? body.materiaIds : [];
+
   // aulaIdEscolhido: quando o usuário resolveu manualmente uma ambiguidade
   // (aluno com +1 aula candidata) escolhendo qual aula vincular.
   const aulaIdParaValidar = existente.aulaId || body.aulaIdEscolhido || null;
-  const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdParaValidar, body.materiaId || null);
+  const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdParaValidar, materiaIds);
   if (!validacao.ok) {
     return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
   }
 
+  await prisma.conteudoMateria.deleteMany({ where: { conteudoId: id } });
   const conteudo = await prisma.conteudo.update({
     where: { id },
     data: {
       alunoId:    body.alunoId,
-      materiaId:  body.materiaId || null,
+      materiaId:  materiaIds[0] ?? null,
       topico:     body.topico,
       descricao:  body.descricao  || null,
       arquivoUrl: body.arquivoUrl !== undefined ? body.arquivoUrl || null : undefined,
       data:       dataAula,
       planejado,
+      materias: materiaIds.length > 0
+        ? { create: materiaIds.map((materiaId) => ({ materiaId })) }
+        : undefined,
     },
     include: includeCompleto,
   });

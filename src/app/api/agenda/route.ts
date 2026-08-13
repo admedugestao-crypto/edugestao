@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
-  const { alunoId, materiaId, data, horaInicio, horaFim, observacao, professoraId: bodyProfId } = body;
+  const { alunoId, materiaIds: materiaIdsBody, data, horaInicio, horaFim, observacao, professoraId: bodyProfId } = body;
 
   // Admin escolhe o professor no modal → usa bodyProfId; professora usa sua própria sessão
   const professoraId = scope.isAdmin ? (bodyProfId ?? null) : (scope.professoraId ?? null);
@@ -198,9 +198,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Sem materiaId = "todas as matérias" do aluno — vincula todas, igual à geração em massa.
-  let materiaIds: string[] = [];
-  if (!materiaId) {
+  // Nenhuma matéria marcada = "todas as matérias" do aluno — vincula todas, igual à geração em massa.
+  let materiaIds: string[] = Array.isArray(materiaIdsBody) ? materiaIdsBody : [];
+  if (materiaIds.length === 0) {
     const alunoMaterias = await prisma.aluno.findUnique({
       where: { id: alunoId },
       select: { materias: { select: { materiaId: true } } },
@@ -213,7 +213,7 @@ export async function POST(req: NextRequest) {
       empresaId: scope.empresaId,
       professoraId,
       alunoId,
-      materiaId:  materiaId || materiaIds[0] || null,
+      materiaId:  materiaIds[0] ?? null,
       data:       dataObj,
       horaInicio: horaInicio || null,
       horaFim:    horaFim    || null,

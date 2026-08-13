@@ -15,7 +15,7 @@ function fmtBr(iso: string) {
 }
 
 // POST /api/agenda/[id]/repor
-// Body: { alunoId?, professoraId?, materiaId?, data, horaInicio, horaFim, observacao? }
+// Body: { alunoId?, professoraId?, materiaIds?, data, horaInicio, horaFim, observacao? }
 //
 // Cria uma aula de reposição no lugar de `id` (que é excluída ao final) e
 // sempre cria um pagamento manual referente à aula original excluída — o
@@ -31,7 +31,7 @@ export async function POST(
 
   const { id } = await params;
   const body = await req.json();
-  const { alunoId: bodyAlunoId, professoraId: bodyProfId, materiaId, data, horaInicio, horaFim, observacao } = body;
+  const { alunoId: bodyAlunoId, professoraId: bodyProfId, materiaIds: materiaIdsBody, data, horaInicio, horaFim, observacao } = body;
 
   const aulaOriginal = await prisma.agendaAula.findUnique({
     where: { id },
@@ -107,9 +107,9 @@ export async function POST(
     );
   }
 
-  // Sem materiaId = "todas as matérias" do aluno — igual à criação normal
-  let materiaIds: string[] = [];
-  if (!materiaId) {
+  // Nenhuma matéria marcada = "todas as matérias" do aluno — igual à criação normal
+  let materiaIds: string[] = Array.isArray(materiaIdsBody) ? materiaIdsBody : [];
+  if (materiaIds.length === 0) {
     const alunoMaterias = await prisma.aluno.findUnique({
       where: { id: alunoId },
       select: { materias: { select: { materiaId: true } } },
@@ -128,7 +128,7 @@ export async function POST(
         empresaId: scope.empresaId,
         professoraId,
         alunoId,
-        materiaId: materiaId || materiaIds[0] || null,
+        materiaId: materiaIds[0] ?? null,
         data: dataObj,
         horaInicio,
         horaFim,

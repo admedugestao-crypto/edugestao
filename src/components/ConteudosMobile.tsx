@@ -10,6 +10,7 @@ import {
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
+import SeletorMaterias from "@/components/SeletorMaterias";
 
 type Materia = { id: string; nome: string; cor: string };
 type Aluno = {
@@ -47,11 +48,12 @@ type Conteudo = {
   planejado: boolean;
   aluno: { nome: string; professora: string | null };
   materia: Materia | null;
+  materias: Materia[];
   agenda: AgendaInfo | null;
 };
 type FormC = {
   alunoId: string;
-  materiaId: string | null;
+  materiaIds: string[];
   topico: string;
   descricao: string;
   arquivoUrl: string;
@@ -71,6 +73,7 @@ type MaterialBiblioteca = {
   serie: string | null;
   materiaId: string | null;
   materia: Materia | null;
+  materias: { materia: Materia }[];
   arquivoUrl: string;
   arquivoNome: string | null;
 };
@@ -82,7 +85,7 @@ function parseDataLocal(iso: string) {
 
 const formVazio = (): FormC => ({
   alunoId: "",
-  materiaId: "",
+  materiaIds: [],
   topico: "",
   descricao: "",
   arquivoUrl: "",
@@ -101,13 +104,13 @@ const STATUS_AGENDA: Record<string, { label: string; color: string }> = {
 
 // ── Seletor de material da Biblioteca ────────────────────────────────────────
 function SeletorBibliotecaMobile({
-  materiaIdInicial,
+  materiaIds,
   serieInicial,
   metodoInicial,
   onSelecionar,
   onFechar,
 }: {
-  materiaIdInicial: string | null;
+  materiaIds: string[];
   serieInicial: string | null;
   metodoInicial: MetodoEnsino | null;
   onSelecionar: (material: MaterialBiblioteca) => void;
@@ -116,7 +119,7 @@ function SeletorBibliotecaMobile({
   const [materiais, setMateriais] = useState<MaterialBiblioteca[] | null>(null);
   const [erro, setErro] = useState("");
   const [busca, setBusca] = useState("");
-  const [filtroMateriaId, setFiltroMateriaId] = useState(materiaIdInicial ?? "");
+  const [filtroMateriaId, setFiltroMateriaId] = useState("");
   const [filtroMetodo, setFiltroMetodo] = useState(metodoInicial?.id ?? "");
   const [filtroSerie, setFiltroSerie] = useState(serieInicial ?? "");
 
@@ -143,11 +146,13 @@ function SeletorBibliotecaMobile({
     new Set([...lista.map((m) => m.serie).filter((s): s is string => !!s), ...(serieInicial ? [serieInicial] : [])])
   ).sort();
   const materiasDisponiveis = Array.from(
-    new Map(lista.filter((m) => m.materia).map((m) => [m.materia!.id, m.materia!])).values()
+    new Map(lista.flatMap((m) => m.materias.map((x) => x.materia)).map((m) => [m.id, m])).values()
   );
 
   const filtrados = lista.filter((m) => {
-    if (filtroMateriaId && m.materiaId !== filtroMateriaId) return false;
+    const idsDoMaterial = m.materias.map((x) => x.materia.id);
+    if (materiaIds.length > 0 && !idsDoMaterial.some((id) => materiaIds.includes(id))) return false;
+    if (filtroMateriaId && !idsDoMaterial.includes(filtroMateriaId)) return false;
     if (filtroMetodo && m.metodoId !== filtroMetodo) return false;
     if (filtroSerie && m.serie !== filtroSerie) return false;
     if (busca) {
@@ -228,7 +233,7 @@ function SeletorBibliotecaMobile({
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-slate-700 truncate">{m.titulo}</p>
                 <p className="text-xs text-slate-400 truncate">
-                  {m.materia?.nome ?? "Sem matéria"}
+                  {m.materias.length > 0 ? m.materias.map((x) => x.materia.nome).join(", ") : "Sem matéria"}
                   {m.serie ? ` · ${m.serie}` : ""}
                   {m.arquivoNome ? ` · ${m.arquivoNome}` : ""}
                 </p>
@@ -262,14 +267,14 @@ function CamposFormMobile({
   const alunosFiltrados = isProfessor ? alunos : (filtroProfId ? alunos.filter((a) => a.professoraId === filtroProfId) : []);
   const alunoSel = alunos.find((a) => a.id === form.alunoId);
   const materiasFiltradas = alunoSel?.materias.map((am) => am.materia) ?? [];
-  // Registros antigos podem apontar pra uma matéria que o aluno não tem mais
-  // vinculada — sem isso, o <select> não acha a opção e mostra "Todas as
-  // matérias" mesmo com o dado real salvo, arriscando perder a matéria
-  // original se o usuário salvar sem perceber.
-  const materiaAtualFaltando = form.materiaId && !materiasFiltradas.some((m) => m.id === form.materiaId)
-    ? materias.find((m) => m.id === form.materiaId)
-    : null;
-  const opcoesMateria = materiaAtualFaltando ? [...materiasFiltradas, materiaAtualFaltando] : materiasFiltradas;
+  // Registros antigos podem apontar pra matérias que o aluno não tem mais
+  // vinculadas — sem isso, o seletor não acha a opção pra exibir marcada,
+  // arriscando perder a matéria original se o usuário salvar sem perceber.
+  const materiasFaltando = form.materiaIds
+    .filter((id) => !materiasFiltradas.some((m) => m.id === id))
+    .map((id) => materias.find((m) => m.id === id))
+    .filter((m): m is Materia => !!m);
+  const opcoesMateria = [...materiasFiltradas, ...materiasFaltando];
   const [seletorBibliotecaAberto, setSeletorBibliotecaAberto] = useState(false);
 
   return (
@@ -278,7 +283,7 @@ function CamposFormMobile({
         <div>
           <label className="text-xs font-medium text-slate-500 block mb-1">Professor(a)</label>
           <select value={filtroProfId}
-            onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaId: "" }); onCampoChave?.(); }}
+            onChange={(e) => { setFiltroProfId(e.target.value); setForm({ ...form, alunoId: "", materiaIds: [] }); onCampoChave?.(); }}
             className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
             <option value="">Selecione...</option>
             {professoras.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
@@ -289,7 +294,7 @@ function CamposFormMobile({
       <div>
         <label className="text-xs font-medium text-slate-500 block mb-1">Aluno *</label>
         <select value={form.alunoId}
-          onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaId: "" }); onCampoChave?.(); }}
+          onChange={(e) => { setForm({ ...form, alunoId: e.target.value, materiaIds: [] }); onCampoChave?.(); }}
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white">
           <option value="">Selecione...</option>
           {alunosFiltrados.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
@@ -298,16 +303,15 @@ function CamposFormMobile({
 
       <div>
         <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
-        <select value={form.materiaId ?? ""} disabled={!form.alunoId}
-          onChange={(e) => setForm({ ...form, materiaId: e.target.value || null })}
-          className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm bg-white disabled:opacity-50">
-          <option value="">{form.alunoId ? "Todas as matérias" : "—"}</option>
-          {opcoesMateria.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.nome}{m.id === materiaAtualFaltando?.id ? " (fora do vínculo atual do aluno)" : ""}
-            </option>
-          ))}
-        </select>
+        {form.alunoId ? (
+          <SeletorMaterias
+            materiasDisponiveis={opcoesMateria}
+            selecionadas={form.materiaIds}
+            onChange={(ids) => setForm({ ...form, materiaIds: ids })}
+          />
+        ) : (
+          <p className="text-xs text-slate-400">Selecione o aluno primeiro.</p>
+        )}
       </div>
 
       <div>
@@ -369,7 +373,7 @@ function CamposFormMobile({
 
       {seletorBibliotecaAberto && (
         <SeletorBibliotecaMobile
-          materiaIdInicial={form.materiaId}
+          materiaIds={form.materiaIds}
           serieInicial={alunoSel?.serie ?? null}
           metodoInicial={alunoSel?.escolaMetodo ?? null}
           onFechar={() => setSeletorBibliotecaAberto(false)}
@@ -390,14 +394,15 @@ function CamposFormMobile({
 }
 
 // Formato cru retornado pela API (aluno.professora aninhado, aula em vez de agenda)
-type RawConteudo = Omit<Conteudo, "aluno" | "agenda"> & {
+type RawConteudo = Omit<Conteudo, "aluno" | "agenda" | "materias"> & {
   aluno: { nome: string; professora: { usuario: { nome: string } } | null };
   aula: AgendaInfo | null;
+  materias: { materia: Materia }[];
 };
 
 // Converte a resposta crua da API para o formato usado na lista (aluno.professora
-// como string, agenda) — usado ao criar/editar conteúdo para manter a lista
-// atualizada sem precisar de F5.
+// como string, agenda, matérias achatadas) — usado ao criar/editar conteúdo
+// para manter a lista atualizada sem precisar de F5.
 function mapConteudo(raw: RawConteudo): Conteudo {
   return {
     ...raw,
@@ -406,6 +411,7 @@ function mapConteudo(raw: RawConteudo): Conteudo {
       professora: raw.aluno.professora?.usuario?.nome ?? null,
     },
     agenda: raw.aula ?? null,
+    materias: raw.materias.map((m) => m.materia),
   };
 }
 
@@ -637,7 +643,7 @@ export default function ConteudosMobile({
     setEditConteudo({
       id: c.id,
       alunoId: c.alunoId,
-      materiaId: c.materiaId,
+      materiaIds: c.materias.map((m) => m.id),
       topico: c.topico,
       descricao: c.descricao ?? "",
       arquivoUrl: c.arquivoUrl ?? "",
@@ -694,7 +700,7 @@ export default function ConteudosMobile({
           conteudosFiltrados.map((c) => (
             <div key={c.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
               <div className="flex items-stretch">
-                <div className="w-1.5 shrink-0" style={{ backgroundColor: c.materia?.cor ?? "#94a3b8" }}/>
+                <div className="w-1.5 shrink-0" style={{ backgroundColor: c.materias[0]?.cor ?? "#94a3b8" }}/>
                 <div className="flex-1 px-4 py-3 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-bold text-slate-800 text-sm">{c.topico}</p>
@@ -718,7 +724,7 @@ export default function ConteudosMobile({
                   </div>
 
                   <p className="text-xs text-slate-500 mt-1">
-                    {c.aluno.nome} · {c.materia ? c.materia.nome : "Todas as matérias"}
+                    {c.aluno.nome} · {c.materias.length > 0 ? c.materias.map((m) => m.nome).join(", ") : "Todas as matérias"}
                     {!isProfessor && c.aluno.professora && <span className="text-slate-400"> · {c.aluno.professora}</span>}
                   </p>
 
@@ -937,8 +943,8 @@ export default function ConteudosMobile({
         </div>
       )}
 
-      {pagamentoInfo.parcelas && (
-        <PagamentoGeradoModal parcelas={pagamentoInfo.parcelas} onFechar={pagamentoInfo.fechar} />
+      {pagamentoInfo.pagamento && (
+        <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
     </div>
   );

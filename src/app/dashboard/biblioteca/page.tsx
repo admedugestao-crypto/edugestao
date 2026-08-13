@@ -13,7 +13,7 @@ export default async function BibliotecaPage() {
   const [materiais, materias, metodos] = await Promise.all([
     prisma.materialBiblioteca.findMany({
       where: { empresaId: scope.empresaId },
-      include: { materia: true, metodoEnsino: true },
+      include: { materia: true, metodoEnsino: true, materias: { select: { materia: true } } },
       orderBy: { criadoEm: "desc" },
     }),
     prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),

@@ -46,6 +46,7 @@ export default async function ConteudosPage() {
           },
         },
         materia: true,
+        materias: { select: { materia: true } },
         aula: {
           select: {
             id: true, horaInicio: true, horaFim: true, status: true,
@@ -101,6 +102,7 @@ export default async function ConteudosPage() {
             nome:      c.aluno.nome,
             professora: c.aluno.professora?.usuario?.nome ?? null,
           },
+          materias: c.materias.map((m) => m.materia),
           agenda: c.aula ? { id: c.aula.id, horaInicio: c.aula.horaInicio, horaFim: c.aula.horaFim, status: c.aula.status, materia: c.aula.materia, aluno: c.aula.aluno } : null,
         }))}
       />
