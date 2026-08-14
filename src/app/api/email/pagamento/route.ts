@@ -18,9 +18,13 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
   const session = await auth();
 
-  if (!emailConfigurado()) {
+  const empresa = await prisma.empresa.findUniqueOrThrow({
+    where: { id: scope.empresaId },
+    select: { emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
+  });
+  if (!emailConfigurado(empresa)) {
     return NextResponse.json(
-      { erro: "E-mail não configurado. Configure EMAIL_HOST, EMAIL_USER e EMAIL_PASS no .env.local." },
+      { erro: "E-mail não configurado. Cadastre o SMTP desta empresa na Plataforma → Empresas → Editar → aba E-mail (SMTP)." },
       { status: 503 },
     );
   }
@@ -73,12 +77,12 @@ export async function POST(req: NextRequest) {
     resultado = await enviarEmailAtraso({
       ...base,
       dataVencimento: pagamento.dataVencimento,
-    });
+    }, empresa);
   } else if (tipo === "lembrete") {
     resultado = await enviarEmailLembrete({
       ...base,
       dataVencimento: pagamento.dataVencimento,
-    });
+    }, empresa);
   } else if (tipo === "recibo") {
     if (!pagamento.dataPagamento)
       return NextResponse.json({ erro: "Pagamento ainda não foi marcado como pago." }, { status: 422 });
@@ -86,7 +90,7 @@ export async function POST(req: NextRequest) {
     resultado = await enviarEmailRecibo({
       ...base,
       dataPagamento: pagamento.dataPagamento,
-    });
+    }, empresa);
   } else {
     return NextResponse.json({ erro: "Tipo inválido" }, { status: 400 });
   }

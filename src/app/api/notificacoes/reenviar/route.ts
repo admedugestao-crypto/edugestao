@@ -32,7 +32,10 @@ export async function POST(req: NextRequest) {
 
   const empresa = await prisma.empresa.findUniqueOrThrow({
     where: { id: scope.empresaId },
-    select: { nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true },
+    select: {
+      nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
+      emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
+    },
   });
 
   const av   = registro.avaliacao;
@@ -78,7 +81,7 @@ export async function POST(req: NextRequest) {
   if (canal === "email") {
     const emailDest = registro.email ?? prof.usuario.email;
     if (!emailDest) return NextResponse.json({ erro: "E-mail do professor não disponível." }, { status: 422 });
-    if (!emailConfigurado()) return NextResponse.json({ erro: "SMTP não configurado no servidor." }, { status: 503 });
+    if (!emailConfigurado(empresa)) return NextResponse.json({ erro: "SMTP não configurado para esta empresa." }, { status: 503 });
 
     const { ok, erro } = await enviarEmailProva({
       emailProfessor: emailDest,
@@ -91,7 +94,7 @@ export async function POST(req: NextRequest) {
       dataProva,
       diasRestantes,
       nomesAlunos,
-    });
+    }, empresa);
 
     if (!ok) return NextResponse.json({ erro: erro ?? "Falha ao enviar e-mail." }, { status: 500 });
 

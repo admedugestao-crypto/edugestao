@@ -18,6 +18,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     ativo?: boolean; nome?: string; slug?: string; logoUrl?: string | null;
     fonnteToken?: string | null;
     evolutionApiUrl?: string | null; evolutionApiKey?: string | null; evolutionApiInstance?: string | null;
+    emailHost?: string | null; emailPort?: string | null; emailUser?: string | null;
+    emailPass?: string | null; emailFrom?: string | null;
   } = {};
 
   if (typeof body.ativo === "boolean") data.ativo = body.ativo;
@@ -47,6 +49,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (typeof body.evolutionApiUrl === "string") data.evolutionApiUrl = body.evolutionApiUrl.trim() || null;
   if (typeof body.evolutionApiKey === "string") data.evolutionApiKey = body.evolutionApiKey.trim() || null;
   if (typeof body.evolutionApiInstance === "string") data.evolutionApiInstance = body.evolutionApiInstance.trim() || null;
+
+  // Credenciais de SMTP — mesmo tratamento de string vazia → null.
+  if (typeof body.emailHost === "string") data.emailHost = body.emailHost.trim() || null;
+  if (typeof body.emailPort === "string") data.emailPort = body.emailPort.trim() || null;
+  if (typeof body.emailUser === "string") data.emailUser = body.emailUser.trim() || null;
+  if (typeof body.emailPass === "string") data.emailPass = body.emailPass.trim() || null;
+  if (typeof body.emailFrom === "string") data.emailFrom = body.emailFrom.trim() || null;
 
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ erro: "Nenhum campo para atualizar." }, { status: 400 });

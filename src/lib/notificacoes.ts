@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
-import { enviarEmailProva, emailConfigurado } from "./email";
+import { enviarEmailProva, type EmailCredenciais } from "./email";
+import { limparEnv } from "./envUtil";
 
 // ── Formata número WhatsApp para o padrão internacional ─────────────────────
 export function formatarWhatsapp(num: string): string {
@@ -102,16 +103,6 @@ export type EnvioResultado = { ok: boolean; provedor: string; erro?: string };
 async function corpoErro(res: Response): Promise<string> {
   const texto = await res.text().catch(() => "");
   return `HTTP ${res.status}${texto ? `: ${texto.slice(0, 300)}` : ""}`;
-}
-
-// Remove BOM (U+FEFF) e espaços que às vezes vêm junto ao colar a variável de
-// ambiente no painel da Vercel (ou o valor no banco) — sem isso, fetch()
-// lança TypeError ao usar o valor como header HTTP.
-const BOM = String.fromCharCode(65279);
-function limparEnv(v: string | null | undefined): string | undefined {
-  if (!v) return undefined;
-  const limpo = (v.startsWith(BOM) ? v.slice(BOM.length) : v).trim();
-  return limpo || undefined;
 }
 
 // ── Credenciais de WhatsApp de UMA empresa (cada empresa tem sua própria
@@ -276,13 +267,11 @@ export async function processarNotificacoesEmail(): Promise<{
 }> {
   const resultado = { enviadas: 0, erros: [] as string[] };
 
-  if (!emailConfigurado()) {
-    resultado.erros.push("E-mail não configurado (EMAIL_HOST / EMAIL_USER / EMAIL_PASS ausentes).");
-    return resultado;
-  }
-
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const empresas = await prisma.empresa.findMany({ where: { ativo: true, emailPausado: false }, select: { id: true } });
+  const empresas = await prisma.empresa.findMany({
+    where: { ativo: true, emailPausado: false },
+    select: { id: true, emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
+  });
 
   for (const empresa of empresas) {
     const avaliacoes = await buscarAvaliacoes(empresa.id);
@@ -320,7 +309,7 @@ export async function processarNotificacoesEmail(): Promise<{
             diasRestantes,
             nomesAlunos,
             observacao:     av.observacao,
-          });
+          }, empresa);
 
           await prisma.notificacaoProva.upsert({
             where: { professoraId_avaliacaoId_diasAntes: { professoraId: prof.id, avaliacaoId: av.id, diasAntes: diasRestantes } },

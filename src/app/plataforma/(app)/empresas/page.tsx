@@ -13,6 +13,11 @@ type Empresa = {
   evolutionApiUrl: string | null;
   evolutionApiKey: string | null;
   evolutionApiInstance: string | null;
+  emailHost: string | null;
+  emailPort: string | null;
+  emailUser: string | null;
+  emailPass: string | null;
+  emailFrom: string | null;
   _count: { usuarios: number };
 };
 
@@ -20,6 +25,7 @@ const formVazio = { empresaNome: "", nome: "", email: "", senha: "" };
 const formEdicaoVazio = {
   nome: "", slug: "", ativo: true,
   fonnteToken: "", evolutionApiUrl: "", evolutionApiKey: "", evolutionApiInstance: "",
+  emailHost: "", emailPort: "", emailUser: "", emailPass: "", emailFrom: "",
 };
 const formAdminVazio = { nome: "", email: "", senha: "" };
 
@@ -37,7 +43,7 @@ export default function PlataformaEmpresasPage() {
   const [logoFileEdicao, setLogoFileEdicao] = useState<File | null>(null);
   const [erroEdicao, setErroEdicao] = useState("");
   const [salvandoEdicao, setSalvandoEdicao] = useState(false);
-  const [abaEdicao, setAbaEdicao] = useState<"geral" | "whatsapp">("geral");
+  const [abaEdicao, setAbaEdicao] = useState<"geral" | "whatsapp" | "email">("geral");
 
   const [empresaNovoAdmin, setEmpresaNovoAdmin] = useState<Empresa | null>(null);
   const [formAdmin, setFormAdmin] = useState(formAdminVazio);
@@ -107,6 +113,11 @@ export default function PlataformaEmpresasPage() {
       evolutionApiUrl: empresa.evolutionApiUrl ?? "",
       evolutionApiKey: empresa.evolutionApiKey ?? "",
       evolutionApiInstance: empresa.evolutionApiInstance ?? "",
+      emailHost: empresa.emailHost ?? "",
+      emailPort: empresa.emailPort ?? "",
+      emailUser: empresa.emailUser ?? "",
+      emailPass: empresa.emailPass ?? "",
+      emailFrom: empresa.emailFrom ?? "",
     });
     setLogoFileEdicao(null);
     setErroEdicao("");
@@ -359,6 +370,15 @@ export default function PlataformaEmpresasPage() {
               >
                 WhatsApp (APIs)
               </button>
+              <button
+                type="button"
+                onClick={() => setAbaEdicao("email")}
+                className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                  abaEdicao === "email" ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                E-mail (SMTP)
+              </button>
             </div>
 
             <form onSubmit={salvarEdicao} method="post" action="#" className="space-y-3">
@@ -424,7 +444,7 @@ export default function PlataformaEmpresasPage() {
                     </div>
                   </div>
                 </>
-              ) : (
+              ) : abaEdicao === "whatsapp" ? (
                 <>
                   <p className="text-xs text-slate-500 -mt-1">
                     Conta própria desta empresa nas APIs de WhatsApp. Sem token cadastrado, essa empresa não
@@ -469,6 +489,70 @@ export default function PlataformaEmpresasPage() {
                         className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />
                     </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-slate-500 -mt-1">
+                    Conta própria de SMTP desta empresa. Sem SMTP cadastrado, essa empresa não consegue enviar
+                    e-mails (atraso, lembrete, recibo, prova, redefinição de senha).
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Host</label>
+                      <input
+                        type="text"
+                        value={formEdicao.emailHost}
+                        onChange={(e) => setFormEdicao({ ...formEdicao, emailHost: e.target.value })}
+                        placeholder="smtp.exemplo.com"
+                        autoComplete="off"
+                        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Porta</label>
+                      <input
+                        type="text"
+                        value={formEdicao.emailPort}
+                        onChange={(e) => setFormEdicao({ ...formEdicao, emailPort: e.target.value })}
+                        placeholder="587"
+                        autoComplete="off"
+                        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Usuário</label>
+                    <input
+                      type="text"
+                      value={formEdicao.emailUser}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, emailUser: e.target.value })}
+                      placeholder="usuario@exemplo.com"
+                      autoComplete="off"
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Senha</label>
+                    <input
+                      type="password"
+                      value={formEdicao.emailPass}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, emailPass: e.target.value })}
+                      placeholder="Senha ou senha de app do SMTP"
+                      autoComplete="off"
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Remetente (opcional)</label>
+                    <input
+                      type="text"
+                      value={formEdicao.emailFrom}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, emailFrom: e.target.value })}
+                      placeholder="Usa o Usuário acima se deixar em branco"
+                      autoComplete="off"
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
                   </div>
                 </>
               )}

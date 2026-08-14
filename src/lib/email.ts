@@ -1,20 +1,34 @@
 import nodemailer from "nodemailer";
+import { limparEnv } from "./envUtil";
+
+// ── Credenciais de SMTP de UMA empresa (cada empresa tem sua própria conta —
+// sem fallback pra variável de ambiente global, mesmo padrão do WhatsApp). ──
+export type EmailCredenciais = {
+  emailHost?: string | null;
+  emailPort?: string | null;
+  emailUser?: string | null;
+  emailPass?: string | null;
+  emailFrom?: string | null;
+};
 
 // ── Transportador SMTP ────────────────────────────────────────────────────────
-function criarTransporte() {
-  const { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } = process.env;
-  if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) return null;
+function criarTransporte(credenciais: EmailCredenciais) {
+  const host = limparEnv(credenciais.emailHost);
+  const user = limparEnv(credenciais.emailUser);
+  const pass = limparEnv(credenciais.emailPass);
+  if (!host || !user || !pass) return null;
 
+  const porta = parseInt(limparEnv(credenciais.emailPort) ?? "587");
   return nodemailer.createTransport({
-    host: EMAIL_HOST,
-    port: parseInt(EMAIL_PORT ?? "587"),
-    secure: parseInt(EMAIL_PORT ?? "587") === 465,
-    auth: { user: EMAIL_USER, pass: EMAIL_PASS },
+    host,
+    port: porta,
+    secure: porta === 465,
+    auth: { user, pass },
   });
 }
 
-export function emailConfigurado() {
-  return !!(process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS);
+export function emailConfigurado(credenciais: EmailCredenciais) {
+  return !!(limparEnv(credenciais.emailHost) && limparEnv(credenciais.emailUser) && limparEnv(credenciais.emailPass));
 }
 
 function escapeHtml(s: string): string {
@@ -375,11 +389,11 @@ function templateRecibo(params: {
 
 export async function enviarEmailLembrete(params: Parameters<typeof templateLembrete>[0] & {
   emailResponsavel: string;
-}): Promise<{ ok: boolean; erro?: string }> {
-  const transporte = criarTransporte();
-  if (!transporte) return { ok: false, erro: "E-mail não configurado no servidor." };
+}, credenciais: EmailCredenciais): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
   const { subject, html } = templateLembrete(params);
-  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
   try {
     await transporte.sendMail({ from, to: params.emailResponsavel, subject, html });
     return { ok: true };
@@ -390,11 +404,11 @@ export async function enviarEmailLembrete(params: Parameters<typeof templateLemb
 
 export async function enviarEmailRecibo(params: Parameters<typeof templateRecibo>[0] & {
   emailResponsavel: string;
-}): Promise<{ ok: boolean; erro?: string }> {
-  const transporte = criarTransporte();
-  if (!transporte) return { ok: false, erro: "E-mail não configurado no servidor." };
+}, credenciais: EmailCredenciais): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
   const { subject, html } = templateRecibo(params);
-  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
   try {
     await transporte.sendMail({ from, to: params.emailResponsavel, subject, html });
     return { ok: true };
@@ -554,13 +568,14 @@ function templateProva(params: {
 }
 
 export async function enviarEmailProva(
-  params: Parameters<typeof templateProva>[0] & { emailProfessor: string }
+  params: Parameters<typeof templateProva>[0] & { emailProfessor: string },
+  credenciais: EmailCredenciais,
 ): Promise<{ ok: boolean; erro?: string }> {
-  const transporte = criarTransporte();
-  if (!transporte) return { ok: false, erro: "E-mail não configurado no servidor." };
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
 
   const { subject, html } = templateProva(params);
-  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
 
   try {
     await transporte.sendMail({ from, to: params.emailProfessor, subject, html });
@@ -682,11 +697,11 @@ function templateReciboMultiplo(params: {
 
 export async function enviarEmailReciboMultiplo(params: Parameters<typeof templateReciboMultiplo>[0] & {
   emailResponsavel: string;
-}): Promise<{ ok: boolean; erro?: string }> {
-  const transporte = criarTransporte();
-  if (!transporte) return { ok: false, erro: "E-mail não configurado no servidor." };
+}, credenciais: EmailCredenciais): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
   const { subject, html } = templateReciboMultiplo(params);
-  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
   try {
     await transporte.sendMail({ from, to: params.emailResponsavel, subject, html });
     return { ok: true };
@@ -757,11 +772,11 @@ function templateRedefinirSenha(params: { nomeUsuario: string; link: string }) {
 
 export async function enviarEmailRedefinirSenha(params: Parameters<typeof templateRedefinirSenha>[0] & {
   emailUsuario: string;
-}): Promise<{ ok: boolean; erro?: string }> {
-  const transporte = criarTransporte();
-  if (!transporte) return { ok: false, erro: "E-mail não configurado no servidor." };
+}, credenciais: EmailCredenciais): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
   const { subject, html } = templateRedefinirSenha(params);
-  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
   try {
     await transporte.sendMail({ from, to: params.emailUsuario, subject, html });
     return { ok: true };
@@ -773,14 +788,14 @@ export async function enviarEmailRedefinirSenha(params: Parameters<typeof templa
 // ── Função principal de envio ─────────────────────────────────────────────────
 export async function enviarEmailAtraso(params: Parameters<typeof templateAtraso>[0] & {
   emailResponsavel: string;
-}): Promise<{ ok: boolean; erro?: string }> {
-  const transporte = criarTransporte();
+}, credenciais: EmailCredenciais): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
   if (!transporte) {
-    return { ok: false, erro: "E-mail não configurado no servidor." };
+    return { ok: false, erro: "E-mail não configurado." };
   }
 
   const { subject, html } = templateAtraso(params);
-  const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "EduGestão";
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
 
   try {
     await transporte.sendMail({

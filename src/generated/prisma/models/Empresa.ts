@@ -37,6 +37,11 @@ export type EmpresaMinAggregateOutputType = {
   evolutionApiUrl: string | null
   evolutionApiKey: string | null
   evolutionApiInstance: string | null
+  emailHost: string | null
+  emailPort: string | null
+  emailUser: string | null
+  emailPass: string | null
+  emailFrom: string | null
 }
 
 export type EmpresaMaxAggregateOutputType = {
@@ -52,6 +57,11 @@ export type EmpresaMaxAggregateOutputType = {
   evolutionApiUrl: string | null
   evolutionApiKey: string | null
   evolutionApiInstance: string | null
+  emailHost: string | null
+  emailPort: string | null
+  emailUser: string | null
+  emailPass: string | null
+  emailFrom: string | null
 }
 
 export type EmpresaCountAggregateOutputType = {
@@ -67,6 +77,11 @@ export type EmpresaCountAggregateOutputType = {
   evolutionApiUrl: number
   evolutionApiKey: number
   evolutionApiInstance: number
+  emailHost: number
+  emailPort: number
+  emailUser: number
+  emailPass: number
+  emailFrom: number
   _all: number
 }
 
@@ -84,6 +99,11 @@ export type EmpresaMinAggregateInputType = {
   evolutionApiUrl?: true
   evolutionApiKey?: true
   evolutionApiInstance?: true
+  emailHost?: true
+  emailPort?: true
+  emailUser?: true
+  emailPass?: true
+  emailFrom?: true
 }
 
 export type EmpresaMaxAggregateInputType = {
@@ -99,6 +119,11 @@ export type EmpresaMaxAggregateInputType = {
   evolutionApiUrl?: true
   evolutionApiKey?: true
   evolutionApiInstance?: true
+  emailHost?: true
+  emailPort?: true
+  emailUser?: true
+  emailPass?: true
+  emailFrom?: true
 }
 
 export type EmpresaCountAggregateInputType = {
@@ -114,6 +139,11 @@ export type EmpresaCountAggregateInputType = {
   evolutionApiUrl?: true
   evolutionApiKey?: true
   evolutionApiInstance?: true
+  emailHost?: true
+  emailPort?: true
+  emailUser?: true
+  emailPass?: true
+  emailFrom?: true
   _all?: true
 }
 
@@ -202,6 +232,11 @@ export type EmpresaGroupByOutputType = {
   evolutionApiUrl: string | null
   evolutionApiKey: string | null
   evolutionApiInstance: string | null
+  emailHost: string | null
+  emailPort: string | null
+  emailUser: string | null
+  emailPass: string | null
+  emailFrom: string | null
   _count: EmpresaCountAggregateOutputType | null
   _min: EmpresaMinAggregateOutputType | null
   _max: EmpresaMaxAggregateOutputType | null
@@ -238,6 +273,11 @@ export type EmpresaWhereInput = {
   evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiKey?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiInstance?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailHost?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailPort?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailUser?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailPass?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailFrom?: Prisma.StringNullableFilter<"Empresa"> | string | null
   usuarios?: Prisma.UsuarioListRelationFilter
   professoras?: Prisma.ProfessoraListRelationFilter
   materias?: Prisma.MateriaListRelationFilter
@@ -270,6 +310,11 @@ export type EmpresaOrderByWithRelationInput = {
   evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailHost?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailPort?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailUser?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailPass?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailFrom?: Prisma.SortOrderInput | Prisma.SortOrder
   usuarios?: Prisma.UsuarioOrderByRelationAggregateInput
   professoras?: Prisma.ProfessoraOrderByRelationAggregateInput
   materias?: Prisma.MateriaOrderByRelationAggregateInput
@@ -305,6 +350,11 @@ export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
   evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiKey?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiInstance?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailHost?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailPort?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailUser?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailPass?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  emailFrom?: Prisma.StringNullableFilter<"Empresa"> | string | null
   usuarios?: Prisma.UsuarioListRelationFilter
   professoras?: Prisma.ProfessoraListRelationFilter
   materias?: Prisma.MateriaListRelationFilter
@@ -337,6 +387,11 @@ export type EmpresaOrderByWithAggregationInput = {
   evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailHost?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailPort?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailUser?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailPass?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailFrom?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EmpresaCountOrderByAggregateInput
   _max?: Prisma.EmpresaMaxOrderByAggregateInput
   _min?: Prisma.EmpresaMinOrderByAggregateInput
@@ -358,6 +413,11 @@ export type EmpresaScalarWhereWithAggregatesInput = {
   evolutionApiUrl?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   evolutionApiKey?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   evolutionApiInstance?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  emailHost?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  emailPort?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  emailUser?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  emailPass?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  emailFrom?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
 }
 
 export type EmpresaCreateInput = {
@@ -373,6 +433,11 @@ export type EmpresaCreateInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -405,6 +470,11 @@ export type EmpresaUncheckedCreateInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -437,6 +507,11 @@ export type EmpresaUpdateInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -469,6 +544,11 @@ export type EmpresaUncheckedUpdateInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -501,6 +581,11 @@ export type EmpresaCreateManyInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
 }
 
 export type EmpresaUpdateManyMutationInput = {
@@ -516,6 +601,11 @@ export type EmpresaUpdateManyMutationInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EmpresaUncheckedUpdateManyInput = {
@@ -531,6 +621,11 @@ export type EmpresaUncheckedUpdateManyInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EmpresaCountOrderByAggregateInput = {
@@ -546,6 +641,11 @@ export type EmpresaCountOrderByAggregateInput = {
   evolutionApiUrl?: Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrder
+  emailHost?: Prisma.SortOrder
+  emailPort?: Prisma.SortOrder
+  emailUser?: Prisma.SortOrder
+  emailPass?: Prisma.SortOrder
+  emailFrom?: Prisma.SortOrder
 }
 
 export type EmpresaMaxOrderByAggregateInput = {
@@ -561,6 +661,11 @@ export type EmpresaMaxOrderByAggregateInput = {
   evolutionApiUrl?: Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrder
+  emailHost?: Prisma.SortOrder
+  emailPort?: Prisma.SortOrder
+  emailUser?: Prisma.SortOrder
+  emailPass?: Prisma.SortOrder
+  emailFrom?: Prisma.SortOrder
 }
 
 export type EmpresaMinOrderByAggregateInput = {
@@ -576,6 +681,11 @@ export type EmpresaMinOrderByAggregateInput = {
   evolutionApiUrl?: Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrder
+  emailHost?: Prisma.SortOrder
+  emailPort?: Prisma.SortOrder
+  emailUser?: Prisma.SortOrder
+  emailPass?: Prisma.SortOrder
+  emailFrom?: Prisma.SortOrder
 }
 
 export type EmpresaNullableScalarRelationFilter = {
@@ -857,6 +967,11 @@ export type EmpresaCreateWithoutUsuariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
@@ -888,6 +1003,11 @@ export type EmpresaUncheckedCreateWithoutUsuariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -935,6 +1055,11 @@ export type EmpresaUpdateWithoutUsuariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
@@ -966,6 +1091,11 @@ export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -997,6 +1127,11 @@ export type EmpresaCreateWithoutProfessorasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
@@ -1028,6 +1163,11 @@ export type EmpresaUncheckedCreateWithoutProfessorasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1075,6 +1215,11 @@ export type EmpresaUpdateWithoutProfessorasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
@@ -1106,6 +1251,11 @@ export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1137,6 +1287,11 @@ export type EmpresaCreateWithoutMateriasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
@@ -1168,6 +1323,11 @@ export type EmpresaUncheckedCreateWithoutMateriasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1215,6 +1375,11 @@ export type EmpresaUpdateWithoutMateriasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
@@ -1246,6 +1411,11 @@ export type EmpresaUncheckedUpdateWithoutMateriasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1277,6 +1447,11 @@ export type EmpresaCreateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1308,6 +1483,11 @@ export type EmpresaUncheckedCreateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1355,6 +1535,11 @@ export type EmpresaUpdateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1386,6 +1571,11 @@ export type EmpresaUncheckedUpdateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1417,6 +1607,11 @@ export type EmpresaCreateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1448,6 +1643,11 @@ export type EmpresaUncheckedCreateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1495,6 +1695,11 @@ export type EmpresaUpdateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1526,6 +1731,11 @@ export type EmpresaUncheckedUpdateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1557,6 +1767,11 @@ export type EmpresaCreateWithoutEscolasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1588,6 +1803,11 @@ export type EmpresaUncheckedCreateWithoutEscolasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1635,6 +1855,11 @@ export type EmpresaUpdateWithoutEscolasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1666,6 +1891,11 @@ export type EmpresaUncheckedUpdateWithoutEscolasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1697,6 +1927,11 @@ export type EmpresaCreateWithoutUnidadesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1728,6 +1963,11 @@ export type EmpresaUncheckedCreateWithoutUnidadesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1775,6 +2015,11 @@ export type EmpresaUpdateWithoutUnidadesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1806,6 +2051,11 @@ export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1837,6 +2087,11 @@ export type EmpresaCreateWithoutCalendariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -1868,6 +2123,11 @@ export type EmpresaUncheckedCreateWithoutCalendariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -1915,6 +2175,11 @@ export type EmpresaUpdateWithoutCalendariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -1946,6 +2211,11 @@ export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1977,6 +2247,11 @@ export type EmpresaCreateWithoutAvaliacoesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2008,6 +2283,11 @@ export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2055,6 +2335,11 @@ export type EmpresaUpdateWithoutAvaliacoesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2086,6 +2371,11 @@ export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2117,6 +2407,11 @@ export type EmpresaCreateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2148,6 +2443,11 @@ export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2195,6 +2495,11 @@ export type EmpresaUpdateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2226,6 +2531,11 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2257,6 +2567,11 @@ export type EmpresaCreateWithoutAlunosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2288,6 +2603,11 @@ export type EmpresaUncheckedCreateWithoutAlunosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2335,6 +2655,11 @@ export type EmpresaUpdateWithoutAlunosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2366,6 +2691,11 @@ export type EmpresaUncheckedUpdateWithoutAlunosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2397,6 +2727,11 @@ export type EmpresaCreateWithoutNotasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2428,6 +2763,11 @@ export type EmpresaUncheckedCreateWithoutNotasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2475,6 +2815,11 @@ export type EmpresaUpdateWithoutNotasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2506,6 +2851,11 @@ export type EmpresaUncheckedUpdateWithoutNotasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2537,6 +2887,11 @@ export type EmpresaCreateWithoutPagamentosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2568,6 +2923,11 @@ export type EmpresaUncheckedCreateWithoutPagamentosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2615,6 +2975,11 @@ export type EmpresaUpdateWithoutPagamentosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2646,6 +3011,11 @@ export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2677,6 +3047,11 @@ export type EmpresaCreateWithoutConteudosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2708,6 +3083,11 @@ export type EmpresaUncheckedCreateWithoutConteudosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2755,6 +3135,11 @@ export type EmpresaUpdateWithoutConteudosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2786,6 +3171,11 @@ export type EmpresaUncheckedUpdateWithoutConteudosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2817,6 +3207,11 @@ export type EmpresaCreateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2848,6 +3243,11 @@ export type EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -2895,6 +3295,11 @@ export type EmpresaUpdateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -2926,6 +3331,11 @@ export type EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -2957,6 +3367,11 @@ export type EmpresaCreateWithoutAulasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -2988,6 +3403,11 @@ export type EmpresaUncheckedCreateWithoutAulasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -3035,6 +3455,11 @@ export type EmpresaUpdateWithoutAulasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -3066,6 +3491,11 @@ export type EmpresaUncheckedUpdateWithoutAulasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -3097,6 +3527,11 @@ export type EmpresaCreateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
@@ -3128,6 +3563,11 @@ export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
   usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
   professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
   materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
@@ -3175,6 +3615,11 @@ export type EmpresaUpdateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
@@ -3206,6 +3651,11 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -3412,6 +3862,11 @@ export type EmpresaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  emailHost?: boolean
+  emailPort?: boolean
+  emailUser?: boolean
+  emailPass?: boolean
+  emailFrom?: boolean
   usuarios?: boolean | Prisma.Empresa$usuariosArgs<ExtArgs>
   professoras?: boolean | Prisma.Empresa$professorasArgs<ExtArgs>
   materias?: boolean | Prisma.Empresa$materiasArgs<ExtArgs>
@@ -3445,6 +3900,11 @@ export type EmpresaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  emailHost?: boolean
+  emailPort?: boolean
+  emailUser?: boolean
+  emailPass?: boolean
+  emailFrom?: boolean
 }, ExtArgs["result"]["empresa"]>
 
 export type EmpresaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -3460,6 +3920,11 @@ export type EmpresaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  emailHost?: boolean
+  emailPort?: boolean
+  emailUser?: boolean
+  emailPass?: boolean
+  emailFrom?: boolean
 }, ExtArgs["result"]["empresa"]>
 
 export type EmpresaSelectScalar = {
@@ -3475,9 +3940,14 @@ export type EmpresaSelectScalar = {
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  emailHost?: boolean
+  emailPort?: boolean
+  emailUser?: boolean
+  emailPass?: boolean
+  emailFrom?: boolean
 }
 
-export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "ativo" | "whatsappPausado" | "emailPausado" | "criadoEm" | "fonnteToken" | "evolutionApiUrl" | "evolutionApiKey" | "evolutionApiInstance", ExtArgs["result"]["empresa"]>
+export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "ativo" | "whatsappPausado" | "emailPausado" | "criadoEm" | "fonnteToken" | "evolutionApiUrl" | "evolutionApiKey" | "evolutionApiInstance" | "emailHost" | "emailPort" | "emailUser" | "emailPass" | "emailFrom", ExtArgs["result"]["empresa"]>
 export type EmpresaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | Prisma.Empresa$usuariosArgs<ExtArgs>
   professoras?: boolean | Prisma.Empresa$professorasArgs<ExtArgs>
@@ -3535,6 +4005,11 @@ export type $EmpresaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     evolutionApiUrl: string | null
     evolutionApiKey: string | null
     evolutionApiInstance: string | null
+    emailHost: string | null
+    emailPort: string | null
+    emailUser: string | null
+    emailPass: string | null
+    emailFrom: string | null
   }, ExtArgs["result"]["empresa"]>
   composites: {}
 }
@@ -3987,6 +4462,11 @@ export interface EmpresaFieldRefs {
   readonly evolutionApiUrl: Prisma.FieldRef<"Empresa", 'String'>
   readonly evolutionApiKey: Prisma.FieldRef<"Empresa", 'String'>
   readonly evolutionApiInstance: Prisma.FieldRef<"Empresa", 'String'>
+  readonly emailHost: Prisma.FieldRef<"Empresa", 'String'>
+  readonly emailPort: Prisma.FieldRef<"Empresa", 'String'>
+  readonly emailUser: Prisma.FieldRef<"Empresa", 'String'>
+  readonly emailPass: Prisma.FieldRef<"Empresa", 'String'>
+  readonly emailFrom: Prisma.FieldRef<"Empresa", 'String'>
 }
     
 

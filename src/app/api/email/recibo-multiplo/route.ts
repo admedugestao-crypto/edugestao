@@ -13,9 +13,13 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
   const session = await auth();
 
-  if (!emailConfigurado()) {
+  const empresa = await prisma.empresa.findUniqueOrThrow({
+    where: { id: scope.empresaId },
+    select: { emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
+  });
+  if (!emailConfigurado(empresa)) {
     return NextResponse.json(
-      { erro: "E-mail não configurado no servidor." },
+      { erro: "E-mail não configurado. Cadastre o SMTP desta empresa na Plataforma → Empresas → Editar → aba E-mail (SMTP)." },
       { status: 503 },
     );
   }
@@ -83,7 +87,7 @@ export async function POST(req: NextRequest) {
       nomeProfessora,
       itens,
       total,
-    });
+    }, empresa);
 
     if (resultado.ok) {
       enviados++;

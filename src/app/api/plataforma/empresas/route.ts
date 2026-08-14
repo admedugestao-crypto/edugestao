@@ -16,6 +16,7 @@ export async function GET() {
     select: {
       id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true,
       fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
+      emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
       _count: { select: { usuarios: true } },
     },
   });

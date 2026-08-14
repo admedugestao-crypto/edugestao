@@ -105,7 +105,12 @@ export const EmpresaScalarFieldEnum = {
   fonnteToken: 'fonnteToken',
   evolutionApiUrl: 'evolutionApiUrl',
   evolutionApiKey: 'evolutionApiKey',
-  evolutionApiInstance: 'evolutionApiInstance'
+  evolutionApiInstance: 'evolutionApiInstance',
+  emailHost: 'emailHost',
+  emailPort: 'emailPort',
+  emailUser: 'emailUser',
+  emailPass: 'emailPass',
+  emailFrom: 'emailFrom'
 } as const
 
 export type EmpresaScalarFieldEnum = (typeof EmpresaScalarFieldEnum)[keyof typeof EmpresaScalarFieldEnum]

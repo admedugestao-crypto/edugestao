@@ -37,12 +37,22 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXTAUTH_URL ?? new URL(req.url).origin;
   const link = `${baseUrl}/redefinir-senha?token=${resetToken}&plataforma=1`;
 
-  if (emailConfigurado()) {
+  // Usuário PLATAFORMA não pertence a nenhuma empresa — continua usando o
+  // SMTP global do sistema (env vars), diferente do fluxo de empresa acima.
+  const credenciaisGlobais = {
+    emailHost: process.env.EMAIL_HOST,
+    emailPort: process.env.EMAIL_PORT,
+    emailUser: process.env.EMAIL_USER,
+    emailPass: process.env.EMAIL_PASS,
+    emailFrom: process.env.EMAIL_FROM,
+  };
+
+  if (emailConfigurado(credenciaisGlobais)) {
     await enviarEmailRedefinirSenha({
       emailUsuario: usuario.email,
       nomeUsuario: usuario.nome,
       link,
-    });
+    }, credenciaisGlobais);
     return NextResponse.json(RESPOSTA_GENERICA);
   }
 

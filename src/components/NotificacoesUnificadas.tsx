@@ -729,10 +729,7 @@ function AbaEmail({
         <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <AlertTriangle size={16} className="text-amber-600 mt-0.5 shrink-0" />
           <p className="text-sm text-amber-800">
-            E-mail SMTP não configurado. Configure{" "}
-            <code className="bg-amber-100 px-1 rounded text-xs">EMAIL_HOST</code>,{" "}
-            <code className="bg-amber-100 px-1 rounded text-xs">EMAIL_USER</code> e{" "}
-            <code className="bg-amber-100 px-1 rounded text-xs">EMAIL_PASS</code> no <code className="bg-amber-100 px-1 rounded text-xs">.env.local</code>.
+            E-mail SMTP não configurado. Cadastre o SMTP desta empresa na Plataforma → Empresas → Editar → aba E-mail (SMTP).
           </p>
         </div>
       )}

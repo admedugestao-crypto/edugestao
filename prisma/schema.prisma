@@ -35,6 +35,16 @@ model Empresa {
   evolutionApiKey      String?
   evolutionApiInstance String?
 
+  // Credenciais de SMTP para envio de e-mail, mesmo padrão do WhatsApp acima:
+  // uma conta própria por empresa, sem fallback pra variável de ambiente
+  // global. emailFrom cai pra emailUser se não preenchido, igual ao comportamento
+  // anterior com EMAIL_FROM/EMAIL_USER.
+  emailHost String?
+  emailPort String?
+  emailUser String?
+  emailPass String?
+  emailFrom String?
+
   usuarios            Usuario[]
   professoras         Professora[]
   materias            Materia[]

@@ -19,22 +19,28 @@ export default async function NotificacoesEmailPage() {
   }
 
   // Histórico completo de e-mails (enviados e com falha)
-  const historico = await prisma.notificacaoProva.findMany({
-    where: { empresaId: scope.empresaId, email: { not: null } },
-    include: {
-      professora: { include: { usuario: { select: { nome: true, email: true } } } },
-      avaliacao: {
-        include: {
-          unidade: { include: { escola: true } },
-          materia: true,
+  const [historico, empresa] = await Promise.all([
+    prisma.notificacaoProva.findMany({
+      where: { empresaId: scope.empresaId, email: { not: null } },
+      include: {
+        professora: { include: { usuario: { select: { nome: true, email: true } } } },
+        avaliacao: {
+          include: {
+            unidade: { include: { escola: true } },
+            materia: true,
+          },
         },
       },
-    },
-    orderBy: { criadoEm: "desc" },
-    take: 100,
-  });
+      orderBy: { criadoEm: "desc" },
+      take: 100,
+    }),
+    prisma.empresa.findUniqueOrThrow({
+      where: { id: scope.empresaId },
+      select: { emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
+    }),
+  ]);
 
-  const emailAtivo = emailConfigurado();
+  const emailAtivo = emailConfigurado(empresa);
 
   return (
     <div className="space-y-5">

@@ -96,6 +96,7 @@ export default async function NotificacoesPage() {
         select: {
           whatsappPausado: true, emailPausado: true,
           fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
+          emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
         },
       }),
     ]);
@@ -105,6 +106,7 @@ export default async function NotificacoesPage() {
   const fonnteConfigurada    = !!empresa.fonnteToken;
   const evolutionConfigurada = !!(empresa.evolutionApiUrl && empresa.evolutionApiKey && empresa.evolutionApiInstance);
   const provedor: "fonnte" | "evolution" | null = fonnteConfigurada ? "fonnte" : evolutionConfigurada ? "evolution" : null;
+  const emailAtivo = emailConfigurado(empresa);
 
   function serAvaliacao(a: (typeof avaliacoes)[0]) {
     return {
@@ -168,7 +170,7 @@ export default async function NotificacoesPage() {
             unidade: n.avaliacao.unidade.nome,
           },
         }))}
-        emailAtivo={emailConfigurado()}
+        emailAtivo={emailAtivo}
         emailPausado={empresa.emailPausado}
         aulasProximas={aulasProximas.map((a) => ({
           id: a.id,

@@ -37,17 +37,29 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXTAUTH_URL ?? new URL(req.url).origin;
   const link = `${baseUrl}/redefinir-senha?token=${resetToken}`;
 
-  if (emailConfigurado()) {
+  const empresa = usuario.empresaId
+    ? await prisma.empresa.findUnique({
+        where: { id: usuario.empresaId },
+        select: { emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
+      })
+    : null;
+
+  if (empresa && emailConfigurado(empresa)) {
     await enviarEmailRedefinirSenha({
       emailUsuario: usuario.email,
       nomeUsuario: usuario.nome,
       link,
-    });
+    }, empresa);
     return NextResponse.json(RESPOSTA_GENERICA);
   }
 
-  // Sem SMTP configurado (ex.: ambiente de dev) — devolve o link na própria
-  // resposta pra dar pra testar o fluxo sem e-mail real. Só existe enquanto
-  // não houver EMAIL_HOST configurado, então nunca acontece em produção.
-  return NextResponse.json({ ...RESPOSTA_GENERICA, linkDev: link });
+  // Sem SMTP configurado pra essa empresa — em produção NÃO expõe o link na
+  // resposta (agora que o SMTP é por empresa, uma empresa sem configuração
+  // ainda pode acontecer em prod, diferente de quando era env var global
+  // sempre presente). Só em dev devolve o link direto, pra testar o fluxo
+  // sem e-mail real.
+  if (process.env.NODE_ENV !== "production") {
+    return NextResponse.json({ ...RESPOSTA_GENERICA, linkDev: link });
+  }
+  return NextResponse.json(RESPOSTA_GENERICA);
 }
