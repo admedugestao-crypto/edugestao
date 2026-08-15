@@ -1,11 +1,37 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Home, LogOut } from "lucide-react";
+import { format, differenceInCalendarDays } from "date-fns";
+import { Home, LogOut, Bell, ChevronDown, ChevronUp } from "lucide-react";
 import BottomNavMobile from "@/components/BottomNavMobile";
 
-export default function DashboardMobile({ nomeUsuario }: { nomeUsuario: string }) {
+type Prova = {
+  id: string; nome: string; data: string; serie: string;
+  materiaNome: string | null; materiaCor: string | null;
+  unidadeNome: string; escolaNome: string;
+};
+
+function parseLocal(iso: string) {
+  const [y, m, d] = iso.split("T")[0].split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+export default function DashboardMobile({
+  nomeUsuario, professoraIdProvas,
+}: { nomeUsuario: string; professoraIdProvas: string }) {
   const router = useRouter();
+
+  const [provasProximas, setProvasProximas] = useState<Prova[]>([]);
+  const [provasAbertas, setProvasAbertas] = useState(false);
+
+  useEffect(() => {
+    if (!professoraIdProvas) { setProvasProximas([]); return; }
+    fetch(`/api/provas-proximas?professoraId=${professoraIdProvas}`)
+      .then((r) => r.json())
+      .then((data) => setProvasProximas(Array.isArray(data) ? data : []))
+      .catch(() => setProvasProximas([]));
+  }, [professoraIdProvas]);
 
   return (
     <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
@@ -19,6 +45,43 @@ export default function DashboardMobile({ nomeUsuario }: { nomeUsuario: string }
           <LogOut size={18}/>
         </button>
       </div>
+
+      {/* ── Aviso de provas próximas ─────────────────────────────────────── */}
+      {provasProximas.length > 0 && (
+        <div className="bg-amber-50 border-b border-amber-200 shrink-0">
+          <button onClick={() => setProvasAbertas((v) => !v)}
+            className="w-full flex items-center justify-between px-4 py-2.5 active:bg-amber-100 transition-colors">
+            <span className="flex items-center gap-2 text-sm font-semibold text-amber-800">
+              <Bell size={15}/>
+              {provasProximas.length === 1 ? "1 prova próxima" : `${provasProximas.length} provas próximas`}
+            </span>
+            {provasAbertas ? <ChevronUp size={16} className="text-amber-700"/> : <ChevronDown size={16} className="text-amber-700"/>}
+          </button>
+          {provasAbertas && (
+            <div className="px-4 pb-3 space-y-2">
+              {provasProximas.map((p) => {
+                const dataProva = parseLocal(p.data);
+                const diasRestantes = differenceInCalendarDays(dataProva, new Date());
+                const aviso = diasRestantes === 0 ? "Hoje" : diasRestantes === 1 ? "Amanhã" : `Em ${diasRestantes} dias`;
+                return (
+                  <div key={p.id} className="bg-white rounded-xl border border-amber-100 px-3 py-2 flex items-start gap-2">
+                    {p.materiaCor && <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: p.materiaCor }}/>}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-800 truncate">
+                        {p.nome}{p.materiaNome ? ` – ${p.materiaNome}` : ""}
+                      </p>
+                      <p className="text-xs text-slate-500 truncate">{p.escolaNome} · {p.unidadeNome} · {p.serie}</p>
+                    </div>
+                    <span className="shrink-0 text-[10px] font-bold text-amber-700 bg-amber-100 rounded-full px-2 py-0.5">
+                      {aviso} · {format(dataProva, "dd/MM")}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Boas-vindas ──────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-4 overflow-y-auto">
