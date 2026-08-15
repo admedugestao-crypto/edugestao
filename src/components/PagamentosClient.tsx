@@ -162,6 +162,34 @@ export default function PagamentosClient({
   const [reciboIds,            setReciboIds]            = useState<string[]>([]);
   const [enviandoReciboEmail,  setEnviandoReciboEmail]  = useState(false);
   const [reciboEmailMsg,       setReciboEmailMsg]       = useState<{ ok: boolean; msg: string } | null>(null);
+  const [enviandoCobrancaEmail, setEnviandoCobrancaEmail] = useState(false);
+  const [cobrancaEmailMsg,      setCobrancaEmailMsg]      = useState<{ ok: boolean; msg: string } | null>(null);
+
+  // ── Enviar cobrança(s) pendente(s) por e-mail, unificada por aluno ───────
+  async function enviarCobrancaEmail(ids: string[]) {
+    setEnviandoCobrancaEmail(true);
+    setCobrancaEmailMsg(null);
+    try {
+      const res  = await fetch("/api/email/cobranca-multipla", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCobrancaEmailMsg({ ok: true, msg: `E-mail enviado com sucesso para ${data.enviados} responsável(is)!` });
+        const agora = new Date().toISOString();
+        setPagamentos((prev) => prev.map((p) =>
+          ids.includes(p.id) ? { ...p, emailEnviadoEm: agora } : p,
+        ));
+      } else {
+        setCobrancaEmailMsg({ ok: false, msg: data.erro ?? "Erro ao enviar e-mail." });
+      }
+      setTimeout(() => setCobrancaEmailMsg(null), 6000);
+    } finally {
+      setEnviandoCobrancaEmail(false);
+    }
+  }
 
   // ── Enviar recibo(s) por e-mail ──────────────────────────────────────────
   async function enviarReciboEmail(ids: string[]) {
@@ -591,8 +619,30 @@ export default function PagamentosClient({
               : `${pagamentosExibidos.length} cobrança(s)`}
           </p>
           <div className="flex items-center gap-3">
+            {cobrancaEmailMsg && (
+              <p className={`text-xs font-medium ${cobrancaEmailMsg.ok ? "text-emerald-600" : "text-red-600"}`}>
+                {cobrancaEmailMsg.msg}
+              </p>
+            )}
             {selecionados.length > 0 && (
               <>
+                {(() => {
+                  const pendentes = selecionados.filter((id) => pagamentosExibidos.find((p) => p.id === id)?.pago === false);
+                  return pendentes.length > 0 ? (
+                    <button
+                      onClick={() => enviarCobrancaEmail(pendentes)}
+                      disabled={enviandoCobrancaEmail}
+                      title="Envia um único e-mail por aluno com todas as cobranças pendentes selecionadas"
+                      className="flex items-center gap-1.5 text-xs font-medium text-indigo-700 hover:text-indigo-900 transition-colors disabled:opacity-50"
+                    >
+                      {enviandoCobrancaEmail
+                        ? <div className="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                        : <Mail size={13} />
+                      }
+                      Enviar cobrança ({pendentes.length})
+                    </button>
+                  ) : null;
+                })()}
                 {(() => {
                   const pagos = selecionados.filter((id) => pagamentosExibidos.find((p) => p.id === id)?.pago);
                   return pagos.length > 0 ? (

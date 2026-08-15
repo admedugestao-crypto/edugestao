@@ -828,6 +828,151 @@ export async function enviarEmailReciboMultiplo(params: Parameters<typeof templa
   }
 }
 
+// ── Template HTML — Cobrança Múltipla (lembrete + atraso unificados por aluno) ──
+function templateCobrancaMultipla(params: {
+  nomeResponsavel: string;
+  nomeAluno: string;
+  nomeProfessora: string;
+  itens: Array<{
+    tipoCobranca:   string;
+    valorCobrado:   number;
+    dataVencimento: Date;
+    mes:            number;
+    ano:            number;
+    parcela?:       number;
+    atrasado:       boolean;
+  }>;
+  total: number;
+}) {
+  const { nomeResponsavel, nomeAluno, nomeProfessora, itens, total } = params;
+  const temAtraso = itens.some((i) => i.atrasado);
+  const todasAtraso = itens.every((i) => i.atrasado);
+
+  const linhas = itens.map((item) => {
+    const tipoFmt    = TIPO_LABEL[item.tipoCobranca] ?? item.tipoCobranca;
+    const parcelaFmt = item.parcela && item.parcela > 1 ? ` (${item.parcela}ª)` : "";
+    const dataFmt    = item.dataVencimento.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const mesFmt     = `${MESES[item.mes - 1]}/${item.ano}`;
+    const statusCor  = item.atrasado ? "#dc2626" : "#1d4ed8";
+    const statusTxt  = item.atrasado ? "Em atraso" : "A vencer";
+    return `
+      <tr style="border-bottom:1px solid #e2e8f0;">
+        <td style="padding:10px 12px;color:#6b7280;font-size:12px;">${mesFmt}</td>
+        <td style="padding:10px 12px;color:#6b7280;font-size:12px;">${tipoFmt}${parcelaFmt}</td>
+        <td style="padding:10px 12px;color:${statusCor};font-size:13px;font-weight:bold;">${dataFmt}</td>
+        <td style="padding:10px 12px;color:${statusCor};font-size:12px;font-weight:bold;">${statusTxt}</td>
+        <td style="padding:10px 12px;color:#111827;font-size:13px;font-weight:bold;text-align:right;">${moeda(item.valorCobrado)}</td>
+      </tr>`;
+  }).join("");
+
+  const corFaixa   = temAtraso ? "#fef2f2" : "#eff6ff";
+  const corBorda   = temAtraso ? "#fca5a5" : "#93c5fd";
+  const corTitulo  = temAtraso ? "#dc2626" : "#1d4ed8";
+  const icone      = temAtraso ? "⚠️" : "📅";
+  const tituloFaixa = itens.length === 1
+    ? (todasAtraso ? "Aviso de pagamento em atraso" : "Lembrete de pagamento próximo ao vencimento")
+    : todasAtraso
+      ? `${itens.length} pagamentos em atraso`
+      : temAtraso
+        ? `${itens.length} cobranças pendentes (parte em atraso)`
+        : `${itens.length} pagamentos próximos ao vencimento`;
+
+  const assunto = itens.length === 1
+    ? (todasAtraso ? `⚠️ Pagamento em atraso — ${nomeAluno}` : `📅 Lembrete de vencimento — ${nomeAluno}`)
+    : `${icone} ${itens.length} cobranças pendentes — ${nomeAluno}`;
+
+  return {
+    subject: assunto,
+    html: `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <tr>
+          <td style="background:#111827;padding:24px 32px;text-align:center;">
+            <p style="margin:0;color:#fff;font-size:22px;font-weight:bold;letter-spacing:1px;">▲ EduGestão</p>
+            <p style="margin:6px 0 0;color:#9ca3af;font-size:13px;">Gestão Educacional</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:${corFaixa};border-bottom:3px solid ${corBorda};padding:16px 32px;">
+            <p style="margin:0;color:${corTitulo};font-size:15px;font-weight:bold;">
+              ${icone} ${tituloFaixa}
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;">
+              Prezado(a) <strong>${nomeResponsavel}</strong>,
+            </p>
+            <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+              Segue${itens.length > 1 ? "m" : ""} abaixo ${itens.length > 1 ? "as cobranças pendentes" : "a cobrança pendente"}
+              referente${itens.length > 1 ? "s" : ""} às aulas do(a) aluno(a) <strong>${nomeAluno}</strong>.
+              ${temAtraso ? "Por gentileza, regularize o quanto antes." : ""}
+            </p>
+
+            <table width="100%" cellpadding="0" cellspacing="0"
+              style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:24px;overflow:hidden;">
+              <thead>
+                <tr style="background:#e2e8f0;">
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Competência</th>
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Tipo</th>
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Vencimento</th>
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#374151;">Status</th>
+                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:#374151;">Valor</th>
+                </tr>
+              </thead>
+              <tbody>${linhas}</tbody>
+              ${itens.length > 1 ? `
+              <tfoot>
+                <tr style="background:#f8fafc;">
+                  <td colspan="4" style="padding:12px;color:#111827;font-size:13px;font-weight:bold;text-align:right;">Total</td>
+                  <td style="padding:12px;color:#111827;font-size:15px;font-weight:bold;text-align:right;">${moeda(total)}</td>
+                </tr>
+              </tfoot>` : ""}
+            </table>
+
+            <p style="margin:0 0 8px;color:#374151;font-size:14px;line-height:1.6;">
+              Em caso de dúvidas, entre em contato com o(a) professor(a) responsável.
+            </p>
+            <p style="margin:0 0 8px;color:#6b7280;font-size:13px;">Professor(a): <strong style="color:#374151;">${nomeProfessora}</strong></p>
+            <p style="margin:16px 0 0;color:#374151;font-size:14px;">Obrigado! 😊</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
+            <p style="margin:0;color:#9ca3af;font-size:12px;">
+              Mensagem automática enviada pelo <strong>EduGestão</strong>.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  };
+}
+
+export async function enviarEmailCobrancaMultipla(params: Parameters<typeof templateCobrancaMultipla>[0] & {
+  emailResponsavel: string;
+}, credenciais: EmailCredenciais): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
+  const { subject, html } = templateCobrancaMultipla(params);
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
+  try {
+    await transporte.sendMail({ from, to: params.emailResponsavel, subject, html });
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, erro: err?.message ?? "Erro ao enviar e-mail." };
+  }
+}
+
 // ── Template HTML — Redefinição de Senha ─────────────────────────────────────
 function templateRedefinirSenha(params: { nomeUsuario: string; link: string }) {
   const { nomeUsuario, link } = params;
