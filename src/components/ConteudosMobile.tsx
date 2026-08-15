@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, Home, LogOut, Library, Search, FileText,
+  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, LogOut, Library, Search, FileText,
 } from "lucide-react";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
 import SeletorMaterias from "@/components/SeletorMaterias";
+import BottomNavMobile from "@/components/BottomNavMobile";
 
 type Materia = { id: string; nome: string; cor: string };
 type Aluno = {
@@ -664,14 +665,9 @@ export default function ConteudosMobile({
     <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/m")} className="opacity-75 hover:opacity-100">
-            <Home size={18}/>
-          </button>
-          <div>
-            <p className="text-xs opacity-75">EduGestão</p>
-            <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
-          </div>
+        <div>
+          <p className="text-xs opacity-75">EduGestão</p>
+          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
         </div>
         <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
           <LogOut size={18}/>
@@ -958,6 +954,8 @@ export default function ConteudosMobile({
       {pagamentoInfo.pagamento && (
         <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
+
+      <BottomNavMobile/>
     </div>
   );
 }

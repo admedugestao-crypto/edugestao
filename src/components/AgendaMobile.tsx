@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { format, addDays, startOfWeek, isSameDay, isToday, differenceInCalendarDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
-         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home, BookOpen, Trash2, Bell, ChevronDown, ChevronUp } from "lucide-react";
+         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, BookOpen, Trash2, Bell, ChevronDown, ChevronUp } from "lucide-react";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal, { type ParcelaGerada } from "@/components/PagamentoGeradoModal";
 import SeletorMaterias from "@/components/SeletorMaterias";
+import BottomNavMobile from "@/components/BottomNavMobile";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -509,14 +510,9 @@ export default function AgendaMobile({
 
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/m")} className="opacity-75 hover:opacity-100">
-            <Home size={18}/>
-          </button>
-          <div>
-            <p className="text-xs opacity-75">EduGestão</p>
-            <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
-          </div>
+        <div>
+          <p className="text-xs opacity-75">EduGestão</p>
+          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
         </div>
         <div className="flex items-center gap-2">
           {loading && <RefreshCw size={15} className="animate-spin opacity-75"/>}
@@ -1061,6 +1057,8 @@ export default function AgendaMobile({
       {pagamentoInfo.pagamento && (
         <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
+
+      <BottomNavMobile/>
     </div>
   );
 }

@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Plus, Pencil, Trash2, Paperclip, X, Loader2, Home, LogOut,
+  Plus, Pencil, Trash2, Paperclip, X, Loader2, LogOut,
   Search, FileText, Download, Camera,
 } from "lucide-react";
 import { SERIES } from "@/lib/series";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 import SeletorMaterias from "@/components/SeletorMaterias";
+import BottomNavMobile from "@/components/BottomNavMobile";
 
 type Materia = { id: string; nome: string; cor: string };
 type MetodoEnsino = { id: string; nome: string };
@@ -199,14 +200,9 @@ export default function BibliotecaMobile({
     <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/m")} className="opacity-75 hover:opacity-100">
-            <Home size={18}/>
-          </button>
-          <div>
-            <p className="text-xs opacity-75">EduGestão</p>
-            <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
-          </div>
+        <div>
+          <p className="text-xs opacity-75">EduGestão</p>
+          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
         </div>
         <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
           <LogOut size={18}/>
@@ -406,6 +402,8 @@ export default function BibliotecaMobile({
           </div>
         </div>
       )}
+
+      <BottomNavMobile/>
     </div>
   );
 }
