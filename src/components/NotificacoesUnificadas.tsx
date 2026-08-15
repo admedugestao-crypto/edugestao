@@ -29,13 +29,14 @@ type AulaProxima = {
   id: string; data: string; horaInicio: string | null; horaFim: string | null;
   notificacaoEnviada: boolean;
   notificacaoCriadoEm: string | null;
-  aluno: { nome: string; responsavel: string | null; telefoneResponsavel: string | null };
+  aluno: { nome: string; responsavel: string | null; telefoneResponsavel: string | null; emailResponsavel: string | null };
   professora: { usuario: { nome: string } };
   materia: { nome: string } | null;
 };
 
 type HistoricoAula = {
   id: string; agendaAulaId: string; enviada: boolean; whatsapp: string; criadoEm: string;
+  emailEnviado: boolean; email: string | null;
   agendaAula: {
     data: string; horaInicio: string | null; horaFim: string | null;
     aluno: { nome: string; responsavel: string | null };
@@ -113,9 +114,14 @@ function ContextMenu({
     }
   }
 
+  // Lembrete de aula não tem canal manual — é sempre automático (WhatsApp
+  // se a empresa tiver Fonnte/Evolution configurados, senão e-mail), então
+  // o texto fica neutro em vez de citar um canal fixo.
   const labelCanal = menu.canal === "whatsapp" ? "WhatsApp" : "E-mail";
-  const labelAcao  = menu.jaEnviado ? `Reenviar via ${labelCanal}` : `Enviar via ${labelCanal}`;
-  const IconCanal  = menu.canal === "whatsapp" ? MessageSquare : Mail;
+  const labelAcao  = menu.tipo === "aula"
+    ? (menu.jaEnviado ? "Reenviar aviso" : "Enviar aviso")
+    : (menu.jaEnviado ? `Reenviar via ${labelCanal}` : `Enviar via ${labelCanal}`);
+  const IconCanal  = menu.tipo === "aula" ? Send : menu.canal === "whatsapp" ? MessageSquare : Mail;
 
   return (
     <div
@@ -279,17 +285,27 @@ function AbaWhatsapp({
       searchText: `${n.professora.usuario.nome} ${n.avaliacao.nome} ${n.avaliacao.materia?.nome ?? ""}`.toLowerCase(),
       onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.id, statusLocal[n.id] ?? n.enviada),
     }));
-    const linhasAula = historicoAulas.map((n) => ({
-      key: `a-${n.id}`,
-      tipo: "Lembrete de Aula" as const,
-      destinatario: n.agendaAula.aluno.responsavel ?? "—",
-      descricao: (n.agendaAula.materia?.nome ?? "—") + (n.agendaAula.horaInicio ? ` · ${n.agendaAula.horaInicio}${n.agendaAula.horaFim ? `–${n.agendaAula.horaFim}` : ""}` : ""),
-      detalhe: <span className="text-xs text-slate-400">{fmtData(n.agendaAula.data)}</span>,
-      criadoEm: n.criadoEm,
-      enviada: statusLocal[n.agendaAulaId] ?? n.enviada,
-      searchText: `${n.agendaAula.aluno.nome} ${n.agendaAula.aluno.responsavel ?? ""} ${n.agendaAula.materia?.nome ?? ""}`.toLowerCase(),
-      onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.agendaAulaId, statusLocal[n.agendaAulaId] ?? n.enviada, "aula"),
-    }));
+    const linhasAula = historicoAulas.map((n) => {
+      const enviadaOriginal = n.enviada || n.emailEnviado;
+      const canalUsado = n.whatsapp ? "whatsapp" : n.email ? "email" : null;
+      const IconCanalAula = canalUsado === "email" ? Mail : MessageSquare;
+      return {
+        key: `a-${n.id}`,
+        tipo: "Lembrete de Aula" as const,
+        destinatario: n.agendaAula.aluno.responsavel ?? "—",
+        descricao: (n.agendaAula.materia?.nome ?? "—") + (n.agendaAula.horaInicio ? ` · ${n.agendaAula.horaInicio}${n.agendaAula.horaFim ? `–${n.agendaAula.horaFim}` : ""}` : ""),
+        detalhe: (
+          <span className="text-xs text-slate-400 flex items-center gap-1">
+            {canalUsado && <IconCanalAula size={11} className="shrink-0" />}
+            {fmtData(n.agendaAula.data)}
+          </span>
+        ),
+        criadoEm: n.criadoEm,
+        enviada: statusLocal[n.agendaAulaId] ?? enviadaOriginal,
+        searchText: `${n.agendaAula.aluno.nome} ${n.agendaAula.aluno.responsavel ?? ""} ${n.agendaAula.materia?.nome ?? ""}`.toLowerCase(),
+        onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.agendaAulaId, statusLocal[n.agendaAulaId] ?? enviadaOriginal, "aula"),
+      };
+    });
     const todasLinhas = [...linhasProva, ...linhasAula].sort(
       (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
     );
@@ -325,6 +341,11 @@ function AbaWhatsapp({
               ? "As notificações são enviadas automaticamente todo dia às 08:00."
               : "Cadastre o token da conta de WhatsApp desta empresa na Plataforma → Empresas → Editar → aba WhatsApp (APIs) para ativar o envio automático."}
           </p>
+          {!whatsappConfigurado && (
+            <p className="text-xs mt-1 text-amber-700">
+              Enquanto isso, os lembretes de aula pro responsável são enviados por e-mail automaticamente (quando o e-mail do responsável estiver cadastrado).
+            </p>
+          )}
         </div>
       </div>
 
@@ -459,7 +480,7 @@ function AbaWhatsapp({
                       <td className="py-2.5 px-4">
                         <span
                           onContextMenu={(e) => abrirMenu(e, aula.id, aula.notificacaoEnviada, "aula")}
-                          title="Botão direito para enviar/reenviar via WhatsApp"
+                          title="Botão direito para enviar/reenviar aviso"
                           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium cursor-context-menu select-none hover:opacity-80 transition-opacity"
                         >
                           Aula
@@ -469,7 +490,9 @@ function AbaWhatsapp({
                         {aula.aluno.nome}{aula.materia && <span className="text-slate-400 ml-1 font-normal">· {aula.materia.nome}</span>}
                       </td>
                       <td className="py-2.5 px-4 text-slate-500 text-xs">
-                        {aula.aluno.responsavel && <>{aula.aluno.responsavel} · </>}{aula.aluno.telefoneResponsavel}{horario && <> · {horario}</>}
+                        {aula.aluno.responsavel && <>{aula.aluno.responsavel} · </>}
+                        {aula.aluno.telefoneResponsavel ?? aula.aluno.emailResponsavel}
+                        {horario && <> · {horario}</>}
                       </td>
                       <td className="py-2.5 px-4 text-slate-400 text-xs">{fmtData(aula.data)}</td>
                       <td className="py-2.5 px-4">
@@ -597,7 +620,7 @@ function AbaWhatsapp({
                           <tr key={l.key} className="hover:bg-slate-50">
                             <td className="py-2.5 px-4">
                               <span
-                                title="Botão direito para enviar/reenviar via WhatsApp"
+                                title={l.tipo === "Prova" ? "Botão direito para enviar/reenviar via WhatsApp" : "Botão direito para enviar/reenviar aviso"}
                                 onContextMenu={l.onContextMenu}
                                 className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium cursor-context-menu select-none hover:opacity-80 transition-opacity ${l.tipo === "Prova" ? "bg-violet-100 text-violet-700" : "bg-indigo-100 text-indigo-700"}`}
                               >

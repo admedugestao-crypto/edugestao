@@ -2594,6 +2594,8 @@ export const NotificacaoAulaScalarFieldEnum = {
   agendaAulaId: 'agendaAulaId',
   enviada: 'enviada',
   whatsapp: 'whatsapp',
+  emailEnviado: 'emailEnviado',
+  email: 'email',
   criadoEm: 'criadoEm'
 } as const
 

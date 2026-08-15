@@ -59,16 +59,16 @@ export default async function NotificacoesPage() {
         orderBy: { criadoEm: "desc" },
         take: 100,
       }),
-      // ── Aulas nos próximos 7 dias com responsável cadastrado ───────────────
+      // ── Aulas nos próximos 7 dias com responsável cadastrado (telefone e/ou e-mail) ──
       prisma.agendaAula.findMany({
         where: {
           empresaId: scope.empresaId,
           data: { gte: hoje, lte: em7dias },
           status: "AGENDADA",
-          aluno: { telefoneResponsavel: { not: null } },
+          aluno: { OR: [{ telefoneResponsavel: { not: null } }, { emailResponsavel: { not: null } }] },
         },
         include: {
-          aluno: { select: { nome: true, responsavel: true, telefoneResponsavel: true } },
+          aluno: { select: { nome: true, responsavel: true, telefoneResponsavel: true, emailResponsavel: true } },
           professora: { include: { usuario: { select: { nome: true } } } },
           materia: { select: { nome: true } },
           notificacao: true,
@@ -188,6 +188,8 @@ export default async function NotificacoesPage() {
           agendaAulaId: n.agendaAulaId,
           enviada: n.enviada,
           whatsapp: n.whatsapp ?? "",
+          emailEnviado: n.emailEnviado,
+          email: n.email ?? null,
           criadoEm: n.criadoEm.toISOString(),
           agendaAula: {
             data: n.agendaAula.data.toISOString(),

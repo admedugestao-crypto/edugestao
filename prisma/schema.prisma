@@ -601,8 +601,13 @@ model NotificacaoAula {
   id           String   @id @default(cuid())
   empresaId    String
   agendaAulaId String   @unique
+  // WhatsApp
   enviada      Boolean  @default(false)
   whatsapp     String?
+  // E-mail — usado quando a empresa não tem Fonnte nem Evolution
+  // configurados (ver enviarEmailAula em src/lib/email.ts).
+  emailEnviado Boolean  @default(false)
+  email        String?
   criadoEm     DateTime @default(now())
 
   empresa    Empresa    @relation(fields: [empresaId], references: [id])

@@ -585,6 +585,124 @@ export async function enviarEmailProva(
   }
 }
 
+// ── Template HTML — Lembrete de Aula ─────────────────────────────────────────
+// Usado quando a empresa não tem Fonnte nem Evolution configurados — nesse
+// caso o lembrete de aula (que por padrão vai por WhatsApp) cai automaticamente
+// pro e-mail do responsável. `aulas` tem 1 item pra aula única, ou 2+ quando o
+// aluno tem aulas seguidas no mesmo dia (1 e-mail só, listando todas — mesma
+// regra de agrupamento do WhatsApp, ver montarBlocosAula em notificacoes.ts).
+function templateAula(params: {
+  nomeEmpresa: string;
+  nomeResponsavel: string | null;
+  nomeAluno: string;
+  dataFormatada: string;
+  aulas: { horario: string; materia: string | null; professor: string }[];
+}) {
+  const { nomeEmpresa, nomeResponsavel, nomeAluno, dataFormatada, aulas } = params;
+  const multipla = aulas.length > 1;
+
+  const subject = multipla
+    ? `📚 Lembrete: ${aulas.length} aulas de ${nomeAluno} amanhã`
+    : `📚 Lembrete de aula — ${nomeAluno} amanhã`;
+
+  const linhasAulas = aulas.map((a) => `
+                    <tr>
+                      <td style="color:#6b7280;font-size:13px;width:40%;">${a.horario}</td>
+                      <td style="color:#111827;font-size:13px;">${a.materia ? `${a.materia} — ` : ""}Prof. ${a.professor}</td>
+                    </tr>`).join("");
+
+  return {
+    subject,
+    html: `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+
+        <!-- Cabeçalho -->
+        <tr>
+          <td style="background:#111827;padding:24px 32px;text-align:center;">
+            <p style="margin:0;color:#fff;font-size:22px;font-weight:bold;letter-spacing:1px;">▲ EduGestão</p>
+            <p style="margin:6px 0 0;color:#9ca3af;font-size:13px;">Gestão Educacional</p>
+          </td>
+        </tr>
+
+        <!-- Alerta -->
+        <tr>
+          <td style="background:#eff6ff;border-bottom:3px solid #93c5fd;padding:16px 32px;">
+            <p style="margin:0;color:#1d4ed8;font-size:15px;font-weight:bold;">
+              ⚠️ Amanhã a(o) ${nomeAluno} tem ${multipla ? `${aulas.length} aulas seguidas agendadas` : "aula agendada"}
+            </p>
+          </td>
+        </tr>
+
+        <!-- Corpo -->
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;">
+              Olá${nomeResponsavel ? `, <strong>${nomeResponsavel}</strong>` : ""}!
+            </p>
+            <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+              Este é um lembrete de que <strong>${nomeAluno}</strong> tem aula agendada pra amanhã.
+            </p>
+
+            <!-- Card detalhes -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+              style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:24px;">
+              <tr>
+                <td style="padding:20px;">
+                  <table width="100%" cellpadding="6" cellspacing="0">
+                    <tr>
+                      <td style="color:#6b7280;font-size:13px;width:40%;">Data</td>
+                      <td style="color:#1d4ed8;font-size:13px;font-weight:bold;">${dataFormatada}</td>
+                    </tr>${linhasAulas}
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;color:#374151;font-size:14px;">Até lá! 📚</p>
+          </td>
+        </tr>
+
+        <!-- Rodapé -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
+            <p style="margin:0;color:#9ca3af;font-size:12px;">
+              Mensagem automática enviada por <strong>${nomeEmpresa}</strong> via EduGestão.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  };
+}
+
+export async function enviarEmailAula(
+  params: Parameters<typeof templateAula>[0] & { emailResponsavel: string },
+  credenciais: EmailCredenciais,
+): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
+
+  const { subject, html } = templateAula(params);
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
+
+  try {
+    await transporte.sendMail({ from, to: params.emailResponsavel, subject, html });
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, erro: err?.message ?? "Erro ao enviar e-mail." };
+  }
+}
+
 // ── Template HTML — Recibo Múltiplo ──────────────────────────────────────────
 function templateReciboMultiplo(params: {
   nomeResponsavel: string;

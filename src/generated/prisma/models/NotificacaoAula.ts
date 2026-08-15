@@ -30,6 +30,8 @@ export type NotificacaoAulaMinAggregateOutputType = {
   agendaAulaId: string | null
   enviada: boolean | null
   whatsapp: string | null
+  emailEnviado: boolean | null
+  email: string | null
   criadoEm: Date | null
 }
 
@@ -39,6 +41,8 @@ export type NotificacaoAulaMaxAggregateOutputType = {
   agendaAulaId: string | null
   enviada: boolean | null
   whatsapp: string | null
+  emailEnviado: boolean | null
+  email: string | null
   criadoEm: Date | null
 }
 
@@ -48,6 +52,8 @@ export type NotificacaoAulaCountAggregateOutputType = {
   agendaAulaId: number
   enviada: number
   whatsapp: number
+  emailEnviado: number
+  email: number
   criadoEm: number
   _all: number
 }
@@ -59,6 +65,8 @@ export type NotificacaoAulaMinAggregateInputType = {
   agendaAulaId?: true
   enviada?: true
   whatsapp?: true
+  emailEnviado?: true
+  email?: true
   criadoEm?: true
 }
 
@@ -68,6 +76,8 @@ export type NotificacaoAulaMaxAggregateInputType = {
   agendaAulaId?: true
   enviada?: true
   whatsapp?: true
+  emailEnviado?: true
+  email?: true
   criadoEm?: true
 }
 
@@ -77,6 +87,8 @@ export type NotificacaoAulaCountAggregateInputType = {
   agendaAulaId?: true
   enviada?: true
   whatsapp?: true
+  emailEnviado?: true
+  email?: true
   criadoEm?: true
   _all?: true
 }
@@ -159,6 +171,8 @@ export type NotificacaoAulaGroupByOutputType = {
   agendaAulaId: string
   enviada: boolean
   whatsapp: string | null
+  emailEnviado: boolean
+  email: string | null
   criadoEm: Date
   _count: NotificacaoAulaCountAggregateOutputType | null
   _min: NotificacaoAulaMinAggregateOutputType | null
@@ -189,6 +203,8 @@ export type NotificacaoAulaWhereInput = {
   agendaAulaId?: Prisma.StringFilter<"NotificacaoAula"> | string
   enviada?: Prisma.BoolFilter<"NotificacaoAula"> | boolean
   whatsapp?: Prisma.StringNullableFilter<"NotificacaoAula"> | string | null
+  emailEnviado?: Prisma.BoolFilter<"NotificacaoAula"> | boolean
+  email?: Prisma.StringNullableFilter<"NotificacaoAula"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"NotificacaoAula"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   agendaAula?: Prisma.XOR<Prisma.AgendaAulaScalarRelationFilter, Prisma.AgendaAulaWhereInput>
@@ -200,6 +216,8 @@ export type NotificacaoAulaOrderByWithRelationInput = {
   agendaAulaId?: Prisma.SortOrder
   enviada?: Prisma.SortOrder
   whatsapp?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailEnviado?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   empresa?: Prisma.EmpresaOrderByWithRelationInput
   agendaAula?: Prisma.AgendaAulaOrderByWithRelationInput
@@ -214,6 +232,8 @@ export type NotificacaoAulaWhereUniqueInput = Prisma.AtLeast<{
   empresaId?: Prisma.StringFilter<"NotificacaoAula"> | string
   enviada?: Prisma.BoolFilter<"NotificacaoAula"> | boolean
   whatsapp?: Prisma.StringNullableFilter<"NotificacaoAula"> | string | null
+  emailEnviado?: Prisma.BoolFilter<"NotificacaoAula"> | boolean
+  email?: Prisma.StringNullableFilter<"NotificacaoAula"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"NotificacaoAula"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   agendaAula?: Prisma.XOR<Prisma.AgendaAulaScalarRelationFilter, Prisma.AgendaAulaWhereInput>
@@ -225,6 +245,8 @@ export type NotificacaoAulaOrderByWithAggregationInput = {
   agendaAulaId?: Prisma.SortOrder
   enviada?: Prisma.SortOrder
   whatsapp?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailEnviado?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   _count?: Prisma.NotificacaoAulaCountOrderByAggregateInput
   _max?: Prisma.NotificacaoAulaMaxOrderByAggregateInput
@@ -240,6 +262,8 @@ export type NotificacaoAulaScalarWhereWithAggregatesInput = {
   agendaAulaId?: Prisma.StringWithAggregatesFilter<"NotificacaoAula"> | string
   enviada?: Prisma.BoolWithAggregatesFilter<"NotificacaoAula"> | boolean
   whatsapp?: Prisma.StringNullableWithAggregatesFilter<"NotificacaoAula"> | string | null
+  emailEnviado?: Prisma.BoolWithAggregatesFilter<"NotificacaoAula"> | boolean
+  email?: Prisma.StringNullableWithAggregatesFilter<"NotificacaoAula"> | string | null
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"NotificacaoAula"> | Date | string
 }
 
@@ -247,6 +271,8 @@ export type NotificacaoAulaCreateInput = {
   id?: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutNotificacoesAulaInput
   agendaAula: Prisma.AgendaAulaCreateNestedOneWithoutNotificacaoInput
@@ -258,6 +284,8 @@ export type NotificacaoAulaUncheckedCreateInput = {
   agendaAulaId: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
 }
 
@@ -265,6 +293,8 @@ export type NotificacaoAulaUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotificacoesAulaNestedInput
   agendaAula?: Prisma.AgendaAulaUpdateOneRequiredWithoutNotificacaoNestedInput
@@ -276,6 +306,8 @@ export type NotificacaoAulaUncheckedUpdateInput = {
   agendaAulaId?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -285,6 +317,8 @@ export type NotificacaoAulaCreateManyInput = {
   agendaAulaId: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
 }
 
@@ -292,6 +326,8 @@ export type NotificacaoAulaUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -301,6 +337,8 @@ export type NotificacaoAulaUncheckedUpdateManyInput = {
   agendaAulaId?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -325,6 +363,8 @@ export type NotificacaoAulaCountOrderByAggregateInput = {
   agendaAulaId?: Prisma.SortOrder
   enviada?: Prisma.SortOrder
   whatsapp?: Prisma.SortOrder
+  emailEnviado?: Prisma.SortOrder
+  email?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -334,6 +374,8 @@ export type NotificacaoAulaMaxOrderByAggregateInput = {
   agendaAulaId?: Prisma.SortOrder
   enviada?: Prisma.SortOrder
   whatsapp?: Prisma.SortOrder
+  emailEnviado?: Prisma.SortOrder
+  email?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -343,6 +385,8 @@ export type NotificacaoAulaMinOrderByAggregateInput = {
   agendaAulaId?: Prisma.SortOrder
   enviada?: Prisma.SortOrder
   whatsapp?: Prisma.SortOrder
+  emailEnviado?: Prisma.SortOrder
+  email?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -424,6 +468,8 @@ export type NotificacaoAulaCreateWithoutEmpresaInput = {
   id?: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
   agendaAula: Prisma.AgendaAulaCreateNestedOneWithoutNotificacaoInput
 }
@@ -433,6 +479,8 @@ export type NotificacaoAulaUncheckedCreateWithoutEmpresaInput = {
   agendaAulaId: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
 }
 
@@ -471,6 +519,8 @@ export type NotificacaoAulaScalarWhereInput = {
   agendaAulaId?: Prisma.StringFilter<"NotificacaoAula"> | string
   enviada?: Prisma.BoolFilter<"NotificacaoAula"> | boolean
   whatsapp?: Prisma.StringNullableFilter<"NotificacaoAula"> | string | null
+  emailEnviado?: Prisma.BoolFilter<"NotificacaoAula"> | boolean
+  email?: Prisma.StringNullableFilter<"NotificacaoAula"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"NotificacaoAula"> | Date | string
 }
 
@@ -478,6 +528,8 @@ export type NotificacaoAulaCreateWithoutAgendaAulaInput = {
   id?: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutNotificacoesAulaInput
 }
@@ -487,6 +539,8 @@ export type NotificacaoAulaUncheckedCreateWithoutAgendaAulaInput = {
   empresaId: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
 }
 
@@ -510,6 +564,8 @@ export type NotificacaoAulaUpdateWithoutAgendaAulaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutNotificacoesAulaNestedInput
 }
@@ -519,6 +575,8 @@ export type NotificacaoAulaUncheckedUpdateWithoutAgendaAulaInput = {
   empresaId?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -527,6 +585,8 @@ export type NotificacaoAulaCreateManyEmpresaInput = {
   agendaAulaId: string
   enviada?: boolean
   whatsapp?: string | null
+  emailEnviado?: boolean
+  email?: string | null
   criadoEm?: Date | string
 }
 
@@ -534,6 +594,8 @@ export type NotificacaoAulaUpdateWithoutEmpresaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agendaAula?: Prisma.AgendaAulaUpdateOneRequiredWithoutNotificacaoNestedInput
 }
@@ -543,6 +605,8 @@ export type NotificacaoAulaUncheckedUpdateWithoutEmpresaInput = {
   agendaAulaId?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -551,6 +615,8 @@ export type NotificacaoAulaUncheckedUpdateManyWithoutEmpresaInput = {
   agendaAulaId?: Prisma.StringFieldUpdateOperationsInput | string
   enviada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -562,6 +628,8 @@ export type NotificacaoAulaSelect<ExtArgs extends runtime.Types.Extensions.Inter
   agendaAulaId?: boolean
   enviada?: boolean
   whatsapp?: boolean
+  emailEnviado?: boolean
+  email?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   agendaAula?: boolean | Prisma.AgendaAulaDefaultArgs<ExtArgs>
@@ -573,6 +641,8 @@ export type NotificacaoAulaSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   agendaAulaId?: boolean
   enviada?: boolean
   whatsapp?: boolean
+  emailEnviado?: boolean
+  email?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   agendaAula?: boolean | Prisma.AgendaAulaDefaultArgs<ExtArgs>
@@ -584,6 +654,8 @@ export type NotificacaoAulaSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   agendaAulaId?: boolean
   enviada?: boolean
   whatsapp?: boolean
+  emailEnviado?: boolean
+  email?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   agendaAula?: boolean | Prisma.AgendaAulaDefaultArgs<ExtArgs>
@@ -595,10 +667,12 @@ export type NotificacaoAulaSelectScalar = {
   agendaAulaId?: boolean
   enviada?: boolean
   whatsapp?: boolean
+  emailEnviado?: boolean
+  email?: boolean
   criadoEm?: boolean
 }
 
-export type NotificacaoAulaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "agendaAulaId" | "enviada" | "whatsapp" | "criadoEm", ExtArgs["result"]["notificacaoAula"]>
+export type NotificacaoAulaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "agendaAulaId" | "enviada" | "whatsapp" | "emailEnviado" | "email" | "criadoEm", ExtArgs["result"]["notificacaoAula"]>
 export type NotificacaoAulaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   agendaAula?: boolean | Prisma.AgendaAulaDefaultArgs<ExtArgs>
@@ -624,6 +698,8 @@ export type $NotificacaoAulaPayload<ExtArgs extends runtime.Types.Extensions.Int
     agendaAulaId: string
     enviada: boolean
     whatsapp: string | null
+    emailEnviado: boolean
+    email: string | null
     criadoEm: Date
   }, ExtArgs["result"]["notificacaoAula"]>
   composites: {}
@@ -1055,6 +1131,8 @@ export interface NotificacaoAulaFieldRefs {
   readonly agendaAulaId: Prisma.FieldRef<"NotificacaoAula", 'String'>
   readonly enviada: Prisma.FieldRef<"NotificacaoAula", 'Boolean'>
   readonly whatsapp: Prisma.FieldRef<"NotificacaoAula", 'String'>
+  readonly emailEnviado: Prisma.FieldRef<"NotificacaoAula", 'Boolean'>
+  readonly email: Prisma.FieldRef<"NotificacaoAula", 'String'>
   readonly criadoEm: Prisma.FieldRef<"NotificacaoAula", 'DateTime'>
 }
     
