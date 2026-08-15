@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Plus, Pencil, Trash2, Paperclip, X, Loader2, Home, LogOut,
+  Plus, Pencil, Trash2, Paperclip, X, Loader2, LogOut,
   Search, FileText, Download, Camera,
 } from "lucide-react";
 import { SERIES } from "@/lib/series";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 import SeletorMaterias from "@/components/SeletorMaterias";
+import BottomNavMobile from "@/components/BottomNavMobile";
 
 type Materia = { id: string; nome: string; cor: string };
 type MetodoEnsino = { id: string; nome: string };
@@ -199,18 +200,18 @@ export default function BibliotecaMobile({
     <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/m")} className="opacity-75 hover:opacity-100">
-            <Home size={18}/>
-          </button>
-          <div>
-            <p className="text-xs opacity-75">EduGestão</p>
-            <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
-          </div>
+        <div>
+          <p className="text-xs opacity-75">EduGestão</p>
+          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
         </div>
-        <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
-          <LogOut size={18}/>
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={abrirNovo} className="opacity-90 hover:opacity-100">
+            <Plus size={20}/>
+          </button>
+          <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
+            <LogOut size={18}/>
+          </button>
+        </div>
       </div>
 
       {/* ── Filtros ──────────────────────────────────────────────────────── */}
@@ -239,7 +240,7 @@ export default function BibliotecaMobile({
       </div>
 
       {/* ── Lista ────────────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2 pb-24">
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {materiaisFiltrados.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">Nenhum material encontrado.</div>
         ) : (
@@ -275,12 +276,6 @@ export default function BibliotecaMobile({
           ))
         )}
       </div>
-
-      {/* ── FAB Novo material ────────────────────────────────────────────── */}
-      <button onClick={abrirNovo}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40">
-        <Plus size={24}/>
-      </button>
 
       {/* ── Modal Novo/Editar ────────────────────────────────────────────── */}
       {modalAberto && (
@@ -406,6 +401,8 @@ export default function BibliotecaMobile({
           </div>
         </div>
       )}
+
+      <BottomNavMobile/>
     </div>
   );
 }

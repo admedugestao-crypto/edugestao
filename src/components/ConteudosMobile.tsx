@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, Home, LogOut, Library, Search, FileText,
+  Plus, Pencil, Trash2, Paperclip, X, Loader2, AlertCircle, LogOut, Library, Search, FileText,
 } from "lucide-react";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
 import SeletorMaterias from "@/components/SeletorMaterias";
+import BottomNavMobile from "@/components/BottomNavMobile";
 
 type Materia = { id: string; nome: string; cor: string };
 type Aluno = {
@@ -664,18 +665,19 @@ export default function ConteudosMobile({
     <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/m")} className="opacity-75 hover:opacity-100">
-            <Home size={18}/>
-          </button>
-          <div>
-            <p className="text-xs opacity-75">EduGestão</p>
-            <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
-          </div>
+        <div>
+          <p className="text-xs opacity-75">EduGestão</p>
+          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
         </div>
-        <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
-          <LogOut size={18}/>
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setCandidatasNovo(null); setModal(true); }}
+            className="opacity-90 hover:opacity-100">
+            <Plus size={20}/>
+          </button>
+          <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
+            <LogOut size={18}/>
+          </button>
+        </div>
       </div>
 
       {/* ── Filtro professor (admin) ──────────────────────────────────────── */}
@@ -690,7 +692,7 @@ export default function ConteudosMobile({
       )}
 
       {/* ── Lista de conteúdos ──────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2 pb-24">
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {conteudosFiltrados.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">
             <p className="text-2xl mb-2">📚</p>
@@ -760,12 +762,6 @@ export default function ConteudosMobile({
           ))
         )}
       </div>
-
-      {/* ── Botão flutuante novo conteúdo ──────────────────────────────────── */}
-      <button onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setCandidatasNovo(null); setModal(true); }}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40">
-        <Plus size={24}/>
-      </button>
 
       {/* ── Modal registrar conteúdo ────────────────────────────────────────── */}
       {modal && (
@@ -958,6 +954,8 @@ export default function ConteudosMobile({
       {pagamentoInfo.pagamento && (
         <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
+
+      <BottomNavMobile/>
     </div>
   );
 }

@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { format, addDays, startOfWeek, isSameDay, isToday, differenceInCalendarDays } from "date-fns";
+import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
-         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, Home, BookOpen, Trash2, Bell, ChevronDown, ChevronUp } from "lucide-react";
+         CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, BookOpen, Trash2 } from "lucide-react";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal, { type ParcelaGerada } from "@/components/PagamentoGeradoModal";
 import SeletorMaterias from "@/components/SeletorMaterias";
+import BottomNavMobile from "@/components/BottomNavMobile";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -17,11 +18,6 @@ type ProfOpt  = { id: string; nome: string };
 type SlotDisp = { dia: string; inicio: string; fim: string };
 type DispProf = { professoraId: string; slots: SlotDisp[] };
 type StatusAula = "AGENDADA" | "REALIZADA" | "CANCELADA" | "FALTA_ALUNO" | "FALTA_PROFESSOR";
-type Prova = {
-  id: string; nome: string; data: string; serie: string;
-  materiaNome: string | null; materiaCor: string | null;
-  unidadeNome: string; escolaNome: string;
-};
 
 type Aula = {
   id: string; alunoId: string; materiaId: string | null;
@@ -98,18 +94,6 @@ export default function AgendaMobile({
   const [aulas,     setAulas]     = useState<Aula[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
-  const [provasProximas, setProvasProximas] = useState<Prova[]>([]);
-  const [provasAbertas, setProvasAbertas] = useState(false);
-
-  // ── Provas próximas do professor em foco (o próprio, ou o filtrado pelo admin) ──
-  const profIdProvas = isProfessor ? professoraIdSessao : filtroProfId;
-  useEffect(() => {
-    if (!profIdProvas) { setProvasProximas([]); return; }
-    fetch(`/api/provas-proximas?professoraId=${profIdProvas}`)
-      .then((res) => res.json())
-      .then((data) => setProvasProximas(Array.isArray(data) ? data : []))
-      .catch(() => setProvasProximas([]));
-  }, [profIdProvas]);
 
   // Modal nova aula
   const [modalAberto, setModalAberto] = useState(false);
@@ -509,59 +493,29 @@ export default function AgendaMobile({
 
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
       <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/m")} className="opacity-75 hover:opacity-100">
-            <Home size={18}/>
-          </button>
-          <div>
-            <p className="text-xs opacity-75">EduGestão</p>
-            <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
-          </div>
+        <div>
+          <p className="text-xs opacity-75">EduGestão</p>
+          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {loading && <RefreshCw size={15} className="animate-spin opacity-75"/>}
+          <button
+            onClick={() => {
+              setReposicaoOrigem(null);
+              setNovaAula({ alunoId: "", materiaIds: [], data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
+              setProfModal(isAdmin ? filtroProfId : "");
+              setErroModal(null);
+              setAvisoDisp(null);
+              setModalAberto(true);
+            }}
+            className="opacity-90 hover:opacity-100">
+            <Plus size={20}/>
+          </button>
           <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
             <LogOut size={18}/>
           </button>
         </div>
       </div>
-
-      {/* ── Aviso de provas próximas ─────────────────────────────────────── */}
-      {provasProximas.length > 0 && (
-        <div className="bg-amber-50 border-b border-amber-200 shrink-0">
-          <button onClick={() => setProvasAbertas((v) => !v)}
-            className="w-full flex items-center justify-between px-4 py-2.5 active:bg-amber-100 transition-colors">
-            <span className="flex items-center gap-2 text-sm font-semibold text-amber-800">
-              <Bell size={15}/>
-              {provasProximas.length === 1 ? "1 prova próxima" : `${provasProximas.length} provas próximas`}
-            </span>
-            {provasAbertas ? <ChevronUp size={16} className="text-amber-700"/> : <ChevronDown size={16} className="text-amber-700"/>}
-          </button>
-          {provasAbertas && (
-            <div className="px-4 pb-3 space-y-2">
-              {provasProximas.map((p) => {
-                const dataProva = parseLocal(p.data);
-                const diasRestantes = differenceInCalendarDays(dataProva, new Date());
-                const aviso = diasRestantes === 0 ? "Hoje" : diasRestantes === 1 ? "Amanhã" : `Em ${diasRestantes} dias`;
-                return (
-                  <div key={p.id} className="bg-white rounded-xl border border-amber-100 px-3 py-2 flex items-start gap-2">
-                    {p.materiaCor && <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: p.materiaCor }}/>}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-slate-800 truncate">
-                        {p.nome}{p.materiaNome ? ` – ${p.materiaNome}` : ""}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate">{p.escolaNome} · {p.unidadeNome} · {p.serie}</p>
-                    </div>
-                    <span className="shrink-0 text-[10px] font-bold text-amber-700 bg-amber-100 rounded-full px-2 py-0.5">
-                      {aviso} · {format(dataProva, "dd/MM")}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* ── Filtro professor (admin) ──────────────────────────────────────── */}
       {isAdmin && professoras.length > 0 && (
@@ -612,7 +566,7 @@ export default function AgendaMobile({
       </div>
 
       {/* ── Lista do dia ──────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2 pb-24">
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {timeline.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">
             <p className="text-2xl mb-2">📅</p>
@@ -683,20 +637,6 @@ export default function AgendaMobile({
           )
         )}
       </div>
-
-      {/* ── Botão flutuante nova aula ──────────────────────────────────────── */}
-      <button
-        onClick={() => {
-          setReposicaoOrigem(null);
-          setNovaAula({ alunoId: "", materiaIds: [], data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
-          setProfModal(isAdmin ? filtroProfId : "");
-          setErroModal(null);
-          setAvisoDisp(null);
-          setModalAberto(true);
-        }}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40">
-        <Plus size={24}/>
-      </button>
 
       {/* ── Modal nova aula ──────────────────────────────────────────────── */}
       {modalAberto && (
@@ -1061,6 +1001,8 @@ export default function AgendaMobile({
       {pagamentoInfo.pagamento && (
         <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
+
+      <BottomNavMobile/>
     </div>
   );
 }
