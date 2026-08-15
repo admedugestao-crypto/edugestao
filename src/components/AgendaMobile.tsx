@@ -497,8 +497,20 @@ export default function AgendaMobile({
           <p className="text-xs opacity-75">EduGestão</p>
           <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {loading && <RefreshCw size={15} className="animate-spin opacity-75"/>}
+          <button
+            onClick={() => {
+              setReposicaoOrigem(null);
+              setNovaAula({ alunoId: "", materiaIds: [], data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
+              setProfModal(isAdmin ? filtroProfId : "");
+              setErroModal(null);
+              setAvisoDisp(null);
+              setModalAberto(true);
+            }}
+            className="opacity-90 hover:opacity-100">
+            <Plus size={20}/>
+          </button>
           <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
             <LogOut size={18}/>
           </button>
@@ -554,7 +566,7 @@ export default function AgendaMobile({
       </div>
 
       {/* ── Lista do dia ──────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2 pb-24">
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {timeline.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">
             <p className="text-2xl mb-2">📅</p>
@@ -625,20 +637,6 @@ export default function AgendaMobile({
           )
         )}
       </div>
-
-      {/* ── Botão flutuante nova aula ──────────────────────────────────────── */}
-      <button
-        onClick={() => {
-          setReposicaoOrigem(null);
-          setNovaAula({ alunoId: "", materiaIds: [], data: dsAtivo, horaInicio: "", horaFim: "", observacao: "" });
-          setProfModal(isAdmin ? filtroProfId : "");
-          setErroModal(null);
-          setAvisoDisp(null);
-          setModalAberto(true);
-        }}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-40">
-        <Plus size={24}/>
-      </button>
 
       {/* ── Modal nova aula ──────────────────────────────────────────────── */}
       {modalAberto && (
