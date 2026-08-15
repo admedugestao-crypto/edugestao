@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format, differenceInCalendarDays } from "date-fns";
-import { Home, LogOut, Bell, ChevronDown, ChevronUp } from "lucide-react";
+import { Home, LogOut, Bell } from "lucide-react";
 import BottomNavMobile from "@/components/BottomNavMobile";
 
 type Prova = {
@@ -23,7 +23,6 @@ export default function DashboardMobile({
   const router = useRouter();
 
   const [provasProximas, setProvasProximas] = useState<Prova[]>([]);
-  const [provasAbertas, setProvasAbertas] = useState(false);
 
   useEffect(() => {
     // Professora com id: provas só das turmas dela. Admin sem professora
@@ -51,19 +50,15 @@ export default function DashboardMobile({
         </button>
       </div>
 
-      {/* ── Aviso de provas próximas ─────────────────────────────────────── */}
-      {provasProximas.length > 0 && (
-        <div className="bg-amber-50 border-b border-amber-200 shrink-0">
-          <button onClick={() => setProvasAbertas((v) => !v)}
-            className="w-full flex items-center justify-between px-4 py-2.5 active:bg-amber-100 transition-colors">
-            <span className="flex items-center gap-2 text-sm font-semibold text-amber-800">
-              <Bell size={15}/>
+      <div className="flex-1 overflow-y-auto flex flex-col">
+        {/* ── Provas próximas ──────────────────────────────────────────────── */}
+        {provasProximas.length > 0 && (
+          <div className="px-4 pt-3 pb-1 shrink-0">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 uppercase tracking-wide mb-2">
+              <Bell size={13}/>
               {provasProximas.length === 1 ? "1 prova próxima" : `${provasProximas.length} provas próximas`}
-            </span>
-            {provasAbertas ? <ChevronUp size={16} className="text-amber-700"/> : <ChevronDown size={16} className="text-amber-700"/>}
-          </button>
-          {provasAbertas && (
-            <div className="px-4 pb-3 space-y-2">
+            </p>
+            <div className="space-y-2">
               {provasProximas.map((p) => {
                 const dataProva = parseLocal(p.data);
                 const diasRestantes = differenceInCalendarDays(dataProva, new Date());
@@ -84,17 +79,17 @@ export default function DashboardMobile({
                 );
               })}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* ── Boas-vindas ──────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-4 overflow-y-auto">
-        <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center">
-          <Home size={28} className="text-indigo-600"/>
+        {/* ── Boas-vindas ──────────────────────────────────────────────────── */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-4">
+          <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center">
+            <Home size={28} className="text-indigo-600"/>
+          </div>
+          <p className="text-lg font-bold text-slate-800 text-center">Olá, {nomeUsuario}</p>
+          <p className="text-sm text-slate-500 text-center">Use o menu abaixo para navegar.</p>
         </div>
-        <p className="text-lg font-bold text-slate-800 text-center">Olá, {nomeUsuario}</p>
-        <p className="text-sm text-slate-500 text-center">Use o menu abaixo para navegar.</p>
       </div>
 
       <BottomNavMobile/>
