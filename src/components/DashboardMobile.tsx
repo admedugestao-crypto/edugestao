@@ -18,24 +18,21 @@ function parseLocal(iso: string) {
 }
 
 export default function DashboardMobile({
-  nomeUsuario, isAdmin, professoraIdProvas,
-}: { nomeUsuario: string; isAdmin: boolean; professoraIdProvas: string }) {
+  nomeUsuario, professoraIdProvas,
+}: { nomeUsuario: string; professoraIdProvas: string }) {
   const router = useRouter();
 
   const [provasProximas, setProvasProximas] = useState<Prova[]>([]);
 
   useEffect(() => {
-    // Professora com id: provas só das turmas dela. Admin sem professora
-    // própria: visão agregada de todas as provas da escola.
-    if (!professoraIdProvas && !isAdmin) { setProvasProximas([]); return; }
-    const url = professoraIdProvas
-      ? `/api/provas-proximas?professoraId=${professoraIdProvas}`
-      : "/api/provas-proximas";
-    fetch(url)
+    // Só busca provas quando quem está logado é (ou também é) professora —
+    // admin puro, sem cadastro de professora vinculado, não vê esse aviso.
+    if (!professoraIdProvas) { setProvasProximas([]); return; }
+    fetch(`/api/provas-proximas?professoraId=${professoraIdProvas}`)
       .then((r) => r.json())
       .then((data) => setProvasProximas(Array.isArray(data) ? data : []))
       .catch(() => setProvasProximas([]));
-  }, [professoraIdProvas, isAdmin]);
+  }, [professoraIdProvas]);
 
   return (
     <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">

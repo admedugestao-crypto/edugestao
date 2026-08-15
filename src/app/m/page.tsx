@@ -15,7 +15,6 @@ export default async function MobileHomePage() {
   return (
     <DashboardMobile
       nomeUsuario={nomeUsuario}
-      isAdmin={scope.isAdmin}
       professoraIdProvas={scope.professoraId ?? ""}
     />
   );

@@ -13,26 +13,19 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const filtroProfId = searchParams.get("professoraId");
 
-  // Admin sem professora filtrada = agrega provas de todos os alunos da
-  // empresa (visão geral, usada na Home). Com filtro, ou para professora
-  // logada, restringe às turmas dela (mesmo comportamento de antes).
   let professoraId: string | null = null;
   if (scope.isAdmin) {
     professoraId = filtroProfId;
   } else if (scope.professoraId) {
     professoraId = scope.professoraId;
-  } else {
-    return NextResponse.json([]);
   }
+  if (!professoraId) return NextResponse.json([]);
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const em30dias = new Date(hoje); em30dias.setDate(em30dias.getDate() + 30); em30dias.setHours(23, 59, 59, 999);
 
   const alunosProf = await prisma.aluno.findMany({
-    where: {
-      empresaId: scope.empresaId, status: "ATIVO",
-      ...(professoraId ? { professoraId } : {}),
-    },
+    where: { professoraId, empresaId: scope.empresaId, status: "ATIVO" },
     select: { unidadeId: true, serie: true },
   });
   const combos = Array.from(new Set(alunosProf.map((a) => `${a.unidadeId}::${a.serie}`)))
