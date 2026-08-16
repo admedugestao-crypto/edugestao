@@ -1,5 +1,5 @@
 import { prisma } from "./prisma";
-import { enviarEmailProva, enviarEmailAula, type EmailCredenciais } from "./email";
+import { enviarEmailProva, enviarEmailAula, enviarEmailAlertaFonnte, emailConfigurado, type EmailCredenciais } from "./email";
 import { limparEnv } from "./envUtil";
 
 // ── Formata número WhatsApp para o padrão internacional ─────────────────────
@@ -539,6 +539,104 @@ export async function processarNotificacoesAula(): Promise<{
       }
     } catch (err) {
       resultado.erros.push(`${primeira.aluno.nome}: ${String(err)}`);
+    }
+  }
+
+  return resultado;
+}
+
+// ── PROCESSO 4: Verificação de status do Fonnte (alerta pra plataforma) ─────
+// Cada empresa tem seu próprio device Fonnte (1 token = 1 device). Consulta o
+// endpoint de perfil do device (POST /device, ver docs.fonnte.com) pra saber
+// se caiu — quando cai, avisa por e-mail os usuários com perfil PLATAFORMA
+// (que não pertencem a nenhuma empresa, então usam o SMTP global via env
+// vars, igual ao fluxo de "esqueci minha senha" da plataforma — ver
+// src/app/api/plataforma/esqueci-senha/route.ts). fonnteAlertaEnviado evita
+// reenviar o alerta a cada execução do cron enquanto a desconexão persiste, e
+// é zerado assim que o device volta a conectar.
+async function verificarStatusFonnte(token: string): Promise<{ conectado: boolean; erro?: string }> {
+  try {
+    const res = await fetch("https://api.fonnte.com/device", {
+      method: "POST",
+      headers: { Authorization: token },
+    });
+    const texto = await res.text();
+    let data: any = null;
+    try { data = JSON.parse(texto); } catch { /* resposta não-JSON */ }
+    if (!res.ok || !data || data.status !== true) {
+      return { conectado: false, erro: data?.reason ?? `HTTP ${res.status}: ${texto.slice(0, 300)}` };
+    }
+    return { conectado: data.device_status === "connect" };
+  } catch (err) {
+    return { conectado: false, erro: String(err) };
+  }
+}
+
+export async function processarVerificacaoFonnte(): Promise<{
+  alertasEnviados: number;
+  erros: string[];
+}> {
+  const resultado = { alertasEnviados: 0, erros: [] as string[] };
+
+  const empresas = await prisma.empresa.findMany({
+    where: { ativo: true, fonnteToken: { not: null } },
+    select: { id: true, nome: true, fonnteToken: true, fonnteAlertaEnviado: true },
+  });
+  if (empresas.length === 0) return resultado;
+
+  const credenciaisGlobais: EmailCredenciais = {
+    emailHost: process.env.EMAIL_HOST,
+    emailPort: process.env.EMAIL_PORT,
+    emailUser: process.env.EMAIL_USER,
+    emailPass: process.env.EMAIL_PASS,
+    emailFrom: process.env.EMAIL_FROM,
+  };
+
+  // Busca os usuários PLATAFORMA só na primeira vez que precisar (evita
+  // query repetida quando várias empresas caem no mesmo ciclo do cron).
+  let usuariosPlataforma: { email: string }[] | null = null;
+
+  for (const empresa of empresas) {
+    const token = limparEnv(empresa.fonnteToken);
+    if (!token) continue;
+
+    const { conectado, erro } = await verificarStatusFonnte(token);
+
+    if (conectado) {
+      if (empresa.fonnteAlertaEnviado) {
+        await prisma.empresa.update({ where: { id: empresa.id }, data: { fonnteAlertaEnviado: false } });
+      }
+      continue;
+    }
+
+    if (empresa.fonnteAlertaEnviado) continue; // já alertado nesta desconexão, aguarda reconectar
+
+    if (!emailConfigurado(credenciaisGlobais)) {
+      resultado.erros.push(`${empresa.nome}: Fonnte desconectado (${erro ?? "sem detalhe"}), mas o SMTP global da plataforma não está configurado`);
+      continue;
+    }
+
+    if (usuariosPlataforma === null) {
+      usuariosPlataforma = await prisma.usuario.findMany({
+        where: { perfil: "PLATAFORMA", ativo: true },
+        select: { email: true },
+      });
+    }
+    if (usuariosPlataforma.length === 0) {
+      resultado.erros.push(`${empresa.nome}: Fonnte desconectado, mas não há usuário com perfil PLATAFORMA ativo pra alertar`);
+      continue;
+    }
+
+    let algumEnvioOk = false;
+    for (const admin of usuariosPlataforma) {
+      const envio = await enviarEmailAlertaFonnte({ nomeEmpresa: empresa.nome, emailDestino: admin.email }, credenciaisGlobais);
+      if (envio.ok) algumEnvioOk = true;
+      else resultado.erros.push(`${empresa.nome} → ${admin.email}: ${envio.erro}`);
+    }
+
+    if (algumEnvioOk) {
+      resultado.alertasEnviados++;
+      await prisma.empresa.update({ where: { id: empresa.id }, data: { fonnteAlertaEnviado: true } });
     }
   }
 

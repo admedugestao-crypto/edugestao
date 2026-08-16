@@ -903,6 +903,79 @@ export async function enviarEmailRedefinirSenha(params: Parameters<typeof templa
   }
 }
 
+// ── Template HTML — Alerta de WhatsApp (Fonnte) Desconectado ────────────────
+// Enviado pra usuários PLATAFORMA (via SMTP global, mesmo padrão do e-mail de
+// redefinição de senha da plataforma) quando o device Fonnte de uma empresa
+// cai — ver processarVerificacaoFonnte em src/lib/notificacoes.ts.
+function templateAlertaFonnte(params: { nomeEmpresa: string }) {
+  const { nomeEmpresa } = params;
+
+  return {
+    subject: `⚠️ WhatsApp desconectado — ${nomeEmpresa}`,
+    html: `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <tr>
+          <td style="background:#111827;padding:24px 32px;text-align:center;">
+            <p style="margin:0;color:#fff;font-size:22px;font-weight:bold;letter-spacing:1px;">▲ EduGestão</p>
+            <p style="margin:6px 0 0;color:#9ca3af;font-size:13px;">Gestão Educacional</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#fef2f2;border-bottom:3px solid #fca5a5;padding:16px 32px;">
+            <p style="margin:0;color:#dc2626;font-size:15px;font-weight:bold;">
+              ⚠️ WhatsApp (Fonnte) desconectado
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+              O device do Fonnte da empresa <strong>${nomeEmpresa}</strong> está desconectado.
+              Enquanto isso, os lembretes de prova e de aula dessa empresa não estão
+              sendo enviados por WhatsApp.
+            </p>
+            <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+              Acesse o painel do Fonnte dessa empresa e reconecte o número
+              escaneando o QR Code novamente.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
+            <p style="margin:0;color:#9ca3af;font-size:12px;">
+              Mensagem automática enviada pelo <strong>EduGestão</strong>.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  };
+}
+
+export async function enviarEmailAlertaFonnte(params: Parameters<typeof templateAlertaFonnte>[0] & {
+  emailDestino: string;
+}, credenciais: EmailCredenciais): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
+  const { subject, html } = templateAlertaFonnte(params);
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
+  try {
+    await transporte.sendMail({ from, to: params.emailDestino, subject, html });
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, erro: err?.message ?? "Erro ao enviar e-mail." };
+  }
+}
+
 // ── Função principal de envio ─────────────────────────────────────────────────
 export async function enviarEmailAtraso(params: Parameters<typeof templateAtraso>[0] & {
   emailResponsavel: string;

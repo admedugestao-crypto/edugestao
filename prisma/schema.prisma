@@ -35,6 +35,13 @@ model Empresa {
   evolutionApiKey      String?
   evolutionApiInstance String?
 
+  // Marca se já foi enviado o e-mail de alerta (pra plataforma) avisando que
+  // o device do Fonnte desta empresa caiu — evita reenviar o alerta a cada
+  // execução do cron enquanto a desconexão persiste. Zerado automaticamente
+  // assim que o device volta a ficar conectado (ver verificarStatusFonnte em
+  // src/lib/notificacoes.ts).
+  fonnteAlertaEnviado  Boolean  @default(false)
+
   // Credenciais de SMTP para envio de e-mail, mesmo padrão do WhatsApp acima:
   // uma conta própria por empresa, sem fallback pra variável de ambiente
   // global. emailFrom cai pra emailUser se não preenchido, igual ao comportamento
