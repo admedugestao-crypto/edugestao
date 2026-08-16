@@ -37,6 +37,7 @@ export type EmpresaMinAggregateOutputType = {
   evolutionApiUrl: string | null
   evolutionApiKey: string | null
   evolutionApiInstance: string | null
+  fonnteAlertaEnviado: boolean | null
   emailHost: string | null
   emailPort: string | null
   emailUser: string | null
@@ -57,6 +58,7 @@ export type EmpresaMaxAggregateOutputType = {
   evolutionApiUrl: string | null
   evolutionApiKey: string | null
   evolutionApiInstance: string | null
+  fonnteAlertaEnviado: boolean | null
   emailHost: string | null
   emailPort: string | null
   emailUser: string | null
@@ -77,6 +79,7 @@ export type EmpresaCountAggregateOutputType = {
   evolutionApiUrl: number
   evolutionApiKey: number
   evolutionApiInstance: number
+  fonnteAlertaEnviado: number
   emailHost: number
   emailPort: number
   emailUser: number
@@ -99,6 +102,7 @@ export type EmpresaMinAggregateInputType = {
   evolutionApiUrl?: true
   evolutionApiKey?: true
   evolutionApiInstance?: true
+  fonnteAlertaEnviado?: true
   emailHost?: true
   emailPort?: true
   emailUser?: true
@@ -119,6 +123,7 @@ export type EmpresaMaxAggregateInputType = {
   evolutionApiUrl?: true
   evolutionApiKey?: true
   evolutionApiInstance?: true
+  fonnteAlertaEnviado?: true
   emailHost?: true
   emailPort?: true
   emailUser?: true
@@ -139,6 +144,7 @@ export type EmpresaCountAggregateInputType = {
   evolutionApiUrl?: true
   evolutionApiKey?: true
   evolutionApiInstance?: true
+  fonnteAlertaEnviado?: true
   emailHost?: true
   emailPort?: true
   emailUser?: true
@@ -232,6 +238,7 @@ export type EmpresaGroupByOutputType = {
   evolutionApiUrl: string | null
   evolutionApiKey: string | null
   evolutionApiInstance: string | null
+  fonnteAlertaEnviado: boolean
   emailHost: string | null
   emailPort: string | null
   emailUser: string | null
@@ -273,6 +280,7 @@ export type EmpresaWhereInput = {
   evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiKey?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiInstance?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFilter<"Empresa"> | boolean
   emailHost?: Prisma.StringNullableFilter<"Empresa"> | string | null
   emailPort?: Prisma.StringNullableFilter<"Empresa"> | string | null
   emailUser?: Prisma.StringNullableFilter<"Empresa"> | string | null
@@ -310,6 +318,7 @@ export type EmpresaOrderByWithRelationInput = {
   evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrderInput | Prisma.SortOrder
+  fonnteAlertaEnviado?: Prisma.SortOrder
   emailHost?: Prisma.SortOrderInput | Prisma.SortOrder
   emailPort?: Prisma.SortOrderInput | Prisma.SortOrder
   emailUser?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -350,6 +359,7 @@ export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
   evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiKey?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiInstance?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFilter<"Empresa"> | boolean
   emailHost?: Prisma.StringNullableFilter<"Empresa"> | string | null
   emailPort?: Prisma.StringNullableFilter<"Empresa"> | string | null
   emailUser?: Prisma.StringNullableFilter<"Empresa"> | string | null
@@ -387,6 +397,7 @@ export type EmpresaOrderByWithAggregationInput = {
   evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrderInput | Prisma.SortOrder
+  fonnteAlertaEnviado?: Prisma.SortOrder
   emailHost?: Prisma.SortOrderInput | Prisma.SortOrder
   emailPort?: Prisma.SortOrderInput | Prisma.SortOrder
   emailUser?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -413,6 +424,7 @@ export type EmpresaScalarWhereWithAggregatesInput = {
   evolutionApiUrl?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   evolutionApiKey?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   evolutionApiInstance?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  fonnteAlertaEnviado?: Prisma.BoolWithAggregatesFilter<"Empresa"> | boolean
   emailHost?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   emailPort?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   emailUser?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
@@ -433,6 +445,7 @@ export type EmpresaCreateInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -470,6 +483,7 @@ export type EmpresaUncheckedCreateInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -507,6 +521,7 @@ export type EmpresaUpdateInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -544,6 +559,7 @@ export type EmpresaUncheckedUpdateInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -581,6 +597,7 @@ export type EmpresaCreateManyInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -601,6 +618,7 @@ export type EmpresaUpdateManyMutationInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -621,6 +639,7 @@ export type EmpresaUncheckedUpdateManyInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -641,6 +660,7 @@ export type EmpresaCountOrderByAggregateInput = {
   evolutionApiUrl?: Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrder
+  fonnteAlertaEnviado?: Prisma.SortOrder
   emailHost?: Prisma.SortOrder
   emailPort?: Prisma.SortOrder
   emailUser?: Prisma.SortOrder
@@ -661,6 +681,7 @@ export type EmpresaMaxOrderByAggregateInput = {
   evolutionApiUrl?: Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrder
+  fonnteAlertaEnviado?: Prisma.SortOrder
   emailHost?: Prisma.SortOrder
   emailPort?: Prisma.SortOrder
   emailUser?: Prisma.SortOrder
@@ -681,6 +702,7 @@ export type EmpresaMinOrderByAggregateInput = {
   evolutionApiUrl?: Prisma.SortOrder
   evolutionApiKey?: Prisma.SortOrder
   evolutionApiInstance?: Prisma.SortOrder
+  fonnteAlertaEnviado?: Prisma.SortOrder
   emailHost?: Prisma.SortOrder
   emailPort?: Prisma.SortOrder
   emailUser?: Prisma.SortOrder
@@ -967,6 +989,7 @@ export type EmpresaCreateWithoutUsuariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1003,6 +1026,7 @@ export type EmpresaUncheckedCreateWithoutUsuariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1055,6 +1079,7 @@ export type EmpresaUpdateWithoutUsuariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1091,6 +1116,7 @@ export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1127,6 +1153,7 @@ export type EmpresaCreateWithoutProfessorasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1163,6 +1190,7 @@ export type EmpresaUncheckedCreateWithoutProfessorasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1215,6 +1243,7 @@ export type EmpresaUpdateWithoutProfessorasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1251,6 +1280,7 @@ export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1287,6 +1317,7 @@ export type EmpresaCreateWithoutMateriasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1323,6 +1354,7 @@ export type EmpresaUncheckedCreateWithoutMateriasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1375,6 +1407,7 @@ export type EmpresaUpdateWithoutMateriasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1411,6 +1444,7 @@ export type EmpresaUncheckedUpdateWithoutMateriasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1447,6 +1481,7 @@ export type EmpresaCreateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1483,6 +1518,7 @@ export type EmpresaUncheckedCreateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1535,6 +1571,7 @@ export type EmpresaUpdateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1571,6 +1608,7 @@ export type EmpresaUncheckedUpdateWithoutMetodosEnsinoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1607,6 +1645,7 @@ export type EmpresaCreateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1643,6 +1682,7 @@ export type EmpresaUncheckedCreateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1695,6 +1735,7 @@ export type EmpresaUpdateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1731,6 +1772,7 @@ export type EmpresaUncheckedUpdateWithoutTiposAvaliacaoInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1767,6 +1809,7 @@ export type EmpresaCreateWithoutEscolasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1803,6 +1846,7 @@ export type EmpresaUncheckedCreateWithoutEscolasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1855,6 +1899,7 @@ export type EmpresaUpdateWithoutEscolasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1891,6 +1936,7 @@ export type EmpresaUncheckedUpdateWithoutEscolasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1927,6 +1973,7 @@ export type EmpresaCreateWithoutUnidadesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -1963,6 +2010,7 @@ export type EmpresaUncheckedCreateWithoutUnidadesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2015,6 +2063,7 @@ export type EmpresaUpdateWithoutUnidadesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2051,6 +2100,7 @@ export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2087,6 +2137,7 @@ export type EmpresaCreateWithoutCalendariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2123,6 +2174,7 @@ export type EmpresaUncheckedCreateWithoutCalendariosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2175,6 +2227,7 @@ export type EmpresaUpdateWithoutCalendariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2211,6 +2264,7 @@ export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2247,6 +2301,7 @@ export type EmpresaCreateWithoutAvaliacoesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2283,6 +2338,7 @@ export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2335,6 +2391,7 @@ export type EmpresaUpdateWithoutAvaliacoesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2371,6 +2428,7 @@ export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2407,6 +2465,7 @@ export type EmpresaCreateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2443,6 +2502,7 @@ export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2495,6 +2555,7 @@ export type EmpresaUpdateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2531,6 +2592,7 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2567,6 +2629,7 @@ export type EmpresaCreateWithoutAlunosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2603,6 +2666,7 @@ export type EmpresaUncheckedCreateWithoutAlunosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2655,6 +2719,7 @@ export type EmpresaUpdateWithoutAlunosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2691,6 +2756,7 @@ export type EmpresaUncheckedUpdateWithoutAlunosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2727,6 +2793,7 @@ export type EmpresaCreateWithoutNotasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2763,6 +2830,7 @@ export type EmpresaUncheckedCreateWithoutNotasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2815,6 +2883,7 @@ export type EmpresaUpdateWithoutNotasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2851,6 +2920,7 @@ export type EmpresaUncheckedUpdateWithoutNotasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2887,6 +2957,7 @@ export type EmpresaCreateWithoutPagamentosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2923,6 +2994,7 @@ export type EmpresaUncheckedCreateWithoutPagamentosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -2975,6 +3047,7 @@ export type EmpresaUpdateWithoutPagamentosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3011,6 +3084,7 @@ export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3047,6 +3121,7 @@ export type EmpresaCreateWithoutConteudosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3083,6 +3158,7 @@ export type EmpresaUncheckedCreateWithoutConteudosInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3135,6 +3211,7 @@ export type EmpresaUpdateWithoutConteudosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3171,6 +3248,7 @@ export type EmpresaUncheckedUpdateWithoutConteudosInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3207,6 +3285,7 @@ export type EmpresaCreateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3243,6 +3322,7 @@ export type EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3295,6 +3375,7 @@ export type EmpresaUpdateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3331,6 +3412,7 @@ export type EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3367,6 +3449,7 @@ export type EmpresaCreateWithoutAulasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3403,6 +3486,7 @@ export type EmpresaUncheckedCreateWithoutAulasInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3455,6 +3539,7 @@ export type EmpresaUpdateWithoutAulasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3491,6 +3576,7 @@ export type EmpresaUncheckedUpdateWithoutAulasInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3527,6 +3613,7 @@ export type EmpresaCreateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3563,6 +3650,7 @@ export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: string | null
   evolutionApiKey?: string | null
   evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
   emailHost?: string | null
   emailPort?: string | null
   emailUser?: string | null
@@ -3615,6 +3703,7 @@ export type EmpresaUpdateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3651,6 +3740,7 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3862,6 +3952,7 @@ export type EmpresaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  fonnteAlertaEnviado?: boolean
   emailHost?: boolean
   emailPort?: boolean
   emailUser?: boolean
@@ -3900,6 +3991,7 @@ export type EmpresaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  fonnteAlertaEnviado?: boolean
   emailHost?: boolean
   emailPort?: boolean
   emailUser?: boolean
@@ -3920,6 +4012,7 @@ export type EmpresaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  fonnteAlertaEnviado?: boolean
   emailHost?: boolean
   emailPort?: boolean
   emailUser?: boolean
@@ -3940,6 +4033,7 @@ export type EmpresaSelectScalar = {
   evolutionApiUrl?: boolean
   evolutionApiKey?: boolean
   evolutionApiInstance?: boolean
+  fonnteAlertaEnviado?: boolean
   emailHost?: boolean
   emailPort?: boolean
   emailUser?: boolean
@@ -3947,7 +4041,7 @@ export type EmpresaSelectScalar = {
   emailFrom?: boolean
 }
 
-export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "ativo" | "whatsappPausado" | "emailPausado" | "criadoEm" | "fonnteToken" | "evolutionApiUrl" | "evolutionApiKey" | "evolutionApiInstance" | "emailHost" | "emailPort" | "emailUser" | "emailPass" | "emailFrom", ExtArgs["result"]["empresa"]>
+export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "ativo" | "whatsappPausado" | "emailPausado" | "criadoEm" | "fonnteToken" | "evolutionApiUrl" | "evolutionApiKey" | "evolutionApiInstance" | "fonnteAlertaEnviado" | "emailHost" | "emailPort" | "emailUser" | "emailPass" | "emailFrom", ExtArgs["result"]["empresa"]>
 export type EmpresaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | Prisma.Empresa$usuariosArgs<ExtArgs>
   professoras?: boolean | Prisma.Empresa$professorasArgs<ExtArgs>
@@ -4005,6 +4099,7 @@ export type $EmpresaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     evolutionApiUrl: string | null
     evolutionApiKey: string | null
     evolutionApiInstance: string | null
+    fonnteAlertaEnviado: boolean
     emailHost: string | null
     emailPort: string | null
     emailUser: string | null
@@ -4462,6 +4557,7 @@ export interface EmpresaFieldRefs {
   readonly evolutionApiUrl: Prisma.FieldRef<"Empresa", 'String'>
   readonly evolutionApiKey: Prisma.FieldRef<"Empresa", 'String'>
   readonly evolutionApiInstance: Prisma.FieldRef<"Empresa", 'String'>
+  readonly fonnteAlertaEnviado: Prisma.FieldRef<"Empresa", 'Boolean'>
   readonly emailHost: Prisma.FieldRef<"Empresa", 'String'>
   readonly emailPort: Prisma.FieldRef<"Empresa", 'String'>
   readonly emailUser: Prisma.FieldRef<"Empresa", 'String'>

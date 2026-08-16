@@ -2255,6 +2255,7 @@ export const EmpresaScalarFieldEnum = {
   evolutionApiUrl: 'evolutionApiUrl',
   evolutionApiKey: 'evolutionApiKey',
   evolutionApiInstance: 'evolutionApiInstance',
+  fonnteAlertaEnviado: 'fonnteAlertaEnviado',
   emailHost: 'emailHost',
   emailPort: 'emailPort',
   emailUser: 'emailUser',
