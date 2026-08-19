@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { validarAgenda, materiasCompativeis } from "@/lib/conteudoAgenda";
+import { enviarNotificacaoConteudoMinistrado } from "@/lib/notificacoes";
 
 export const dynamic = "force-dynamic";
 
@@ -115,6 +116,16 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+
+    if (!planejado) {
+      // Best-effort: criado com sucesso independente do e-mail dar certo.
+      try {
+        await enviarNotificacaoConteudoMinistrado(conteudo.id);
+      } catch (err) {
+        console.error(`[ConteudoMinistrado] Falha ao notificar responsável (conteudo ${conteudo.id}):`, err);
+      }
+    }
+
     return NextResponse.json(conteudo, { status: 201 });
   } catch (err: any) {
     if (err?.code === "P2002" && err?.meta?.target?.includes("aulaId")) {

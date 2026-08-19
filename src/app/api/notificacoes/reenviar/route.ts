@@ -5,7 +5,7 @@ import {
   montarMensagem, formatarWhatsapp, enviarWhatsapp,
   montarMensagemAulaWhatsapp, montarDadosAulaEmail, whatsappConfiguradoEmpresa,
 } from "@/lib/notificacoes";
-import { enviarEmailProva, enviarEmailAula, emailConfigurado } from "@/lib/email";
+import { enviarEmailProva, enviarEmailAula, enviarEmailConteudoMinistrado, emailConfigurado } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -13,13 +13,14 @@ export async function POST(req: NextRequest) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
-  const { id, canal, tipo } = await req.json() as { id: string; canal: "whatsapp" | "email"; tipo?: "prova" | "aula" };
+  const { id, canal, tipo } = await req.json() as { id: string; canal: "whatsapp" | "email"; tipo?: "prova" | "aula" | "conteudo" };
   if (!id || !canal) return NextResponse.json({ erro: "id e canal são obrigatórios" }, { status: 400 });
 
   // Lembrete de aula não tem escolha manual de canal — é sempre automático
   // (WhatsApp se a empresa tiver Fonnte/Evolution configurados, senão
   // e-mail pro responsável), então `canal` do body é ignorado aqui.
   if (tipo === "aula") return reenviarAula(id, scope.empresaId);
+  if (tipo === "conteudo") return reenviarConteudo(id, canal, scope.empresaId);
 
   // Busca o registro completo
   const registro = await prisma.notificacaoProva.findUnique({
@@ -175,5 +176,62 @@ async function reenviarAula(agendaAulaId: string, empresaId: string) {
     update: { emailEnviado: true, email: emailResponsavel },
     create: { empresaId, agendaAulaId, emailEnviado: true, email: emailResponsavel },
   });
+  return NextResponse.json({ ok: true, canal: "email" });
+}
+
+// E-mail de Conteúdo Ministrado — `id` aqui é o id do Conteudo (não da
+// notificação), mesmo padrão de reenviarAula: funciona tanto pra reenviar
+// quanto pra mandar pela 1ª vez manualmente. Reenvio manual ignora a pausa
+// de e-mail da empresa por decisão de produto — só o disparo automático
+// respeita a pausa.
+async function reenviarConteudo(conteudoId: string, canal: "whatsapp" | "email", empresaId: string) {
+  if (canal !== "email") {
+    return NextResponse.json({ erro: "Conteúdo ministrado só pode ser enviado por E-mail." }, { status: 400 });
+  }
+
+  const conteudo = await prisma.conteudo.findUnique({
+    where: { id: conteudoId },
+    include: {
+      aluno: { select: { nome: true, responsavel: true, emailResponsavel: true } },
+      materia: { select: { nome: true } },
+      aula: { include: { professora: { include: { usuario: { select: { nome: true } } } } } },
+      empresa: {
+        select: {
+          nome: true,
+          emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
+        },
+      },
+    },
+  });
+
+  if (!conteudo || conteudo.empresaId !== empresaId) {
+    return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
+  }
+  if (!conteudo.aluno.emailResponsavel) {
+    return NextResponse.json({ erro: "Responsável sem e-mail cadastrado." }, { status: 422 });
+  }
+  if (!emailConfigurado(conteudo.empresa)) return NextResponse.json({ erro: "SMTP não configurado para esta empresa." }, { status: 503 });
+
+  const envio = await enviarEmailConteudoMinistrado({
+    emailResponsavel: conteudo.aluno.emailResponsavel,
+    nomeEmpresa: conteudo.empresa.nome,
+    nomeResponsavel: conteudo.aluno.responsavel,
+    nomeAluno: conteudo.aluno.nome,
+    nomeMateria: conteudo.materia?.nome ?? null,
+    nomeProfessora: conteudo.aula?.professora.usuario.nome ?? "—",
+    topico: conteudo.topico,
+    descricao: conteudo.descricao,
+    arquivoUrl: conteudo.arquivoUrl,
+    data: conteudo.data,
+  }, conteudo.empresa);
+
+  if (!envio.ok) return NextResponse.json({ erro: `Falha ao enviar e-mail: ${envio.erro}` }, { status: 500 });
+
+  await prisma.notificacaoConteudo.upsert({
+    where: { conteudoId },
+    update: { enviada: true, email: conteudo.aluno.emailResponsavel },
+    create: { empresaId, conteudoId, enviada: true, email: conteudo.aluno.emailResponsavel },
+  });
+
   return NextResponse.json({ ok: true, canal: "email" });
 }

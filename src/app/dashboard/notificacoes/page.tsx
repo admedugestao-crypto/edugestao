@@ -24,7 +24,7 @@ export default async function NotificacoesPage() {
   em7dias.setDate(em7dias.getDate() + 7);
   em7dias.setHours(23, 59, 59, 999);
 
-  const [avaliacoes, historicoWhatsapp, historicoEmail, aulasProximas, historicoAulas, empresa] =
+  const [avaliacoes, historicoWhatsapp, historicoEmail, aulasProximas, historicoAulas, empresa, historicoConteudo] =
     await Promise.all([
       // ── Dados WhatsApp ────────────────────────────────────────────────────
       prisma.avaliacao.findMany({
@@ -98,6 +98,21 @@ export default async function NotificacoesPage() {
           fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
         },
+      }),
+      // ── Dados Notificações de Conteúdo Ministrado ────────────────────────────
+      prisma.notificacaoConteudo.findMany({
+        where: { empresaId: scope.empresaId },
+        include: {
+          conteudo: {
+            select: {
+              topico: true, data: true,
+              aluno: { select: { nome: true, responsavel: true } },
+              materia: { select: { nome: true } },
+            },
+          },
+        },
+        orderBy: { criadoEm: "desc" },
+        take: 50,
       }),
     ]);
 
@@ -199,6 +214,18 @@ export default async function NotificacoesPage() {
             professora: { usuario: { nome: n.agendaAula.professora.usuario.nome } },
             materia: n.agendaAula.materia,
           },
+        }))}
+        historicoConteudo={historicoConteudo.map((n) => ({
+          id: n.id,
+          conteudoId: n.conteudoId,
+          enviada: n.enviada,
+          email: n.email,
+          criadoEm: n.criadoEm.toISOString(),
+          aluno: n.conteudo.aluno.nome,
+          responsavel: n.conteudo.aluno.responsavel,
+          materia: n.conteudo.materia?.nome ?? null,
+          topico: n.conteudo.topico,
+          data: n.conteudo.data.toISOString(),
         }))}
       />
     </div>

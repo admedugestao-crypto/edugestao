@@ -703,6 +703,147 @@ export async function enviarEmailAula(
   }
 }
 
+// ── Template HTML — Conteúdo Ministrado ──────────────────────────────────────
+// Enviado ao responsável quando um Conteúdo é marcado como Ministrado
+// (criação avulsa com planejado=false, ou transição planejado→ministrado
+// pela agenda). Só canal e-mail — não há mensagem por WhatsApp pra isso.
+function templateConteudoMinistrado(params: {
+  nomeEmpresa: string;
+  nomeResponsavel: string | null;
+  nomeAluno: string;
+  nomeMateria: string | null;
+  nomeProfessora: string;
+  topico: string;
+  descricao: string | null;
+  arquivoUrl: string | null;
+  data: Date;
+}) {
+  const {
+    nomeEmpresa, nomeResponsavel, nomeAluno, nomeMateria,
+    nomeProfessora, topico, descricao, arquivoUrl, data,
+  } = params;
+
+  const dataFmt = data.toLocaleDateString("pt-BR", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+  });
+  const topicoSeguro = escapeHtml(topico);
+  const descricaoSeguro = descricao ? escapeHtml(descricao) : null;
+
+  const subject = `📘 Conteúdo ministrado — ${nomeAluno}${nomeMateria ? ` (${nomeMateria})` : ""}`;
+
+  return {
+    subject,
+    html: `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+
+        <!-- Cabeçalho -->
+        <tr>
+          <td style="background:#111827;padding:24px 32px;text-align:center;">
+            <p style="margin:0;color:#fff;font-size:22px;font-weight:bold;letter-spacing:1px;">▲ EduGestão</p>
+            <p style="margin:6px 0 0;color:#9ca3af;font-size:13px;">Gestão Educacional</p>
+          </td>
+        </tr>
+
+        <!-- Alerta -->
+        <tr>
+          <td style="background:#eff6ff;border-bottom:3px solid #93c5fd;padding:16px 32px;">
+            <p style="margin:0;color:#1d4ed8;font-size:15px;font-weight:bold;">
+              📘 Conteúdo ministrado para ${nomeAluno}
+            </p>
+          </td>
+        </tr>
+
+        <!-- Corpo -->
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;">
+              Olá${nomeResponsavel ? `, <strong>${nomeResponsavel}</strong>` : ""}!
+            </p>
+            <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+              Segue o conteúdo ministrado na aula de <strong>${nomeAluno}</strong>.
+            </p>
+
+            <!-- Card detalhes -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+              style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:24px;">
+              <tr>
+                <td style="padding:20px;">
+                  <table width="100%" cellpadding="6" cellspacing="0">
+                    <tr>
+                      <td style="color:#6b7280;font-size:13px;width:30%;">Data</td>
+                      <td style="color:#1d4ed8;font-size:13px;font-weight:bold;">${dataFmt}</td>
+                    </tr>
+                    ${nomeMateria ? `
+                    <tr>
+                      <td style="color:#6b7280;font-size:13px;">Matéria</td>
+                      <td style="color:#111827;font-size:13px;">${escapeHtml(nomeMateria)}</td>
+                    </tr>` : ""}
+                    <tr>
+                      <td style="color:#6b7280;font-size:13px;">Tópico</td>
+                      <td style="color:#111827;font-size:13px;font-weight:bold;">${topicoSeguro}</td>
+                    </tr>
+                    <tr>
+                      <td style="color:#6b7280;font-size:13px;">Professor(a)</td>
+                      <td style="color:#111827;font-size:13px;">${nomeProfessora}</td>
+                    </tr>
+                    ${descricaoSeguro ? `
+                    <tr>
+                      <td style="color:#6b7280;font-size:13px;vertical-align:top;">Descrição</td>
+                      <td style="color:#111827;font-size:13px;">${descricaoSeguro}</td>
+                    </tr>` : ""}
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            ${arquivoUrl ? `
+            <p style="text-align:center;margin:0 0 8px;">
+              <a href="${arquivoUrl}" style="display:inline-block;background:#1d4ed8;color:#fff;text-decoration:none;font-size:14px;font-weight:bold;padding:12px 24px;border-radius:8px;">📎 Ver material</a>
+            </p>` : ""}
+          </td>
+        </tr>
+
+        <!-- Rodapé -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
+            <p style="margin:0;color:#9ca3af;font-size:12px;">
+              Mensagem automática enviada por <strong>${nomeEmpresa}</strong> via EduGestão.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  };
+}
+
+export async function enviarEmailConteudoMinistrado(
+  params: Parameters<typeof templateConteudoMinistrado>[0] & { emailResponsavel: string },
+  credenciais: EmailCredenciais,
+): Promise<{ ok: boolean; erro?: string }> {
+  const transporte = criarTransporte(credenciais);
+  if (!transporte) return { ok: false, erro: "E-mail não configurado." };
+
+  const { subject, html } = templateConteudoMinistrado(params);
+  const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
+
+  try {
+    await transporte.sendMail({ from, to: params.emailResponsavel, subject, html });
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, erro: err?.message ?? "Erro ao enviar e-mail." };
+  }
+}
+
 // ── Template HTML — Recibo Múltiplo ──────────────────────────────────────────
 function templateReciboMultiplo(params: {
   nomeResponsavel: string;

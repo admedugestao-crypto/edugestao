@@ -52,6 +52,11 @@ type HistoricoEmail = {
   avaliacao: { nome: string; serie: string; data: string; materia: string | null; escola: string; unidade: string };
 };
 
+type HistoricoConteudo = {
+  id: string; conteudoId: string; enviada: boolean; email: string | null; criadoEm: string;
+  aluno: string; responsavel: string | null; materia: string | null; topico: string; data: string;
+};
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function parseDataLocal(iso: string) {
   const [y, m, d] = iso.split("T")[0].split("-").map(Number);
@@ -72,7 +77,7 @@ type ContextMenuState = {
   registroId: string;
   canal: "whatsapp" | "email";
   jaEnviado: boolean;
-  tipo: "prova" | "aula";
+  tipo: "prova" | "aula" | "conteudo";
 } | null;
 
 function ContextMenu({
@@ -155,7 +160,7 @@ function ContextMenu({
 // ── Componente raiz ────────────────────────────────────────────────────────────
 export default function NotificacoesUnificadas({
   avaliacoes, historicoWhatsapp, whatsappConfigurado, provedor, whatsappPausado,
-  historicoEmail, emailAtivo, emailPausado, historicoAulas, aulasProximas,
+  historicoEmail, emailAtivo, emailPausado, historicoAulas, aulasProximas, historicoConteudo,
 }: {
   avaliacoes: Avaliacao[];
   historicoWhatsapp: HistoricoWhatsapp[];
@@ -167,6 +172,7 @@ export default function NotificacoesUnificadas({
   emailPausado: boolean;
   historicoAulas: HistoricoAula[];
   aulasProximas: AulaProxima[];
+  historicoConteudo: HistoricoConteudo[];
 }) {
   const [aba, setAba] = useState<"whatsapp" | "email">("whatsapp");
 
@@ -204,7 +210,13 @@ export default function NotificacoesUnificadas({
         />
       )}
       {aba === "email" && (
-        <AbaEmail historico={historicoEmail} emailAtivo={emailAtivo} avaliacoes={avaliacoes} emailPausadoInicial={emailPausado} />
+        <AbaEmail
+          historico={historicoEmail}
+          historicoConteudo={historicoConteudo}
+          emailAtivo={emailAtivo}
+          avaliacoes={avaliacoes}
+          emailPausadoInicial={emailPausado}
+        />
       )}
     </div>
   );
@@ -665,9 +677,10 @@ function AbaWhatsapp({
 
 // ── Aba E-mail ────────────────────────────────────────────────────────────────
 function AbaEmail({
-  historico, emailAtivo, avaliacoes, emailPausadoInicial,
+  historico, historicoConteudo, emailAtivo, avaliacoes, emailPausadoInicial,
 }: {
   historico: HistoricoEmail[];
+  historicoConteudo: HistoricoConteudo[];
   emailAtivo: boolean;
   avaliacoes: Avaliacao[];
   emailPausadoInicial: boolean;
@@ -714,6 +727,17 @@ function AbaEmail({
   );
   const totalFalhos = historico.length - totalEnviados;
 
+  const conteudosFiltrados = useMemo(() => historicoConteudo.filter((r) => {
+    const enviadoOk = statusLocal[r.id] ?? r.enviada;
+    const textoOk = !busca || [r.aluno, r.responsavel ?? "", r.materia ?? "", r.topico]
+      .some((s) => s.toLowerCase().includes(busca.toLowerCase()));
+    const statusOk =
+      filtroStatus === "todos" ||
+      (filtroStatus === "enviado" && enviadoOk) ||
+      (filtroStatus === "falhou" && !enviadoOk);
+    return textoOk && statusOk;
+  }), [historicoConteudo, busca, filtroStatus, statusLocal]);
+
   async function dispararAgora() {
     setDisparando(true); setMsgDisparo(null);
     try {
@@ -729,9 +753,9 @@ function AbaEmail({
     }
   }
 
-  function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean) {
+  function abrirMenu(e: React.MouseEvent, id: string, jaEnviado: boolean, tipo: "prova" | "conteudo" = "prova") {
     e.preventDefault();
-    setContextMenu({ x: e.clientX, y: e.clientY, registroId: id, canal: "email", jaEnviado, tipo: "prova" });
+    setContextMenu({ x: e.clientX, y: e.clientY, registroId: id, canal: "email", jaEnviado, tipo });
   }
 
   const reenviar = useCallback(async (id: string, canal: "whatsapp" | "email") => {
@@ -936,6 +960,74 @@ function AbaEmail({
         {registros.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
             <p className="text-xs text-slate-400">{registros.length} registro(s) exibido(s)</p>
+          </div>
+        )}
+      </div>
+
+      {/* Tabela histórico e-mail — Conteúdo Ministrado */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+          <Mail size={15} className="text-indigo-600" />
+          <h2 className="font-semibold text-slate-800">Histórico de notificações E-mail — Conteúdo Ministrado</h2>
+        </div>
+        {conteudosFiltrados.length === 0 ? (
+          <div className="p-10 text-center text-slate-400 text-sm">
+            {historicoConteudo.length === 0
+              ? "Nenhum e-mail de conteúdo ministrado registrado ainda."
+              : "Nenhum registro encontrado para os filtros aplicados."}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-slate-100 bg-slate-50">
+                <tr>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Canal</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Enviado em</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Responsável</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">E-mail</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Conteúdo</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Data da aula</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {conteudosFiltrados.map((r) => {
+                  const enviadoOk = statusLocal[r.id] ?? r.enviada;
+                  return (
+                    <tr key={r.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3">
+                        <span
+                          title="Botão direito para enviar/reenviar via E-mail"
+                          onContextMenu={(e) => abrirMenu(e, r.conteudoId, enviadoOk, "conteudo")}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium cursor-context-menu select-none hover:bg-indigo-200 transition-colors"
+                        >
+                          <Mail size={10}/>E-mail
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">{fmtDataHora(r.criadoEm)}</td>
+                      <td className="px-4 py-3 text-xs font-medium text-slate-800">{r.responsavel ?? "—"} <span className="text-slate-400 font-normal">· {r.aluno}</span></td>
+                      <td className="px-4 py-3 text-xs text-slate-500">{r.email ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-slate-700 text-xs">{r.topico}</p>
+                        {r.materia && <p className="text-xs text-slate-400">{r.materia}</p>}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">{fmtData(r.data)}</td>
+                      <td className="px-4 py-3">
+                        {enviadoOk
+                          ? <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium"><CheckCircle2 size={12}/> Enviado</span>
+                          : <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium"><XCircle size={12}/> Falhou</span>
+                        }
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {conteudosFiltrados.length > 0 && (
+          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
+            <p className="text-xs text-slate-400">{conteudosFiltrados.length} registro(s) exibido(s)</p>
           </div>
         )}
       </div>

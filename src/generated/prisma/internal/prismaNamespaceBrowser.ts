@@ -74,7 +74,8 @@ export const ModelName = {
   MaterialBibliotecaMateria: 'MaterialBibliotecaMateria',
   AgendaAula: 'AgendaAula',
   AgendaAulaMateria: 'AgendaAulaMateria',
-  NotificacaoAula: 'NotificacaoAula'
+  NotificacaoAula: 'NotificacaoAula',
+  NotificacaoConteudo: 'NotificacaoConteudo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -452,6 +453,18 @@ export const NotificacaoAulaScalarFieldEnum = {
 } as const
 
 export type NotificacaoAulaScalarFieldEnum = (typeof NotificacaoAulaScalarFieldEnum)[keyof typeof NotificacaoAulaScalarFieldEnum]
+
+
+export const NotificacaoConteudoScalarFieldEnum = {
+  id: 'id',
+  empresaId: 'empresaId',
+  conteudoId: 'conteudoId',
+  enviada: 'enviada',
+  email: 'email',
+  criadoEm: 'criadoEm'
+} as const
+
+export type NotificacaoConteudoScalarFieldEnum = (typeof NotificacaoConteudoScalarFieldEnum)[keyof typeof NotificacaoConteudoScalarFieldEnum]
 
 
 export const SortOrder = {

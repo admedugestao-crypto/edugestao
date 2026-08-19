@@ -407,7 +407,8 @@ export const ModelName = {
   MaterialBibliotecaMateria: 'MaterialBibliotecaMateria',
   AgendaAula: 'AgendaAula',
   AgendaAulaMateria: 'AgendaAulaMateria',
-  NotificacaoAula: 'NotificacaoAula'
+  NotificacaoAula: 'NotificacaoAula',
+  NotificacaoConteudo: 'NotificacaoConteudo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -423,7 +424,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "metodoEnsino" | "tipoAvaliacao" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "conteudoMateria" | "materialBiblioteca" | "materialBibliotecaMateria" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula"
+    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "metodoEnsino" | "tipoAvaliacao" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "conteudoMateria" | "materialBiblioteca" | "materialBibliotecaMateria" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula" | "notificacaoConteudo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2203,6 +2204,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    NotificacaoConteudo: {
+      payload: Prisma.$NotificacaoConteudoPayload<ExtArgs>
+      fields: Prisma.NotificacaoConteudoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NotificacaoConteudoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NotificacaoConteudoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>
+        }
+        findFirst: {
+          args: Prisma.NotificacaoConteudoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NotificacaoConteudoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>
+        }
+        findMany: {
+          args: Prisma.NotificacaoConteudoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>[]
+        }
+        create: {
+          args: Prisma.NotificacaoConteudoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>
+        }
+        createMany: {
+          args: Prisma.NotificacaoConteudoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NotificacaoConteudoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>[]
+        }
+        delete: {
+          args: Prisma.NotificacaoConteudoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>
+        }
+        update: {
+          args: Prisma.NotificacaoConteudoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>
+        }
+        deleteMany: {
+          args: Prisma.NotificacaoConteudoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NotificacaoConteudoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NotificacaoConteudoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>[]
+        }
+        upsert: {
+          args: Prisma.NotificacaoConteudoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificacaoConteudoPayload>
+        }
+        aggregate: {
+          args: Prisma.NotificacaoConteudoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNotificacaoConteudo>
+        }
+        groupBy: {
+          args: Prisma.NotificacaoConteudoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificacaoConteudoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NotificacaoConteudoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificacaoConteudoCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2603,6 +2678,18 @@ export const NotificacaoAulaScalarFieldEnum = {
 export type NotificacaoAulaScalarFieldEnum = (typeof NotificacaoAulaScalarFieldEnum)[keyof typeof NotificacaoAulaScalarFieldEnum]
 
 
+export const NotificacaoConteudoScalarFieldEnum = {
+  id: 'id',
+  empresaId: 'empresaId',
+  conteudoId: 'conteudoId',
+  enviada: 'enviada',
+  email: 'email',
+  criadoEm: 'criadoEm'
+} as const
+
+export type NotificacaoConteudoScalarFieldEnum = (typeof NotificacaoConteudoScalarFieldEnum)[keyof typeof NotificacaoConteudoScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2930,6 +3017,7 @@ export type GlobalOmitConfig = {
   agendaAula?: Prisma.AgendaAulaOmit
   agendaAulaMateria?: Prisma.AgendaAulaMateriaOmit
   notificacaoAula?: Prisma.NotificacaoAulaOmit
+  notificacaoConteudo?: Prisma.NotificacaoConteudoOmit
 }
 
 /* Types for Logging */

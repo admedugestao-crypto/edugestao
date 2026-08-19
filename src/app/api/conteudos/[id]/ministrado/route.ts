@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { buscarAulaVinculada, materiasCompativeis } from "@/lib/conteudoAgenda";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
+import { enviarNotificacaoConteudoMinistrado } from "@/lib/notificacoes";
 
 export const dynamic = "force-dynamic";
 
@@ -141,6 +142,14 @@ export async function POST(
   } catch (e) {
     console.error("Falha ao gerar pagamento automático:", e);
     avisoPagamento = "Ministrado salvo, mas não foi possível gerar a cobrança automaticamente.";
+  }
+
+  // Best-effort: o conteúdo já foi marcado como Ministrado independente do
+  // e-mail dar certo ou não — falha aqui não deve derrubar a resposta.
+  try {
+    await enviarNotificacaoConteudoMinistrado(conteudo.id);
+  } catch (err) {
+    console.error(`[ConteudoMinistrado] Falha ao notificar responsável (conteudo ${conteudo.id}):`, err);
   }
 
   return NextResponse.json({ ok: true, pagamentoGerado, avisoPagamento });

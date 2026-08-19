@@ -1,5 +1,5 @@
 import { prisma } from "./prisma";
-import { enviarEmailProva, enviarEmailAula, enviarEmailAlertaFonnte, emailConfigurado, type EmailCredenciais } from "./email";
+import { enviarEmailProva, enviarEmailAula, enviarEmailAlertaFonnte, enviarEmailConteudoMinistrado, emailConfigurado, type EmailCredenciais } from "./email";
 import { limparEnv } from "./envUtil";
 
 // ── Formata número WhatsApp para o padrão internacional ─────────────────────
@@ -641,4 +641,51 @@ export async function processarVerificacaoFonnte(): Promise<{
   }
 
   return resultado;
+}
+
+// ── Conteúdo Ministrado — e-mail avulso pro responsável, disparado direto (não
+// pelo cron) na criação/marcação como Ministrado de um Conteudo. `conteudoId`
+// serve tanto pro disparo automático (respeita emailPausado) quanto pro
+// reenvio manual (reenviarConteudo em src/app/api/notificacoes/reenviar/
+// route.ts ignora emailPausado por decisão de produto, mesmo padrão de aula).
+export async function enviarNotificacaoConteudoMinistrado(conteudoId: string): Promise<{ ok: boolean; erro?: string }> {
+  const conteudo = await prisma.conteudo.findUnique({
+    where: { id: conteudoId },
+    include: {
+      aluno: { select: { nome: true, responsavel: true, emailResponsavel: true } },
+      materia: { select: { nome: true } },
+      aula: { include: { professora: { include: { usuario: { select: { nome: true } } } } } },
+      empresa: {
+        select: {
+          nome: true, emailPausado: true,
+          emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
+        },
+      },
+    },
+  });
+  if (!conteudo) return { ok: false, erro: "Conteúdo não encontrado." };
+  if (conteudo.empresa.emailPausado) return { ok: false, erro: "Envio de e-mail pausado para esta empresa." };
+  if (!conteudo.aluno.emailResponsavel) return { ok: false, erro: "Responsável sem e-mail cadastrado." };
+  if (!emailConfigurado(conteudo.empresa)) return { ok: false, erro: "SMTP não configurado para esta empresa." };
+
+  const envio = await enviarEmailConteudoMinistrado({
+    emailResponsavel: conteudo.aluno.emailResponsavel,
+    nomeEmpresa: conteudo.empresa.nome,
+    nomeResponsavel: conteudo.aluno.responsavel,
+    nomeAluno: conteudo.aluno.nome,
+    nomeMateria: conteudo.materia?.nome ?? null,
+    nomeProfessora: conteudo.aula?.professora.usuario.nome ?? "—",
+    topico: conteudo.topico,
+    descricao: conteudo.descricao,
+    arquivoUrl: conteudo.arquivoUrl,
+    data: conteudo.data,
+  }, conteudo.empresa);
+
+  await prisma.notificacaoConteudo.upsert({
+    where: { conteudoId },
+    update: { enviada: envio.ok, email: conteudo.aluno.emailResponsavel },
+    create: { empresaId: conteudo.empresaId, conteudoId, enviada: envio.ok, email: conteudo.aluno.emailResponsavel },
+  });
+
+  return envio;
 }

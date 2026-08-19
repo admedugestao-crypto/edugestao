@@ -65,6 +65,7 @@ model Empresa {
   notas               Nota[]
   notificacoesProva   NotificacaoProva[]
   notificacoesAula    NotificacaoAula[]
+  notificacoesConteudo NotificacaoConteudo[]
   calendarios         CalendarioEscolar[]
   materiaisBiblioteca MaterialBiblioteca[]
   metodosEnsino       MetodoEnsino[]
@@ -485,6 +486,7 @@ model Conteudo {
   materia Materia?    @relation(fields: [materiaId], references: [id])
   aula    AgendaAula? @relation(fields: [aulaId], references: [id], onDelete: SetNull)
   materias ConteudoMateria[]
+  notificacao NotificacaoConteudo?
 
   @@index([empresaId])
   @@index([alunoId])
@@ -622,4 +624,22 @@ model NotificacaoAula {
 
   @@index([empresaId])
   @@map("notificacoes_aula")
+}
+
+// ─── Notificações de Conteúdo Ministrado para Responsáveis ───────────────────
+// Só canal e-mail (reusa Empresa.emailPausado pro disparo automático — reenvio
+// manual ignora a pausa, mesmo padrão de NotificacaoAula).
+model NotificacaoConteudo {
+  id         String   @id @default(cuid())
+  empresaId  String
+  conteudoId String   @unique
+  enviada    Boolean  @default(false)
+  email      String?
+  criadoEm   DateTime @default(now())
+
+  empresa  Empresa  @relation(fields: [empresaId], references: [id])
+  conteudo Conteudo @relation(fields: [conteudoId], references: [id], onDelete: Cascade)
+
+  @@index([empresaId])
+  @@map("notificacoes_conteudo")
 }
