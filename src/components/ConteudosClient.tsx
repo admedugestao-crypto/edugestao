@@ -558,6 +558,14 @@ type RawConteudo = Omit<Conteudo, "aluno" | "agenda" | "materias"> & {
   materias: { materia: Materia }[];
 };
 
+// Conjunto vazio (de qualquer lado) = "todas as matérias", compatível com
+// tudo — mesma regra de src/lib/conteudoAgenda.ts, reimplementada aqui pra
+// não importar um módulo que carrega o Prisma Client no bundle do cliente.
+function materiasCompativeisLocal(aIds: string[], bIds: string[]): boolean {
+  if (aIds.length === 0 || bIds.length === 0) return true;
+  return aIds.some((id) => bIds.includes(id));
+}
+
 // Converte a resposta crua da API para o formato usado no grid (aluno.professora
 // como string, agenda, matérias achatadas) — usado ao criar/editar conteúdo
 // para manter o grid atualizado sem precisar de F5.
@@ -621,8 +629,19 @@ export default function ConteudosClient({
       // Se já existe um conteúdo vinculado a esta aula, edita o existente em
       // vez de abrir um formulário em branco (evita duplicar o registro).
       const existente = conteudos.find((c) => c.agenda?.id === aulaId);
+      // Sem vínculo direto: procura um conteúdo Planejado do mesmo aluno/dia/
+      // matéria que ainda não foi vinculado a nenhuma aula — evita duplicar
+      // quando o professor já tinha planejado o conteúdo antes de dar a aula.
+      const existentePlanejado = !existente && conteudos.find((c) =>
+        c.planejado && !c.agenda && c.alunoId === alunoId && c.data.split("T")[0] === data &&
+        materiasCompativeisLocal(c.materias.map((m) => m.id), materiaIds),
+      );
       if (existente) {
         abrirEdit(existente);
+      } else if (existentePlanejado) {
+        abrirEdit(existentePlanejado);
+        setEditConteudo((prev) => prev ? { ...prev, planejado: false } : prev);
+        setAulaIdPendente(aulaId);
       } else {
         setAulaIdPendente(aulaId);
         setNovo({ ...formVazio(), alunoId, materiaIds, data, descricao, planejado: false });
@@ -732,11 +751,15 @@ export default function ConteudosClient({
       }
 
       if (mudandoParaMinistrado) {
+        // aulaIdPendente: veio da agenda (marcar Realizada reaproveitando um
+        // conteúdo Planejado já existente) — vincula direto na aula certa em
+        // vez de deixar a rota de ministrado adivinhar por aluno/data/matéria.
+        const aulaAlvo = aulaIdEscolhido || aulaIdPendente || undefined;
         // Primeiro salva os outros campos via PUT (mantendo planejado=true por ora)
         const resPut = await fetch(`/api/conteudos/${editConteudo.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...editConteudo, planejado: true, arquivoUrl: editConteudo.arquivoUrl || null, aulaIdEscolhido: aulaIdEscolhido || undefined }),
+          body: JSON.stringify({ ...editConteudo, planejado: true, arquivoUrl: editConteudo.arquivoUrl || null, aulaIdEscolhido: aulaAlvo }),
         });
         if (!resPut.ok) {
           const d = await resPut.json();
@@ -751,7 +774,7 @@ export default function ConteudosClient({
         const resMin = await fetch(`/api/conteudos/${editConteudo.id}/ministrado`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ aulaId: aulaIdEscolhido || undefined }),
+          body: JSON.stringify({ aulaId: aulaAlvo }),
         });
         const dMin = await resMin.json();
         if (!resMin.ok) {
@@ -763,6 +786,7 @@ export default function ConteudosClient({
           return;
         }
         setCandidatasEdit(null);
+        setAulaIdPendente(null);
         const resFresh = await fetch(`/api/conteudos/${editConteudo.id}`);
         const dFresh = await resFresh.json();
         setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? mapConteudo(dFresh) : c));
@@ -1166,7 +1190,7 @@ export default function ConteudosClient({
                     {salvando ? "Salvando..." : "Salvar"}
                   </button>
                   <button
-                    onClick={() => { setEditConteudo(null); setErroEdit(""); setCandidatasEdit(null); }}
+                    onClick={() => { setEditConteudo(null); setErroEdit(""); setCandidatasEdit(null); setAulaIdPendente(null); }}
                     className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition-colors"
                   >
                     Cancelar

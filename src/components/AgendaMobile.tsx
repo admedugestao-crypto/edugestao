@@ -403,8 +403,14 @@ export default function AgendaMobile({
           return;
         }
         if (form.planejadoOriginal) {
-          // ainda estava Planejado — marcar Ministrado já atualiza a agenda para Realizada
-          const resMin = await fetch(`/api/conteudos/${form.id}/ministrado`, { method: "POST" });
+          // ainda estava Planejado — marcar Ministrado já atualiza a agenda para
+          // Realizada. Passa aulaId explícito (já sabemos qual é) pra vincular
+          // direto em vez de deixar a rota adivinhar por aluno/data/matéria.
+          const resMin = await fetch(`/api/conteudos/${form.id}/ministrado`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ aulaId }),
+          });
           const dMin = await resMin.json();
           if (!resMin.ok) {
             setErroConteudo(dMin.erro ?? "Erro ao marcar como Ministrado.");

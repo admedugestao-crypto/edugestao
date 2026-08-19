@@ -25,11 +25,52 @@ export async function GET(req: NextRequest) {
     include: { materia: true, materias: { select: { materia: true } } },
   });
 
-  if (conteudo && conteudo.empresaId !== scope.empresaId) {
-    return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
+  if (conteudo) {
+    if (conteudo.empresaId !== scope.empresaId) {
+      return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
+    }
+    return NextResponse.json(conteudo);
   }
 
-  return NextResponse.json(conteudo);
+  // Sem vínculo direto: procura um conteúdo Planejado do mesmo aluno/dia/
+  // matéria que ainda não foi vinculado a nenhuma aula — evita duplicar
+  // quando o professor já tinha planejado o conteúdo antes de dar a aula
+  // (mesma regra usada em ConteudosClient.tsx pro fluxo do desktop).
+  const aula = await prisma.agendaAula.findUnique({
+    where: { id: aulaId, empresaId: scope.empresaId },
+    select: {
+      alunoId: true, data: true, materiaId: true,
+      materias: { select: { materiaId: true } },
+    },
+  });
+  if (!aula) return NextResponse.json(null);
+
+  const aulaMateriaIds = aula.materias.length > 0
+    ? aula.materias.map((m) => m.materiaId)
+    : (aula.materiaId ? [aula.materiaId] : []);
+
+  const dY = aula.data.getUTCFullYear();
+  const dM = aula.data.getUTCMonth();
+  const dD = aula.data.getUTCDate();
+
+  const candidatos = await prisma.conteudo.findMany({
+    where: {
+      empresaId: scope.empresaId,
+      alunoId:   aula.alunoId,
+      planejado: true,
+      aulaId:    null,
+      data: {
+        gte: new Date(Date.UTC(dY, dM, dD)),
+        lt:  new Date(Date.UTC(dY, dM, dD + 1)),
+      },
+    },
+    include: { materia: true, materias: { select: { materia: true } } },
+  });
+  const compativel = candidatos.find((c) =>
+    materiasCompativeis(c.materias.map((m) => m.materia.id), aulaMateriaIds),
+  );
+
+  return NextResponse.json(compativel ?? null);
 }
 
 export async function POST(req: NextRequest) {
