@@ -434,6 +434,8 @@ export default function ConteudosMobile({
   const [editConteudo, setEditConteudo] = useState<(FormC & { id: string }) | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; topico: string } | null>(null);
   const [filtroProfId, setFiltroProfId]   = useState("");
+  const [filtroAlunoId, setFiltroAlunoId] = useState("");
+  const [filtroStatus, setFiltroStatus]   = useState<"todos" | "planejado" | "ministrado">("todos");
   const [salvando, setSalvando]           = useState(false);
   const pagamentoInfo = usePagamentoGeradoInfo();
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
@@ -657,9 +659,15 @@ export default function ConteudosMobile({
     });
   }
 
-  const conteudosFiltrados = filtroProfId
-    ? conteudos.filter((c) => alunos.find((a) => a.id === c.alunoId)?.professoraId === filtroProfId)
-    : conteudos;
+  const alunosOrdenados = [...alunos].sort((a, b) => a.nome.localeCompare(b.nome));
+
+  const conteudosFiltrados = conteudos.filter((c) => {
+    if (filtroProfId && alunos.find((a) => a.id === c.alunoId)?.professoraId !== filtroProfId) return false;
+    if (filtroAlunoId && c.alunoId !== filtroAlunoId) return false;
+    if (filtroStatus === "planejado" && !c.planejado) return false;
+    if (filtroStatus === "ministrado" && c.planejado) return false;
+    return true;
+  });
 
   const podeSalvarNovo = !!novo.alunoId && !!novo.topico && !!novo.data;
   const podeSalvarEdit = !!editConteudo?.alunoId && !!editConteudo?.topico && !!editConteudo?.data;
@@ -694,12 +702,34 @@ export default function ConteudosMobile({
         </div>
       )}
 
+      {/* ── Filtro aluno + status ────────────────────────────────────────── */}
+      <div className="bg-white border-b border-slate-200 px-4 py-2 shrink-0 space-y-2">
+        <select value={filtroAlunoId} onChange={(e) => setFiltroAlunoId(e.target.value)}
+          className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="">Todos os alunos</option>
+          {alunosOrdenados.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+        </select>
+        <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+          {(["todos", "planejado", "ministrado"] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setFiltroStatus(v)}
+              className={`flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                filtroStatus === v ? "bg-white shadow-sm text-slate-800" : "text-slate-500"
+              }`}
+            >
+              {v === "todos" ? "Todos" : v === "planejado" ? "📋 Planejado" : "✅ Ministrado"}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* ── Lista de conteúdos ──────────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {conteudosFiltrados.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">
             <p className="text-2xl mb-2">📚</p>
-            <p>Nenhum conteúdo registrado ainda.</p>
+            <p>{conteudos.length === 0 ? "Nenhum conteúdo registrado ainda." : "Nenhum conteúdo encontrado para o filtro aplicado."}</p>
           </div>
         ) : (
           conteudosFiltrados.map((c) => (

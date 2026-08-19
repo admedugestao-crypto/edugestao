@@ -609,6 +609,19 @@ export default function ConteudosClient({
   const [aulaIdPendente, setAulaIdPendente] = useState<string | null>(null);
   const pagamentoInfo = usePagamentoGeradoInfo();
 
+  // Filtros da listagem: aluno e status (Planejado/Ministrado)
+  const [filtroListaAlunoId, setFiltroListaAlunoId] = useState("");
+  const [filtroListaStatus, setFiltroListaStatus] = useState<"todos" | "planejado" | "ministrado">("todos");
+
+  const alunosOrdenados = [...alunos].sort((a, b) => a.nome.localeCompare(b.nome));
+
+  const conteudosFiltrados = conteudos.filter((c) => {
+    if (filtroListaAlunoId && c.alunoId !== filtroListaAlunoId) return false;
+    if (filtroListaStatus === "planejado" && !c.planejado) return false;
+    if (filtroListaStatus === "ministrado" && c.planejado) return false;
+    return true;
+  });
+
   // Alunos filtrados pelo professor selecionado (admin)
   const alunosFiltrados = filtroProfId
     ? alunos.filter((a) => a.professoraId === filtroProfId)
@@ -868,13 +881,45 @@ export default function ConteudosClient({
         Registrar conteúdo
       </button>
 
+      {conteudos.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 p-3 flex flex-col sm:flex-row gap-3">
+          <select
+            value={filtroListaAlunoId}
+            onChange={(e) => setFiltroListaAlunoId(e.target.value)}
+            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">Todos os alunos</option>
+            {alunosOrdenados.map((a) => (
+              <option key={a.id} value={a.id}>{a.nome}</option>
+            ))}
+          </select>
+          <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+            {(["todos", "planejado", "ministrado"] as const).map((v) => (
+              <button
+                key={v}
+                onClick={() => setFiltroListaStatus(v)}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  filtroListaStatus === v ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                {v === "todos" ? "Todos" : v === "planejado" ? "📋 Planejado" : "✅ Ministrado"}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="space-y-2">
         {conteudos.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
             Nenhum conteúdo registrado ainda.
           </div>
+        ) : conteudosFiltrados.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
+            Nenhum conteúdo encontrado para o filtro aplicado.
+          </div>
         ) : (
-          conteudos.map((c) => (
+          conteudosFiltrados.map((c) => (
             <div
               key={c.id}
               className="bg-white rounded-xl border border-slate-200 p-4 flex items-start gap-4 group"
