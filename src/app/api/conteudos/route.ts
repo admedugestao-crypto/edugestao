@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
-import { validarAgenda, materiasCompativeis } from "@/lib/conteudoAgenda";
+import { validarAulaParaMinistrado, materiasCompativeis, type AulaCandidata } from "@/lib/conteudoAgenda";
 import { enviarNotificacaoConteudoMinistrado } from "@/lib/notificacoes";
+import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 
 export const dynamic = "force-dynamic";
 
@@ -95,10 +96,21 @@ export async function POST(req: NextRequest) {
 
   // Planejado: sem validação de agenda
   // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após
-  // Ministrado avulso: exige aula com status REALIZADA
+  // Ministrado avulso (sem vir da tela de Agenda): impreterivelmente precisa
+  // achar uma Aula Agendada compatível pra vincular — não dá pra registrar
+  // um Ministrado "solto", sem aula por trás. A função já retorna a aula
+  // encontrada, que é usada abaixo pra vincular e marcar Realizada.
+  let aulaMinistradoAvulso: AulaCandidata | null = null;
   if (!planejado && !aulaId) {
-    const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdEscolhido, materiaIds);
-    if (!validacao.ok) return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
+    const resultado = await validarAulaParaMinistrado({
+      empresaId: scope.empresaId,
+      alunoId: body.alunoId,
+      data: dataAula,
+      materiaIds,
+      aulaId: aulaIdEscolhido,
+    });
+    if (!resultado.ok) return NextResponse.json({ erro: resultado.erro, candidatas: resultado.candidatas }, { status: 422 });
+    aulaMinistradoAvulso = resultado.aula;
   }
 
   // Aviso (não bloqueio): data não-futura e já existe conteúdo Ministrado
@@ -129,7 +141,7 @@ export async function POST(req: NextRequest) {
         empresaId:  scope.empresaId,
         alunoId:    body.alunoId,
         materiaId:  materiaIds[0] ?? null,
-        aulaId: aulaId || (!planejado ? aulaIdEscolhido : null),
+        aulaId: aulaId || aulaMinistradoAvulso?.id || null,
         topico:     body.topico,
         descricao:  body.descricao  || null,
         arquivoUrl: body.arquivoUrl || null,
@@ -158,6 +170,25 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Ministrado avulso recém-vinculado a uma Aula Agendada: marca a agenda
+    // como Realizada e gera a cobrança na hora — mesmo comportamento de
+    // quem converte um Planejado pra Ministrado (ver /ministrado/route.ts).
+    let avisoPagamento: string | undefined;
+    let pagamentoGerado: ParcelaGerada | undefined;
+    if (aulaMinistradoAvulso) {
+      await prisma.agendaAula.update({
+        where: { id: aulaMinistradoAvulso.id },
+        data: { status: "REALIZADA" },
+      });
+      try {
+        const resultado = await gerarPagamentoAula(scope.empresaId, aulaMinistradoAvulso.id);
+        if (!resultado.semCobranca) pagamentoGerado = resultado.parcela;
+      } catch (e) {
+        console.error("Falha ao gerar pagamento automático:", e);
+        avisoPagamento = "Conteúdo salvo, mas não foi possível gerar a cobrança automaticamente.";
+      }
+    }
+
     if (!planejado) {
       // Best-effort: criado com sucesso independente do e-mail dar certo.
       try {
@@ -167,7 +198,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json(conteudo, { status: 201 });
+    return NextResponse.json({ ...conteudo, pagamentoGerado, avisoPagamento }, { status: 201 });
   } catch (err: any) {
     if (err?.code === "P2002" && err?.meta?.target?.includes("aulaId")) {
       return NextResponse.json({ erro: "Já existe um conteúdo registrado para esta aula." }, { status: 409 });

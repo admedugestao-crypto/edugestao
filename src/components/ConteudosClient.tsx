@@ -708,6 +708,10 @@ export default function ConteudosClient({
 
       setModal(false);
       setNovo(formVazio());
+      // Ministrado avulso vinculado a uma Aula Agendada: o servidor já marcou
+      // a agenda como Realizada e pode ter gerado cobrança — mesmo aviso do
+      // fluxo acima.
+      if (data.pagamentoGerado) pagamentoInfo.mostrar(data.pagamentoGerado);
     } catch {
       setErroNovo("Erro de comunicação com o servidor.");
     } finally {

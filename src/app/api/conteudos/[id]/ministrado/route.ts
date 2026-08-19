@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
-import { buscarAulaVinculada, materiasCompativeis } from "@/lib/conteudoAgenda";
+import { validarAulaParaMinistrado } from "@/lib/conteudoAgenda";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 import { enviarNotificacaoConteudoMinistrado } from "@/lib/notificacoes";
 
@@ -34,91 +34,23 @@ export async function POST(
   }
   if (!conteudo.planejado) return NextResponse.json({ erro: "Conteúdo já está Ministrado." }, { status: 422 });
 
-  const dY = conteudo.data.getUTCFullYear();
-  const dM = conteudo.data.getUTCMonth();
-  const dD = conteudo.data.getUTCDate();
-
   // Prioriza o vínculo exato (aulaId gravado, ou escolhido manualmente pelo
   // usuário) — só cai para a busca por aluno+data (materia-aware, segura
   // contra ambiguidade) quando nenhum dos dois está disponível.
   const conteudoMateriaIds = conteudo.materias.map((m) => m.materiaId);
 
-  const { aula, ambigua, candidatas } = await buscarAulaVinculada({
+  const resultado = await validarAulaParaMinistrado({
     empresaId: scope.empresaId,
-    aulaId: conteudo.aulaId || aulaIdEscolhido,
     alunoId: conteudo.alunoId,
     data: conteudo.data,
     materiaIds: conteudoMateriaIds,
+    aulaId: conteudo.aulaId || aulaIdEscolhido,
+    conteudoIdExcluir: conteudo.id,
   });
-
-  if (!aula) {
-    return NextResponse.json(
-      {
-        erro: ambigua
-          ? "Este aluno tem mais de uma Aula Agendada nesta data/matéria — escolha qual delas vincular."
-          : "Nenhuma Aula Agendada encontrada para este aluno nesta data.",
-        candidatas: ambigua ? candidatas : undefined,
-      },
-      { status: 422 },
-    );
+  if (!resultado.ok) {
+    return NextResponse.json({ erro: resultado.erro, candidatas: resultado.candidatas }, { status: 422 });
   }
-
-  // Valida que há pelo menos 1 matéria em comum entre o conteúdo e a Aula
-  // Agendada (conjunto vazio de qualquer lado = "Todas as matérias", sempre compatível)
-  if (!materiasCompativeis(aula.materiaIds, conteudoMateriaIds)) {
-    return NextResponse.json(
-      {
-        erro: `A matéria do conteúdo (${conteudo.materia?.nome ?? conteudo.materiaId}) não corresponde à matéria da Aula Agendada (${aula.materia?.nome ?? aula.materiaId}).`,
-      },
-      { status: 422 },
-    );
-  }
-
-  // Bloqueia se ainda não passou o horário de término da aula (fuso UTC-3 Brasil)
-  if (aula.horaFim) {
-    const [hh, mm] = aula.horaFim.split(":").map(Number);
-    // horaFim é horário local (UTC-3), converte para UTC somando 3h
-    const fimUTC = new Date(Date.UTC(dY, dM, dD, hh + 3, mm));
-    if (new Date() < fimUTC) {
-      return NextResponse.json(
-        { erro: `Não é possível marcar como Ministrado antes do término da Aula Agendada (${aula.horaFim}).` },
-        { status: 422 },
-      );
-    }
-  } else {
-    // Sem horário definido: bloqueia se a data ainda não passou
-    const hojeUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate() + 1));
-    if (conteudo.data >= hojeUTC) {
-      return NextResponse.json(
-        { erro: "Não é possível marcar como Ministrado: a Aula Agendada ainda não ocorreu." },
-        { status: 422 },
-      );
-    }
-  }
-
-  if (aula.status === "CANCELADA") {
-    return NextResponse.json(
-      { erro: "Não é possível marcar como Ministrado: a Aula Agendada está Cancelada." },
-      { status: 422 },
-    );
-  }
-
-  if (aula.status === "FALTA_PROFESSOR") {
-    return NextResponse.json(
-      { erro: "Não é possível marcar como Ministrado: a Aula Agendada está registrada como Falta do Professor." },
-      { status: 422 },
-    );
-  }
-
-  // Essa Aula Agendada já tem outro conteúdo vinculado (ex: dois conteúdos
-  // criados para o mesmo aluno/matéria/dia) — não deixa vincular de novo.
-  const outroVinculado = await prisma.conteudo.findUnique({ where: { aulaId: aula.id }, select: { id: true, topico: true } });
-  if (outroVinculado && outroVinculado.id !== conteudo.id) {
-    return NextResponse.json(
-      { erro: `Esta Aula Agendada já está vinculada a outro conteúdo ("${outroVinculado.topico}").` },
-      { status: 422 },
-    );
-  }
+  const { aula } = resultado;
 
   // Marca a agenda como REALIZADA, o conteúdo como Ministrado, e grava o vínculo exato
   await prisma.$transaction([

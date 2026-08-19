@@ -115,3 +115,85 @@ export async function validarAgenda(
 
   return { ok: true };
 }
+
+export type AulaMinistradaResultado =
+  | { ok: true; aula: AulaCandidata }
+  | { ok: false; erro: string; candidatas?: AulaCandidata[] };
+
+// Localiza e valida a Aula Agendada por trás de um conteúdo Ministrado —
+// usado tanto ao criar um conteúdo já como Ministrado (avulso, sem vir da
+// tela de Agenda) quanto ao converter um Planejado existente pra Ministrado.
+// Nos dois casos a regra é a mesma: tem que existir uma Aula Agendada
+// compatível (não Cancelada, não Falta do Professor, ainda sem outro
+// conteúdo vinculado) e o horário dela já precisa ter passado — não dá pra
+// "ministrar" uma aula que ainda não aconteceu. Diferente de validarAgenda
+// (que só confirma o status), esta função RETORNA a aula encontrada, pra
+// quem chama vincular o aulaId e marcar a agenda como Realizada.
+export async function validarAulaParaMinistrado(params: {
+  empresaId: string;
+  alunoId: string;
+  data: Date;
+  materiaIds?: string[];
+  aulaId?: string | null;
+  conteudoIdExcluir?: string;
+}): Promise<AulaMinistradaResultado> {
+  const { aula, ambigua, candidatas } = await buscarAulaVinculada({
+    empresaId: params.empresaId,
+    aulaId: params.aulaId,
+    alunoId: params.alunoId,
+    data: params.data,
+    materiaIds: params.materiaIds,
+  });
+
+  if (!aula) {
+    return {
+      ok: false,
+      erro: ambigua
+        ? "Este aluno tem mais de uma Aula Agendada nesta data/matéria — escolha qual delas vincular."
+        : "Nenhuma Aula Agendada encontrada para este aluno nesta data.",
+      candidatas: ambigua ? candidatas : undefined,
+    };
+  }
+
+  if (!materiasCompativeis(aula.materiaIds, params.materiaIds)) {
+    return {
+      ok: false,
+      erro: `A matéria do conteúdo não corresponde à matéria da Aula Agendada (${aula.materia?.nome ?? "—"}).`,
+    };
+  }
+
+  // Bloqueia se ainda não passou o horário de término da aula (fuso UTC-3 Brasil)
+  const dY = params.data.getUTCFullYear();
+  const dM = params.data.getUTCMonth();
+  const dD = params.data.getUTCDate();
+  if (aula.horaFim) {
+    const [hh, mm] = aula.horaFim.split(":").map(Number);
+    // horaFim é horário local (UTC-3), converte para UTC somando 3h
+    const fimUTC = new Date(Date.UTC(dY, dM, dD, hh + 3, mm));
+    if (new Date() < fimUTC) {
+      return { ok: false, erro: `Não é possível marcar como Ministrado antes do término da Aula Agendada (${aula.horaFim}).` };
+    }
+  } else {
+    // Sem horário definido: bloqueia se a data ainda não passou
+    const hojeUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate() + 1));
+    if (params.data >= hojeUTC) {
+      return { ok: false, erro: "Não é possível marcar como Ministrado: a Aula Agendada ainda não ocorreu." };
+    }
+  }
+
+  if (aula.status === "CANCELADA") {
+    return { ok: false, erro: "Não é possível marcar como Ministrado: a Aula Agendada está Cancelada." };
+  }
+  if (aula.status === "FALTA_PROFESSOR") {
+    return { ok: false, erro: "Não é possível marcar como Ministrado: a Aula Agendada está registrada como Falta do Professor." };
+  }
+
+  // Essa Aula Agendada já tem outro conteúdo vinculado (ex: dois conteúdos
+  // criados para o mesmo aluno/matéria/dia) — não deixa vincular de novo.
+  const outroVinculado = await prisma.conteudo.findUnique({ where: { aulaId: aula.id }, select: { id: true, topico: true } });
+  if (outroVinculado && outroVinculado.id !== params.conteudoIdExcluir) {
+    return { ok: false, erro: `Esta Aula Agendada já está vinculada a outro conteúdo ("${outroVinculado.topico}").` };
+  }
+
+  return { ok: true, aula };
+}
