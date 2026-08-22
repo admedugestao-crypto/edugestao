@@ -12,6 +12,7 @@ import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
 import SeletorMaterias from "@/components/SeletorMaterias";
 import BottomNavMobile from "@/components/BottomNavMobile";
+import DescricaoPorVozMobile from "@/components/DescricaoPorVozMobile";
 
 type Materia = { id: string; nome: string; cor: string };
 type Aluno = {
@@ -334,11 +335,10 @@ function CamposFormMobile({
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
       </div>
 
-      <div>
-        <label className="text-xs font-medium text-slate-500 block mb-1">Descrição</label>
-        <textarea rows={3} value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-          className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm resize-none"/>
-      </div>
+      <DescricaoPorVozMobile
+        value={form.descricao}
+        onChange={(descricao) => setForm({ ...form, descricao })}
+      />
 
       <div>
         <label className="text-xs font-medium text-slate-500 block mb-1">Anexo</label>
