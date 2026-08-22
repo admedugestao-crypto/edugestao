@@ -18,6 +18,7 @@
     "@capacitor/cli": "^8.4.2",
     "@capacitor/core": "^8.4.2",
     "@capacitor/ios": "^8.4.2",
+    "@capgo/capacitor-speech-recognition": "^8.1.11",
     "@hookform/resolvers": "^5.2.2",
     "@libsql/client": "^0.17.3",
     "@prisma/adapter-libsql": "^7.8.0",
