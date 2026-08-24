@@ -11,8 +11,7 @@ type Props = {
 };
 
 export default function DescricaoPorVozMobile({ value, onChange }: Props) {
-  const [campoEmFoco, setCampoEmFoco] = useState(false);
-  const [disponivel, setDisponivel] = useState(false);
+  const [nativo, setNativo] = useState(false);
   const [ouvindo, setOuvindo] = useState(false);
   const [iniciando, setIniciando] = useState(false);
   const [erro, setErro] = useState("");
@@ -21,12 +20,10 @@ export default function DescricaoPorVozMobile({ value, onChange }: Props) {
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
-
-    SpeechRecognition.available()
-      .then(({ available }) => setDisponivel(available))
-      .catch(() => setDisponivel(false));
+    const timer = window.setTimeout(() => setNativo(true), 0);
 
     return () => {
+      window.clearTimeout(timer);
       listenersRef.current.forEach((listener) => listener.remove());
       SpeechRecognition.stop().catch(() => undefined);
     };
@@ -94,12 +91,10 @@ export default function DescricaoPorVozMobile({ value, onChange }: Props) {
         <textarea
           rows={3}
           value={value}
-          onFocus={() => setCampoEmFoco(true)}
-          onBlur={() => setCampoEmFoco(false)}
           onChange={(e) => onChange(e.target.value)}
           className="w-full border border-slate-200 rounded-xl px-3 py-3 pr-12 text-sm resize-none"
         />
-        {campoEmFoco && disponivel && (
+        {nativo && (
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}
