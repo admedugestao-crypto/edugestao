@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Plus, RefreshCw, X,
   CheckCircle2, XCircle, Clock, UserX, UserCheck,
-  CalendarDays, List, Zap, Trash2, Printer, BookOpen,
+  CalendarDays, Calendar, List, Zap, Trash2, Printer, BookOpen,
 } from "lucide-react";
-import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
+import { format, addDays, addMonths, startOfWeek, startOfMonth, isSameDay, isSameMonth, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
@@ -62,7 +62,7 @@ type Aula = {
 type StatusAula = "AGENDADA" | "REALIZADA" | "CANCELADA" | "FALTA_ALUNO" | "FALTA_PROFESSOR";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
-const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const DIAS_PT = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 const DIAS_SEMANA_FULL = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
 const STATUS_CONFIG: Record<StatusAula, { label: string; cor: string; bg: string; icon: React.ReactNode }> = {
@@ -82,6 +82,10 @@ function parseLocal(iso: string) {
 function semanaInicio(ref: Date) {
   // Segunda como início da semana
   return startOfWeek(ref, { weekStartsOn: 1 });
+}
+
+function capitalizar(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function corAluno(id: string) {
@@ -133,9 +137,10 @@ export default function AgendaClient({
   isProfessor?: boolean;
 }) {
   const router = useRouter();
-  const [vista, setVista]         = useState<"semana" | "dia">("semana");
+  const [vista, setVista]         = useState<"semana" | "dia" | "mes">("mes");
   const [semanaRef, setSemanaRef] = useState(() => semanaInicio(new Date()));
   const [diaRef, setDiaRef]       = useState(new Date());
+  const [mesRef, setMesRef]       = useState(() => startOfMonth(new Date()));
   const [aulas, setAulas]         = useState<Aula[]>([]);
   const [carregando, setCarregando] = useState(false);
 
@@ -225,11 +230,14 @@ export default function AgendaClient({
       if (vista === "semana") {
         inicio = semanaRef;
         fim    = addDays(semanaRef, 6);
+      } else if (vista === "mes") {
+        inicio = semanaInicio(startOfMonth(mesRef));
+        fim    = addDays(inicio, 41);
       } else {
         inicio = diaRef;
         fim    = diaRef;
       }
-      const fmt = (d: Date) => d.toISOString().split("T")[0];
+      const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       let url = `/api/agenda?inicio=${fmt(inicio)}&fim=${fmt(fim)}`;
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
       const res  = await fetch(url);
@@ -238,23 +246,26 @@ export default function AgendaClient({
     } finally {
       setCarregando(false);
     }
-  }, [vista, semanaRef, diaRef, isProfessor, filtroProfId]);
+  }, [vista, semanaRef, diaRef, mesRef, isProfessor, filtroProfId]);
 
   useEffect(() => { carregar(); }, [carregar]);
 
   // ── Navegação ──────────────────────────────────────────────────────────────
   function navAnterior() {
     if (vista === "semana") setSemanaRef((s) => addDays(s, -7));
+    else if (vista === "mes") setMesRef((m) => addMonths(m, -1));
     else setDiaRef((d) => addDays(d, -1));
   }
   function navProximo() {
     if (vista === "semana") setSemanaRef((s) => addDays(s, 7));
+    else if (vista === "mes") setMesRef((m) => addMonths(m, 1));
     else setDiaRef((d) => addDays(d, 1));
   }
   function irHoje() {
     const hoje = new Date();
     setSemanaRef(semanaInicio(hoje));
     setDiaRef(hoje);
+    setMesRef(startOfMonth(hoje));
   }
 
   // ── Gerar semana ───────────────────────────────────────────────────────────
@@ -647,6 +658,12 @@ export default function AgendaClient({
   // ── Dados calculados ───────────────────────────────────────────────────────
   const diasGrade = Array.from({ length: 7 }, (_, i) => addDays(semanaRef, i));
 
+  // Grade mensal fixa de seis semanas, iniciada na segunda-feira.
+  const diasGradeMes = useMemo(() => {
+    const inicio = semanaInicio(startOfMonth(mesRef));
+    return Array.from({ length: 42 }, (_, i) => addDays(inicio, i));
+  }, [mesRef]);
+
   // Matérias únicas derivadas dos alunos (garante que o filtro aparece mesmo
   // quando a prop `materias` vem vazia por falta de vínculo professora-matéria)
   const materiasDisponiveis: Materia[] = useMemo(() => {
@@ -837,6 +854,10 @@ export default function AgendaClient({
       <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
         {/* Vista */}
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+          <button onClick={() => setVista("mes")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${vista === "mes" ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"}`}>
+            <Calendar size={13}/> Mês
+          </button>
           <button onClick={() => setVista("semana")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${vista === "semana" ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"}`}>
             <CalendarDays size={13}/> Semana
@@ -855,7 +876,9 @@ export default function AgendaClient({
           <span className="text-sm font-semibold text-slate-700 min-w-[160px] text-center">
             {vista === "semana"
               ? `${format(semanaRef, "dd/MM", { locale: ptBR })} – ${format(addDays(semanaRef, 6), "dd/MM/yyyy", { locale: ptBR })}`
-              : format(diaRef, "EEEE, dd/MM/yyyy", { locale: ptBR })
+              : vista === "mes"
+                ? capitalizar(format(mesRef, "MMMM 'de' yyyy", { locale: ptBR }))
+                : format(diaRef, "EEEE, dd/MM/yyyy", { locale: ptBR })
             }
           </span>
           <button onClick={navProximo} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
@@ -1000,6 +1023,62 @@ export default function AgendaClient({
             : "bg-emerald-50 border-emerald-200 text-emerald-800"
         }`}>
           {msgLimpar}
+        </div>
+      )}
+
+      {/* ── Vista Mês ──────────────────────────────────────────────────────── */}
+      {vista === "mes" && (
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="grid grid-cols-7 border-b border-slate-100">
+            {DIAS_PT.map((d) => (
+              <div key={d} className="py-2 px-2 text-center text-xs font-semibold text-slate-500 border-r last:border-r-0 border-slate-100">
+                {d}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7">
+            {diasGradeMes.map((dia, i) => {
+              const hoje  = isToday(dia);
+              const noMes = isSameMonth(dia, mesRef);
+              const aulasDia = aulasNoDia(dia);
+              const MAX_VISIVEIS = 3;
+              return (
+                <div key={i}
+                  onClick={() => { setDiaRef(dia); setVista("dia"); }}
+                  title="Ver dia"
+                  className={`min-h-[96px] border-r border-b border-slate-100 p-1.5 align-top cursor-pointer transition-colors ${
+                    !noMes ? "bg-slate-50/60" : hoje ? "bg-indigo-50/40" : "hover:bg-slate-50"
+                  }`}
+                >
+                  <p className={`text-xs font-semibold mb-1 ${
+                    !noMes ? "text-slate-300" : hoje ? "text-indigo-600" : "text-slate-600"
+                  }`}>
+                    {format(dia, "dd")}
+                  </p>
+                  <div className="space-y-0.5">
+                    {aulasDia.slice(0, MAX_VISIVEIS).map((a) => {
+                      const cor = a.materia?.cor ?? corAluno(a.alunoId);
+                      return (
+                        <div key={a.id}
+                          title={`${a.horaInicio ?? ""} ${a.aluno.nome}`}
+                          className="text-[10px] font-medium truncate px-1 py-0.5 rounded"
+                          style={{ backgroundColor: cor + "22", color: cor }}
+                        >
+                          {a.horaInicio && <span className="font-semibold">{a.horaInicio} </span>}
+                          {a.aluno.nome}
+                        </div>
+                      );
+                    })}
+                    {aulasDia.length > MAX_VISIVEIS && (
+                      <p className="text-[10px] text-slate-400 font-medium px-1">
+                        +{aulasDia.length - MAX_VISIVEIS} mais
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
