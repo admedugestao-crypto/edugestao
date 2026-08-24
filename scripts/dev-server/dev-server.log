@@ -1,0 +1,1983 @@
+2026-07-24T17:24:27.0147038-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1802ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /plataforma/login 200 in 640ms (next.js: 256ms, proxy.ts: 118ms, application-code: 266ms)
+ GET /login 200 in 296ms (next.js: 68ms, proxy.ts: 17ms, application-code: 210ms)
+ GET /login 200 in 85ms (next.js: 7ms, proxy.ts: 10ms, application-code: 67ms)
+ GET /api/auth/providers 200 in 1938ms (next.js: 1877ms, proxy.ts: 7ms, application-code: 54ms)
+ GET /api/auth/csrf 200 in 717ms (next.js: 693ms, proxy.ts: 8ms, application-code: 17ms)
+ POST /api/auth/callback/credentials-plataforma 200 in 1402ms (next.js: 11ms, proxy.ts: 8ms, application-code: 1384ms)
+ GET /plataforma 200 in 886ms (next.js: 737ms, proxy.ts: 13ms, application-code: 135ms)
+ GET /plataforma/empresas 200 in 701ms (next.js: 579ms, proxy.ts: 19ms, application-code: 103ms)
+ GET /plataforma/empresas 200 in 73ms (next.js: 12ms, proxy.ts: 11ms, application-code: 50ms)
+ GET /api/plataforma/empresas 200 in 362ms (next.js: 86ms, proxy.ts: 13ms, application-code: 262ms)
+ GET /api/plataforma/empresas 200 in 235ms (next.js: 6ms, proxy.ts: 9ms, application-code: 221ms)
+ GET /plataforma/usuarios 200 in 87ms (next.js: 44ms, proxy.ts: 7ms, application-code: 36ms)
+ GET /api/plataforma/empresas 200 in 1119ms (next.js: 58ms, proxy.ts: 16ms, application-code: 1045ms)
+ GET /api/plataforma/usuarios 200 in 1374ms (next.js: 49ms, proxy.ts: 20ms, application-code: 1305ms)
+ GET /api/plataforma/empresas 200 in 257ms (next.js: 7ms, proxy.ts: 10ms, application-code: 240ms)
+ GET /api/plataforma/usuarios 200 in 454ms (next.js: 6ms, proxy.ts: 14ms, application-code: 434ms)
+ POST /api/plataforma/usuarios 201 in 1402ms (next.js: 5ms, proxy.ts: 6ms, application-code: 1391ms)
+ GET /api/plataforma/empresas 200 in 1031ms (next.js: 9ms, proxy.ts: 11ms, application-code: 1011ms)
+ GET /api/plataforma/usuarios 200 in 1253ms (next.js: 5ms, proxy.ts: 13ms, application-code: 1234ms)
+ PATCH /api/plataforma/usuarios/cd42885f-7731-49f7-a511-2ed1038ff771 200 in 2.3s (next.js: 1609ms, proxy.ts: 6ms, application-code: 645ms)
+ GET /api/plataforma/empresas 200 in 243ms (next.js: 14ms, proxy.ts: 17ms, application-code: 213ms)
+ GET /api/plataforma/usuarios 200 in 451ms (next.js: 6ms, proxy.ts: 19ms, application-code: 426ms)
+ GET /api/auth/csrf 200 in 671ms (next.js: 660ms, proxy.ts: 3ms, application-code: 8ms)
+ POST /api/auth/signout 200 in 26ms (next.js: 8ms, proxy.ts: 5ms, application-code: 12ms)
+ GET /plataforma/login 200 in 82ms (next.js: 6ms, proxy.ts: 8ms, application-code: 69ms)
+ GET /login 200 in 144ms (next.js: 31ms, proxy.ts: 13ms, application-code: 100ms)
+ GET /login 200 in 50ms (next.js: 4ms, proxy.ts: 3ms, application-code: 43ms)
+ GET /api/auth/providers 200 in 673ms (next.js: 662ms, proxy.ts: 4ms, application-code: 7ms)
+ GET /api/auth/csrf 200 in 32ms (next.js: 8ms, proxy.ts: 4ms, application-code: 20ms)
+ POST /api/auth/callback/credentials-plataforma 200 in 1176ms (next.js: 10ms, proxy.ts: 5ms, application-code: 1160ms)
+ GET /plataforma 200 in 48ms (next.js: 5ms, proxy.ts: 12ms, application-code: 31ms)
+ GET /plataforma/empresas 200 in 57ms (next.js: 6ms, proxy.ts: 13ms, application-code: 38ms)
+ GET /plataforma/empresas 200 in 47ms (next.js: 10ms, proxy.ts: 6ms, application-code: 31ms)
+ GET /api/plataforma/empresas 200 in 251ms (next.js: 5ms, proxy.ts: 6ms, application-code: 240ms)
+ GET /api/plataforma/empresas 200 in 236ms (next.js: 6ms, proxy.ts: 7ms, application-code: 223ms)
+ GET /login 200 in 82ms (next.js: 7ms, proxy.ts: 6ms, application-code: 69ms)
+ GET /login 200 in 143ms (next.js: 23ms, proxy.ts: 33ms, application-code: 87ms)
+ GET /login 200 in 286ms (next.js: 7ms, proxy.ts: 4ms, application-code: 275ms)
+ GET /plataforma 307 in 327ms (next.js: 5ms, proxy.ts: 10ms, application-code: 312ms)
+ GET /plataforma/empresas 200 in 93ms (next.js: 6ms, proxy.ts: 8ms, application-code: 79ms)
+ GET /api/auth/providers 200 in 710ms (next.js: 686ms, proxy.ts: 5ms, application-code: 19ms)
+ GET /api/auth/csrf 200 in 40ms (next.js: 9ms, proxy.ts: 4ms, application-code: 27ms)
+ POST /api/auth/callback/credentials 401 in 2.1s (next.js: 9ms, proxy.ts: 8ms, application-code: 2.1s)
+ GET /plataforma/login 200 in 79ms (next.js: 6ms, proxy.ts: 4ms, application-code: 69ms)
+ GET /login 200 in 120ms (next.js: 21ms, proxy.ts: 15ms, application-code: 83ms)
+ GET /login 200 in 145ms (next.js: 6ms, proxy.ts: 5ms, application-code: 134ms)
+ GET /plataforma 307 in 209ms (next.js: 45ms, proxy.ts: 6ms, application-code: 158ms)
+ GET /plataforma/empresas 200 in 77ms (next.js: 5ms, proxy.ts: 7ms, application-code: 65ms)
+ GET /api/auth/providers 200 in 681ms (next.js: 668ms, proxy.ts: 5ms, application-code: 8ms)
+ GET /api/auth/csrf 200 in 40ms (next.js: 12ms, proxy.ts: 4ms, application-code: 23ms)
+ POST /api/auth/callback/credentials-plataforma 401 in 3.1s (next.js: 10ms, proxy.ts: 6ms, application-code: 3.1s)
+ GET /api/auth/providers 200 in 691ms (next.js: 679ms, proxy.ts: 4ms, application-code: 8ms)
+ GET /api/auth/csrf 200 in 23ms (next.js: 6ms, proxy.ts: 4ms, application-code: 13ms)
+ POST /api/auth/callback/credentials-plataforma 401 in 1411ms (next.js: 10ms, proxy.ts: 4ms, application-code: 1397ms)
+ GET /plataforma/login 200 in 82ms (next.js: 6ms, proxy.ts: 8ms, application-code: 68ms)
+ GET /login 200 in 112ms (next.js: 16ms, proxy.ts: 27ms, application-code: 68ms)
+ GET /login 200 in 171ms (next.js: 7ms, proxy.ts: 5ms, application-code: 158ms)
+ GET /plataforma 307 in 209ms (next.js: 8ms, proxy.ts: 14ms, application-code: 188ms)
+ GET /plataforma/empresas 200 in 87ms (next.js: 6ms, proxy.ts: 8ms, application-code: 74ms)
+ GET /api/auth/providers 200 in 671ms (next.js: 656ms, proxy.ts: 5ms, application-code: 10ms)
+ GET /api/auth/csrf 200 in 37ms (next.js: 11ms, proxy.ts: 4ms, application-code: 22ms)
+ POST /api/auth/callback/credentials-plataforma 200 in 1250ms (next.js: 11ms, proxy.ts: 6ms, application-code: 1233ms)
+ GET /plataforma 200 in 49ms (next.js: 4ms, proxy.ts: 9ms, application-code: 36ms)
+ GET /plataforma/empresas 200 in 141ms (next.js: 9ms, proxy.ts: 21ms, application-code: 112ms)
+ GET /plataforma/empresas 200 in 124ms (next.js: 52ms, proxy.ts: 8ms, application-code: 64ms)
+ GET /plataforma 307 in 239ms (next.js: 12ms, proxy.ts: 9ms, application-code: 218ms)
+ GET /plataforma/empresas 200 in 209ms (next.js: 8ms, proxy.ts: 10ms, application-code: 191ms)
+ GET /plataforma 307 in 179ms (next.js: 9ms, proxy.ts: 22ms, application-code: 148ms)
+ GET /plataforma/empresas 200 in 69ms (next.js: 8ms, proxy.ts: 6ms, application-code: 55ms)
+ GET /plataforma 307 in 83ms (next.js: 4ms, proxy.ts: 5ms, application-code: 74ms)
+ GET /plataforma/empresas 200 in 71ms (next.js: 4ms, proxy.ts: 6ms, application-code: 62ms)
+ GET /api/plataforma/empresas 200 in 850ms (next.js: 25ms, proxy.ts: 14ms, application-code: 811ms)
+ GET /api/plataforma/empresas 200 in 282ms (next.js: 5ms, proxy.ts: 13ms, application-code: 263ms)
+ GET /plataforma/usuarios 200 in 31ms (next.js: 5ms, proxy.ts: 5ms, application-code: 21ms)
+ GET /plataforma 307 in 88ms (next.js: 8ms, proxy.ts: 10ms, application-code: 70ms)
+ GET /plataforma/empresas 200 in 55ms (next.js: 6ms, proxy.ts: 5ms, application-code: 45ms)
+ GET /api/plataforma/empresas 200 in 1108ms (next.js: 16ms, proxy.ts: 19ms, application-code: 1073ms)
+ GET /api/plataforma/empresas 200 in 225ms (next.js: 4ms, proxy.ts: 7ms, application-code: 213ms)
+ GET /api/plataforma/usuarios 200 in 1549ms (next.js: 10ms, proxy.ts: 18ms, application-code: 1521ms)
+ GET /api/plataforma/usuarios 200 in 433ms (next.js: 4ms, proxy.ts: 6ms, application-code: 423ms)
+ GET /api/auth/providers 200 in 724ms (next.js: 705ms, proxy.ts: 4ms, application-code: 15ms)
+ GET /api/auth/csrf 200 in 42ms (next.js: 7ms, proxy.ts: 4ms, application-code: 31ms)
+ POST /api/auth/callback/credentials 401 in 2.1s (next.js: 10ms, proxy.ts: 5ms, application-code: 2.1s)
+ PATCH /api/plataforma/usuarios/cmrhsrgoz000004i5sd677nha 200 in 2.4s (next.js: 677ms, proxy.ts: 8ms, application-code: 1736ms)
+ GET /api/plataforma/empresas 200 in 1039ms (next.js: 8ms, proxy.ts: 11ms, application-code: 1020ms)
+ GET /api/plataforma/usuarios 200 in 1246ms (next.js: 5ms, proxy.ts: 12ms, application-code: 1229ms)
+ GET /api/auth/providers 200 in 688ms (next.js: 674ms, proxy.ts: 4ms, application-code: 9ms)
+ GET /api/auth/csrf 200 in 27ms (next.js: 8ms, proxy.ts: 4ms, application-code: 14ms)
+ POST /api/auth/callback/credentials 401 in 445ms (next.js: 9ms, proxy.ts: 5ms, application-code: 431ms)
+ GET /api/auth/providers 200 in 706ms (next.js: 692ms, proxy.ts: 5ms, application-code: 9ms)
+ GET /api/auth/csrf 200 in 30ms (next.js: 9ms, proxy.ts: 4ms, application-code: 17ms)
+ POST /api/auth/callback/credentials 200 in 2.1s (next.js: 10ms, proxy.ts: 5ms, application-code: 2.1s)
+ GET /dashboard 200 in 1530ms (next.js: 105ms, proxy.ts: 8ms, application-code: 1417ms)
+ GET /dashboard/notificacoes 200 in 7.0s (next.js: 1103ms, proxy.ts: 5ms, application-code: 5.9s)
+ GET /dashboard/escolas 200 in 3.4s (next.js: 859ms, proxy.ts: 7ms, application-code: 2.5s)
+ GET /dashboard/biblioteca 200 in 3.0s (next.js: 725ms, proxy.ts: 6ms, application-code: 2.3s)
+ GET /dashboard 200 in 1484ms (next.js: 6ms, proxy.ts: 6ms, application-code: 1471ms)
+ GET /dashboard/conteudos 200 in 3.5s (next.js: 914ms, proxy.ts: 7ms, application-code: 2.6s)
+ GET /login 200 in 91ms (next.js: 10ms, proxy.ts: 6ms, application-code: 75ms)
+ GET /login 200 in 163ms (next.js: 51ms, proxy.ts: 32ms, application-code: 81ms)
+ GET /login 200 in 57ms (next.js: 6ms, proxy.ts: 5ms, application-code: 46ms)
+ GET /api/auth/providers 200 in 836ms (next.js: 805ms, proxy.ts: 6ms, application-code: 25ms)
+ GET /api/auth/csrf 200 in 41ms (next.js: 10ms, proxy.ts: 5ms, application-code: 25ms)
+ POST /api/auth/callback/credentials 200 in 2.2s (next.js: 12ms, proxy.ts: 8ms, application-code: 2.2s)
+ GET /dashboard 200 in 1304ms (next.js: 5ms, proxy.ts: 9ms, application-code: 1290ms)
+ GET /dashboard/pagamentos 200 in 3.2s (next.js: 653ms, proxy.ts: 6ms, application-code: 2.5s)
+✓ Compiled in 226ms
+ GET /dashboard/pagamentos 200 in 2.1s (next.js: 168ms, proxy.ts: 75ms, application-code: 1864ms)
+✓ Compiled in 127ms
+[browser] Uncaught ReferenceError: Avatar is not defined
+    at Sidebar (src/components/Sidebar.tsx:91:12)
+    at DashboardLayout (src\app\dashboard\layout.tsx:29:9)
+  89 |       <div className="p-3 border-t border-slate-100">
+  90 |         <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-slate-50 tra...
+> 91 |           <Avatar foto={usuario?.foto} nome={usuario?.name} />
+     |            ^
+  92 |           <div className="flex-1 min-w-0">
+  93 |             <p className="text-xs font-semibold text-slate-800 truncate">
+  94 |               {usuario?.name}
+ GET /dashboard/pagamentos 200 in 1965ms (next.js: 124ms, proxy.ts: 52ms, application-code: 1789ms)
+✓ Compiled in 106ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+    at Set.forEach (<anonymous>) (<anonymous>)
+ GET /login 200 in 490ms (next.js: 52ms, proxy.ts: 357ms, application-code: 82ms)
+ GET /dashboard/pagamentos 200 in 1486ms (next.js: 188ms, proxy.ts: 159ms, application-code: 1139ms)
+ GET /login 200 in 151ms (next.js: 26ms, proxy.ts: 14ms, application-code: 110ms)
+ GET /login 200 in 66ms (next.js: 8ms, proxy.ts: 6ms, application-code: 52ms)
+ GET /login 200 in 81ms (next.js: 9ms, proxy.ts: 6ms, application-code: 67ms)
+ GET /login 200 in 54ms (next.js: 5ms, proxy.ts: 4ms, application-code: 46ms)
+ GET /api/auth/providers 200 in 949ms (next.js: 925ms, proxy.ts: 5ms, application-code: 20ms)
+ GET /api/auth/csrf 200 in 38ms (next.js: 8ms, proxy.ts: 4ms, application-code: 26ms)
+ POST /api/auth/callback/credentials 401 in 2.2s (next.js: 10ms, proxy.ts: 6ms, application-code: 2.1s)
+ GET /login 200 in 46ms (next.js: 8ms, proxy.ts: 3ms, application-code: 35ms)
+ GET /dashboard 200 in 1576ms (next.js: 139ms, proxy.ts: 6ms, application-code: 1431ms)
+  Reload env: .env
+ GET /login 200 in 225ms (next.js: 99ms, proxy.ts: 45ms, application-code: 80ms)
+[?25h
+2026-07-24T20:47:49.5145974-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1773ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[?25h
+2026-07-24T21:50:56.6023286-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1734ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /login 200 in 660ms (next.js: 270ms, proxy.ts: 3ms, application-code: 387ms)
+2026-07-25T06:00:13.0765340-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 2.6s
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /login 200 in 1493ms (next.js: 784ms, proxy.ts: 221ms, application-code: 488ms)
+ GET /plataforma/login 200 in 849ms (next.js: 647ms, proxy.ts: 58ms, application-code: 143ms)
+ GET /login 200 in 201ms (next.js: 41ms, proxy.ts: 8ms, application-code: 152ms)
+ GET /login 200 in 115ms (next.js: 10ms, proxy.ts: 11ms, application-code: 94ms)
+○ Compiling /_not-found/page ...
+ GET /api/auth/providers 404 in 17.8s (next.js: 17.7s, proxy.ts: 8ms, application-code: 82ms)
+[browser] [next-auth][error][CLIENT_FETCH_ERROR] 
+https://next-auth.js.org/errors#client_fetch_error Unexpected token '<', "<!DOCTYPE "... is not valid JSON {
+  error: {
+    message: [32m`Unexpected token '<', "<!DOCTYPE "... is not valid JSON`[39m,
+    name: [32m'SyntaxError'[39m,
+    stack: [32m`SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON`[39m
+  },
+  message: [32m`Unexpected token '<', "<!DOCTYPE "... is not valid JSON`[39m,
+  url: [32m'/api/auth/providers'[39m
+} 
+    at new Promise (<anonymous>) (<anonymous>)
+ GET /plataforma/login 200 in 330ms (next.js: 263ms, proxy.ts: 26ms, application-code: 41ms)
+ POST /api/auth/_log 404 in 451ms (next.js: 80ms, proxy.ts: 56ms, application-code: 315ms)
+ GET /api/auth/error 404 in 389ms (next.js: 195ms, proxy.ts: 33ms, application-code: 161ms)
+ GET /login 200 in 179ms (next.js: 55ms, proxy.ts: 26ms, application-code: 99ms)
+ GET /login 200 in 87ms (next.js: 9ms, proxy.ts: 6ms, application-code: 71ms)
+✓ Finished filesystem cache database compaction in 13.1s
+ GET /plataforma/login 200 in 752ms (next.js: 298ms, proxy.ts: 198ms, application-code: 256ms)
+ GET /login 200 in 212ms (next.js: 75ms, proxy.ts: 21ms, application-code: 115ms)
+ GET /login 200 in 140ms (next.js: 28ms, proxy.ts: 8ms, application-code: 103ms)
+ GET /login 200 in 278ms (next.js: 115ms, proxy.ts: 70ms, application-code: 93ms)
+ GET /login 200 in 202ms (next.js: 67ms, proxy.ts: 18ms, application-code: 117ms)
+ GET /login 200 in 95ms (next.js: 5ms, proxy.ts: 8ms, application-code: 83ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 3.0s
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[browser] ⨯ unhandledRejection: SecurityError: Failed to register a ServiceWorker for scope ('http://localhost:3001/') with script ('http://localhost:3001/sw.js'): The script resource is behind a redirect, which is disallowed.
+
+○ Compiling /login ...
+ GET /login 200 in 28.8s (next.js: 26.0s, proxy.ts: 988ms, application-code: 1768ms)
+ GET /login 200 in 657ms (next.js: 312ms, proxy.ts: 8ms, application-code: 337ms)
+ GET /login 200 in 134ms (next.js: 12ms, proxy.ts: 10ms, application-code: 113ms)
+ GET /login 200 in 220ms (next.js: 42ms, proxy.ts: 20ms, application-code: 159ms)
+ GET /login 200 in 97ms (next.js: 8ms, proxy.ts: 8ms, application-code: 80ms)
+ GET /plataforma/login 200 in 578ms (next.js: 398ms, proxy.ts: 12ms, application-code: 168ms)
+ GET /login 200 in 287ms (next.js: 80ms, proxy.ts: 17ms, application-code: 190ms)
+ GET /login 200 in 106ms (next.js: 6ms, proxy.ts: 7ms, application-code: 93ms)
+ GET /plataforma/login 200 in 322ms (next.js: 42ms, proxy.ts: 106ms, application-code: 173ms)
+ GET /login 200 in 228ms (next.js: 49ms, proxy.ts: 12ms, application-code: 166ms)
+ GET /login 200 in 66ms (next.js: 7ms, proxy.ts: 4ms, application-code: 55ms)
+ GET /api/auth/providers 200 in 3.2s (next.js: 3.1s, proxy.ts: 7ms, application-code: 44ms)
+ GET /api/auth/csrf 200 in 749ms (next.js: 719ms, proxy.ts: 5ms, application-code: 25ms)
+ POST /api/auth/callback/credentials-plataforma 200 in 1448ms (next.js: 12ms, proxy.ts: 13ms, application-code: 1422ms)
+ GET /plataforma 200 in 695ms (next.js: 487ms, proxy.ts: 21ms, application-code: 186ms)
+ GET /plataforma/empresas 200 in 699ms (next.js: 628ms, proxy.ts: 21ms, application-code: 50ms)
+ GET /plataforma/empresas 200 in 75ms (next.js: 17ms, proxy.ts: 12ms, application-code: 46ms)
+ GET /plataforma 307 in 827ms (next.js: 6ms, proxy.ts: 7ms, application-code: 813ms)
+ GET /plataforma/empresas 200 in 171ms (next.js: 7ms, proxy.ts: 8ms, application-code: 156ms)
+ GET /api/plataforma/empresas 200 in 893ms (next.js: 349ms, proxy.ts: 21ms, application-code: 524ms)
+ GET /api/plataforma/empresas 200 in 257ms (next.js: 9ms, proxy.ts: 9ms, application-code: 239ms)
+ GET /plataforma/usuarios 200 in 353ms (next.js: 307ms, proxy.ts: 7ms, application-code: 39ms)
+ GET /api/plataforma/empresas 200 in 833ms (next.js: 8ms, proxy.ts: 21ms, application-code: 805ms)
+ GET /api/plataforma/empresas 200 in 1051ms (next.js: 5ms, proxy.ts: 15ms, application-code: 1031ms)
+ GET /api/plataforma/usuarios 200 in 2.1s (next.js: 802ms, proxy.ts: 24ms, application-code: 1237ms)
+ GET /api/plataforma/usuarios 200 in 501ms (next.js: 6ms, proxy.ts: 9ms, application-code: 487ms)
+ GET /login 200 in 139ms (next.js: 11ms, proxy.ts: 15ms, application-code: 112ms)
+ GET /login 200 in 190ms (next.js: 42ms, proxy.ts: 18ms, application-code: 130ms)
+ GET /login 200 in 75ms (next.js: 10ms, proxy.ts: 8ms, application-code: 58ms)
+ GET /api/auth/providers 200 in 738ms (next.js: 712ms, proxy.ts: 6ms, application-code: 20ms)
+ GET /api/auth/csrf 200 in 42ms (next.js: 10ms, proxy.ts: 5ms, application-code: 27ms)
+ POST /api/auth/callback/credentials 401 in 2.1s (next.js: 13ms, proxy.ts: 7ms, application-code: 2.1s)
+ GET /api/auth/providers 200 in 725ms (next.js: 711ms, proxy.ts: 5ms, application-code: 10ms)
+ GET /api/auth/csrf 200 in 44ms (next.js: 9ms, proxy.ts: 7ms, application-code: 28ms)
+ POST /api/auth/callback/credentials 401 in 2.1s (next.js: 11ms, proxy.ts: 4ms, application-code: 2.1s)
+ GET /api/auth/providers 200 in 740ms (next.js: 724ms, proxy.ts: 6ms, application-code: 10ms)
+ GET /api/auth/csrf 200 in 55ms (next.js: 18ms, proxy.ts: 5ms, application-code: 32ms)
+ POST /api/auth/callback/credentials 200 in 2.2s (next.js: 13ms, proxy.ts: 11ms, application-code: 2.1s)
+ GET /dashboard 200 in 1723ms (next.js: 533ms, proxy.ts: 14ms, application-code: 1176ms)
+○ Compiling /dashboard/agenda ...
+ GET /dashboard 200 in 2.8s (next.js: 86ms, proxy.ts: 7ms, application-code: 2.7s)
+ GET /login 200 in 232ms (next.js: 24ms, proxy.ts: 22ms, application-code: 185ms)
+ GET /login 200 in 116ms (next.js: 8ms, proxy.ts: 8ms, application-code: 100ms)
+ GET /dashboard/agenda 200 in 35.1s (next.js: 34.3s, proxy.ts: 5ms, application-code: 802ms)
+ GET /dashboard/agenda 200 in 2.2s (next.js: 790ms, proxy.ts: 10ms, application-code: 1368ms)
+ GET /dashboard/agenda 200 in 1599ms (next.js: 27ms, proxy.ts: 61ms, application-code: 1511ms)
+ GET /api/agenda?inicio=2026-07-20&fim=2026-07-26 200 in 2.2s (next.js: 1347ms, proxy.ts: 31ms, application-code: 838ms)
+ GET /api/agenda?inicio=2026-07-20&fim=2026-07-26 200 in 850ms (next.js: 5ms, proxy.ts: 11ms, application-code: 834ms)
+✓ Finished filesystem cache database compaction in 17.7s
+ GET /dashboard/notificacoes 200 in 2.9s (next.js: 273ms, proxy.ts: 9ms, application-code: 2.6s)
+✓ Compiled in 929ms
+ GET /dashboard/notificacoes 200 in 3.9s (next.js: 828ms, proxy.ts: 371ms, application-code: 2.7s)
+✓ Compiled in 252ms
+ GET /dashboard/notificacoes 200 in 1641ms (next.js: 381ms, proxy.ts: 121ms, application-code: 1139ms)
+✓ Compiled in 1744ms
+ GET /dashboard/notificacoes 200 in 9.2s (next.js: 3.2s, proxy.ts: 967ms, application-code: 5.1s)
+✓ Compiled in 641ms
+✓ Compiled in 167ms
+ GET /dashboard/notificacoes 200 in 9.9s (next.js: 2.4s, proxy.ts: 677ms, application-code: 6.8s)
+ GET /dashboard/notificacoes 200 in 6.6s (next.js: 3.3s, proxy.ts: 751ms, application-code: 2.5s)
+✓ Compiled in 6s
+ GET /dashboard/notificacoes 200 in 4.8s (next.js: 1656ms, proxy.ts: 332ms, application-code: 2.8s)
+✓ Compiled in 5.3s
+⨯ ./src/components/NotificacoesUnificadas.tsx:547:7
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  [90m545 |[0m           </>
+  [90m546 |[0m         );
+[31m[1m>[0m [90m547 |[0m       })()}
+  [90m    |[0m       [31m[1m^[0m
+  [90m548 |[0m     </div>
+  [90m549 |[0m   );
+  [90m550 |[0m }
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/NotificacoesUnificadas.tsx
+    ./src/app/dashboard/notificacoes/page.tsx
+
+
+
+./src/components/NotificacoesUnificadas.tsx:547:11
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  [90m545 |[0m           </>
+  [90m546 |[0m         );
+[31m[1m>[0m [90m547 |[0m       })()}
+  [90m    |[0m           [31m[1m^[0m
+  [90m548 |[0m     </div>
+  [90m549 |[0m   );
+  [90m550 |[0m }
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Server Component:
+    ./src/components/NotificacoesUnificadas.tsx
+    ./src/app/dashboard/notificacoes/page.tsx
+
+
+○ Compiling /_error ...
+✓ Compiled in 8.5s
+ GET /dashboard/notificacoes 500 in 19.7s (next.js: 14.2s, proxy.ts: 183ms, application-code: 5.3s)
+ GET /dashboard/notificacoes 200 in 18.3s (next.js: 8.0s, proxy.ts: 1980ms, application-code: 8.4s)
+ GET /dashboard/notificacoes 200 in 16.4s (next.js: 9.3s, proxy.ts: 94ms, application-code: 6.9s)
+ GET /dashboard/notificacoes 200 in 6.8s (next.js: 53ms, proxy.ts: 172ms, application-code: 6.6s)
+ GET /dashboard/notificacoes 200 in 8.4s (next.js: 155ms, proxy.ts: 170ms, application-code: 8.0s)
+ GET /dashboard/notificacoes 200 in 8.4s (next.js: 247ms, proxy.ts: 168ms, application-code: 8.0s)
+ GET /dashboard/notificacoes 200 in 19.9s (next.js: 7.7s, proxy.ts: 1978ms, application-code: 10.2s)
+ GET /login 200 in 1318ms (next.js: 477ms, proxy.ts: 15ms, application-code: 826ms)
+ GET /dashboard/notificacoes 200 in 2.4s (next.js: 63ms, proxy.ts: 50ms, application-code: 2.3s)
+ GET /login 200 in 408ms (next.js: 197ms, proxy.ts: 10ms, application-code: 201ms)
+✓ Compiled in 3.5s
+✓ Finished filesystem cache database compaction in 28.2s
+ GET /dashboard/notificacoes 200 in 4.0s (next.js: 1640ms, proxy.ts: 1190ms, application-code: 1192ms)
+ GET /dashboard/notificacoes 200 in 3.5s (next.js: 641ms, proxy.ts: 153ms, application-code: 2.7s)
+✓ Compiled in 4.3s
+ GET /dashboard/notificacoes 200 in 6.7s (next.js: 2.1s, proxy.ts: 1328ms, application-code: 3.2s)
+ GET /dashboard/agenda 200 in 1779ms (next.js: 993ms, proxy.ts: 12ms, application-code: 774ms)
+ GET /api/agenda?inicio=2026-07-20&fim=2026-07-26 200 in 3.0s (next.js: 1999ms, proxy.ts: 19ms, application-code: 960ms)
+ GET /api/agenda?inicio=2026-07-20&fim=2026-07-26 200 in 850ms (next.js: 8ms, proxy.ts: 8ms, application-code: 834ms)
+ GET /dashboard/notificacoes 200 in 2.7s (next.js: 45ms, proxy.ts: 10ms, application-code: 2.7s)
+ GET /dashboard/pagamentos 200 in 4.8s (next.js: 2.0s, proxy.ts: 36ms, application-code: 2.8s)
+ GET /dashboard/pagamentos 200 in 899ms (next.js: 15ms, proxy.ts: 11ms, application-code: 873ms)
+ GET /dashboard/escolas 200 in 1657ms (next.js: 348ms, proxy.ts: 7ms, application-code: 1302ms)
+ GET /dashboard/pagamentos 200 in 909ms (next.js: 17ms, proxy.ts: 8ms, application-code: 884ms)
+○ Compiling /dashboard/notas ...
+ GET /dashboard 200 in 3.1s (next.js: 1348ms, proxy.ts: 7ms, application-code: 1779ms)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+ GET /dashboard/notas 200 in 5.5s (next.js: 3.4s, proxy.ts: 6ms, application-code: 2.1s)
+ GET /dashboard/notas 200 in 14.5s (next.js: 12.5s, proxy.ts: 5ms, application-code: 2.1s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+ GET /dashboard/notas 200 in 30.4s (next.js: 27.8s, proxy.ts: 7ms, application-code: 2.5s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., empresaId: ..., professoraId: ..., unidadeId: ..., nome: ..., dataNascimento: ..., fotoUrl: ..., serie: ..., turma: ..., responsavel: ..., telefoneResponsavel: ..., emailResponsavel: ..., rua: ..., numero: ..., complemento: ..., bairro: ..., cidade: ..., estado: ..., cep: ..., observacoes: ..., status: ..., tipoCobranca: ..., valorCobranca: Decimal, diaPagamento: ..., diaPagamento2: ..., diaSemana: ..., horaAula: ..., agendaSemanal: ..., diaSemanaCobranca: ..., dataInicioContrato: ..., dataFimContrato: ..., criadoEm: ..., atualizadoEm: ..., materias: ..., unidade: ...}
+                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^
+ GET /dashboard/notas 200 in 2.1s (next.js: 14ms, proxy.ts: 8ms, application-code: 2.1s)
+○ Compiling /dashboard/alunos ...
+[alunos] encontrados: 10 | status filter: ATIVO
+ GET /dashboard/alunos 200 in 9.3s (next.js: 6.3s, proxy.ts: 37ms, application-code: 2.9s)
+○ Compiling /dashboard/alunos/[id] ...
+✓ Finished filesystem cache database compaction in 16.6s
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce 200 in 23.5s (next.js: 19.6s, proxy.ts: 15ms, application-code: 3.8s)
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce 200 in 4.4s (next.js: 1115ms, proxy.ts: 61ms, application-code: 3.2s)
+○ Compiling /dashboard/alunos/[id]/imprimir ...
+✓ Finished filesystem cache database compaction in 43s
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce/imprimir 200 in 44s (next.js: 39.3s, proxy.ts: 7ms, application-code: 4.9s)
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce/imprimir 200 in 4.7s (next.js: 1034ms, proxy.ts: 87ms, application-code: 3.6s)
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce/imprimir 200 in 2.4s (next.js: 68ms, proxy.ts: 33ms, application-code: 2.3s)
+○ Compiling /dashboard/alunos/[id]/editar ...
+ GET /dashboard 200 in 391ms (next.js: 59ms, proxy.ts: 7ms, application-code: 326ms)
+[alunos] encontrados: 10 | status filter: ATIVO
+ GET /dashboard/alunos 200 in 708ms (next.js: 9ms, proxy.ts: 6ms, application-code: 694ms)
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce 200 in 1709ms (next.js: 819ms, proxy.ts: 8ms, application-code: 882ms)
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce/editar 200 in 14.9s (next.js: 14.1s, proxy.ts: 20ms, application-code: 797ms)
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce/imprimir 200 in 2.7s (next.js: 922ms, proxy.ts: 20ms, application-code: 1743ms)
+✓ Finished filesystem cache database compaction in 22.7s
+✓ Compiled in 2.7s
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce/editar 200 in 6.1s (next.js: 1938ms, proxy.ts: 83ms, application-code: 4.1s)
+ GET /dashboard/alunos/cmri6ccvr000004l2kspm17ce/editar 200 in 3.9s (next.js: 30ms, proxy.ts: 2.2s, application-code: 1653ms)
+2026-07-27T12:07:03.9415405-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 2.1s
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ POST /login 200 in 2.4s (next.js: 663ms, proxy.ts: 166ms, application-code: 1560ms)
+ GET /login 200 in 271ms (next.js: 30ms, proxy.ts: 8ms, application-code: 234ms)
+ GET /login 200 in 1450ms (next.js: 9ms, proxy.ts: 21ms, application-code: 1420ms)
+○ Compiling /m ...
+ GET /m 200 in 15.7s (next.js: 14.6s, proxy.ts: 17ms, application-code: 1124ms)
+ GET /m/agenda 200 in 17.4s (next.js: 15.1s, proxy.ts: 15ms, application-code: 2.3s)
+ GET /m/conteudos 200 in 18.5s (next.js: 15.2s, proxy.ts: 15ms, application-code: 3.3s)
+ GET /api/auth/providers 200 in 2.2s (next.js: 2.1s, proxy.ts: 16ms, application-code: 55ms)
+ GET /api/auth/csrf 200 in 52ms (next.js: 24ms, proxy.ts: 7ms, application-code: 22ms)
+ POST /api/auth/callback/credentials 401 in 2.3s (next.js: 13ms, proxy.ts: 9ms, application-code: 2.3s)
+ GET /plataforma/login 200 in 414ms (next.js: 311ms, proxy.ts: 10ms, application-code: 94ms)
+ GET /login 200 in 194ms (next.js: 42ms, proxy.ts: 17ms, application-code: 135ms)
+ GET /login 200 in 72ms (next.js: 6ms, proxy.ts: 5ms, application-code: 62ms)
+ GET /api/auth/providers 200 in 42ms (next.js: 22ms, proxy.ts: 5ms, application-code: 15ms)
+ GET /api/auth/csrf 200 in 43ms (next.js: 12ms, proxy.ts: 4ms, application-code: 27ms)
+ POST /api/auth/callback/credentials-plataforma 200 in 1182ms (next.js: 11ms, proxy.ts: 5ms, application-code: 1165ms)
+ GET /plataforma 200 in 407ms (next.js: 272ms, proxy.ts: 6ms, application-code: 129ms)
+ GET /plataforma/empresas 200 in 370ms (next.js: 271ms, proxy.ts: 18ms, application-code: 80ms)
+ GET /plataforma/empresas 200 in 55ms (next.js: 8ms, proxy.ts: 8ms, application-code: 38ms)
+ GET /api/plataforma/empresas 200 in 503ms (next.js: 259ms, proxy.ts: 13ms, application-code: 231ms)
+ GET /api/plataforma/empresas 200 in 233ms (next.js: 7ms, proxy.ts: 8ms, application-code: 218ms)
+ GET /plataforma/usuarios 200 in 112ms (next.js: 75ms, proxy.ts: 5ms, application-code: 32ms)
+ GET /api/plataforma/empresas 200 in 264ms (next.js: 15ms, proxy.ts: 20ms, application-code: 229ms)
+ GET /api/plataforma/empresas 200 in 241ms (next.js: 4ms, proxy.ts: 8ms, application-code: 229ms)
+ GET /api/plataforma/usuarios 200 in 1529ms (next.js: 182ms, proxy.ts: 21ms, application-code: 1326ms)
+ GET /api/plataforma/usuarios 200 in 483ms (next.js: 5ms, proxy.ts: 9ms, application-code: 469ms)
+ PATCH /api/plataforma/usuarios/cmrfdkord000cg8isrnzl8vbx 200 in 2.8s (next.js: 928ms, proxy.ts: 6ms, application-code: 1876ms)
+ GET /api/plataforma/empresas 200 in 261ms (next.js: 7ms, proxy.ts: 16ms, application-code: 239ms)
+ GET /api/plataforma/usuarios 200 in 1316ms (next.js: 12ms, proxy.ts: 12ms, application-code: 1291ms)
+ GET /api/auth/providers 200 in 37ms (next.js: 16ms, proxy.ts: 5ms, application-code: 16ms)
+ GET /api/auth/csrf 200 in 27ms (next.js: 9ms, proxy.ts: 6ms, application-code: 12ms)
+ POST /api/auth/callback/credentials 401 in 2.2s (next.js: 9ms, proxy.ts: 6ms, application-code: 2.2s)
+ GET /login 200 in 68ms (next.js: 5ms, proxy.ts: 6ms, application-code: 58ms)
+ GET /login 200 in 128ms (next.js: 19ms, proxy.ts: 10ms, application-code: 99ms)
+ GET /login 200 in 49ms (next.js: 5ms, proxy.ts: 4ms, application-code: 40ms)
+ GET /api/auth/providers 200 in 44ms (next.js: 18ms, proxy.ts: 4ms, application-code: 21ms)
+ GET /api/auth/csrf 200 in 27ms (next.js: 8ms, proxy.ts: 4ms, application-code: 15ms)
+ POST /api/auth/callback/credentials 401 in 2.2s (next.js: 9ms, proxy.ts: 5ms, application-code: 2.1s)
+ GET /plataforma/login 200 in 131ms (next.js: 7ms, proxy.ts: 6ms, application-code: 118ms)
+ GET /login 200 in 171ms (next.js: 42ms, proxy.ts: 23ms, application-code: 106ms)
+ GET /login 200 in 75ms (next.js: 11ms, proxy.ts: 6ms, application-code: 58ms)
+ GET /api/auth/providers 200 in 37ms (next.js: 18ms, proxy.ts: 4ms, application-code: 15ms)
+ GET /api/auth/csrf 200 in 43ms (next.js: 6ms, proxy.ts: 5ms, application-code: 32ms)
+ POST /api/auth/callback/credentials-plataforma 200 in 4.8s (next.js: 9ms, proxy.ts: 4ms, application-code: 4.8s)
+ GET /plataforma 200 in 58ms (next.js: 6ms, proxy.ts: 8ms, application-code: 44ms)
+ GET /plataforma/empresas 200 in 127ms (next.js: 8ms, proxy.ts: 19ms, application-code: 99ms)
+ GET /plataforma/empresas 200 in 77ms (next.js: 15ms, proxy.ts: 11ms, application-code: 52ms)
+ GET /api/plataforma/empresas 200 in 287ms (next.js: 7ms, proxy.ts: 35ms, application-code: 245ms)
+ GET /api/plataforma/empresas 200 in 251ms (next.js: 6ms, proxy.ts: 7ms, application-code: 238ms)
+ GET /plataforma/usuarios 200 in 35ms (next.js: 5ms, proxy.ts: 6ms, application-code: 25ms)
+ GET /api/plataforma/usuarios 200 in 3.2s (next.js: 10ms, proxy.ts: 17ms, application-code: 3.2s)
+ GET /api/plataforma/empresas 200 in 4.9s (next.js: 16ms, proxy.ts: 15ms, application-code: 4.9s)
+ GET /api/plataforma/usuarios 200 in 1791ms (next.js: 5ms, proxy.ts: 7ms, application-code: 1779ms)
+ GET /api/plataforma/empresas 200 in 250ms (next.js: 5ms, proxy.ts: 11ms, application-code: 235ms)
+ PATCH /api/plataforma/usuarios/cmreyh8yh0000z8is9sawrnah 200 in 2.4s (next.js: 18ms, proxy.ts: 7ms, application-code: 2.3s)
+ GET /api/plataforma/usuarios 200 in 1972ms (next.js: 5ms, proxy.ts: 12ms, application-code: 1955ms)
+ GET /api/plataforma/empresas 200 in 2.5s (next.js: 9ms, proxy.ts: 10ms, application-code: 2.4s)
+ GET /api/auth/providers 200 in 42ms (next.js: 17ms, proxy.ts: 4ms, application-code: 21ms)
+ GET /api/auth/csrf 200 in 30ms (next.js: 8ms, proxy.ts: 5ms, application-code: 16ms)
+ POST /api/auth/callback/credentials 200 in 2.2s (next.js: 10ms, proxy.ts: 4ms, application-code: 2.2s)
+ GET /dashboard 200 in 1332ms (next.js: 179ms, proxy.ts: 8ms, application-code: 1146ms)
+ GET /dashboard/conteudos 200 in 1842ms (next.js: 105ms, proxy.ts: 5ms, application-code: 1732ms)
+[?25h
+2026-07-27T13:52:41.2198681-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1846ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+○ Compiling /dashboard/biblioteca ...
+ GET /dashboard/biblioteca 200 in 7.6s (next.js: 5.4s, proxy.ts: 48ms, application-code: 2.1s)
+ GET /dashboard/biblioteca 200 in 7.8s (next.js: 4.9s, proxy.ts: 213ms, application-code: 2.7s)
+ GET /login 200 in 470ms (next.js: 146ms, proxy.ts: 25ms, application-code: 298ms)
+ GET /login 200 in 159ms (next.js: 27ms, proxy.ts: 16ms, application-code: 116ms)
+ GET /m 200 in 700ms (next.js: 205ms, proxy.ts: 29ms, application-code: 466ms)
+ GET /m 200 in 400ms (next.js: 19ms, proxy.ts: 77ms, application-code: 304ms)
+ GET /m/agenda 200 in 1334ms (next.js: 104ms, proxy.ts: 27ms, application-code: 1203ms)
+ GET /m/agenda 200 in 1013ms (next.js: 89ms, proxy.ts: 76ms, application-code: 848ms)
+ GET /m/conteudos 200 in 1858ms (next.js: 355ms, proxy.ts: 25ms, application-code: 1478ms)
+ GET /m/conteudos 200 in 1365ms (next.js: 122ms, proxy.ts: 74ms, application-code: 1169ms)
+ GET /dashboard 200 in 399ms (next.js: 88ms, proxy.ts: 7ms, application-code: 304ms)
+ GET /dashboard/biblioteca 200 in 1217ms (next.js: 6ms, proxy.ts: 6ms, application-code: 1206ms)
+ GET /dashboard/biblioteca 200 in 1440ms (next.js: 5ms, proxy.ts: 7ms, application-code: 1428ms)
+ POST /api/upload 200 in 2.5s (next.js: 1391ms, proxy.ts: 9ms, application-code: 1075ms)
+ POST /api/biblioteca 201 in 3.2s (next.js: 896ms, proxy.ts: 8ms, application-code: 2.3s)
+✓ Finished filesystem cache database compaction in 16.5s
+2026-07-28T16:55:58.9640230-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 2.8s
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ GET /login 200 in 2.1s (next.js: 1322ms, proxy.ts: 5ms, application-code: 730ms)
+ GET /login 200 in 69ms (next.js: 7ms, proxy.ts: 4ms, application-code: 57ms)
+ GET /api/auth/providers 200 in 2.7s (next.js: 2.6s, proxy.ts: 7ms, application-code: 39ms)
+ GET /api/auth/csrf 200 in 733ms (next.js: 713ms, proxy.ts: 6ms, application-code: 13ms)
+ POST /api/auth/callback/credentials 200 in 2.6s (next.js: 12ms, proxy.ts: 22ms, application-code: 2.6s)
+ GET /dashboard 200 in 2.7s (next.js: 349ms, proxy.ts: 16ms, application-code: 2.4s)
+○ Compiling /m/biblioteca ...
+ GET /m/biblioteca 200 in 5.9s (next.js: 4.5s, proxy.ts: 7ms, application-code: 1342ms)
+ GET /m 200 in 794ms (next.js: 127ms, proxy.ts: 27ms, application-code: 639ms)
+ GET /m/conteudos 200 in 3.0s (next.js: 385ms, proxy.ts: 20ms, application-code: 2.6s)
+ GET /m/agenda 200 in 3.0s (next.js: 508ms, proxy.ts: 22ms, application-code: 2.5s)
+2026-07-28T18:04:13.5817218-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 2.3s
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ GET /login 200 in 2.1s (next.js: 1281ms, proxy.ts: 8ms, application-code: 806ms)
+ GET /login 200 in 1500ms (next.js: 559ms, proxy.ts: 702ms, application-code: 239ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+[browser] ⨯ unhandledRejection: SecurityError: Failed to register a ServiceWorker for scope ('http://localhost:3001/') with script ('http://localhost:3001/sw.js'): The script resource is behind a redirect, which is disallowed.
+
+ GET /api/auth/providers 200 in 4.4s (next.js: 4.4s, proxy.ts: 6ms, application-code: 34ms)
+ GET /api/auth/csrf 200 in 742ms (next.js: 706ms, proxy.ts: 6ms, application-code: 30ms)
+ POST /api/auth/callback/credentials 200 in 2.3s (next.js: 10ms, proxy.ts: 11ms, application-code: 2.3s)
+ GET /m 200 in 320ms (next.js: 174ms, proxy.ts: 13ms, application-code: 133ms)
+ GET /m/biblioteca 200 in 1118ms (next.js: 88ms, proxy.ts: 7ms, application-code: 1024ms)
+ GET /m 200 in 217ms (next.js: 8ms, proxy.ts: 7ms, application-code: 203ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/m" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /m 200 in 5.3s (next.js: 14ms, proxy.ts: 22ms, application-code: 5.2s)
+ GET /m/agenda 200 in 11.9s (next.js: 3.7s, proxy.ts: 18ms, application-code: 8.2s)
+ GET /m/conteudos 200 in 12.9s (next.js: 469ms, proxy.ts: 20ms, application-code: 12.4s)
+ GET /login 200 in 122ms (next.js: 10ms, proxy.ts: 9ms, application-code: 103ms)
+ GET /login 200 in 181ms (next.js: 21ms, proxy.ts: 34ms, application-code: 126ms)
+ GET /login 200 in 68ms (next.js: 7ms, proxy.ts: 6ms, application-code: 55ms)
+ GET /api/auth/providers 200 in 785ms (next.js: 758ms, proxy.ts: 5ms, application-code: 23ms)
+ GET /api/auth/csrf 200 in 41ms (next.js: 8ms, proxy.ts: 4ms, application-code: 30ms)
+ POST /api/auth/callback/credentials 200 in 2.2s (next.js: 9ms, proxy.ts: 6ms, application-code: 2.1s)
+ GET /dashboard 200 in 1200ms (next.js: 107ms, proxy.ts: 8ms, application-code: 1085ms)
+○ Compiling /dashboard/tabelas ...
+ GET /dashboard/tabelas 200 in 16.1s (next.js: 16.1s, proxy.ts: 5ms, application-code: 59ms)
+ GET /dashboard/tabelas 200 in 54ms (next.js: 6ms, proxy.ts: 5ms, application-code: 43ms)
+ GET /dashboard/tabelas/metodos-ensino 200 in 2.5s (next.js: 1517ms, proxy.ts: 6ms, application-code: 1008ms)
+ POST /api/metodos-ensino 201 in 2.2s (next.js: 1158ms, proxy.ts: 6ms, application-code: 1009ms)
+ GET /m/biblioteca 200 in 1283ms (next.js: 40ms, proxy.ts: 6ms, application-code: 1236ms)
+ GET /m/biblioteca 200 in 456ms (next.js: 7ms, proxy.ts: 7ms, application-code: 441ms)
+ POST /api/upload 200 in 1888ms (next.js: 257ms, proxy.ts: 70ms, application-code: 1561ms)
+ POST /api/biblioteca 201 in 2.3s (next.js: 147ms, proxy.ts: 6ms, application-code: 2.2s)
+ GET /m 200 in 72ms (next.js: 6ms, proxy.ts: 5ms, application-code: 61ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/m" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /m/biblioteca 200 in 1289ms (next.js: 9ms, proxy.ts: 9ms, application-code: 1270ms)
+ POST /api/upload 200 in 1522ms (next.js: 9ms, proxy.ts: 80ms, application-code: 1433ms)
+ POST /api/biblioteca 201 in 2.2s (next.js: 5ms, proxy.ts: 6ms, application-code: 2.2s)
+ GET /login 200 in 650ms (next.js: 195ms, proxy.ts: 153ms, application-code: 302ms)
+ GET /login 200 in 142ms (next.js: 25ms, proxy.ts: 16ms, application-code: 101ms)
+ GET /login 200 in 71ms (next.js: 5ms, proxy.ts: 6ms, application-code: 59ms)
+ GET /api/auth/providers 200 in 974ms (next.js: 934ms, proxy.ts: 5ms, application-code: 35ms)
+ GET /api/auth/csrf 200 in 24ms (next.js: 8ms, proxy.ts: 5ms, application-code: 11ms)
+ POST /api/auth/callback/credentials 200 in 2.1s (next.js: 8ms, proxy.ts: 5ms, application-code: 2.1s)
+ GET /dashboard 200 in 1274ms (next.js: 161ms, proxy.ts: 12ms, application-code: 1102ms)
+ GET /dashboard/biblioteca 200 in 510ms (next.js: 77ms, proxy.ts: 5ms, application-code: 429ms)
+ POST /api/upload 200 in 3.3s (next.js: 265ms, proxy.ts: 30ms, application-code: 3.0s)
+ GET /login 200 in 578ms (next.js: 197ms, proxy.ts: 142ms, application-code: 240ms)
+ GET /login 200 in 156ms (next.js: 44ms, proxy.ts: 11ms, application-code: 101ms)
+ GET /login 200 in 50ms (next.js: 4ms, proxy.ts: 5ms, application-code: 41ms)
+ GET /api/auth/providers 200 in 892ms (next.js: 847ms, proxy.ts: 4ms, application-code: 41ms)
+ GET /api/auth/csrf 200 in 41ms (next.js: 9ms, proxy.ts: 6ms, application-code: 27ms)
+ POST /api/auth/callback/credentials 401 in 2.0s (next.js: 7ms, proxy.ts: 4ms, application-code: 2.0s)
+ GET /api/auth/providers 200 in 748ms (next.js: 735ms, proxy.ts: 4ms, application-code: 9ms)
+ GET /api/auth/csrf 200 in 49ms (next.js: 8ms, proxy.ts: 5ms, application-code: 36ms)
+ POST /api/auth/callback/credentials 200 in 536ms (next.js: 11ms, proxy.ts: 6ms, application-code: 519ms)
+ GET /dashboard 200 in 1336ms (next.js: 170ms, proxy.ts: 9ms, application-code: 1157ms)
+ GET /dashboard/biblioteca 200 in 661ms (next.js: 144ms, proxy.ts: 6ms, application-code: 511ms)
+ POST /api/upload 200 in 1368ms (next.js: 253ms, proxy.ts: 15ms, application-code: 1100ms)
+ GET /login 200 in 519ms (next.js: 166ms, proxy.ts: 110ms, application-code: 243ms)
+ GET /login 200 in 113ms (next.js: 19ms, proxy.ts: 8ms, application-code: 86ms)
+ GET /login 200 in 57ms (next.js: 7ms, proxy.ts: 6ms, application-code: 44ms)
+ GET /api/auth/providers 200 in 867ms (next.js: 827ms, proxy.ts: 6ms, application-code: 34ms)
+ GET /api/auth/csrf 200 in 53ms (next.js: 9ms, proxy.ts: 4ms, application-code: 40ms)
+ POST /api/auth/callback/credentials 401 in 2.0s (next.js: 9ms, proxy.ts: 5ms, application-code: 2.0s)
+ GET /api/auth/providers 200 in 708ms (next.js: 680ms, proxy.ts: 4ms, application-code: 25ms)
+ GET /api/auth/csrf 200 in 27ms (next.js: 8ms, proxy.ts: 4ms, application-code: 15ms)
+ POST /api/auth/callback/credentials 200 in 2.1s (next.js: 11ms, proxy.ts: 5ms, application-code: 2.0s)
+ GET /dashboard 200 in 1273ms (next.js: 165ms, proxy.ts: 5ms, application-code: 1103ms)
+ GET /dashboard/biblioteca 200 in 634ms (next.js: 135ms, proxy.ts: 6ms, application-code: 493ms)
+ POST /api/upload 200 in 1241ms (next.js: 269ms, proxy.ts: 12ms, application-code: 961ms)
+ POST /api/biblioteca 201 in 2.5s (next.js: 142ms, proxy.ts: 6ms, application-code: 2.3s)
+2026-07-29T06:00:05.1243419-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1249ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ GET /login 200 in 1309ms (next.js: 718ms, proxy.ts: 171ms, application-code: 420ms)
+ GET /login 200 in 231ms (next.js: 48ms, proxy.ts: 19ms, application-code: 164ms)
+ GET /login 200 in 116ms (next.js: 14ms, proxy.ts: 6ms, application-code: 97ms)
+ GET /api/auth/providers 200 in 2.1s (next.js: 2.0s, proxy.ts: 6ms, application-code: 45ms)
+ GET /api/auth/csrf 200 in 729ms (next.js: 707ms, proxy.ts: 7ms, application-code: 15ms)
+ POST /api/auth/callback/credentials 401 in 2.5s (next.js: 10ms, proxy.ts: 9ms, application-code: 2.5s)
+ GET /api/auth/providers 200 in 686ms (next.js: 670ms, proxy.ts: 5ms, application-code: 11ms)
+ GET /api/auth/csrf 200 in 50ms (next.js: 9ms, proxy.ts: 5ms, application-code: 35ms)
+ POST /api/auth/callback/credentials 401 in 2.2s (next.js: 9ms, proxy.ts: 6ms, application-code: 2.2s)
+ GET /api/auth/providers 200 in 712ms (next.js: 691ms, proxy.ts: 4ms, application-code: 17ms)
+ GET /api/auth/csrf 200 in 35ms (next.js: 9ms, proxy.ts: 6ms, application-code: 20ms)
+ POST /api/auth/callback/credentials 401 in 2.2s (next.js: 10ms, proxy.ts: 6ms, application-code: 2.2s)
+ GET /plataforma/login 200 in 276ms (next.js: 155ms, proxy.ts: 9ms, application-code: 112ms)
+ GET /login 200 in 179ms (next.js: 20ms, proxy.ts: 37ms, application-code: 121ms)
+ GET /login 200 in 62ms (next.js: 5ms, proxy.ts: 5ms, application-code: 51ms)
+ GET /api/auth/providers 200 in 701ms (next.js: 668ms, proxy.ts: 5ms, application-code: 28ms)
+ GET /api/auth/csrf 200 in 39ms (next.js: 9ms, proxy.ts: 4ms, application-code: 25ms)
+ POST /api/auth/callback/credentials-plataforma 200 in 1100ms (next.js: 9ms, proxy.ts: 4ms, application-code: 1087ms)
+ GET /plataforma 200 in 369ms (next.js: 192ms, proxy.ts: 8ms, application-code: 169ms)
+ GET /plataforma/empresas 200 in 155ms (next.js: 87ms, proxy.ts: 21ms, application-code: 48ms)
+ GET /plataforma/empresas 200 in 55ms (next.js: 14ms, proxy.ts: 9ms, application-code: 32ms)
+ GET /api/plataforma/empresas 200 in 446ms (next.js: 210ms, proxy.ts: 7ms, application-code: 230ms)
+ GET /api/plataforma/empresas 200 in 248ms (next.js: 6ms, proxy.ts: 7ms, application-code: 235ms)
+ GET /plataforma/usuarios 200 in 126ms (next.js: 89ms, proxy.ts: 5ms, application-code: 33ms)
+ GET /api/plataforma/empresas 200 in 258ms (next.js: 7ms, proxy.ts: 23ms, application-code: 228ms)
+ GET /api/plataforma/empresas 200 in 239ms (next.js: 5ms, proxy.ts: 8ms, application-code: 227ms)
+ GET /api/plataforma/usuarios 200 in 1414ms (next.js: 162ms, proxy.ts: 23ms, application-code: 1229ms)
+ GET /api/plataforma/usuarios 200 in 443ms (next.js: 6ms, proxy.ts: 7ms, application-code: 430ms)
+ PATCH /api/plataforma/usuarios/cmrfdkord000cg8isrnzl8vbx 200 in 3.6s (next.js: 1865ms, proxy.ts: 7ms, application-code: 1743ms)
+ GET /api/plataforma/empresas 200 in 1033ms (next.js: 14ms, proxy.ts: 13ms, application-code: 1006ms)
+ GET /api/plataforma/usuarios 200 in 1233ms (next.js: 7ms, proxy.ts: 14ms, application-code: 1212ms)
+ GET /api/auth/providers 200 in 708ms (next.js: 683ms, proxy.ts: 4ms, application-code: 21ms)
+ GET /api/auth/csrf 200 in 42ms (next.js: 10ms, proxy.ts: 4ms, application-code: 28ms)
+ POST /api/auth/callback/credentials 200 in 2.1s (next.js: 7ms, proxy.ts: 5ms, application-code: 2.1s)
+ GET /trocar-senha 200 in 3.1s (next.js: 3.1s, proxy.ts: 6ms, application-code: 45ms)
+ POST /api/trocar-senha 200 in 2.1s (next.js: 940ms, proxy.ts: 8ms, application-code: 1104ms)
+ GET /api/auth/csrf 200 in 718ms (next.js: 702ms, proxy.ts: 5ms, application-code: 11ms)
+ POST /api/auth/signout 200 in 49ms (next.js: 10ms, proxy.ts: 9ms, application-code: 30ms)
+ GET /login 200 in 98ms (next.js: 9ms, proxy.ts: 6ms, application-code: 83ms)
+ GET /login 200 in 154ms (next.js: 35ms, proxy.ts: 17ms, application-code: 101ms)
+ GET /login 200 in 70ms (next.js: 7ms, proxy.ts: 7ms, application-code: 57ms)
+ GET /api/auth/providers 200 in 733ms (next.js: 716ms, proxy.ts: 6ms, application-code: 11ms)
+ GET /api/auth/csrf 200 in 42ms (next.js: 11ms, proxy.ts: 5ms, application-code: 26ms)
+ POST /api/auth/callback/credentials 200 in 2.1s (next.js: 12ms, proxy.ts: 6ms, application-code: 2.1s)
+ GET /dashboard 200 in 1390ms (next.js: 225ms, proxy.ts: 9ms, application-code: 1156ms)
+ GET /login 200 in 62ms (next.js: 8ms, proxy.ts: 4ms, application-code: 50ms)
+ GET /m/biblioteca 200 in 1945ms (next.js: 105ms, proxy.ts: 5ms, application-code: 1835ms)
+ GET /login 200 in 59ms (next.js: 8ms, proxy.ts: 4ms, application-code: 47ms)
+ GET /m/biblioteca 200 in 2.1s (next.js: 9ms, proxy.ts: 5ms, application-code: 2.1s)
+ GET /m 200 in 147ms (next.js: 97ms, proxy.ts: 6ms, application-code: 45ms)
+ GET /m/conteudos 200 in 2.5s (next.js: 74ms, proxy.ts: 6ms, application-code: 2.4s)
+ GET /m/biblioteca 200 in 1294ms (next.js: 7ms, proxy.ts: 5ms, application-code: 1282ms)
+ GET /m/conteudos 200 in 451ms (next.js: 5ms, proxy.ts: 6ms, application-code: 440ms)
+ GET /m/biblioteca 200 in 494ms (next.js: 6ms, proxy.ts: 6ms, application-code: 482ms)
+ GET /m 200 in 44ms (next.js: 8ms, proxy.ts: 6ms, application-code: 31ms)
+ GET /m/conteudos 200 in 863ms (next.js: 6ms, proxy.ts: 6ms, application-code: 851ms)
+ POST /api/upload 200 in 2.1s (next.js: 463ms, proxy.ts: 176ms, application-code: 1496ms)
+(node:10780) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ POST /api/conteudos 201 in 4.3s (next.js: 804ms, proxy.ts: 7ms, application-code: 3.5s)
+ GET /m/biblioteca 200 in 1306ms (next.js: 7ms, proxy.ts: 6ms, application-code: 1293ms)
+Request body exceeded 10MB for /api/upload. Only the first 10MB will be available unless configured. See https://nextjs.org/docs/app/api-reference/config/next-config-js/middlewareClientMaxBodySize for more details.
+⨯ TypeError: Failed to parse body as FormData.
+    at ignore-listed frames {
+  [cause]: TypeError: expected boundary after body
+      at ignore-listed frames
+}
+ POST /api/upload 500 in 1414ms (next.js: 5ms, proxy.ts: 1293ms, application-code: 116ms)
+ GET /m/conteudos 200 in 2.2s (next.js: 10ms, proxy.ts: 7ms, application-code: 2.2s)
+ GET /m/biblioteca 200 in 2.1s (next.js: 6ms, proxy.ts: 5ms, application-code: 2.0s)
+ POST /api/upload 200 in 1212ms (next.js: 4ms, proxy.ts: 170ms, application-code: 1038ms)
+ GET /m/biblioteca 200 in 2.1s (next.js: 8ms, proxy.ts: 6ms, application-code: 2.1s)
+ GET /m/biblioteca 200 in 1693ms (next.js: 28ms, proxy.ts: 135ms, application-code: 1531ms)
+ GET /login 200 in 659ms (next.js: 280ms, proxy.ts: 16ms, application-code: 363ms)
+ GET /login 200 in 1013ms (next.js: 911ms, proxy.ts: 34ms, application-code: 68ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /api/auth/providers 200 in 816ms (next.js: 796ms, proxy.ts: 5ms, application-code: 16ms)
+ GET /api/auth/csrf 200 in 18ms (next.js: 6ms, proxy.ts: 3ms, application-code: 8ms)
+ POST /api/auth/callback/credentials 200 in 2.2s (next.js: 7ms, proxy.ts: 4ms, application-code: 2.2s)
+ GET /m 200 in 65ms (next.js: 12ms, proxy.ts: 7ms, application-code: 47ms)
+ GET /m/biblioteca 200 in 1094ms (next.js: 25ms, proxy.ts: 6ms, application-code: 1063ms)
+ POST /api/upload 200 in 1644ms (next.js: 7ms, proxy.ts: 253ms, application-code: 1384ms)
+ GET /m 200 in 149ms (next.js: 30ms, proxy.ts: 10ms, application-code: 109ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/m" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /m/biblioteca 200 in 1215ms (next.js: 6ms, proxy.ts: 6ms, application-code: 1203ms)
+ GET /m 200 in 81ms (next.js: 11ms, proxy.ts: 7ms, application-code: 64ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/m" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /m/biblioteca 200 in 1271ms (next.js: 5ms, proxy.ts: 7ms, application-code: 1259ms)
+ GET /m 200 in 78ms (next.js: 4ms, proxy.ts: 7ms, application-code: 67ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/m" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /api/auth/signout 200 in 734ms (next.js: 702ms, proxy.ts: 4ms, application-code: 28ms)
+ GET /api/auth/signout 200 in 43ms (next.js: 8ms, proxy.ts: 5ms, application-code: 30ms)
+ POST /api/auth/signout 302 in 729ms (next.js: 696ms, proxy.ts: 5ms, application-code: 28ms)
+ GET /login 200 in 59ms (next.js: 5ms, proxy.ts: 3ms, application-code: 51ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /login 200 in 50ms (next.js: 6ms, proxy.ts: 4ms, application-code: 40ms)
+ GET /login 200 in 42ms (next.js: 3ms, proxy.ts: 3ms, application-code: 35ms)
+ GET /login 200 in 55ms (next.js: 5ms, proxy.ts: 3ms, application-code: 47ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /login 200 in 88ms (next.js: 7ms, proxy.ts: 6ms, application-code: 75ms)
+ GET /login 200 in 58ms (next.js: 5ms, proxy.ts: 9ms, application-code: 44ms)
+ GET /api/auth/providers 200 in 728ms (next.js: 694ms, proxy.ts: 3ms, application-code: 31ms)
+ GET /api/auth/csrf 200 in 30ms (next.js: 6ms, proxy.ts: 3ms, application-code: 21ms)
+ POST /api/auth/callback/credentials 200 in 2.1s (next.js: 8ms, proxy.ts: 5ms, application-code: 2.1s)
+ GET /m 200 in 42ms (next.js: 5ms, proxy.ts: 5ms, application-code: 32ms)
+ GET /m/biblioteca 200 in 1184ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1173ms)
+ GET /m 200 in 86ms (next.js: 7ms, proxy.ts: 7ms, application-code: 72ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/m" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /api/auth/signout 200 in 739ms (next.js: 692ms, proxy.ts: 5ms, application-code: 42ms)
+ GET /api/auth/signout 200 in 43ms (next.js: 6ms, proxy.ts: 3ms, application-code: 33ms)
+ GET /api/auth/signout 200 in 47ms (next.js: 8ms, proxy.ts: 4ms, application-code: 36ms)
+ POST /api/auth/signout 302 in 727ms (next.js: 689ms, proxy.ts: 7ms, application-code: 32ms)
+ GET /login 200 in 56ms (next.js: 4ms, proxy.ts: 6ms, application-code: 47ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /login 200 in 52ms (next.js: 10ms, proxy.ts: 7ms, application-code: 35ms)
+ GET /login 200 in 42ms (next.js: 4ms, proxy.ts: 3ms, application-code: 36ms)
+ GET /login 200 in 59ms (next.js: 5ms, proxy.ts: 4ms, application-code: 50ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /login 200 in 114ms (next.js: 8ms, proxy.ts: 4ms, application-code: 102ms)
+ GET /login 200 in 48ms (next.js: 5ms, proxy.ts: 3ms, application-code: 40ms)
+ GET /api/auth/providers 200 in 726ms (next.js: 711ms, proxy.ts: 4ms, application-code: 11ms)
+ GET /api/auth/csrf 200 in 43ms (next.js: 8ms, proxy.ts: 5ms, application-code: 30ms)
+ POST /api/auth/callback/credentials 200 in 2.0s (next.js: 6ms, proxy.ts: 6ms, application-code: 2.0s)
+ GET /m 200 in 53ms (next.js: 10ms, proxy.ts: 7ms, application-code: 36ms)
+ GET /m/biblioteca 200 in 1234ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1223ms)
+ GET /m 200 in 72ms (next.js: 6ms, proxy.ts: 7ms, application-code: 59ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/m" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /m/biblioteca 200 in 1335ms (next.js: 7ms, proxy.ts: 4ms, application-code: 1324ms)
+ GET /api/auth/signout 200 in 724ms (next.js: 704ms, proxy.ts: 3ms, application-code: 16ms)
+ GET /api/auth/signout 200 in 47ms (next.js: 10ms, proxy.ts: 4ms, application-code: 33ms)
+ POST /api/auth/signout 302 in 38ms (next.js: 8ms, proxy.ts: 5ms, application-code: 25ms)
+ GET /login 200 in 67ms (next.js: 5ms, proxy.ts: 4ms, application-code: 58ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /login 200 in 70ms (next.js: 5ms, proxy.ts: 4ms, application-code: 61ms)
+ GET /login 200 in 54ms (next.js: 4ms, proxy.ts: 4ms, application-code: 47ms)
+ GET /api/auth/providers 200 in 713ms (next.js: 688ms, proxy.ts: 4ms, application-code: 22ms)
+ GET /api/auth/csrf 200 in 39ms (next.js: 7ms, proxy.ts: 3ms, application-code: 29ms)
+ POST /api/auth/callback/credentials 200 in 2.2s (next.js: 6ms, proxy.ts: 4ms, application-code: 2.2s)
+ GET /m 200 in 40ms (next.js: 4ms, proxy.ts: 6ms, application-code: 30ms)
+ GET /m/biblioteca 200 in 1299ms (next.js: 5ms, proxy.ts: 6ms, application-code: 1288ms)
+ GET /m 200 in 73ms (next.js: 6ms, proxy.ts: 8ms, application-code: 60ms)
+ GET /api/auth/signout 200 in 719ms (next.js: 698ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /api/auth/signout 200 in 38ms (next.js: 8ms, proxy.ts: 4ms, application-code: 26ms)
+ POST /api/auth/signout 302 in 51ms (next.js: 8ms, proxy.ts: 5ms, application-code: 38ms)
+ GET /login 200 in 57ms (next.js: 6ms, proxy.ts: 4ms, application-code: 48ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /login 200 in 130ms (next.js: 13ms, proxy.ts: 5ms, application-code: 112ms)
+ GET /login 200 in 98ms (next.js: 8ms, proxy.ts: 6ms, application-code: 84ms)
+ GET /api/auth/providers 200 in 708ms (next.js: 692ms, proxy.ts: 4ms, application-code: 12ms)
+ GET /api/auth/csrf 200 in 36ms (next.js: 8ms, proxy.ts: 4ms, application-code: 25ms)
+ POST /api/auth/callback/credentials 200 in 2.0s (next.js: 7ms, proxy.ts: 5ms, application-code: 2.0s)
+ GET /m 200 in 53ms (next.js: 7ms, proxy.ts: 5ms, application-code: 41ms)
+ GET /m/biblioteca 200 in 1013ms (next.js: 7ms, proxy.ts: 5ms, application-code: 1001ms)
+ GET /login 200 in 1272ms (next.js: 388ms, proxy.ts: 5ms, application-code: 879ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="pt-BR"
+                          className="h-full"
+-                         style={{--safe-area-inset-top:"0px",--safe-area-inset-right:"0px",--safe-area-inset-bottom:"0px", ...}}
+                        >
+                  ...
+ 
+ GET /login 200 in 123ms (next.js: 7ms, proxy.ts: 4ms, application-code: 112ms)
+ GET /login 200 in 57ms (next.js: 4ms, proxy.ts: 4ms, application-code: 49ms)
+ GET /api/auth/providers 200 in 902ms (next.js: 877ms, proxy.ts: 5ms, application-code: 21ms)
+ GET /api/auth/csrf 200 in 42ms (next.js: 9ms, proxy.ts: 4ms, application-code: 30ms)
+ POST /api/auth/callback/credentials 200 in 2.3s (next.js: 17ms, proxy.ts: 5ms, application-code: 2.3s)
+ GET /m 200 in 313ms (next.js: 163ms, proxy.ts: 6ms, application-code: 144ms)
+ GET /m/biblioteca 200 in 1562ms (next.js: 199ms, proxy.ts: 5ms, application-code: 1358ms)
+ POST /api/upload 200 in 1402ms (next.js: 309ms, proxy.ts: 121ms, application-code: 972ms)
+✓ Compiled in 10.6s
+✓ Compiled in 10.9s
+✓ Compiled in 2.3s
+ GET /login 200 in 7.6s (next.js: 1518ms, proxy.ts: 2.1s, application-code: 4.0s)
+ GET /login 200 in 414ms (next.js: 100ms, proxy.ts: 19ms, application-code: 295ms)
+ GET /login 200 in 92ms (next.js: 6ms, proxy.ts: 5ms, application-code: 81ms)
+ GET /api/auth/providers 200 in 1015ms (next.js: 977ms, proxy.ts: 6ms, application-code: 32ms)
+ GET /api/auth/csrf 200 in 54ms (next.js: 9ms, proxy.ts: 5ms, application-code: 40ms)
+ POST /api/auth/callback/credentials 200 in 2.1s (next.js: 10ms, proxy.ts: 6ms, application-code: 2.1s)
+ GET /dashboard 200 in 1805ms (next.js: 616ms, proxy.ts: 7ms, application-code: 1182ms)
+ GET /dashboard/conteudos 200 in 2.4s (next.js: 707ms, proxy.ts: 7ms, application-code: 1669ms)
+ POST /api/upload 200 in 3.4s (next.js: 1885ms, proxy.ts: 197ms, application-code: 1336ms)
+ POST /api/conteudos 201 in 3.5s (next.js: 133ms, proxy.ts: 10ms, application-code: 3.3s)
+ GET /dashboard/conteudos 200 in 6.8s (next.js: 1347ms, proxy.ts: 2.5s, application-code: 3.0s)
+ GET /dashboard/conteudos 200 in 2.5s (next.js: 10ms, proxy.ts: 135ms, application-code: 2.4s)
+ GET /dashboard/conteudos 200 in 2.4s (next.js: 13ms, proxy.ts: 52ms, application-code: 2.3s)
+ GET /m 200 in 1058ms (next.js: 567ms, proxy.ts: 42ms, application-code: 450ms)
+ GET /m 200 in 150ms (next.js: 19ms, proxy.ts: 29ms, application-code: 102ms)
+ GET /api/auth/signout 200 in 1448ms (next.js: 1404ms, proxy.ts: 5ms, application-code: 39ms)
+ GET /api/auth/signout 200 in 54ms (next.js: 9ms, proxy.ts: 4ms, application-code: 41ms)
+ POST /api/auth/signout 302 in 68ms (next.js: 15ms, proxy.ts: 13ms, application-code: 41ms)
+ GET /login 200 in 347ms (next.js: 83ms, proxy.ts: 5ms, application-code: 259ms)
+ GET /login 200 in 260ms (next.js: 9ms, proxy.ts: 14ms, application-code: 237ms)
+ GET /login 200 in 133ms (next.js: 11ms, proxy.ts: 18ms, application-code: 103ms)
+ GET /api/auth/providers 200 in 872ms (next.js: 848ms, proxy.ts: 6ms, application-code: 18ms)
+ GET /api/auth/csrf 200 in 57ms (next.js: 8ms, proxy.ts: 5ms, application-code: 44ms)
+ POST /api/auth/callback/credentials 200 in 2.0s (next.js: 9ms, proxy.ts: 5ms, application-code: 2.0s)
+ GET /m 200 in 116ms (next.js: 33ms, proxy.ts: 9ms, application-code: 75ms)
+ GET /m/conteudos 200 in 2.4s (next.js: 658ms, proxy.ts: 20ms, application-code: 1748ms)
+ POST /api/upload 200 in 2.1s (next.js: 947ms, proxy.ts: 187ms, application-code: 981ms)
+ POST /api/conteudos 201 in 3.7s (next.js: 276ms, proxy.ts: 8ms, application-code: 3.4s)
+✓ Compiled in 21.5s
+[?25h
+2026-07-30T06:08:20.4010880-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1564ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ POST /login 200 in 967ms (next.js: 367ms, proxy.ts: 179ms, application-code: 420ms)
+ GET /login 200 in 290ms (next.js: 40ms, proxy.ts: 29ms, application-code: 222ms)
+ GET /login 200 in 111ms (next.js: 13ms, proxy.ts: 13ms, application-code: 85ms)
+ GET /api/auth/providers 200 in 3.3s (next.js: 3.2s, proxy.ts: 16ms, application-code: 55ms)
+ GET /api/auth/csrf 200 in 1189ms (next.js: 1165ms, proxy.ts: 10ms, application-code: 14ms)
+ POST /api/auth/callback/credentials 200 in 3.3s (next.js: 13ms, proxy.ts: 11ms, application-code: 3.3s)
+ GET /dashboard 200 in 2.5s (next.js: 1068ms, proxy.ts: 14ms, application-code: 1384ms)
+⨯ TypeError: Cannot read properties of undefined (reading 'findMany')
+    at CalendarioPage (src\app\dashboard\calendario\page.tsx:49:26)
+  47 |         })
+  48 |       : prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: ...
+> 49 |     prisma.tipoAvaliacao.findMany({
+     |                          ^
+  50 |       where: { empresaId: scope.empresaId },
+  51 |       orderBy: { nome: "asc" },
+  52 |       select: { id: true, nome: true }, {
+  digest: '4059917583'
+}
+ GET /dashboard/calendario 200 in 180ms (next.js: 64ms, proxy.ts: 10ms, application-code: 107ms)
+[browser] Uncaught TypeError: Cannot read properties of undefined (reading 'findMany')
+    at CalendarioPage (src\app\dashboard\calendario\page.tsx:49:26)
+  47 |         })
+  48 |       : prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: ...
+> 49 |     prisma.tipoAvaliacao.findMany({
+     |                          ^
+  50 |       where: { empresaId: scope.empresaId },
+  51 |       orderBy: { nome: "asc" },
+  52 |       select: { id: true, nome: true },
+✓ Compiled in 200ms
+⨯ TypeError: Cannot read properties of undefined (reading 'findMany')
+    at CalendarioPage (src\app\dashboard\calendario\page.tsx:49:26)
+  47 |         })
+  48 |       : prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: ...
+> 49 |     prisma.tipoAvaliacao.findMany({
+     |                          ^
+  50 |       where: { empresaId: scope.empresaId },
+  51 |       orderBy: { nome: "asc" },
+  52 |       select: { id: true, nome: true }, {
+  digest: '4059917583'
+}
+ GET /dashboard/calendario 500 in 1659ms (next.js: 134ms, proxy.ts: 83ms, application-code: 1442ms)
+[browser] Uncaught TypeError: Cannot read properties of undefined (reading 'findMany')
+    at CalendarioPage (src\app\dashboard\calendario\page.tsx:49:26)
+  47 |         })
+  48 |       : prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: ...
+> 49 |     prisma.tipoAvaliacao.findMany({
+     |                          ^
+  50 |       where: { empresaId: scope.empresaId },
+  51 |       orderBy: { nome: "asc" },
+  52 |       select: { id: true, nome: true },
+[?25h
+2026-07-30T06:14:02.3521713-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1514ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ GET /dashboard/calendario 200 in 2.7s (next.js: 288ms, proxy.ts: 134ms, application-code: 2.3s)
+ GET /login 200 in 285ms (next.js: 96ms, proxy.ts: 16ms, application-code: 173ms)
+ GET /login 200 in 116ms (next.js: 12ms, proxy.ts: 8ms, application-code: 97ms)
+ GET /dashboard/calendario 200 in 1652ms (next.js: 17ms, proxy.ts: 24ms, application-code: 1611ms)
+ GET /login 200 in 168ms (next.js: 36ms, proxy.ts: 13ms, application-code: 119ms)
+ GET /login 200 in 103ms (next.js: 9ms, proxy.ts: 6ms, application-code: 89ms)
+✓ Compiled in 3.4s
+ GET /login 200 in 3.9s (next.js: 3.1s, proxy.ts: 58ms, application-code: 822ms)
+ GET /login 200 in 479ms (next.js: 108ms, proxy.ts: 48ms, application-code: 323ms)
+ GET /dashboard/calendario 200 in 5.0s (next.js: 3.2s, proxy.ts: 53ms, application-code: 1765ms)
+ GET /dashboard/calendario 200 in 1819ms (next.js: 219ms, proxy.ts: 95ms, application-code: 1505ms)
+✓ Compiled in 55ms
+ GET /login 200 in 482ms (next.js: 51ms, proxy.ts: 36ms, application-code: 395ms)
+ GET /login 200 in 561ms (next.js: 212ms, proxy.ts: 7ms, application-code: 342ms)
+ GET /login 200 in 459ms (next.js: 39ms, proxy.ts: 6ms, application-code: 414ms)
+ GET /login 200 in 411ms (next.js: 15ms, proxy.ts: 27ms, application-code: 369ms)
+ GET /login 200 in 217ms (next.js: 96ms, proxy.ts: 16ms, application-code: 106ms)
+ GET /login 200 in 72ms (next.js: 11ms, proxy.ts: 21ms, application-code: 40ms)
+ GET /dashboard/calendario 200 in 2.1s (next.js: 16ms, proxy.ts: 56ms, application-code: 2.0s)
+ GET /dashboard/calendario 200 in 2.4s (next.js: 202ms, proxy.ts: 39ms, application-code: 2.2s)
+ GET /dashboard/calendario 200 in 1971ms (next.js: 39ms, proxy.ts: 51ms, application-code: 1881ms)
+ GET /dashboard/calendario 200 in 2.1s (next.js: 69ms, proxy.ts: 50ms, application-code: 1932ms)
+ GET /dashboard/calendario 200 in 2.1s (next.js: 102ms, proxy.ts: 49ms, application-code: 1914ms)
+ GET /dashboard/calendario 200 in 2.1s (next.js: 133ms, proxy.ts: 47ms, application-code: 1935ms)
+[?25h
+2026-07-30T06:18:47.4887946-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1505ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[browser] ⨯ unhandledRejection: SecurityError: Failed to register a ServiceWorker for scope ('http://localhost:3001/') with script ('http://localhost:3001/sw.js'): The script resource is behind a redirect, which is disallowed.
+
+Node.js fs rename failed after 101 retries with error Error: EPERM: operation not permitted, rename 'C:\Users\isaac\OneDrive\Desktop\EduGestao\.next\dev\server\server-reference-manifest.json.tmp.ds85llbktxd' -> 'C:\Users\isaac\OneDrive\Desktop\EduGestao\.next\dev\server\server-reference-manifest.json'
+⨯ Error: EPERM: operation not permitted, rename 'C:\Users\isaac\OneDrive\Desktop\EduGestao\.next\dev\server\server-reference-manifest.json.tmp.ds85llbktxd' -> 'C:\Users\isaac\OneDrive\Desktop\EduGestao\.next\dev\server\server-reference-manifest.json'
+    at ignore-listed frames {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\isaac\\OneDrive\\Desktop\\EduGestao\\.next\\dev\\server\\server-reference-manifest.json.tmp.ds85llbktxd',
+  dest: 'C:\\Users\\isaac\\OneDrive\\Desktop\\EduGestao\\.next\\dev\\server\\server-reference-manifest.json'
+}
+ GET /login 500 in 2.1s (next.js: 1765ms, proxy.ts: 118ms, application-code: 190ms)
+[browser] Uncaught Error: EPERM: operation not permitted, rename 'C:\Users\isaac\OneDrive\Desktop\EduGestao\.next\dev\server\server-reference-manifest.json.tmp.ds85llbktxd' -> 'C:\Users\isaac\OneDrive\Desktop\EduGestao\.next\dev\server\server-reference-manifest.json'
+ GET /dashboard/calendario 200 in 2.9s (next.js: 390ms, proxy.ts: 118ms, application-code: 2.4s)
+ GET /login 200 in 201ms (next.js: 51ms, proxy.ts: 11ms, application-code: 140ms)
+ GET /login 200 in 62ms (next.js: 10ms, proxy.ts: 7ms, application-code: 44ms)
+ GET /dashboard/agenda 200 in 3.4s (next.js: 1447ms, proxy.ts: 14ms, application-code: 1957ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-08-02 200 in 2.3s (next.js: 627ms, proxy.ts: 22ms, application-code: 1662ms)
+ GET /dashboard/calendario 200 in 1163ms (next.js: 10ms, proxy.ts: 12ms, application-code: 1141ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-08-02 200 in 907ms (next.js: 9ms, proxy.ts: 14ms, application-code: 884ms)
+ POST /api/avaliacoes 201 in 2.7s (next.js: 78ms, proxy.ts: 18ms, application-code: 2.6s)
+ GET /dashboard/notificacoes 200 in 3.8s (next.js: 1125ms, proxy.ts: 9ms, application-code: 2.7s)
+2026-07-30T10:43:06.5190949-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1699ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[?25h
+2026-07-30T10:51:55.8937451-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1299ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+⨯ Error: Failed to load external module next/dist/compiled/next-server/app-page-turbo.runtime.dev.js: Error: Cannot find module 'next/dist/compiled/next-server/app-page-turbo.runtime.dev.js'
+Require stack:
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[externals]__0n13xf4._.js
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\app\login\page.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\require.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\load-components.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\build\utils.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\start-server.js
+    at module evaluation (C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[externals]__0n13xf4._.js:16:35)
+    at Object.<anonymous> (C:\Users\isaac\.next-cache\edugestao\.next\dev\server\app\login\page.js:14:3) {
+  page: '/login'
+}
+⨯ Error: Failed to load external module react/jsx-runtime: Error: Cannot find module 'react/jsx-runtime'
+Require stack:
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[externals]__0.o~_~l._.js
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\app\login\page.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\require.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\load-components.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\build\utils.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\start-server.js
+    at module evaluation (C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[externals]__0.o~_~l._.js:4:35)
+    at Object.<anonymous> (C:\Users\isaac\.next-cache\edugestao\.next\dev\server\pages\_document.js:4:3)
+ POST /login 500 in 725ms (next.js: 454ms, proxy.ts: 111ms, application-code: 161ms)
+[browser] Uncaught Error: Failed to load external module react/jsx-runtime: Error: Cannot find module 'react/jsx-runtime'
+Require stack:
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[externals]__0.o~_~l._.js
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js
+- C:\Users\isaac\.next-cache\edugestao\.next\dev\server\app\login\page.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\require.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\load-components.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\build\utils.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\isaac\OneDrive\Desktop\EduGestao\node_modules\next\dist\server\lib\start-server.js
+    at Context.externalRequire [as x] (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:624:15)
+    at module evaluation (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[externals]__0.o~_~l._.js:4:35)
+    at <unknown> (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1291:27)
+    at runWithHooks (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1554:9)
+    at instantiateModuleShared (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1289:9)
+    at instantiateModule (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1557:23)
+    at getOrInstantiateModuleFromParent (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1593:23)
+    at Context.commonJsRequire [as r] (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:302:12)
+    at <unknown> (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1291:27)
+    at runWithHooks (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1554:9)
+    at instantiateModuleShared (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1289:9)
+    at instantiateModule (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1557:23)
+    at getOrInstantiateModuleFromParent (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1593:23)
+    at Context.commonJsRequire [as r] (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:302:12)
+    at <unknown> (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1291:27)
+    at runWithHooks (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1554:9)
+    at instantiateModuleShared (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1289:9)
+    at instantiateModule (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1557:23)
+    at instantiateRuntimeModule (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1564:12)
+    at getOrInstantiateRuntimeModule (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1577:12)
+    at Object.m (..\..\..\.next-cache\edugestao\.next\dev\server\chunks\ssr\[turbopack]_runtime.js:1599:18)
+    at Object.<anonymous> (..\..\..\.next-cache\edugestao\.next\dev\server\pages\_document.js:4:3)
+[?25h
+2026-07-30T10:54:45.6850353-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1244ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+○ Compiling /login ...
+ GET /login 200 in 5.2s (next.js: 4.9s, proxy.ts: 91ms, application-code: 229ms)
+ GET /login 200 in 234ms (next.js: 33ms, proxy.ts: 11ms, application-code: 189ms)
+ GET /login 200 in 81ms (next.js: 14ms, proxy.ts: 8ms, application-code: 59ms)
+ GET /login 200 in 46ms (next.js: 5ms, proxy.ts: 4ms, application-code: 38ms)
+ GET /login 200 in 89ms (next.js: 10ms, proxy.ts: 7ms, application-code: 72ms)
+ GET /login 200 in 128ms (next.js: 34ms, proxy.ts: 12ms, application-code: 82ms)
+ GET /login 200 in 47ms (next.js: 4ms, proxy.ts: 4ms, application-code: 40ms)
+ GET /api/auth/providers 200 in 2.3s (next.js: 2.3s, proxy.ts: 5ms, application-code: 39ms)
+ GET /api/auth/csrf 200 in 744ms (next.js: 727ms, proxy.ts: 7ms, application-code: 10ms)
+ POST /api/auth/callback/credentials 200 in 2.3s (next.js: 10ms, proxy.ts: 7ms, application-code: 2.3s)
+ GET /dashboard 200 in 2.3s (next.js: 1132ms, proxy.ts: 11ms, application-code: 1170ms)
+ GET /dashboard/calendario 200 in 2.4s (next.js: 937ms, proxy.ts: 7ms, application-code: 1457ms)
+ GET /login 200 in 52ms (next.js: 4ms, proxy.ts: 4ms, application-code: 44ms)
+ GET /dashboard/agenda 200 in 2.1s (next.js: 614ms, proxy.ts: 7ms, application-code: 1461ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-08-02 200 in 1731ms (next.js: 354ms, proxy.ts: 17ms, application-code: 1360ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-08-02 200 in 822ms (next.js: 15ms, proxy.ts: 12ms, application-code: 795ms)
+[alunos] encontrados: 4 | status filter: ATIVO
+ GET /dashboard/alunos 200 in 2.2s (next.js: 770ms, proxy.ts: 7ms, application-code: 1416ms)
+2026-07-30T11:10:23.6968080-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1186ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ POST /login 200 in 534ms (next.js: 219ms, proxy.ts: 108ms, application-code: 207ms)
+ GET /login 200 in 129ms (next.js: 24ms, proxy.ts: 18ms, application-code: 87ms)
+ GET /login 200 in 52ms (next.js: 5ms, proxy.ts: 5ms, application-code: 42ms)
+ GET /api/auth/providers 200 in 1268ms (next.js: 1219ms, proxy.ts: 8ms, application-code: 41ms)
+ GET /api/auth/csrf 200 in 261ms (next.js: 246ms, proxy.ts: 5ms, application-code: 10ms)
+ POST /api/auth/callback/credentials 200 in 2.3s (next.js: 10ms, proxy.ts: 7ms, application-code: 2.3s)
+ GET /dashboard 200 in 1288ms (next.js: 106ms, proxy.ts: 12ms, application-code: 1170ms)
+ GET /dashboard/calendario 200 in 703ms (next.js: 37ms, proxy.ts: 6ms, application-code: 661ms)
+[alunos] encontrados: 4 | status filter: ATIVO
+ GET /dashboard/alunos 200 in 694ms (next.js: 47ms, proxy.ts: 7ms, application-code: 640ms)
+ GET /dashboard/disciplinas 200 in 1798ms (next.js: 735ms, proxy.ts: 5ms, application-code: 1057ms)
+ GET /dashboard/calendario 200 in 1447ms (next.js: 8ms, proxy.ts: 9ms, application-code: 1431ms)
+✓ Compiled in 2.6s
+ GET /dashboard/calendario 200 in 3.7s (next.js: 2.1s, proxy.ts: 85ms, application-code: 1514ms)
+ GET /dashboard/calendario 200 in 1584ms (next.js: 6ms, proxy.ts: 21ms, application-code: 1557ms)
+ GET /dashboard/calendario 200 in 1560ms (next.js: 6ms, proxy.ts: 20ms, application-code: 1534ms)
+[?25h
+2026-07-30T11:50:14.8910022-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 716ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[?25h
+2026-07-30T12:43:28.3580404-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1216ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[?25h
+2026-07-30T12:50:06.1837651-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1148ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[?25h
+2026-07-30T13:02:54.7506871-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1209ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+2026-07-30T21:00:09.0566661-03:00 - nenhum servidor rodando na porta 3001, nada a fazer.
+2026-08-05T21:00:10.3843023-03:00 - nenhum servidor rodando na porta 3001, nada a fazer.
+2026-08-06T21:00:08.0796960-03:00 - dev server na porta 3001 encerrado.
+2026-08-07T21:00:06.6649783-03:00 - dev server na porta 3001 encerrado.
+2026-08-08T06:00:06.2829312-03:00 - servidor ja rodando na porta 3001, nada a fazer.
+2026-08-08T21:00:07.4157067-03:00 - dev server na porta 3001 encerrado.
+2026-08-10T21:00:09.7544193-03:00 - dev server na porta 3001 encerrado.
+2026-08-12T21:00:08.8522567-03:00 - dev server na porta 3001 encerrado.
+2026-08-13T08:00:23.5660213-03:00 - servidor ja rodando na porta 3001, nada a fazer.
+2026-08-15T03:50:00.3951685-03:00 - nenhum servidor rodando na porta 3001, nada a fazer.
+2026-08-18T21:00:08.5294326-03:00 - nenhum servidor rodando na porta 3001, nada a fazer.
+2026-08-20T09:33:26.4769607-03:00 - servidor ja rodando na porta 3001, nada a fazer.
+2026-08-20T17:55:05.9965089-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 1050ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+○ Compiling /login ...
+ GET /login 200 in 5.9s (next.js: 5.4s, proxy.ts: 7ms, application-code: 498ms)
+ POST /login 200 in 139ms (next.js: 14ms, proxy.ts: 22ms, application-code: 103ms)
+ GET /login 200 in 203ms (next.js: 44ms, proxy.ts: 13ms, application-code: 146ms)
+ GET /login 200 in 132ms (next.js: 23ms, proxy.ts: 24ms, application-code: 85ms)
+ GET /api/auth/providers 404 in 175ms (next.js: 106ms, proxy.ts: 4ms, application-code: 65ms)
+[browser] [next-auth][error][CLIENT_FETCH_ERROR] 
+https://next-auth.js.org/errors#client_fetch_error Unexpected token '<', "<!DOCTYPE "... is not valid JSON {
+  error: {
+    message: [32m`Unexpected token '<', "<!DOCTYPE "... is not valid JSON`[39m,
+    name: [32m'SyntaxError'[39m,
+    stack: [32m`SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON`[39m
+  },
+  message: [32m`Unexpected token '<', "<!DOCTYPE "... is not valid JSON`[39m,
+  url: [32m'/api/auth/providers'[39m
+} 
+    at new Promise (<anonymous>) (<anonymous>)
+ POST /api/auth/_log 404 in 1287ms (next.js: 44ms, proxy.ts: 9ms, application-code: 1235ms)
+ GET /api/auth/error 404 in 1318ms (next.js: 69ms, proxy.ts: 61ms, application-code: 1188ms)
+ GET /login 200 in 183ms (next.js: 39ms, proxy.ts: 25ms, application-code: 119ms)
+ GET /login 200 in 88ms (next.js: 10ms, proxy.ts: 6ms, application-code: 72ms)
+ GET /dashboard 200 in 2.6s (next.js: 277ms, proxy.ts: 112ms, application-code: 2.2s)
+ GET /api/auth/providers 404 in 58ms (next.js: 13ms, proxy.ts: 3ms, application-code: 42ms)
+ GET /api/auth/session 404 in 51ms (next.js: 12ms, proxy.ts: 4ms, application-code: 36ms)
+ GET /api/auth/csrf 404 in 45ms (next.js: 10ms, proxy.ts: 3ms, application-code: 32ms)
+ GET /api/cron 404 in 47ms (next.js: 11ms, proxy.ts: 3ms, application-code: 33ms)
+[?25h
+2026-08-20T17:59:06.3397947-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 994ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[browser] ⨯ unhandledRejection: TypeError: Failed to register a ServiceWorker for scope ('http://localhost:3001/') with script ('http://localhost:3001/sw.js'): An unknown error occurred when fetching the script.
+TypeError: Failed to register a ServiceWorker for scope ('http://localhost:3001/') with script ('http://localhost:3001/sw.js'): An unknown error occurred when fetching the script.
+ GET /api/auth/error 200 in 2.8s (next.js: 2.7s, proxy.ts: 12ms, application-code: 53ms)
+○ Compiling /login ...
+ GET /api/auth/providers 200 in 67ms (next.js: 32ms, proxy.ts: 8ms, application-code: 27ms)
+ GET /api/auth/session 200 in 55ms (next.js: 14ms, proxy.ts: 8ms, application-code: 34ms)
+ GET /login 200 in 3.4s (next.js: 3.2s, proxy.ts: 9ms, application-code: 216ms)
+ GET /login 200 in 7.9s (next.js: 7.5s, proxy.ts: 109ms, application-code: 316ms)
+ GET /api/auth/error 200 in 53ms (next.js: 19ms, proxy.ts: 7ms, application-code: 27ms)
+ GET /login 200 in 78ms (next.js: 6ms, proxy.ts: 7ms, application-code: 64ms)
+ GET /login 200 in 154ms (next.js: 24ms, proxy.ts: 12ms, application-code: 118ms)
+ GET /login 200 in 74ms (next.js: 9ms, proxy.ts: 7ms, application-code: 58ms)
+ GET /api/auth/providers 200 in 42ms (next.js: 22ms, proxy.ts: 6ms, application-code: 14ms)
+ GET /api/auth/csrf 200 in 43ms (next.js: 14ms, proxy.ts: 5ms, application-code: 25ms)
+ POST /api/auth/callback/credentials 401 in 2.3s (next.js: 9ms, proxy.ts: 6ms, application-code: 2.3s)
+ GET /api/auth/providers 200 in 52ms (next.js: 20ms, proxy.ts: 5ms, application-code: 27ms)
+ GET /api/auth/csrf 200 in 44ms (next.js: 12ms, proxy.ts: 5ms, application-code: 27ms)
+ POST /api/auth/callback/credentials 401 in 2.1s (next.js: 13ms, proxy.ts: 6ms, application-code: 2.1s)
+ GET /api/auth/providers 200 in 41ms (next.js: 22ms, proxy.ts: 4ms, application-code: 16ms)
+ GET /api/auth/csrf 200 in 43ms (next.js: 13ms, proxy.ts: 6ms, application-code: 24ms)
+ POST /api/auth/callback/credentials 200 in 2.2s (next.js: 15ms, proxy.ts: 7ms, application-code: 2.2s)
+ GET /dashboard 200 in 2.5s (next.js: 1142ms, proxy.ts: 9ms, application-code: 1329ms)
+ GET /dashboard/agenda 200 in 2.4s (next.js: 901ms, proxy.ts: 7ms, application-code: 1503ms)
+ GET /api/agenda?inicio=2026-08-17&fim=2026-08-23 200 in 1880ms (next.js: 430ms, proxy.ts: 20ms, application-code: 1430ms)
+ GET /api/agenda?inicio=2026-08-17&fim=2026-08-23 200 in 850ms (next.js: 8ms, proxy.ts: 13ms, application-code: 829ms)
+[?25h
+2026-08-20T18:04:28.6568100-03:00 - iniciando dev server na porta 3001
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.18.10:3001
+- Environments: .env.local, .env
+✓ Ready in 898ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · optimizePackageImports
+
+[browser] ⨯ unhandledRejection: TypeError: Failed to register a ServiceWorker for scope ('http://localhost:3001/') with script ('http://localhost:3001/sw.js'): An unknown error occurred when fetching the script.
+TypeError: Failed to register a ServiceWorker for scope ('http://localhost:3001/') with script ('http://localhost:3001/sw.js'): An unknown error occurred when fetching the script.
+○ Compiling /login ...
+ GET /login 200 in 4.2s (next.js: 3.1s, proxy.ts: 161ms, application-code: 935ms)
+ GET /dashboard/agenda 200 in 5.8s (next.js: 3.5s, proxy.ts: 196ms, application-code: 2.2s)
+ GET /login 200 in 236ms (next.js: 45ms, proxy.ts: 28ms, application-code: 163ms)
+ GET /login 200 in 279ms (next.js: 18ms, proxy.ts: 18ms, application-code: 243ms)
+ GET /api/agenda?inicio=2026-08-17&fim=2026-08-23 200 in 1085ms (next.js: 200ms, proxy.ts: 21ms, application-code: 864ms)
+ GET /api/auth/providers 200 in 1372ms (next.js: 1340ms, proxy.ts: 4ms, application-code: 28ms)
+ GET /dashboard/agenda 200 in 1577ms (next.js: 9ms, proxy.ts: 10ms, application-code: 1559ms)
+ GET /login 200 in 195ms (next.js: 27ms, proxy.ts: 23ms, application-code: 144ms)
+ GET /login 200 in 108ms (next.js: 12ms, proxy.ts: 8ms, application-code: 88ms)
+ GET /api/agenda?inicio=2026-08-17&fim=2026-08-23 200 in 842ms (next.js: 5ms, proxy.ts: 16ms, application-code: 821ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-09-06 200 in 882ms (next.js: 8ms, proxy.ts: 8ms, application-code: 867ms)
+✓ Compiled in 170ms
+ GET /login 200 in 474ms (next.js: 94ms, proxy.ts: 47ms, application-code: 333ms)
+ GET /dashboard/agenda 200 in 1861ms (next.js: 208ms, proxy.ts: 23ms, application-code: 1629ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-09-06 200 in 2.5s (next.js: 248ms, proxy.ts: 113ms, application-code: 2.1s)
+ GET /login 200 in 102ms (next.js: 5ms, proxy.ts: 3ms, application-code: 94ms)
+ GET /dashboard/agenda 200 in 1580ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1569ms)
+ GET /login 200 in 190ms (next.js: 38ms, proxy.ts: 24ms, application-code: 128ms)
+ GET /login 200 in 112ms (next.js: 16ms, proxy.ts: 7ms, application-code: 88ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-09-06 200 in 861ms (next.js: 7ms, proxy.ts: 19ms, application-code: 834ms)
+ GET /dashboard/disciplinas 200 in 1305ms (next.js: 1045ms, proxy.ts: 6ms, application-code: 254ms)
+ GET /dashboard/agenda 200 in 692ms (next.js: 8ms, proxy.ts: 8ms, application-code: 676ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-09-06 200 in 873ms (next.js: 10ms, proxy.ts: 14ms, application-code: 849ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-09-06 200 in 862ms (next.js: 11ms, proxy.ts: 12ms, application-code: 839ms)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-07-27 200 in 2.3s (next.js: 6ms, proxy.ts: 8ms, application-code: 2.3s)
+ GET /api/agenda?inicio=2026-07-27&fim=2026-09-06 200 in 868ms (next.js: 9ms, proxy.ts: 6ms, application-code: 853ms)

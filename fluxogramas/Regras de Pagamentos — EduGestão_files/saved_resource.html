@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<!-- saved from url=(0253)https://d6e7c7be-5f3d-4805-89de-29699cc3303d.frame.claudeusercontent.com/_f/1786049343-aeab/?__frame_t=6BKfggdXHgTcWY9cYEBzPWYc.82e6ce13-0596-4475-bcaf-fc23f48914a4.13f2892b-ab97-4962-8284-799b34f25d18.1786053079&__frame_v=manifest.a2bc197790966b24.json -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- frame-runtime --><!--<base href="/_f/1786049343-aeab/">--><base href="."><script>window.__FRAME_PREAMBLE={"capabilities":{"comments":"comments.BaoaqR_K.js","db":"db.CfOZ1CRq.js","downloads":"downloads.BXsoAvg9.js","mcp":"mcp.CYSdpjo0.js","permissions":"permissions.DdITF2Mk.js","self":"self.DtZoNC4q.js","user":"user.Cr_h1ETf.js"},"transforms":"_transforms.VaITkagF.js","comments":"_comments.zwwDucaS.js","translate":"_translate.BOzFH2D9.js"}</script><script>(function(){"use strict";var re=["light","dark","system"];function ne(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function Y(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function se(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const n=t.theme;return typeof n=="string"&&re.includes(n)}function oe(e){try{typeof reportError=="function"?reportError(e):setTimeout(()=>{throw e},0)}catch{}}var K=Object.freeze(Object.assign(Object.create(null),{user:Object.freeze(Object.assign(Object.create(null),{id:null,isOwner:!1,canEdit:!1,name:null,avatarUrl:null,email:null}))})),ie={};function x(e){if(window===top||e.type==="auxclick"&&e.button!==1)return;const t=e.composedPath?e.composedPath():[e.target];let n=null;for(let p=0;p<t.length;p++){const a=t[p];if(a&&a.matches&&a.matches("a[href],area[href]")){n=a;break}}if(!n&&e.target&&e.target.closest&&(n=e.target.closest("a[href],area[href]")),!n)return;const c=n.getAttribute("href");if(!c)return;let i,s;try{i=new URL(c,document.baseURI),s=new URL(document.baseURI).origin}catch{return}(i.protocol==="http:"||i.protocol==="https:")&&i.origin!==s&&(e.preventDefault(),parent.postMessage({__frame_nav:!0,url:i.href},"*"))}var J={};function I(e){if(window===top)return;const t=Date.now();t-(J[e]||0)<500||(J[e]=t,parent.postMessage({__frame_engaged:!0,kind:e},"*"))}var ae=2e3,G=["wheel","touchstart","touchmove","keydown","pointerdown"],X=0;function ce(e){e.isTrusted&&(X=Date.now())}function le(){addEventListener("click",x,!0),addEventListener("auxclick",x,!0)}function ue(){for(let e=0;e<G.length;e++)addEventListener(G[e],ce,{capture:!0,passive:!0});addEventListener("scroll",e=>{e.isTrusted&&Date.now()-X<ae&&I("scroll")},{capture:!0,passive:!0}),addEventListener("pointermove",e=>{e.isTrusted&&I("pointer")},{capture:!0,passive:!0}),addEventListener("click",e=>{e.isTrusted&&I("click")},{capture:!0,passive:!0})}var D="__frame_scroll",fe=150,de=310,pe=160,me=3e4;function he(){let e=0,t=!1,n=!1,c=!1,i=0;const s=d=>{try{sessionStorage.setItem(D,JSON.stringify({y:d}))}catch{}},p=()=>{if(t){t=!1;return}n=!0,clearTimeout(e),e=setTimeout(()=>s(scrollY),fe)};try{addEventListener("scroll",p,{passive:!0}),addEventListener("pagehide",()=>{clearTimeout(e),s(scrollY)})}catch{}const a=()=>{let d;try{d=sessionStorage.getItem(D)}catch{return null}if(d===null)return null;let w;try{w=JSON.parse(d)}catch{w=null}const m=w?.y;if(!(typeof m=="number"&&Number.isFinite(m)&&m>=0)){try{sessionStorage.removeItem(D)}catch{}return null}return m};let _=!1;const y=d=>{try{const w=scrollY;scrollTo({top:d,left:0,behavior:"instant"}),i=d,c=!0,s(d);const m=scrollY;m!==w&&(t=!0),m!==d&&!_&&(_=!0,addEventListener("load",()=>{try{if(scrollY===m){const u=a();y(u!==null?u:i)}}catch{}},{once:!0}))}catch{}},o=()=>{try{return!!location.hash}catch{return!0}};let l=!1;const f=()=>{try{if(l||innerWidth>de||innerHeight>pe)return;l=!0;const d=Date.now(),w=()=>{try{removeEventListener("resize",w)}catch{}if(Date.now()-d>me||n||o())return;const m=a();y(m!==null?m:i)};addEventListener("resize",w)}catch{}};let h=!1,g=!1;return{restore(){if(h||(h=!0,o()))return;const d=a();d!==null&&(y(d),f())},promoted(){if(g||(g=!0,o()))return;const d=a();d!==null?(y(d),f()):c&&y(i)}}}function ge(e,t,n){const c=[...t.values()].filter(i=>i.targets.some(s=>s.startsWith(e+".")));return{wrap(i,s){const p=`${e}.${i}`,a=c.filter(_=>_.targets.includes(p));return a.length===0?(..._)=>{try{return s(..._)}catch(y){return Promise.reject(y)}}:(..._)=>{let y=_;for(const l of a){const f=l.module.parameters;if(f)try{y=f(y)}catch{return Promise.reject({code:"transform_error",id:l.id,scope:e,message:"parameters transform failed"})}}let o;try{o=s(...y)}catch(l){o=Promise.reject(l)}return o.then(l=>{for(let f=a.length-1;f>=0;f--){const h=a[f],g=h.module.returns;if(g)try{l=g(l)}catch{return n({id:h.id,scope:e,leg:"returns"}),l}}return l},l=>{for(let f=a.length-1;f>=0;f--){const h=a[f],g=h.module.throws;if(g)try{l=g(l)}catch{return n({id:h.id,scope:e,leg:"throws"}),Promise.reject(l)}}return Promise.reject(l)})}}}}function ve(e,t,n,c=()=>{}){const i=new Set(e.changes??[]),s=new Map;for(const p of i){const a=t[p];a&&s.set(p,a)}return{contract:e.contract,changes:i,flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:s,shellOrigin:n.shellOrigin,mount:n.mount,pipe:p=>ge(p,s,c)}}var Oe="modulepreload",Se=function(e){return"/"+e},Ae={},_e=function(t,n,c){let i=Promise.resolve();function s(p){const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=p,window.dispatchEvent(a),!a.defaultPrevented)throw p}return i.then(p=>{for(const a of p||[])a.status==="rejected"&&s(a.reason);return t().catch(s)})};(function(){const e=Object.defineProperty,t=globalThis,n=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let c=0;for(let i=0;i<n.length;i++){const s=n[i];try{e(t,s,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[s]}catch{}try{e(t,s,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[s]=="function"&&c++}if(c&&window!==top)try{parent.postMessage({__frame_rtc_lockdown_failed:c},"*")}catch{}})();var ye=1e4,be=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function Q(e){for(const t of be)if(t.endsWith(":*"))try{const n=new URL(e);if(`${n.protocol}//${n.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var k=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),q=window.__FRAME_PREAMBLE?.transforms,z=window.__FRAME_PREAMBLE?.comments,B=window.__FRAME_PREAMBLE?.translate,C=/^[\w.-]+\.js$/,Ee=/^[a-z][a-z0-9_-]{0,63}$/,V=null,R=null;function $(e,t,n){try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var F=!1;function Z(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,F=!0):F&&(delete t.dataset.theme,t.style.colorScheme="",F=!1)}var ee=256,L=Object.assign(Object.create(null),{mcp:Object.assign(Object.create(null),{watchTool:{handlerArg:3}})}),M=new Map;function te(e,t){const n=M.get(e);if(!n)return;const c=Object.assign(Object.create(null),t);Object.assign(n.impl,c),n.impl.__settled=()=>Promise.reject({code:"capability_removed",message:`${e}: method not in this runtime`});const i=n.queue;n.queue=[];for(const s of i){const p=c[s.method];if(p)if(L[e]?.[s.method])try{s.resolve(p(...s.args))}catch{T(s,L[e][s.method].handlerArg,{code:"transform_error",message:`${e}.${s.method} rejected its arguments`})}else p(...s.args).then(s.resolve,s.reject);else{const a={code:"capability_removed",message:`${e}.${s.method} is not in this runtime`},_=L[e]?.[s.method];if(_){T(s,_.handlerArg,a);continue}s.reject(a)}}}function we(e,t){const n=M.get(e);if(!n)return;n.impl.__settled=()=>Promise.reject(t);const c=n.queue;n.queue=[];for(const i of c){const s=L[e]?.[i.method];if(s){T(i,s.handlerArg,t);continue}i.reject(t)}}function N(e,t){const n=K[e];if(!n){we(e,t);return}te(e,Object.fromEntries(Object.entries(n).map(([c,i])=>[c,()=>Promise.resolve(i)])))}function T(e,t,n){if(e.syncState?.dead)return;const c=e.args[t];typeof c=="function"&&queueMicrotask(()=>{if(!e.syncState?.dead)try{c({type:"error",error:n})}catch(i){oe(i)}})}var H=Object.getOwnPropertyDescriptor(window,"claude");if(window!==top&&!(H&&H.writable===!1)){le(),ue();let e=null;try{e=he()}catch{}const t=H?.value??{};$(window,"claude",t);const n=o=>{const l={impl:Object.create(null),queue:[]};M.set(o,l);const f=l.impl,h=m=>({code:"queue_overflow",message:`${o}.${m}: pre-init call queue is full`}),g=(m,u)=>{if(l.queue.length>=ee){const v=K[o];return v&&m in v?Promise.resolve(v[m]):Promise.reject(h(m))}return new Promise((v,b)=>{l.queue.push({method:m,args:u,resolve:v,reject:b})})},d=ie[o],w=new Proxy(d===void 0?f:(()=>{}),{apply:(m,u,v)=>{const b=d,O=f[b]??f.__settled;return O?O(...v):g(b,v)},get:(m,u)=>{if(typeof u!="string"||u==="then"||u==="toJSON"||u==="valueOf")return;if(u==="toString")return Object.prototype.toString;if(d!==void 0&&(u==="call"||u==="apply"||u==="bind"))return Function.prototype[u];const v=L[o]?.[u];return v?(...b)=>{if(typeof b[v.handlerArg]!="function")throw new TypeError(`${o}.${u} requires a handler function`);const O=f[u];if(O)return O(...b);if(f.__settled){const E={dead:!1},U={args:[...b],syncState:E};return f.__settled().catch(r=>T(U,v.handlerArg,r)),()=>{E.dead=!0}}if(l.queue.length>=ee){const E={dead:!1};return T({args:[...b],syncState:E},v.handlerArg,h(u)),()=>{E.dead=!0}}let A=null;const j={dead:!1};return l.queue.push({method:u,args:b,resolve:E=>{A=typeof E=="function"?E:null,j.dead&&A?.()},reject:()=>{},syncState:j}),()=>{j.dead=!0,A?.()}}:(...b)=>{const O=f[u]??f.__settled;return O?O(...b):g(u,b)}},set:()=>!1});$(t,o,w)};for(const o of Object.keys(k)){if(t[o]!==void 0){$(t,o,t[o]);continue}n(o)}let c=null,i=null,s=0;const p=o=>{o.source!==parent||!Q(o.origin)||ne(o.data)&&(c=o.data.__frame_init,R=o.origin,removeEventListener("message",p),clearTimeout(s),i?.())};addEventListener("message",p),parent.postMessage({__frame_connect:!0},"*");const a=new Promise(o=>{i=o,s=setTimeout(()=>{removeEventListener("message",p),o()},ye)}),_=document.readyState==="loading"?new Promise(o=>document.addEventListener("DOMContentLoaded",()=>o(),{once:!0})):Promise.resolve();_.then(()=>{try{e?.restore()}catch{}});const y=o=>{if(!(o.source!==parent||!Q(o.origin))&&Y(o.data)){removeEventListener("message",y);try{e?.promoted()}catch{}}};addEventListener("message",y),a.then(async()=>{if(!c||!R){for(const r of M.keys())N(r,{code:"not_granted",message:"frame initialization did not arrive - capability unavailable"});return}Z(c.theme);const o=R;let l=!1,f=!1;addEventListener("message",r=>{if(r.source!==parent||r.origin!==o)return;se(r.data)&&Z(r.data.__frame_theme.theme);const S=r.data?.__fc_mode;S&&typeof S=="object"&&!l&&z&&C.test(z)&&(l=!0,h(z).then(W=>W.install?.(o,S.on===!0)).catch(()=>{}));const P=r.data?.__ft_cmd;P&&typeof P=="object"&&!f&&B&&C.test(B)&&(f=!0,h(B).then(W=>W.install?.(o,P)).catch(()=>{}))});const h=r=>_e(()=>import("/_runtime/"+r),void 0),g=Object.keys(c.capabilities??{});for(const r of g)Object.hasOwn(k,r)||Ee.test(r)&&t[r]===void 0&&(n(r),N(r,{code:"capability_disabled",message:"capability not in this runtime generation"}));const d=g.filter(r=>Object.hasOwn(k,r)).map(r=>[r,k[r]]).filter(r=>typeof r[1]=="string"&&C.test(r[1])),[w,...m]=await Promise.allSettled([q&&C.test(q)?h(q):Promise.resolve({}),...d.map(([,r])=>h(r))]),u=R;V=ve(c,w.status==="fulfilled"&&w.value?.TRANSFORMS||{},{shellOrigin:u,mount:te},r=>parent.postMessage({__frame_cap_telemetry:r},u));const v=r=>parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:r}},u),b=V;m.forEach((r,S)=>{const P=d[S][0];if(r.status!=="fulfilled"){v(P);return}try{r.value?.install?.(b)}catch{v(P)}});for(const[r,S]of M)if(!(S.queue.length===0&&Object.keys(S.impl).length>0)){if(g.includes(r)){N(r,{code:"capability_disabled",message:"capability not available in this session"});continue}N(r,{code:"not_granted",message:"capability not available in this session"})}await _,parent.postMessage({__frame_ready:!0},R);let O=-1,A=0;const j=()=>{A=0;const r=Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0);r!==O&&(O=r,parent.postMessage({__frame_size:!0,h:r},u))},E=()=>{A||(A=setTimeout(j,200))},U=new ResizeObserver(E);U.observe(document.documentElement),document.body&&U.observe(document.body),document.addEventListener("load",E,!0),document.fonts?.ready.then(E,()=>{}),addEventListener("beforeprint",()=>{O=-1,j()}),E(),addEventListener("message",r=>{if(!(r.source!==parent||r.origin!==u)&&Y(r.data)){try{e?.promoted()}catch{}O=-1,E()}})})}})();</script><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Regras de Pagamentos — EduGestão</title>
+<style>
+  :root {
+    --bg: #F7F7FB;
+    --surface: #FFFFFF;
+    --surface2: #F1F1F8;
+    --ink: #211F33;
+    --muted: #5D5A75;
+    --line: #E3E2EE;
+    --edge: #8B88A6;
+    --accent: #4F46E5;
+    --accent-soft: #EEF0FE;
+    --ok: #0E8F62;
+    --ok-soft: #E7F6EF;
+    --danger: #D33131;
+    --danger-soft: #FBEBEB;
+    --warn: #B45309;
+    --warn-soft: #FCF3E3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16151F;
+      --surface: #1F1E2C;
+      --surface2: #262536;
+      --ink: #EAE9F4;
+      --muted: #A3A0BC;
+      --line: #34324A;
+      --edge: #77748F;
+      --accent: #9AA0F7;
+      --accent-soft: #2A2C4A;
+      --ok: #43D398;
+      --ok-soft: #16352A;
+      --danger: #F08080;
+      --danger-soft: #3A2022;
+      --warn: #E8A44C;
+      --warn-soft: #3A2E1A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16151F; --surface: #1F1E2C; --surface2: #262536;
+    --ink: #EAE9F4; --muted: #A3A0BC; --line: #34324A; --edge: #77748F;
+    --accent: #9AA0F7; --accent-soft: #2A2C4A;
+    --ok: #43D398; --ok-soft: #16352A;
+    --danger: #F08080; --danger-soft: #3A2022;
+    --warn: #E8A44C; --warn-soft: #3A2E1A;
+  }
+  :root[data-theme="light"] {
+    --bg: #F7F7FB; --surface: #FFFFFF; --surface2: #F1F1F8;
+    --ink: #211F33; --muted: #5D5A75; --line: #E3E2EE; --edge: #8B88A6;
+    --accent: #4F46E5; --accent-soft: #EEF0FE;
+    --ok: #0E8F62; --ok-soft: #E7F6EF;
+    --danger: #D33131; --danger-soft: #FBEBEB;
+    --warn: #B45309; --warn-soft: #FCF3E3;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 14.5px/1.65 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 44px 24px 80px; }
+
+  header.doc { border-bottom: 1px solid var(--line); padding-bottom: 26px; margin-bottom: 8px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 10px;
+  }
+  h1 { font-size: 27px; line-height: 1.25; font-weight: 700; margin: 0 0 10px; text-wrap: balance; }
+  .meta { color: var(--muted); font-size: 13px; margin: 0; }
+  .meta a { color: var(--accent); }
+
+  section { margin-top: 44px; }
+  h2 { font-size: 18px; font-weight: 700; margin: 0 0 6px; text-wrap: balance; }
+  h2 .idx { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 6px; }
+  .lead { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+
+  figure { margin: 18px 0 0; }
+  .diagram {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 14px; overflow-x: auto;
+  }
+  .diagram svg { display: block; min-width: 640px; max-width: 100%; height: auto; margin: 0 auto; }
+  figcaption { color: var(--muted); font-size: 12.5px; margin-top: 10px; max-width: 70ch; }
+
+  svg text { font-family: inherit; font-size: 12.5px; fill: var(--ink); }
+  svg .sub  { font-size: 11px; fill: var(--muted); }
+  svg .elab { font-size: 11px; fill: var(--muted); }
+  svg .box    { fill: var(--surface2); stroke: var(--edge); stroke-width: 1.1; }
+  svg .status { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.3; }
+  svg .hot    { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.3; }
+  svg .good   { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 1.2; }
+  svg .bad    { fill: var(--danger-soft); stroke: var(--danger); stroke-width: 1.2; }
+  svg .note   { fill: none; stroke: var(--edge); stroke-dasharray: 4 3; }
+  svg .flow { stroke: var(--edge); stroke-width: 1.3; fill: none; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .chip {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    border: 1px solid var(--line); background: var(--surface);
+    border-radius: 999px; padding: 7px 14px; font-size: 13.5px; font-weight: 600;
+  }
+  .chip small { font-weight: 500; color: var(--muted); font-size: 11.5px; }
+  .chip.auto  { border-color: var(--accent); }
+  .chip.auto small { color: var(--accent); }
+  .chip.rep   { border-color: #A855F7; }
+  .chip.rep small { color: #A855F7; font-weight: 600; }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  @media (max-width: 640px) { .duo { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+  .card.trava h3 { color: var(--danger); }
+  .card.livre h3 { color: var(--ok); }
+  .card ul { margin: 0; padding-left: 18px; }
+  .card li { margin: 4px 0; }
+  .card li em { color: var(--muted); font-style: normal; font-size: 12.5px; }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: top; }
+  th { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); background: var(--surface2); }
+  tr:last-child td { border-bottom: none; }
+  td strong { font-weight: 600; }
+
+  ul.plain { margin: 12px 0 0; padding-left: 20px; }
+  ul.plain li { margin: 6px 0; max-width: 68ch; }
+
+  .callout {
+    margin-top: 16px; border-left: 3px solid var(--warn); background: var(--warn-soft);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 13.5px; max-width: 72ch;
+  }
+
+  footer.doc { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 12.5px; }
+  footer.doc code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 11.5px; background: var(--surface2); border-radius: 4px; padding: 1px 5px; }
+</style>
+
+<div class="wrap">
+  <header class="doc">
+    <p class="eyebrow">EduGestão · Cobrança &amp; Pagamentos</p>
+    <h1>Regras de pagamentos: geração, baixa e exclusão</h1>
+    <p class="meta">Atualizado em 06/08/2026 · reflete a versão publicada na dev (multi-empresa) · complementa o fluxograma <a href="https://claude.ai/code/artifact/c1a12ab3-9f81-4524-9dd4-740f54300430">Regras da Agenda</a></p>
+  </header>
+
+  <section>
+    <h2><span class="idx">1</span>De onde vem um pagamento (coluna Geração)</h2>
+    <p class="lead">Todo pagamento nasce por um de três caminhos, identificados na coluna Geração da tela de Pagamentos. A origem define o que pode ser feito com ele depois.</p>
+    <div class="chips">
+      <div class="chip auto">Automático <small>criado pelo botão "Gerar cobranças"</small></div>
+      <div class="chip">Manual <small>digitado pelo admin, pode vincular aulas</small></div>
+      <div class="chip rep">Rep. Aula <small>criado ao excluir uma aula "será reposta"</small></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="idx">2</span>Motor "Gerar cobranças"</h2>
+    <p class="lead">O botão recalcula o mês inteiro: conta as aulas cobradas de cada aluno, monta as parcelas conforme o tipo de cobrança e refaz os vínculos aula ↔ pagamento. O tipo de cobrança define a <strong>forma e as datas</strong> — a quantidade de parcelas depende de onde caem as aulas.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 780 560" role="img" aria-label="Fluxo do motor de geração de cobranças: aulas Realizada e Falta do Aluno do mês, exceto reposições, de alunos com contrato, são agrupadas por aluno e viram parcelas conforme o tipo de cobrança; parcelas são criadas ou atualizadas com os vínculos refeitos, e parcelas automáticas não pagas que sobraram são removidas.">
+          <defs>
+            <marker id="arrM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="var(--edge)"></path>
+            </marker>
+          </defs>
+
+          <rect class="status" x="290" y="14" width="200" height="40" rx="10"></rect>
+          <text x="390" y="39" text-anchor="middle">Gerar cobranças (mês)</text>
+
+          <path class="flow" d="M390 54 V76" marker-end="url(#arrM)"></path>
+
+          <rect class="box" x="250" y="78" width="280" height="52" rx="9"></rect>
+          <text x="390" y="99" text-anchor="middle">Aulas do mês: Realizada + Falta do Aluno</text>
+          <text class="sub" x="390" y="115" text-anchor="middle">aulas de reposição ficam de fora</text>
+
+          <path class="flow" d="M390 130 V152" marker-end="url(#arrM)"></path>
+
+          <rect class="box" x="250" y="154" width="280" height="44" rx="9"></rect>
+          <text x="390" y="172" text-anchor="middle">Aluno tem período contratual</text>
+          <text x="390" y="188" text-anchor="middle">cobrindo o mês?</text>
+
+          <path class="flow" d="M530 176 H578" marker-end="url(#arrM)"></path>
+          <text class="elab" x="552" y="168" text-anchor="middle">não</text>
+          <rect class="note" x="580" y="158" width="170" height="36" rx="9"></rect>
+          <text class="elab" x="665" y="180" text-anchor="middle">Não gera cobrança</text>
+
+          <path class="flow" d="M390 198 V222" marker-end="url(#arrM)"></path>
+          <text class="elab" x="400" y="215">sim</text>
+
+          <rect class="box" x="240" y="224" width="300" height="40" rx="9"></rect>
+          <text x="390" y="249" text-anchor="middle">Agrupa por aluno · valor = valor/aula × qtd</text>
+
+          <path class="flow" d="M390 264 V286 H135 V302" marker-end="url(#arrM)"></path>
+          <path class="flow" d="M390 264 V302" marker-end="url(#arrM)"></path>
+          <path class="flow" d="M390 264 V286 H645 V302" marker-end="url(#arrM)"></path>
+
+          <rect class="box" x="45" y="304" width="180" height="70" rx="9"></rect>
+          <text x="135" y="324" text-anchor="middle">Mensal / Por aula</text>
+          <text class="sub" x="135" y="341" text-anchor="middle">1 parcela — vencimento no</text>
+          <text class="sub" x="135" y="355" text-anchor="middle">dia de pagamento do aluno</text>
+
+          <rect class="box" x="270" y="304" width="240" height="70" rx="9"></rect>
+          <text x="390" y="322" text-anchor="middle">Quinzenal</text>
+          <text class="sub" x="390" y="338" text-anchor="middle">dias 1–15 → parcela 1 · venc. dia 1</text>
+          <text class="sub" x="390" y="352" text-anchor="middle">dias 16+ → parcela 2 · venc. dia 2</text>
+          <text class="sub" x="390" y="366" text-anchor="middle">quinzena sem aula não gera parcela</text>
+
+          <rect class="box" x="535" y="304" width="220" height="70" rx="9"></rect>
+          <text x="645" y="324" text-anchor="middle">Semanal</text>
+          <text class="sub" x="645" y="341" text-anchor="middle">1 parcela por ocorrência do</text>
+          <text class="sub" x="645" y="355" text-anchor="middle">dia de cobrança; semana sem aula é pulada</text>
+
+          <path class="flow" d="M135 374 V396 H390 V414" fill="none"></path>
+          <path class="flow" d="M645 374 V396 H390 V414" fill="none"></path>
+          <path class="flow" d="M390 374 V416" marker-end="url(#arrM)"></path>
+
+          <rect class="hot" x="240" y="418" width="300" height="52" rx="9"></rect>
+          <text x="390" y="439" text-anchor="middle">Cria/atualiza a parcela (aluno · mês · nº)</text>
+          <text x="390" y="455" text-anchor="middle">e refaz os vínculos aula ↔ pagamento</text>
+
+          <path class="flow" d="M390 470 V494" marker-end="url(#arrM)"></path>
+
+          <rect class="note" x="215" y="496" width="350" height="52" rx="9"></rect>
+          <text class="elab" x="390" y="517" text-anchor="middle">Limpeza: parcelas automáticas não pagas que não foram</text>
+          <text class="elab" x="390" y="532" text-anchor="middle">regeradas são removidas — pagas e manuais/reposição ficam</text>
+        </svg>
+      </div>
+      <figcaption>Se todas as aulas realizadas de um aluno mudarem de quinzena ou forem revertidas, a parcela antiga não paga é removida na próxima geração — o histórico pago nunca é apagado pelo motor.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="idx">3</span>Ciclo de vida da parcela e a baixa</h2>
+    <p class="lead">O status na tela é calculado pelo vencimento e pela baixa. Só vira "Atrasado" a partir do dia seguinte ao vencimento.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 780 300" role="img" aria-label="Ciclo de vida de uma parcela: gerada, fica A vencer; sem baixa após o vencimento vira Atrasado; a baixa é bloqueada se houver aula vinculada ainda Agendada, senão o pagamento fica Pago com data registrada.">
+          <defs>
+            <marker id="arrP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="var(--edge)"></path>
+            </marker>
+          </defs>
+
+          <rect class="status" x="20" y="36" width="150" height="52" rx="9"></rect>
+          <text x="95" y="57" text-anchor="middle">Parcela gerada</text>
+          <text class="sub" x="95" y="73" text-anchor="middle">pelo motor ou manual</text>
+
+          <path class="flow" d="M170 62 H208" marker-end="url(#arrP)"></path>
+
+          <rect class="box" x="210" y="36" width="150" height="52" rx="9"></rect>
+          <text x="285" y="57" text-anchor="middle">A vencer</text>
+          <text class="sub" x="285" y="73" text-anchor="middle">e-mail: lembrete</text>
+
+          <path class="flow" d="M360 62 H428" marker-end="url(#arrP)"></path>
+          <text class="elab" x="394" y="52" text-anchor="middle">venc. + 1 dia</text>
+
+          <rect class="bad" x="430" y="36" width="170" height="52" rx="9"></rect>
+          <text x="515" y="57" text-anchor="middle">Atrasado</text>
+          <text class="sub" x="515" y="73" text-anchor="middle">e-mail: aviso de atraso</text>
+
+          <path class="flow" d="M285 88 V128 H345 V148" marker-end="url(#arrP)"></path>
+          <path class="flow" d="M515 88 V128 H420 V148" marker-end="url(#arrP)"></path>
+          <text class="elab" x="392" y="122" text-anchor="middle">baixa (marcar como pago ✓)</text>
+
+          <rect class="box" x="255" y="150" width="255" height="44" rx="9"></rect>
+          <text x="382" y="168" text-anchor="middle">Alguma aula vinculada ainda</text>
+          <text x="382" y="184" text-anchor="middle">está Agendada?</text>
+
+          <path class="flow" d="M510 172 H548" marker-end="url(#arrP)"></path>
+          <text class="elab" x="528" y="164" text-anchor="middle">sim</text>
+
+          <rect class="bad" x="550" y="146" width="210" height="52" rx="9"></rect>
+          <text x="655" y="167" text-anchor="middle">Bloqueado — lance o resultado</text>
+          <text x="655" y="183" text-anchor="middle">das aulas na agenda antes</text>
+
+          <path class="flow" d="M382 194 V224" marker-end="url(#arrP)"></path>
+          <text class="elab" x="392" y="214">não</text>
+
+          <rect class="good" x="255" y="226" width="255" height="52" rx="9"></rect>
+          <text x="382" y="247" text-anchor="middle">Pago — data de pagamento registrada</text>
+          <text class="sub" x="382" y="263" text-anchor="middle">e-mail: recibo · recibo para impressão</text>
+        </svg>
+      </div>
+      <figcaption>Desmarcar a baixa limpa a data de pagamento e o status volta a ser calculado pelo vencimento. O botão de e-mail sugere o tipo pelo status (lembrete / atraso / recibo) e registra o último envio.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="idx">4</span>Pagamento manual (com vínculo de aulas)</h2>
+    <ul class="plain">
+      <li>Em <strong>Pagamentos → Novo</strong>, ao escolher o aluno aparece a lista de aulas <strong>Realizadas sem pagamento vinculado</strong> (reposições ficam de fora).</li>
+      <li>Marcar aulas preenche <strong>quantidade e valor</strong> automaticamente (nº × valor/aula); os campos continuam ajustáveis.</li>
+      <li>Ao salvar, o pagamento nasce <strong>vinculado</strong> às aulas — elas não aparecem mais como "sem cobrança".</li>
+      <li>O pagamento de <strong>reposição</strong> (Rep. Aula) é um caso especial de manual: criado sozinho ao excluir uma aula "será reposta", referente à aula original, <strong>sem vínculo</strong> com a aula de reposição (que fica fora do motor).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="idx">5</span>Excluir um pagamento</h2>
+    <p class="lead">A regra muda pela origem: manuais são livres, automáticos só quando o mês do aluno inteiro foi cancelado.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 780 356" role="img" aria-label="Fluxo de exclusão de pagamento: manuais e de reposição podem sempre ser excluídos; automáticos só se todas as aulas do mês do aluno estiverem Cancelada ou Falta do Professor, senão a exclusão é bloqueada.">
+          <defs>
+            <marker id="arrE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="var(--edge)"></path>
+            </marker>
+          </defs>
+
+          <rect class="status" x="60" y="16" width="180" height="40" rx="10"></rect>
+          <text x="150" y="41" text-anchor="middle">Excluir pagamento</text>
+
+          <path class="flow" d="M150 56 V86" marker-end="url(#arrE)"></path>
+
+          <rect class="box" x="40" y="88" width="220" height="44" rx="9"></rect>
+          <text x="150" y="106" text-anchor="middle">Origem Manual ou</text>
+          <text x="150" y="122" text-anchor="middle">Rep. Aula?</text>
+
+          <path class="flow" d="M260 110 H318" marker-end="url(#arrE)"></path>
+          <text class="elab" x="286" y="102" text-anchor="middle">sim</text>
+
+          <rect class="good" x="320" y="88" width="200" height="44" rx="9"></rect>
+          <text x="420" y="115" text-anchor="middle">Pode excluir sempre</text>
+
+          <path class="flow" d="M420 132 V148" marker-end="url(#arrE)" stroke-dasharray="4 3"></path>
+          <rect class="note" x="300" y="150" width="320" height="52" rx="9"></rect>
+          <text class="elab" x="460" y="171" text-anchor="middle">Rep. Aula: a aula de reposição fica sem cobrança</text>
+          <text class="elab" x="460" y="186" text-anchor="middle">(continua fora do motor) — a tela avisa antes</text>
+
+          <path class="flow" d="M150 132 V208" marker-end="url(#arrE)"></path>
+          <text class="elab" x="160" y="176">não (Automático)</text>
+
+          <rect class="box" x="20" y="210" width="260" height="56" rx="9"></rect>
+          <text x="150" y="230" text-anchor="middle">Todas as aulas do mês do aluno</text>
+          <text x="150" y="246" text-anchor="middle">estão Cancelada / Falta do Professor?</text>
+
+          <path class="flow" d="M280 238 H338" marker-end="url(#arrE)"></path>
+          <text class="elab" x="306" y="230" text-anchor="middle">sim</text>
+
+          <rect class="good" x="340" y="216" width="190" height="44" rx="9"></rect>
+          <text x="435" y="243" text-anchor="middle">Exclui o pagamento</text>
+
+          <path class="flow" d="M150 266 V300" marker-end="url(#arrE)"></path>
+          <text class="elab" x="160" y="288">não</text>
+
+          <rect class="bad" x="40" y="302" width="220" height="44" rx="9"></rect>
+          <text x="150" y="320" text-anchor="middle">Bloqueado — ainda há</text>
+          <text x="150" y="336" text-anchor="middle">aulas ativas no mês</text>
+        </svg>
+      </div>
+      <figcaption>Excluir um pagamento automático não é o caminho para "corrigir" cobrança errada — para isso, ajuste os status das aulas na agenda e rode "Gerar cobranças" de novo, que o motor recalcula e limpa o que sobrar.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="idx">6</span>Tabela de parcelas por tipo de cobrança</h2>
+    <table>
+      <thead><tr><th>Tipo de cobrança</th><th>Parcelas geradas no mês</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mensal</strong></td><td>1 parcela, vencimento no dia de pagamento do aluno (ou último dia do mês, se não definido)</td></tr>
+        <tr><td><strong>Quinzenal</strong></td><td>Até 2 parcelas — aulas dos dias 1–15 na 1ª (venc. dia de pagamento 1) e dos dias 16 em diante na 2ª (venc. dia de pagamento 2); quinzena sem aula não gera parcela</td></tr>
+        <tr><td><strong>Semanal</strong></td><td>1 parcela por ocorrência do dia de cobrança na semana; cada aula entra na ocorrência igual ou posterior à sua data; semanas sem aula são puladas</td></tr>
+        <tr><td><strong>Por aula</strong></td><td>1 parcela única, valor = valor/aula × nº de aulas do mês</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">💡 Em todos os tipos, o valor da parcela é <strong>valor por aula × quantidade de aulas</strong> daquele período. O tipo de cobrança define a forma e as datas de vencimento — não uma quantidade fixa de parcelas.</div>
+  </section>
+
+  <section>
+    <h2><span class="idx">7</span>Ponte com a Agenda</h2>
+    <div class="duo">
+      <div class="card trava">
+        <h3>Pagamento pago trava na agenda</h3>
+        <ul>
+          <li>Mudar a aula para <strong>Cancelada</strong> ou <strong>Falta do Professor</strong></li>
+          <li><strong>Excluir</strong> ou <strong>repor</strong> a aula</li>
+        </ul>
+      </div>
+      <div class="card livre">
+        <h3>Movimentos que mexem no pagamento</h3>
+        <ul>
+          <li>Aula cobrada volta para <strong>Agendada</strong> → pagamento vinculado é <strong>desmarcado e excluído</strong> <em>(regenerar recria o período sem a aula)</em></li>
+          <li><strong>Baixa bloqueada</strong> enquanto houver aula vinculada ainda Agendada</li>
+          <li>Excluir aula "será reposta" → nasce o pagamento <strong>Rep. Aula</strong></li>
+        </ul>
+      </div>
+    </div>
+    <p class="meta" style="margin-top:14px;">Os detalhes de cada transição de status estão no fluxograma <a href="https://claude.ai/code/artifact/c1a12ab3-9f81-4524-9dd4-740f54300430">Regras da Agenda</a>.</p>
+  </section>
+
+  <footer class="doc">
+    Fontes das regras no código: <code>src/app/api/pagamentos/gerar/route.ts</code> (motor),
+    <code>src/app/api/pagamentos/route.ts</code> (listagem e criação manual),
+    <code>src/app/api/pagamentos/[id]/route.ts</code> (baixa e exclusão),
+    <code>src/app/api/agenda/[id]/repor/route.ts</code> (pagamento de reposição),
+    <code>PagamentosClient.tsx</code> (status na tela, e-mails, recibos).
+  </footer>
+</div>
+
+</body></html>
