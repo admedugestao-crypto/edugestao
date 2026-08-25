@@ -51,8 +51,8 @@ export default async function AgendaPage() {
   }));
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-2">
+    <div className="flex h-full min-h-0 flex-col gap-5">
+      <div className="flex shrink-0 items-center gap-2">
         <CalendarDays size={20} className="text-indigo-600" />
         <h1 className="text-xl font-bold text-slate-800">Agenda de Aulas</h1>
       </div>
