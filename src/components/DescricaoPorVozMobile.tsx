@@ -5,6 +5,25 @@ import { Capacitor, type PluginListenerHandle } from "@capacitor/core";
 import { SpeechRecognition } from "@capgo/capacitor-speech-recognition";
 import { Loader2, Mic, Square } from "lucide-react";
 
+type BrowserSpeechRecognitionEvent = {
+  resultIndex: number;
+  results: ArrayLike<{ 0?: { transcript?: string } }>;
+};
+
+type BrowserSpeechRecognition = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+  onresult: ((event: BrowserSpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+};
+
+type BrowserSpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
+
 type Props = {
   value: string;
   onChange: (value: string) => void;
@@ -17,33 +36,34 @@ export default function DescricaoPorVozMobile({ value, onChange }: Props) {
   const [erro, setErro] = useState("");
   const baseRef = useRef("");
   const listenersRef = useRef<PluginListenerHandle[]>([]);
+  const reconhecimentoWebRef = useRef<BrowserSpeechRecognition | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (!Capacitor.isNativePlatform()) return;
-    const timer = window.setTimeout(() => setNativo(true), 0);
+    const plataformaNativa = Capacitor.isNativePlatform();
+    const timer = window.setTimeout(() => setNativo(plataformaNativa), 0);
 
     return () => {
       window.clearTimeout(timer);
       listenersRef.current.forEach((listener) => listener.remove());
-      SpeechRecognition.stop().catch(() => undefined);
+      reconhecimentoWebRef.current?.abort();
+      if (plataformaNativa) SpeechRecognition.stop().catch(() => undefined);
     };
   }, []);
 
   async function pararDitado() {
     setOuvindo(false);
-    await SpeechRecognition.stop().catch(() => undefined);
-    await Promise.all(listenersRef.current.map((listener) => listener.remove()));
-    listenersRef.current = [];
+    if (nativo) {
+      await SpeechRecognition.stop().catch(() => undefined);
+      await Promise.all(listenersRef.current.map((listener) => listener.remove()));
+      listenersRef.current = [];
+    } else {
+      reconhecimentoWebRef.current?.stop();
+      reconhecimentoWebRef.current = null;
+    }
   }
 
-  async function alternarDitado() {
-    if (ouvindo) {
-      await pararDitado();
-      return;
-    }
-
-    setErro("");
-    setIniciando(true);
+  async function iniciarDitadoNativo() {
     try {
       const permissao = await SpeechRecognition.requestPermissions();
       if (permissao.speechRecognition !== "granted") {
@@ -84,31 +104,96 @@ export default function DescricaoPorVozMobile({ value, onChange }: Props) {
     }
   }
 
+  function iniciarDitadoNoNavegador() {
+    const janelaComVoz = window as Window & {
+      SpeechRecognition?: BrowserSpeechRecognitionConstructor;
+      webkitSpeechRecognition?: BrowserSpeechRecognitionConstructor;
+    };
+    const ConstrutorReconhecimento = janelaComVoz.SpeechRecognition ?? janelaComVoz.webkitSpeechRecognition;
+
+    if (!ConstrutorReconhecimento) {
+      textareaRef.current?.focus();
+      setErro("Neste navegador, use o microfone do teclado do iPhone para ditar a descrição.");
+      setIniciando(false);
+      return;
+    }
+
+    const reconhecimento = new ConstrutorReconhecimento();
+    reconhecimento.lang = "pt-BR";
+    reconhecimento.continuous = false;
+    reconhecimento.interimResults = true;
+    baseRef.current = value.trimEnd();
+
+    reconhecimento.onresult = (event) => {
+      let transcricao = "";
+      for (let indice = event.resultIndex; indice < event.results.length; indice += 1) {
+        transcricao += event.results[indice]?.[0]?.transcript ?? "";
+      }
+      if (transcricao.trim()) {
+        onChange(baseRef.current ? `${baseRef.current} ${transcricao.trim()}` : transcricao.trim());
+      }
+    };
+    reconhecimento.onend = () => {
+      setOuvindo(false);
+      reconhecimentoWebRef.current = null;
+    };
+    reconhecimento.onerror = () => {
+      setOuvindo(false);
+      setErro("Não foi possível iniciar o ditado no navegador. Verifique a permissão do microfone.");
+      reconhecimentoWebRef.current = null;
+    };
+
+    reconhecimentoWebRef.current = reconhecimento;
+    try {
+      reconhecimento.start();
+      setOuvindo(true);
+    } catch {
+      reconhecimentoWebRef.current = null;
+      setErro("Não foi possível iniciar o ditado no navegador. Tente novamente.");
+    } finally {
+      setIniciando(false);
+    }
+  }
+
+  async function alternarDitado() {
+    if (ouvindo) {
+      await pararDitado();
+      return;
+    }
+
+    setErro("");
+    setIniciando(true);
+    if (nativo) {
+      await iniciarDitadoNativo();
+    } else {
+      iniciarDitadoNoNavegador();
+    }
+  }
+
   return (
     <div>
       <label className="text-xs font-medium text-slate-500 block mb-1">Descrição</label>
       <div className="relative">
         <textarea
+          ref={textareaRef}
           rows={3}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-full border border-slate-200 rounded-xl px-3 py-3 pr-12 text-sm resize-none"
         />
-        {nativo && (
-          <button
-            type="button"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={alternarDitado}
-            disabled={iniciando}
-            aria-label={ouvindo ? "Encerrar ditado" : "Ditado por voz"}
-            title={ouvindo ? "Encerrar ditado" : "Ditado por voz"}
-            className={`absolute right-2 bottom-2 w-9 h-9 rounded-full flex items-center justify-center transition-colors disabled:opacity-60 ${
-              ouvindo ? "bg-red-100 text-red-600" : "bg-indigo-50 text-indigo-600 active:bg-indigo-100"
-            }`}
-          >
-            {iniciando ? <Loader2 size={17} className="animate-spin" /> : ouvindo ? <Square size={15} /> : <Mic size={17} />}
-          </button>
-        )}
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={alternarDitado}
+          disabled={iniciando}
+          aria-label={ouvindo ? "Encerrar ditado" : "Ditado por voz"}
+          title={ouvindo ? "Encerrar ditado" : "Ditado por voz"}
+          className={`absolute right-2 bottom-2 w-9 h-9 rounded-full flex items-center justify-center transition-colors disabled:opacity-60 ${
+            ouvindo ? "bg-red-100 text-red-600" : "bg-indigo-50 text-indigo-600 active:bg-indigo-100"
+          }`}
+        >
+          {iniciando ? <Loader2 size={17} className="animate-spin" /> : ouvindo ? <Square size={15} /> : <Mic size={17} />}
+        </button>
       </div>
       {ouvindo && <p className="mt-1 text-xs text-red-600">Ouvindo… toque no botão para encerrar.</p>}
       {erro && <p className="mt-1 text-xs text-red-600">{erro}</p>}
