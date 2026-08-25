@@ -60,9 +60,11 @@ type Aula = {
 };
 
 type StatusAula = "AGENDADA" | "REALIZADA" | "CANCELADA" | "FALTA_ALUNO" | "FALTA_PROFESSOR";
+type Feriado = { data: string; nome: string; abrangencia: "NACIONAL" | "ESTADUAL" | "MUNICIPAL" | "LOCAL" };
 
 // ── Constantes ────────────────────────────────────────────────────────────────
-const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const DIAS_CABECALHO = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+const DIAS_POR_INDICE = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const DIAS_SEMANA_FULL = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
 const STATUS_CONFIG: Record<StatusAula, { label: string; cor: string; bg: string; icon: React.ReactNode }> = {
@@ -142,6 +144,7 @@ export default function AgendaClient({
   const [diaRef, setDiaRef]       = useState(new Date());
   const [mesRef, setMesRef]       = useState(() => startOfMonth(new Date()));
   const [aulas, setAulas]         = useState<Aula[]>([]);
+  const [feriados, setFeriados]   = useState<Feriado[]>([]);
   const [carregando, setCarregando] = useState(false);
 
   // Modal nova aula
@@ -240,9 +243,18 @@ export default function AgendaClient({
       const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       let url = `/api/agenda?inicio=${fmt(inicio)}&fim=${fmt(fim)}`;
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
-      const res  = await fetch(url);
+      const anos = Array.from(new Set([inicio.getFullYear(), fim.getFullYear()]));
+      const [res, ...respostasFeriados] = await Promise.all([
+        fetch(url),
+        ...anos.map((ano) =>
+          fetch(`/api/feriados?ano=${ano}`)
+            .then((resposta) => resposta.ok ? resposta.json() : { feriados: [] })
+            .catch(() => ({ feriados: [] }))),
+      ]);
       const data = await res.json();
       setAulas(Array.isArray(data) ? data : []);
+      setFeriados(respostasFeriados.flatMap((resposta) =>
+        Array.isArray(resposta.feriados) ? resposta.feriados : []));
     } finally {
       setCarregando(false);
     }
@@ -693,6 +705,15 @@ export default function AgendaClient({
       .sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
   }
 
+  function feriadosNoDia(dia: Date) {
+    const data = `${dia.getFullYear()}-${String(dia.getMonth() + 1).padStart(2, "0")}-${String(dia.getDate()).padStart(2, "0")}`;
+    return feriados.filter((feriado) => feriado.data === data);
+  }
+
+  function ehFimDeSemana(dia: Date) {
+    return dia.getDay() === 0 || dia.getDay() === 6;
+  }
+
   type TimelineItem =
     | { tipo: "aula"; aula: Aula; inicio: number }
     | { tipo: "livre"; inicio: string; fim: string; inicioMin: number };
@@ -795,8 +816,8 @@ export default function AgendaClient({
           const hoje = isToday(dia);
           return (
             <div key={i} className={`border-r last:border-r-0 border-slate-200 py-1.5 px-1 text-center ${hoje ? "bg-indigo-50" : "bg-slate-50"}`}>
-              <p className={`font-semibold ${hoje ? "text-indigo-600" : "text-slate-500"}`}>{DIAS_PT[dia.getDay()]}</p>
-              <p className={`text-sm font-bold leading-none mt-0.5 ${hoje ? "text-indigo-700" : "text-slate-800"}`}>{format(dia, "dd")}</p>
+              <p className={`font-bold ${ehFimDeSemana(dia) || feriadosNoDia(dia).length > 0 ? "text-red-600" : hoje ? "text-indigo-600" : "text-slate-600"}`}>{DIAS_POR_INDICE[dia.getDay()]}</p>
+              <p className={`text-sm font-bold leading-none mt-0.5 ${ehFimDeSemana(dia) || feriadosNoDia(dia).length > 0 ? "text-red-600" : hoje ? "text-indigo-700" : "text-slate-800"}`}>{format(dia, "dd")}</p>
             </div>
           );
         })}
@@ -1031,8 +1052,8 @@ export default function AgendaClient({
       {vista === "mes" && (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="grid grid-cols-7 border-b border-slate-100">
-            {DIAS_PT.map((d) => (
-              <div key={d} className="py-2 px-2 text-center text-xs font-semibold text-slate-500 border-r last:border-r-0 border-slate-100">
+            {DIAS_CABECALHO.map((d, indice) => (
+              <div key={d} className={`py-2 px-2 text-center text-xs font-bold border-r last:border-r-0 border-slate-100 ${indice >= 5 ? "text-red-600 bg-red-50/50" : "text-slate-600"}`}>
                 {d}
               </div>
             ))}
@@ -1042,21 +1063,31 @@ export default function AgendaClient({
               const hoje  = isToday(dia);
               const noMes = isSameMonth(dia, mesRef);
               const aulasDia = aulasNoDia(dia);
+              const feriadosDia = feriadosNoDia(dia);
+              const diaVermelho = ehFimDeSemana(dia) || feriadosDia.length > 0;
               const MAX_VISIVEIS = 3;
               return (
                 <div key={i}
                   onClick={() => { setDiaRef(dia); setVista("dia"); }}
-                  title="Ver dia"
+                  title={feriadosDia.length > 0 ? feriadosDia.map((feriado) => `${feriado.nome} (${feriado.abrangencia.toLowerCase()})`).join(" · ") : "Ver dia"}
                   className={`min-h-[96px] border-r last:border-r-0 border-b border-slate-100 p-1.5 align-top cursor-pointer transition-colors ${
-                    !noMes ? "bg-slate-50/60" : hoje ? "bg-indigo-50/40" : "hover:bg-slate-50"
+                    !noMes ? "bg-slate-50/60" : feriadosDia.length > 0 ? "bg-red-50/60" : hoje ? "bg-indigo-50/40" : "hover:bg-slate-50"
                   }`}
                 >
-                  <p className={`text-xs font-semibold mb-1 ${
-                    !noMes ? "text-slate-300" : hoje ? "text-indigo-600" : "text-slate-600"
+                  <p className={`text-xs font-bold mb-1 ${
+                    !noMes ? "text-slate-300" : diaVermelho ? "text-red-600" : hoje ? "text-indigo-600" : "text-slate-700"
                   }`}>
                     {format(dia, "dd")}
                   </p>
                   <div className="space-y-0.5">
+                    {feriadosDia.slice(0, 1).map((feriado) => (
+                      <p key={`${feriado.data}-${feriado.nome}`} className="text-[9px] leading-tight font-bold text-red-700 bg-red-100 rounded px-1 py-0.5 truncate">
+                        {feriado.nome} · {feriado.abrangencia.toLowerCase()}
+                      </p>
+                    ))}
+                    {feriadosDia.length > 1 && (
+                      <p className="text-[9px] text-red-600 font-medium px-1">+{feriadosDia.length - 1} feriado</p>
+                    )}
                     {aulasDia.slice(0, MAX_VISIVEIS).map((a) => {
                       const cor = a.materia?.cor ?? corAluno(a.alunoId);
                       return (
@@ -1089,10 +1120,11 @@ export default function AgendaClient({
           <div className="grid grid-cols-7 border-b border-slate-100">
             {diasGrade.map((dia, i) => {
               const hoje = isToday(dia);
+              const diaVermelho = ehFimDeSemana(dia) || feriadosNoDia(dia).length > 0;
               return (
                 <div key={i} className={`py-3 px-2 text-center border-r last:border-r-0 border-slate-100 ${hoje ? "bg-indigo-50" : ""}`}>
-                  <p className={`text-xs font-semibold ${hoje ? "text-indigo-600" : "text-slate-500"}`}>{DIAS_PT[dia.getDay()]}</p>
-                  <p className={`text-lg font-bold mt-0.5 leading-none ${hoje ? "text-indigo-700" : "text-slate-800"}`}>
+                  <p className={`text-xs font-bold ${diaVermelho ? "text-red-600" : hoje ? "text-indigo-600" : "text-slate-600"}`}>{DIAS_POR_INDICE[dia.getDay()]}</p>
+                  <p className={`text-lg font-bold mt-0.5 leading-none ${diaVermelho ? "text-red-600" : hoje ? "text-indigo-700" : "text-slate-800"}`}>
                     {format(dia, "dd")}
                   </p>
                 </div>

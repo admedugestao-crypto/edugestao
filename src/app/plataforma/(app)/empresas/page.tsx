@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import EnderecoEmpresaCampos, { type EnderecoEmpresa } from "@/components/EnderecoEmpresaCampos";
 
 type Empresa = {
   id: string;
@@ -18,14 +19,26 @@ type Empresa = {
   emailUser: string | null;
   emailPass: string | null;
   emailFrom: string | null;
+  cep: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  estado: string | null;
+  codigoIbge: string | null;
   _count: { usuarios: number };
 };
 
-const formVazio = { empresaNome: "", nome: "", email: "", senha: "" };
+const enderecoVazio: EnderecoEmpresa = {
+  cep: "", logradouro: "", numero: "", complemento: "", bairro: "", cidade: "", estado: "", codigoIbge: "",
+};
+const formVazio = { empresaNome: "", nome: "", email: "", senha: "", ...enderecoVazio };
 const formEdicaoVazio = {
   nome: "", slug: "", ativo: true,
   fonnteToken: "", evolutionApiUrl: "", evolutionApiKey: "", evolutionApiInstance: "",
   emailHost: "", emailPort: "", emailUser: "", emailPass: "", emailFrom: "",
+  ...enderecoVazio,
 };
 const formAdminVazio = { nome: "", email: "", senha: "" };
 
@@ -43,7 +56,7 @@ export default function PlataformaEmpresasPage() {
   const [logoFileEdicao, setLogoFileEdicao] = useState<File | null>(null);
   const [erroEdicao, setErroEdicao] = useState("");
   const [salvandoEdicao, setSalvandoEdicao] = useState(false);
-  const [abaEdicao, setAbaEdicao] = useState<"geral" | "whatsapp" | "email">("geral");
+  const [abaEdicao, setAbaEdicao] = useState<"geral" | "endereco" | "whatsapp" | "email">("geral");
 
   const [empresaNovoAdmin, setEmpresaNovoAdmin] = useState<Empresa | null>(null);
   const [formAdmin, setFormAdmin] = useState(formAdminVazio);
@@ -118,6 +131,14 @@ export default function PlataformaEmpresasPage() {
       emailUser: empresa.emailUser ?? "",
       emailPass: empresa.emailPass ?? "",
       emailFrom: empresa.emailFrom ?? "",
+      cep: empresa.cep ?? "",
+      logradouro: empresa.logradouro ?? "",
+      numero: empresa.numero ?? "",
+      complemento: empresa.complemento ?? "",
+      bairro: empresa.bairro ?? "",
+      cidade: empresa.cidade ?? "",
+      estado: empresa.estado ?? "",
+      codigoIbge: empresa.codigoIbge ?? "",
     });
     setLogoFileEdicao(null);
     setErroEdicao("");
@@ -257,7 +278,7 @@ export default function PlataformaEmpresasPage() {
 
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm">
+          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova empresa</h2>
             <form onSubmit={criar} method="post" action="#" className="space-y-3" autoComplete="off">
               <div className="hidden" aria-hidden="true">
@@ -273,6 +294,13 @@ export default function PlataformaEmpresasPage() {
                   required
                   autoComplete="off"
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div className="border-t border-slate-200 pt-3">
+                <p className="text-sm font-semibold text-slate-700 mb-2">Endereço da empresa</p>
+                <EnderecoEmpresaCampos
+                  value={form}
+                  onChange={(endereco) => setForm({ ...form, ...endereco })}
                 />
               </div>
               <div>
@@ -348,7 +376,7 @@ export default function PlataformaEmpresasPage() {
 
       {empresaEditando && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar empresa</h2>
 
             <div className="flex gap-1 border-b border-slate-200 mb-4">
@@ -360,6 +388,15 @@ export default function PlataformaEmpresasPage() {
                 }`}
               >
                 Geral
+              </button>
+              <button
+                type="button"
+                onClick={() => setAbaEdicao("endereco")}
+                className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                  abaEdicao === "endereco" ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                Endereço
               </button>
               <button
                 type="button"
@@ -444,6 +481,11 @@ export default function PlataformaEmpresasPage() {
                     </div>
                   </div>
                 </>
+              ) : abaEdicao === "endereco" ? (
+                <EnderecoEmpresaCampos
+                  value={formEdicao}
+                  onChange={(endereco) => setFormEdicao({ ...formEdicao, ...endereco })}
+                />
               ) : abaEdicao === "whatsapp" ? (
                 <>
                   <p className="text-xs text-slate-500 -mt-1">
