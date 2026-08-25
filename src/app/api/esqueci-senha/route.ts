@@ -45,11 +45,20 @@ export async function POST(req: NextRequest) {
     : null;
 
   if (empresa && emailConfigurado(empresa)) {
-    await enviarEmailRedefinirSenha({
+    const resultadoEnvio = await enviarEmailRedefinirSenha({
       emailUsuario: usuario.email,
       nomeUsuario: usuario.nome,
       link,
     }, empresa);
+
+    if (!resultadoEnvio.ok) {
+      console.error("Falha ao enviar e-mail de redefinição do EduGestão:", resultadoEnvio.erro);
+      return NextResponse.json(
+        { erro: "Não foi possível enviar o e-mail agora. Verifique a configuração de envio ou tente novamente mais tarde." },
+        { status: 502 },
+      );
+    }
+
     return NextResponse.json(RESPOSTA_GENERICA);
   }
 
@@ -61,5 +70,10 @@ export async function POST(req: NextRequest) {
   if (process.env.NODE_ENV !== "production") {
     return NextResponse.json({ ...RESPOSTA_GENERICA, linkDev: link });
   }
-  return NextResponse.json(RESPOSTA_GENERICA);
+
+  console.error("SMTP da empresa não configurado para recuperação de senha do EduGestão.");
+  return NextResponse.json(
+    { erro: "O envio de e-mail não está configurado. Contate o administrador da empresa." },
+    { status: 503 },
+  );
 }

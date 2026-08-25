@@ -48,16 +48,31 @@ export async function POST(req: NextRequest) {
   };
 
   if (emailConfigurado(credenciaisGlobais)) {
-    await enviarEmailRedefinirSenha({
+    const resultadoEnvio = await enviarEmailRedefinirSenha({
       emailUsuario: usuario.email,
       nomeUsuario: usuario.nome,
       link,
     }, credenciaisGlobais);
+
+    if (!resultadoEnvio.ok) {
+      console.error("Falha ao enviar e-mail de redefinição da plataforma:", resultadoEnvio.erro);
+      return NextResponse.json(
+        { erro: "Não foi possível enviar o e-mail agora. Verifique a configuração de envio ou tente novamente mais tarde." },
+        { status: 502 },
+      );
+    }
+
     return NextResponse.json(RESPOSTA_GENERICA);
   }
 
-  // Sem SMTP configurado (ex.: ambiente de dev) — devolve o link na própria
-  // resposta pra dar pra testar o fluxo sem e-mail real. Só existe enquanto
-  // não houver EMAIL_HOST configurado, então nunca acontece em produção.
-  return NextResponse.json({ ...RESPOSTA_GENERICA, linkDev: link });
+  // Sem SMTP configurado, o ambiente dev devolve o link para permitir o teste.
+  if (process.env.NODE_ENV !== "production") {
+    return NextResponse.json({ ...RESPOSTA_GENERICA, linkDev: link });
+  }
+
+  console.error("SMTP global não configurado para recuperação de senha da plataforma.");
+  return NextResponse.json(
+    { erro: "O envio de e-mail não está configurado. Contate o suporte da plataforma." },
+    { status: 503 },
+  );
 }
