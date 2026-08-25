@@ -1182,7 +1182,22 @@ export async function enviarEmailRedefinirSenha(params: Parameters<typeof templa
   const { subject, html } = templateRedefinirSenha(params);
   const from = limparEnv(credenciais.emailFrom) ?? limparEnv(credenciais.emailUser) ?? "EduGestão";
   try {
-    await transporte.sendMail({ from, to: params.emailUsuario, subject, html });
+    const info = await transporte.sendMail({ from, to: params.emailUsuario, subject, html });
+    const aceitos = Array.isArray(info.accepted) ? info.accepted.length : 0;
+    const rejeitados = Array.isArray(info.rejected) ? info.rejected.length : 0;
+
+    if (aceitos === 0 || rejeitados > 0) {
+      return {
+        ok: false,
+        erro: `Servidor SMTP não aceitou o destinatário (aceitos: ${aceitos}; rejeitados: ${rejeitados}).`,
+      };
+    }
+
+    console.info("E-mail de redefinição aceito pelo servidor SMTP.", {
+      aceitos,
+      rejeitados,
+      messageIdPresente: Boolean(info.messageId),
+    });
     return { ok: true };
   } catch (err: any) {
     return { ok: false, erro: err?.message ?? "Erro ao enviar e-mail." };
