@@ -32,7 +32,7 @@ export default async function DashboardLayout({
         <div className="print:hidden">
           <TopBar usuario={usuario} empresaLogoUrl={empresa?.logoUrl ?? null} empresaNome={empresa?.nome ?? null} />
         </div>
-        <main className="flex-1 overflow-y-auto p-6 bg-slate-100 print:p-0 print:overflow-visible">{children}</main>
+        <main className="flex-1 min-h-0 overflow-y-auto p-6 bg-slate-100 print:p-0 print:overflow-visible">{children}</main>
       </div>
     </div>
   );

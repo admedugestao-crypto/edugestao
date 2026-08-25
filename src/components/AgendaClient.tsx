@@ -870,10 +870,10 @@ export default function AgendaClient({
     </div>
 
     {/* ── Interface normal (oculta ao imprimir) ─────────────────────────────── */}
-    <div className="space-y-4 print:hidden">
+    <div className="flex h-full min-h-0 flex-col gap-4 print:hidden">
 
       {/* ── Barra de controles ─────────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
+      <div className="shrink-0 bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
         {/* Vista */}
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
           <button onClick={() => setVista("mes")}
@@ -1050,15 +1050,15 @@ export default function AgendaClient({
 
       {/* ── Vista Mês ──────────────────────────────────────────────────────── */}
       {vista === "mes" && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="grid grid-cols-7 border-b border-slate-100">
+        <div className="flex flex-1 min-h-0 flex-col bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="grid shrink-0 grid-cols-7 border-b border-slate-100">
             {DIAS_CABECALHO.map((d, indice) => (
               <div key={d} className={`py-2 px-2 text-center text-xs font-bold border-r last:border-r-0 border-slate-100 ${indice >= 5 ? "text-red-600 bg-red-50/50" : "text-slate-600"}`}>
                 {d}
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-7">
+          <div className="grid min-h-0 flex-1 grid-cols-7 overflow-y-auto">
             {diasGradeMes.map((dia, i) => {
               const hoje  = isToday(dia);
               const noMes = isSameMonth(dia, mesRef);
@@ -1116,8 +1116,8 @@ export default function AgendaClient({
 
       {/* ── Vista Semana ───────────────────────────────────────────────────── */}
       {vista === "semana" && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="grid grid-cols-7 border-b border-slate-100">
+        <div className="flex flex-1 min-h-0 flex-col bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="grid shrink-0 grid-cols-7 border-b border-slate-100">
             {diasGrade.map((dia, i) => {
               const hoje = isToday(dia);
               const diaVermelho = ehFimDeSemana(dia) || feriadosNoDia(dia).length > 0;
@@ -1131,7 +1131,7 @@ export default function AgendaClient({
               );
             })}
           </div>
-          <div className="grid grid-cols-7 min-h-[320px]">
+          <div className="grid min-h-0 flex-1 grid-cols-7 overflow-y-auto">
             {diasGrade.map((dia, i) => {
               const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
               const hoje     = isToday(dia);
@@ -1171,7 +1171,7 @@ export default function AgendaClient({
 
       {/* ── Vista Dia ──────────────────────────────────────────────────────── */}
       {vista === "dia" && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="flex flex-1 min-h-0 flex-col bg-white rounded-xl border border-slate-200 overflow-hidden">
           {/* Resumo */}
           <div className="px-5 py-3 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
             <span className="text-sm font-semibold text-slate-700">
@@ -1182,11 +1182,11 @@ export default function AgendaClient({
             </span>
           </div>
           {aulasHoje.length === 0 ? (
-            <div className="p-12 text-center text-slate-400 text-sm">
+            <div className="min-h-0 flex-1 overflow-y-auto p-12 text-center text-slate-400 text-sm">
               Nenhuma aula agendada para este dia.
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="min-h-0 flex-1 overflow-y-auto divide-y divide-slate-100">
               {aulasHoje.map((aula) => {
                 const cor = aula.materia?.cor ?? corAluno(aula.alunoId);
                 return (
