@@ -20,6 +20,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     evolutionApiUrl?: string | null; evolutionApiKey?: string | null; evolutionApiInstance?: string | null;
     emailHost?: string | null; emailPort?: string | null; emailUser?: string | null;
     emailPass?: string | null; emailFrom?: string | null;
+    cep?: string | null; logradouro?: string | null; numero?: string | null;
+    complemento?: string | null; bairro?: string | null; cidade?: string | null;
+    estado?: string | null; codigoIbge?: string | null;
   } = {};
 
   if (typeof body.ativo === "boolean") data.ativo = body.ativo;
@@ -56,6 +59,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (typeof body.emailUser === "string") data.emailUser = body.emailUser.trim() || null;
   if (typeof body.emailPass === "string") data.emailPass = body.emailPass.trim() || null;
   if (typeof body.emailFrom === "string") data.emailFrom = body.emailFrom.trim() || null;
+
+  if (typeof body.cep === "string") data.cep = body.cep.trim() || null;
+  if (typeof body.logradouro === "string") data.logradouro = body.logradouro.trim() || null;
+  if (typeof body.numero === "string") data.numero = body.numero.trim() || null;
+  if (typeof body.complemento === "string") data.complemento = body.complemento.trim() || null;
+  if (typeof body.bairro === "string") data.bairro = body.bairro.trim() || null;
+  if (typeof body.cidade === "string") data.cidade = body.cidade.trim() || null;
+  if (typeof body.estado === "string") data.estado = body.estado.trim().toUpperCase() || null;
+  if (typeof body.codigoIbge === "string") data.codigoIbge = body.codigoIbge.trim() || null;
 
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ erro: "Nenhum campo para atualizar." }, { status: 400 });

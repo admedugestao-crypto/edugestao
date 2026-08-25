@@ -15,6 +15,8 @@ export async function GET() {
     orderBy: { criadoEm: "desc" },
     select: {
       id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true,
+      cep: true, logradouro: true, numero: true, complemento: true,
+      bairro: true, cidade: true, estado: true, codigoIbge: true,
       fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
       emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
       _count: { select: { usuarios: true } },
@@ -30,7 +32,10 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { empresaNome, nome, email, senha, logoUrl } = body;
+  const {
+    empresaNome, nome, email, senha, logoUrl,
+    cep, logradouro, numero, complemento, bairro, cidade, estado, codigoIbge,
+  } = body;
 
   if (!empresaNome || !nome || !email || !senha) {
     return NextResponse.json({ erro: "Preencha todos os campos." }, { status: 400 });
@@ -55,7 +60,19 @@ export async function POST(req: NextRequest) {
 
   const usuario = await prisma.$transaction(async (tx) => {
     const empresa = await tx.empresa.create({
-      data: { nome: empresaNome, slug, logoUrl: typeof logoUrl === "string" ? logoUrl : null },
+      data: {
+        nome: empresaNome,
+        slug,
+        logoUrl: typeof logoUrl === "string" ? logoUrl : null,
+        cep: typeof cep === "string" ? cep.trim() || null : null,
+        logradouro: typeof logradouro === "string" ? logradouro.trim() || null : null,
+        numero: typeof numero === "string" ? numero.trim() || null : null,
+        complemento: typeof complemento === "string" ? complemento.trim() || null : null,
+        bairro: typeof bairro === "string" ? bairro.trim() || null : null,
+        cidade: typeof cidade === "string" ? cidade.trim() || null : null,
+        estado: typeof estado === "string" ? estado.trim().toUpperCase() || null : null,
+        codigoIbge: typeof codigoIbge === "string" ? codigoIbge.trim() || null : null,
+      },
     });
     return tx.usuario.create({
       data: { nome, email, senhaHash, perfil: "SUPERADMIN", empresaId: empresa.id, senhaTemporaria: true },

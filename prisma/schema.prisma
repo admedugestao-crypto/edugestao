@@ -17,14 +17,22 @@ datasource db {
 // deliberadamente fora de escopo por ora.
 
 model Empresa {
-  id               String   @id @default(cuid())
-  nome             String
-  slug             String   @unique
-  logoUrl          String?
-  ativo            Boolean  @default(true)
-  whatsappPausado  Boolean  @default(false)
-  emailPausado     Boolean  @default(false)
-  criadoEm         DateTime @default(now())
+  id              String   @id @default(cuid())
+  nome            String
+  slug            String   @unique
+  logoUrl         String?
+  cep             String?
+  logradouro      String?
+  numero          String?
+  complemento     String?
+  bairro          String?
+  cidade          String?
+  estado          String?
+  codigoIbge      String?
+  ativo           Boolean  @default(true)
+  whatsappPausado Boolean  @default(false)
+  emailPausado    Boolean  @default(false)
+  criadoEm        DateTime @default(now())
 
   // Credenciais de envio de WhatsApp, uma conta própria por empresa (sem
   // fallback para variável de ambiente global — ver commit que reabriu a
@@ -40,7 +48,7 @@ model Empresa {
   // execução do cron enquanto a desconexão persiste. Zerado automaticamente
   // assim que o device volta a ficar conectado (ver verificarStatusFonnte em
   // src/lib/notificacoes.ts).
-  fonnteAlertaEnviado  Boolean  @default(false)
+  fonnteAlertaEnviado Boolean @default(false)
 
   // Credenciais de SMTP para envio de e-mail, mesmo padrão do WhatsApp acima:
   // uma conta própria por empresa, sem fallback pra variável de ambiente
@@ -52,24 +60,24 @@ model Empresa {
   emailPass String?
   emailFrom String?
 
-  usuarios            Usuario[]
-  professoras         Professora[]
-  materias            Materia[]
-  escolas             Escola[]
-  unidades            Unidade[]
-  alunos              Aluno[]
-  aulas               AgendaAula[]
-  avaliacoes          Avaliacao[]
-  pagamentos          Pagamento[]
-  conteudos           Conteudo[]
-  notas               Nota[]
-  notificacoesProva   NotificacaoProva[]
-  notificacoesAula    NotificacaoAula[]
+  usuarios             Usuario[]
+  professoras          Professora[]
+  materias             Materia[]
+  escolas              Escola[]
+  unidades             Unidade[]
+  alunos               Aluno[]
+  aulas                AgendaAula[]
+  avaliacoes           Avaliacao[]
+  pagamentos           Pagamento[]
+  conteudos            Conteudo[]
+  notas                Nota[]
+  notificacoesProva    NotificacaoProva[]
+  notificacoesAula     NotificacaoAula[]
   notificacoesConteudo NotificacaoConteudo[]
-  calendarios         CalendarioEscolar[]
-  materiaisBiblioteca MaterialBiblioteca[]
-  metodosEnsino       MetodoEnsino[]
-  tiposAvaliacao      TipoAvaliacao[]
+  calendarios          CalendarioEscolar[]
+  materiaisBiblioteca  MaterialBiblioteca[]
+  metodosEnsino        MetodoEnsino[]
+  tiposAvaliacao       TipoAvaliacao[]
 
   @@map("empresas")
 }
@@ -77,10 +85,10 @@ model Empresa {
 // ─── Usuários e Autenticação ──────────────────────────────────────────────────
 
 model Usuario {
-  id              String   @id @default(cuid())
-  empresaId       String?
-  nome            String
-  email           String
+  id               String    @id @default(cuid())
+  empresaId        String?
+  nome             String
+  email            String
   senhaHash        String
   senhaTemporaria  Boolean   @default(false)
   resetToken       String?   @unique
@@ -137,16 +145,16 @@ model Materia {
   nome      String
   cor       String @default("#6366f1")
 
-  empresa             Empresa              @relation(fields: [empresaId], references: [id])
-  professoras         ProfessoraMateria[]
-  alunoMaterias       AlunoMateria[]
-  avaliacoes          Avaliacao[]
-  notas               Nota[]
-  conteudos           Conteudo[]
-  aulas               AgendaAula[]
-  aulasMaterias       AgendaAulaMateria[]
-  materiaisBiblioteca MaterialBiblioteca[]
-  conteudoMaterias        ConteudoMateria[]
+  empresa                     Empresa                     @relation(fields: [empresaId], references: [id])
+  professoras                 ProfessoraMateria[]
+  alunoMaterias               AlunoMateria[]
+  avaliacoes                  Avaliacao[]
+  notas                       Nota[]
+  conteudos                   Conteudo[]
+  aulas                       AgendaAula[]
+  aulasMaterias               AgendaAulaMateria[]
+  materiaisBiblioteca         MaterialBiblioteca[]
+  conteudoMaterias            ConteudoMateria[]
   materiaisBibliotecaMaterias MaterialBibliotecaMateria[]
 
   @@unique([empresaId, nome])
@@ -281,18 +289,18 @@ enum TipoEvento {
 // ─── Avaliações / Calendário de Provas ───────────────────────────────────────
 
 model Avaliacao {
-  id        String   @id @default(cuid())
-  empresaId String
-  unidadeId String
-  materiaId String?
-  serie     String
-  nome      String
-  data      DateTime
-  peso      Float    @default(1.0)
-  notaMax   Float    @default(10.0)
-  periodo   String?
+  id         String   @id @default(cuid())
+  empresaId  String
+  unidadeId  String
+  materiaId  String?
+  serie      String
+  nome       String
+  data       DateTime
+  peso       Float    @default(1.0)
+  notaMax    Float    @default(10.0)
+  periodo    String?
   observacao String?
-  criadoEm  DateTime @default(now())
+  criadoEm   DateTime @default(now())
 
   empresa      Empresa            @relation(fields: [empresaId], references: [id])
   unidade      Unidade            @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
@@ -357,7 +365,7 @@ model Aluno {
   status              StatusAluno @default(ATIVO)
   // ── Configuração de cobrança ──────────────────────────────────────
   tipoCobranca        String? // MENSAL | QUINZENAL | SEMANAL | POR_AULA
-  valorCobranca       Decimal? @db.Decimal(10, 2) // valor por parcela / por aula
+  valorCobranca       Decimal?    @db.Decimal(10, 2) // valor por parcela / por aula
   diaPagamento        Int? // dia do mês (MENSAL = venc.; QUINZENAL = 1ª parcela)
   diaPagamento2       Int? // 2ª parcela (apenas QUINZENAL)
   diaSemana           Int? // legado — mantido para retrocompat
@@ -481,11 +489,11 @@ model Conteudo {
   planejado  Boolean  @default(false)
   criadoEm   DateTime @default(now())
 
-  empresa Empresa     @relation(fields: [empresaId], references: [id])
-  aluno   Aluno       @relation(fields: [alunoId], references: [id], onDelete: Cascade)
-  materia Materia?    @relation(fields: [materiaId], references: [id])
-  aula    AgendaAula? @relation(fields: [aulaId], references: [id], onDelete: SetNull)
-  materias ConteudoMateria[]
+  empresa     Empresa              @relation(fields: [empresaId], references: [id])
+  aluno       Aluno                @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia     Materia?             @relation(fields: [materiaId], references: [id])
+  aula        AgendaAula?          @relation(fields: [aulaId], references: [id], onDelete: SetNull)
+  materias    ConteudoMateria[]
   notificacao NotificacaoConteudo?
 
   @@index([empresaId])
@@ -525,9 +533,9 @@ model MaterialBiblioteca {
   arquivoNome String?
   criadoEm    DateTime @default(now())
 
-  empresa      Empresa       @relation(fields: [empresaId], references: [id])
-  materia      Materia?      @relation(fields: [materiaId], references: [id])
-  metodoEnsino MetodoEnsino? @relation(fields: [metodoId], references: [id])
+  empresa      Empresa                     @relation(fields: [empresaId], references: [id])
+  materia      Materia?                    @relation(fields: [materiaId], references: [id])
+  metodoEnsino MetodoEnsino?               @relation(fields: [metodoId], references: [id])
   materias     MaterialBibliotecaMateria[]
 
   @@index([empresaId])
