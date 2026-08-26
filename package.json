@@ -7,6 +7,7 @@
     "build": "prisma generate && DATABASE_URL=${DATABASE_URL:-postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder} next build",
     "start": "next start",
     "lint": "eslint",
+    "test:database-config": "node --experimental-strip-types --test tests/databaseConfig.test.ts",
     "seed": "tsx prisma/seed.ts"
   },
   "prisma": {
