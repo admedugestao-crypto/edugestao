@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
+import { podeAcessarProfessora } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,8 @@ export async function PATCH(
   const body   = await req.json();
   const { status, horaInicio, horaFim, observacao, materiaIds, data, confirmarEstornoPagamento } = body;
 
-  const aulaEmpresa = await prisma.agendaAula.findUnique({ where: { id }, select: { empresaId: true } });
-  if (!aulaEmpresa || aulaEmpresa.empresaId !== scope.empresaId) {
+  const aulaEmpresa = await prisma.agendaAula.findUnique({ where: { id }, select: { empresaId: true, professoraId: true } });
+  if (!aulaEmpresa || aulaEmpresa.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aulaEmpresa.professoraId)) {
     return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
   }
 
@@ -215,7 +216,7 @@ export async function DELETE(
   const { id } = await params;
 
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
-  if (!aula || aula.empresaId !== scope.empresaId) {
+  if (!aula || aula.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aula.professoraId)) {
     return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
   }
 

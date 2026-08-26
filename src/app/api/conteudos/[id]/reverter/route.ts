@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
+import { podeAcessarProfessora } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +17,10 @@ export async function POST(
 
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { id: true, empresaId: true, planejado: true, aulaId: true },
+    select: { id: true, empresaId: true, planejado: true, aulaId: true, aluno: { select: { professoraId: true } } },
   });
 
-  if (!conteudo || conteudo.empresaId !== scope.empresaId) {
+  if (!conteudo || conteudo.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, conteudo.aluno.professoraId)) {
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
   if (conteudo.planejado) return NextResponse.json({ erro: "Conteúdo já está Planejado." }, { status: 422 });

@@ -35,7 +35,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   const [alunoOk, avaliacaoOk, materiaOk] = await Promise.all([
-    prisma.aluno.findFirst({ where: { id: body.alunoId, empresaId: scope.empresaId }, select: { id: true } }),
+    prisma.aluno.findFirst({
+      where: {
+        id: body.alunoId,
+        empresaId: scope.empresaId,
+        ...(!scope.isAdmin ? { professoraId: scope.professoraId ?? "__sem_professora__" } : {}),
+      },
+      select: { id: true },
+    }),
     prisma.avaliacao.findFirst({ where: { id: body.avaliacaoId, empresaId: scope.empresaId }, select: { id: true } }),
     prisma.materia.findFirst({ where: { id: body.materiaId, empresaId: scope.empresaId }, select: { id: true } }),
   ]);

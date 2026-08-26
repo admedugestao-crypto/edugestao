@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
+import { podeGerenciarFinanceiro } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -106,6 +107,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  if (!podeGerenciarFinanceiro(scope)) return NextResponse.json({ erro: "Apenas administradores podem criar cobranças." }, { status: 403 });
 
   const body = await req.json();
   const { alunoId, mes, ano, parcela = 1, pago, valorCobrado, dataVencimento, quantidadeAulas, observacao } = body;

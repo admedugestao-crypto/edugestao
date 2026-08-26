@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
+import { podeAcessarProfessora } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export async function POST(
     where: { id },
     include: { aluno: { select: { id: true, tipoCobranca: true, valorCobranca: true } } },
   });
-  if (!aulaOriginal || aulaOriginal.empresaId !== scope.empresaId) {
+  if (!aulaOriginal || aulaOriginal.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aulaOriginal.professoraId)) {
     return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
   }
 

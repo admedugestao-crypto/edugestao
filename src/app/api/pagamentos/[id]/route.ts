@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
+import { podeGerenciarFinanceiro } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  if (!podeGerenciarFinanceiro(scope)) return NextResponse.json({ erro: "Apenas administradores podem alterar cobranças." }, { status: 403 });
 
   const { id } = await params;
   const body   = await req.json();
@@ -73,6 +75,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  if (!podeGerenciarFinanceiro(scope)) return NextResponse.json({ erro: "Apenas administradores podem excluir cobranças." }, { status: 403 });
 
   const { id } = await params;
 

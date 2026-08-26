@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { validarAgenda } from "@/lib/conteudoAgenda";
+import { podeAcessarProfessora } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ const includeCompleto = {
   aluno: {
     select: {
       nome: true,
+      professoraId: true,
       professora: { select: { usuario: { select: { nome: true } } } },
     },
   },
@@ -32,7 +34,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
   const { id } = await params;
   const conteudo = await prisma.conteudo.findUnique({ where: { id }, include: includeCompleto });
-  if (!conteudo || conteudo.empresaId !== scope.empresaId) {
+  if (!conteudo || conteudo.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, conteudo.aluno.professoraId)) {
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
   return NextResponse.json(conteudo);
@@ -47,8 +49,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const dataAula  = new Date(body.data);
   const planejado = body.planejado ?? false;
 
-  const existente = await prisma.conteudo.findUnique({ where: { id }, select: { aulaId: true, empresaId: true } });
-  if (!existente || existente.empresaId !== scope.empresaId) {
+  const existente = await prisma.conteudo.findUnique({ where: { id }, select: { aulaId: true, empresaId: true, aluno: { select: { professoraId: true } } } });
+  if (!existente || existente.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, existente.aluno.professoraId)) {
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
 
@@ -93,9 +95,9 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   // aluno+data+matéria, que pode "achar" a aula de OUTRO conteúdo do mesmo dia.
   const conteudo = await prisma.conteudo.findUnique({
     where: { id },
-    select: { aulaId: true, empresaId: true },
+    select: { aulaId: true, empresaId: true, aluno: { select: { professoraId: true } } },
   });
-  if (!conteudo || conteudo.empresaId !== scope.empresaId) {
+  if (!conteudo || conteudo.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, conteudo.aluno.professoraId)) {
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
   if (conteudo?.aulaId) {

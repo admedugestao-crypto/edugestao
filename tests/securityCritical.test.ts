@@ -3,6 +3,7 @@ import test from "node:test";
 import { autorizarCron } from "../src/lib/cronAuth.ts";
 import { normalizarIds, todosIdsEncontrados } from "../src/lib/entityIds.ts";
 import { ocultarCredenciaisEmpresa } from "../src/lib/platformCredentials.ts";
+import { podeAcessarProfessora, podeGerenciarFinanceiro } from "../src/lib/permissions.ts";
 
 test("cron falha fechado quando CRON_SECRET não está configurado", () => {
   const result = autorizarCron(new Headers(), undefined);
@@ -11,6 +12,22 @@ test("cron falha fechado quando CRON_SECRET não está configurado", () => {
     status: 503,
     erro: "Serviço de notificações não configurado.",
   });
+});
+
+test("professora só acessa registros vinculados a ela", () => {
+  const professora = { isAdmin: false, professoraId: "prof-1" };
+  assert.equal(podeAcessarProfessora(professora, "prof-1"), true);
+  assert.equal(podeAcessarProfessora(professora, "prof-2"), false);
+  assert.equal(podeAcessarProfessora({ isAdmin: false, professoraId: null }, "prof-1"), false);
+});
+
+test("administrador acessa registros de qualquer professora", () => {
+  assert.equal(podeAcessarProfessora({ isAdmin: true, professoraId: null }, "prof-2"), true);
+});
+
+test("somente administrador altera dados financeiros", () => {
+  assert.equal(podeGerenciarFinanceiro({ isAdmin: true }), true);
+  assert.equal(podeGerenciarFinanceiro({ isAdmin: false }), false);
 });
 
 test("cron rejeita credencial ausente ou incorreta", () => {

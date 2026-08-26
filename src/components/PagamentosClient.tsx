@@ -802,8 +802,8 @@ export default function PagamentosClient({
                       {/* Ações */}
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-1.5">
-                          {/* Marcar pago */}
-                          <button
+                          {/* Operações financeiras — somente administradores */}
+                          {isAdmin && <button
                             onClick={() => togglePago(item)}
                             disabled={loading}
                             title={item.pago ? "Desmarcar" : "Marcar como pago"}
@@ -817,10 +817,10 @@ export default function PagamentosClient({
                               ? <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                               : item.pago ? <X size={14} /> : <Check size={14} />
                             }
-                          </button>
+                          </button>}
 
                           {/* Observação */}
-                          <button
+                          {isAdmin && <button
                             onClick={() => { setErroObs(null); setObsModal({ id: item.id, obs: item.observacao ?? "" }); }}
                             title="Observação"
                             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
@@ -830,7 +830,7 @@ export default function PagamentosClient({
                             }`}
                           >
                             <MessageSquare size={13} />
-                          </button>
+                          </button>}
 
                           {/* E-mail ao responsável */}
                           {item.aluno.emailResponsavel && (() => {
@@ -877,22 +877,22 @@ export default function PagamentosClient({
                           )}
 
                           {/* Editar */}
-                          <button
+                          {isAdmin && <button
                             onClick={() => abrirEditar(item)}
                             title="Editar"
                             className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-indigo-100 text-slate-400 hover:text-indigo-600 transition-colors"
                           >
                             <Pencil size={13} />
-                          </button>
+                          </button>}
 
                           {/* Excluir */}
-                          <button
+                          {isAdmin && <button
                             onClick={() => setExcluirId(item.id)}
                             title="Excluir"
                             className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors"
                           >
                             <Trash2 size={13} />
-                          </button>
+                          </button>}
                         </div>
 
                         {emailMsg?.id === item.id && (
