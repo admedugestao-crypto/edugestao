@@ -1,19 +1,21 @@
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import dns from "dns";
+import { getDatabaseRuntimeConfig } from "@/lib/databaseConfig";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
 function createPrismaClient(): PrismaClient {
-  const rawUrl =
-    process.env.DATABASE_URL ??
-    process.env.DIRECT_URL ??
-    "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
-  const connectionString = rawUrl.replace("?pgbouncer=true", "").replace("&pgbouncer=true", "");
+  const { connectionString, max } = getDatabaseRuntimeConfig();
   // Força resolução IPv4 — alguns ambientes de desenvolvimento não têm
   // saída IPv6, e o pooler do Supabase resolve para IPv6 por padrão.
   const adapter = new PrismaPg({
     connectionString,
+    // Uma conexão por instância serverless evita esgotar o pool pequeno do
+    // Supabase. DATABASE_POOL_MAX permite ajuste controlado entre 1 e 5.
+    max,
+    connectionTimeoutMillis: 10_000,
+    idleTimeoutMillis: 10_000,
     lookup: (hostname: string, options: dns.LookupOneOptions, callback: (...args: any[]) => void) =>
       dns.lookup(hostname, { family: 4 }, callback),
   } as any);

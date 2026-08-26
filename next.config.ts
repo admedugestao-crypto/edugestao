@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { validateAndNormalizeDatabaseUrl } from "./src/lib/databaseConfig";
 
 // ── Garante DATABASE_URL antes de qualquer módulo ser avaliado ────────────────
 // O Prisma 7.x lê process.env.DATABASE_URL no momento em que
@@ -13,7 +14,12 @@ import path from "path";
 //
 // Em produção (Vercel runtime), DATABASE_URL já está definida pela
 // variável de ambiente do projeto e esta linha não é executada.
-if (!process.env.DATABASE_URL) {
+if (process.env.VERCEL_ENV === "production") {
+  if (!process.env.DATABASE_URL) {
+    throw new Error("Deploy bloqueado: DATABASE_URL não configurada em produção.");
+  }
+  validateAndNormalizeDatabaseUrl(process.env.DATABASE_URL, process.env);
+} else if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL =
     "postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder";
 }
