@@ -8,3 +8,8 @@ export function normalizarIds(valor: unknown): string[] {
       .filter(Boolean),
   )];
 }
+
+export function todosIdsEncontrados(solicitados: string[], encontrados: string[]): boolean {
+  const encontradosSet = new Set(encontrados);
+  return solicitados.every((id) => encontradosSet.has(id));
+}

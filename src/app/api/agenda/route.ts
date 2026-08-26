@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
+import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
@@ -199,13 +200,23 @@ export async function POST(req: NextRequest) {
   }
 
   // Nenhuma matéria marcada = "todas as matérias" do aluno — vincula todas, igual à geração em massa.
-  let materiaIds: string[] = Array.isArray(materiaIdsBody) ? materiaIdsBody : [];
+  let materiaIds = normalizarIds(materiaIdsBody);
   if (materiaIds.length === 0) {
     const alunoMaterias = await prisma.aluno.findUnique({
       where: { id: alunoId },
       select: { materias: { select: { materiaId: true } } },
     });
     materiaIds = alunoMaterias?.materias.map((m) => m.materiaId) ?? [];
+  }
+
+  const materiasEncontradas = materiaIds.length > 0
+    ? await prisma.materia.findMany({
+        where: { id: { in: materiaIds }, empresaId: scope.empresaId },
+        select: { id: true },
+      })
+    : [];
+  if (!todosIdsEncontrados(materiaIds, materiasEncontradas.map((materia) => materia.id))) {
+    return NextResponse.json({ erro: "Uma ou mais matérias não foram encontradas." }, { status: 404 });
   }
 
   const aula = await prisma.agendaAula.create({
