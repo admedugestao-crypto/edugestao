@@ -570,7 +570,7 @@ export default function AgendaClient({
   }
 
   // ── Atualizar status ───────────────────────────────────────────────────────
-  async function atualizarStatus(id: string, status: StatusAula) {
+  async function atualizarStatus(id: string, status: StatusAula, confirmarEstornoPagamento = false) {
     // Aulas futuras só permitem CANCELADA; demais status exigem a data já passada
     if (aulaDetalhe && status !== "CANCELADA") {
       const dataAula = parseLocal(aulaDetalhe.data);
@@ -601,10 +601,15 @@ export default function AgendaClient({
       const res = await fetch(`/api/agenda/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, confirmarEstornoPagamento }),
       });
       const data = await res.json();
       if (!res.ok) {
+        if (data.codigo === "CONFIRMACAO_ESTORNO_PAGAMENTO" && data.exigeConfirmacao) {
+          const confirmou = window.confirm(data.erro);
+          if (confirmou) await atualizarStatus(id, status, true);
+          return;
+        }
         setErroStatus(data.erro ?? "Não foi possível alterar o status.");
         return;
       }

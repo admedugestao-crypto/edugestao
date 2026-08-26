@@ -112,6 +112,7 @@ export default function AgendaMobile({
   const [confirmExcluirAula, setConfirmExcluirAula] = useState(false);
   const [excluindoAula, setExcluindoAula] = useState(false);
   const [erroExcluirAula, setErroExcluirAula] = useState<string | null>(null);
+  const [erroStatus, setErroStatus] = useState<string | null>(null);
 
   // Reposição — ao excluir uma aula perguntando se ela será reposta
   const [reposicaoOrigem, setReposicaoOrigem] = useState<{ id: string } | null>(null);
@@ -254,13 +255,23 @@ export default function AgendaMobile({
   }
 
   // ── Atualizar status ────────────────────────────────────────────────────────
-  async function atualizarStatus(id: string, status: StatusAula) {
+  async function atualizarStatus(id: string, status: StatusAula, confirmarEstornoPagamento = false) {
+    setErroStatus(null);
     const res = await fetch(`/api/agenda/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, confirmarEstornoPagamento }),
     });
     const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (data.codigo === "CONFIRMACAO_ESTORNO_PAGAMENTO" && data.exigeConfirmacao) {
+        const confirmou = window.confirm(data.erro);
+        if (confirmou) await atualizarStatus(id, status, true);
+        return;
+      }
+      setErroStatus(data.erro ?? "Não foi possível alterar o status.");
+      return;
+    }
     // Sair de Realizada exclui o Conteúdo no servidor — reflete no estado
     // local para o modal não continuar mostrando conteúdo/matéria travada.
     const conteudoLocal = status === "REALIZADA";
@@ -822,6 +833,9 @@ export default function AgendaMobile({
                   </div>
                 );
               })()}
+              {erroStatus && (
+                <p className="mt-2 text-xs text-red-600">⚠️ {erroStatus}</p>
+              )}
             </div>
 
             {/* Conteúdo vinculado */}

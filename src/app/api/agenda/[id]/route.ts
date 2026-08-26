@@ -15,7 +15,7 @@ export async function PATCH(
 
   const { id } = await params;
   const body   = await req.json();
-  const { status, horaInicio, horaFim, observacao, materiaIds, data } = body;
+  const { status, horaInicio, horaFim, observacao, materiaIds, data, confirmarEstornoPagamento } = body;
 
   const aulaEmpresa = await prisma.agendaAula.findUnique({ where: { id }, select: { empresaId: true } });
   if (!aulaEmpresa || aulaEmpresa.empresaId !== scope.empresaId) {
@@ -64,6 +64,36 @@ export async function PATCH(
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
 
+  // A primeira tentativa de voltar uma aula quitada para Agendada é somente
+  // uma consulta: nada muda antes da confirmação explícita do usuário.
+  if (status === "AGENDADA" && aula.status !== "AGENDADA") {
+    const vinculosFinanceiros = await prisma.pagamentoAula.findMany({
+      where: {
+        agendaAulaId: id,
+        pagamento: { empresaId: scope.empresaId },
+      },
+      select: {
+        pagamento: { select: { pago: true, _count: { select: { aulas: true } } } },
+      },
+    });
+    if (vinculosFinanceiros.some((v) => v.pagamento._count.aulas > 1)) {
+      return NextResponse.json(
+        { erro: "Não foi possível desfazer automaticamente: esta cobrança também está vinculada a outras aulas. Regularize o pagamento antes de alterar o status." },
+        { status: 422 },
+      );
+    }
+    if (vinculosFinanceiros.some((v) => v.pagamento.pago) && confirmarEstornoPagamento !== true) {
+      return NextResponse.json(
+        {
+          erro: "Esta aula possui pagamento quitado. Para voltar a Agendada, a baixa e a cobrança vinculada serão desfeitas. Deseja continuar?",
+          codigo: "CONFIRMACAO_ESTORNO_PAGAMENTO",
+          exigeConfirmacao: true,
+        },
+        { status: 409 },
+      );
+    }
+  }
+
   // Bloqueia mudar para REALIZADA sem conteúdo registrado; se conteúdo for planejado, converte para ministrado
   // Busca pelo vínculo exato (aulaId) — evita pegar o conteúdo de outra aula do
   // mesmo aluno no mesmo dia, quando há mais de uma.
@@ -80,33 +110,6 @@ export async function PATCH(
     }
     if (conteudo.planejado) {
       await prisma.conteudo.update({ where: { id: conteudo.id }, data: { planejado: false } });
-    }
-  }
-
-  // Se sair de REALIZADA para outro status → exclui o conteúdo vinculado
-  if (status !== undefined && status !== "REALIZADA" && aula.status === "REALIZADA") {
-    await prisma.conteudo.deleteMany({
-      where: { aulaId: id },
-    });
-  }
-
-  // Voltar para AGENDADA → a aula deixa de ser cobrada (só REALIZADA e
-  // FALTA_ALUNO geram cobrança). Pagamentos vinculados ficam com quantidade/
-  // valor defasados, então são desmarcados como não pagos e excluídos — igual
-  // ao Conteúdo acima. O motor de cobrança regenera o período sem esta aula.
-  // FALTA_ALUNO não passa por aqui: falta do aluno continua sendo cobrada.
-  if (status === "AGENDADA" && aula.status !== "AGENDADA") {
-    const vinculos = await prisma.pagamentoAula.findMany({
-      where: { agendaAulaId: id },
-      select: { pagamentoId: true },
-    });
-    const pagamentoIds = [...new Set(vinculos.map((v) => v.pagamentoId))];
-    if (pagamentoIds.length > 0) {
-      await prisma.pagamento.updateMany({
-        where: { id: { in: pagamentoIds } },
-        data: { pago: false, dataPagamento: null },
-      });
-      await prisma.pagamento.deleteMany({ where: { id: { in: pagamentoIds } } });
     }
   }
 
@@ -127,20 +130,47 @@ export async function PATCH(
     }
   }
 
-  const updated = await prisma.agendaAula.update({
-    where: { id },
-    data: {
-      ...(status     !== undefined ? { status }               : {}),
-      ...(horaInicio !== undefined ? { horaInicio }           : {}),
-      ...(horaFim    !== undefined ? { horaFim }              : {}),
-      ...(observacao !== undefined ? { observacao }           : {}),
-      ...(data       !== undefined ? { data: new Date(data) } : {}),
-    },
-    include: {
-      aluno:   { select: { id: true, nome: true, serie: true, turma: true } },
-      materia: { select: { id: true, nome: true, cor: true } },
-      materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
-    },
+  const updated = await prisma.$transaction(async (tx) => {
+    // Conteúdo, cobrança e status mudam como uma única operação. Se qualquer
+    // etapa falhar, o banco preserva integralmente a situação anterior.
+    if (status !== undefined && status !== "REALIZADA" && aula.status === "REALIZADA") {
+      await tx.conteudo.deleteMany({ where: { aulaId: id } });
+    }
+
+    if (status === "AGENDADA" && aula.status !== "AGENDADA") {
+      const vinculos = await tx.pagamentoAula.findMany({
+        where: { agendaAulaId: id },
+        select: { pagamentoId: true },
+      });
+      const pagamentoIds = [...new Set(vinculos.map((v) => v.pagamentoId))];
+      if (pagamentoIds.length > 0) {
+        // Primeiro desfaz a baixa; depois remove a cobrança, pois uma aula
+        // Agendada ainda não constitui fato gerador financeiro.
+        await tx.pagamento.updateMany({
+          where: { id: { in: pagamentoIds }, empresaId: scope.empresaId },
+          data: { pago: false, dataPagamento: null },
+        });
+        await tx.pagamento.deleteMany({
+          where: { id: { in: pagamentoIds }, empresaId: scope.empresaId },
+        });
+      }
+    }
+
+    return tx.agendaAula.update({
+      where: { id },
+      data: {
+        ...(status     !== undefined ? { status }               : {}),
+        ...(horaInicio !== undefined ? { horaInicio }           : {}),
+        ...(horaFim    !== undefined ? { horaFim }              : {}),
+        ...(observacao !== undefined ? { observacao }           : {}),
+        ...(data       !== undefined ? { data: new Date(data) } : {}),
+      },
+      include: {
+        aluno:   { select: { id: true, nome: true, serie: true, turma: true } },
+        materia: { select: { id: true, nome: true, cor: true } },
+        materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
+      },
+    });
   });
 
   // Marcar como Realizada ou Falta do Aluno gera/atualiza a cobrança na hora —
