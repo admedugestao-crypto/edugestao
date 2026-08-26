@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { requirePlataforma } from "@/lib/plataforma";
+import { ocultarCredenciaisEmpresa } from "@/lib/platformCredentials";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +18,13 @@ export async function GET() {
       id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true,
       cep: true, logradouro: true, numero: true, complemento: true,
       bairro: true, cidade: true, estado: true, codigoIbge: true,
-      fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
-      emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
+      evolutionApiUrl: true, evolutionApiInstance: true,
+      emailHost: true, emailPort: true, emailUser: true, emailFrom: true,
+      fonnteToken: true, evolutionApiKey: true, emailPass: true,
       _count: { select: { usuarios: true } },
     },
   });
-  return NextResponse.json(empresas);
+  return NextResponse.json(empresas.map(ocultarCredenciaisEmpresa));
 }
 
 // Cria uma empresa nova + seu primeiro usuário SUPERADMIN.

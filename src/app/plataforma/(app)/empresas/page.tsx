@@ -10,14 +10,14 @@ type Empresa = {
   logoUrl: string | null;
   ativo: boolean;
   criadoEm: string;
-  fonnteToken: string | null;
+  fonnteTokenConfigurado: boolean;
   evolutionApiUrl: string | null;
-  evolutionApiKey: string | null;
+  evolutionApiKeyConfigurada: boolean;
   evolutionApiInstance: string | null;
   emailHost: string | null;
   emailPort: string | null;
   emailUser: string | null;
-  emailPass: string | null;
+  emailPassConfigurada: boolean;
   emailFrom: string | null;
   cep: string | null;
   logradouro: string | null;
@@ -122,14 +122,14 @@ export default function PlataformaEmpresasPage() {
     setEmpresaEditando(empresa);
     setFormEdicao({
       nome: empresa.nome, slug: empresa.slug, ativo: empresa.ativo,
-      fonnteToken: empresa.fonnteToken ?? "",
+      fonnteToken: "",
       evolutionApiUrl: empresa.evolutionApiUrl ?? "",
-      evolutionApiKey: empresa.evolutionApiKey ?? "",
+      evolutionApiKey: "",
       evolutionApiInstance: empresa.evolutionApiInstance ?? "",
       emailHost: empresa.emailHost ?? "",
       emailPort: empresa.emailPort ?? "",
       emailUser: empresa.emailUser ?? "",
-      emailPass: empresa.emailPass ?? "",
+      emailPass: "",
       emailFrom: empresa.emailFrom ?? "",
       cep: empresa.cep ?? "",
       logradouro: empresa.logradouro ?? "",
@@ -152,10 +152,18 @@ export default function PlataformaEmpresasPage() {
     setSalvandoEdicao(true);
     try {
       const logoUrl = logoFileEdicao ? await enviarLogo(logoFileEdicao) : undefined;
+      const { fonnteToken, evolutionApiKey, emailPass, ...camposEdicao } = formEdicao;
+      const payload = {
+        ...camposEdicao,
+        logoUrl,
+        ...(fonnteToken.trim() ? { fonnteToken } : {}),
+        ...(evolutionApiKey.trim() ? { evolutionApiKey } : {}),
+        ...(emailPass.trim() ? { emailPass } : {}),
+      };
       const res = await fetch(`/api/plataforma/empresas/${empresaEditando.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formEdicao, logoUrl }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -498,7 +506,9 @@ export default function PlataformaEmpresasPage() {
                       type="text"
                       value={formEdicao.fonnteToken}
                       onChange={(e) => setFormEdicao({ ...formEdicao, fonnteToken: e.target.value })}
-                      placeholder="Token do device conectado no painel da Fonnte"
+                      placeholder={empresaEditando.fonnteTokenConfigurado
+                        ? "Configurado — digite para substituir"
+                        : "Token do device conectado no painel da Fonnte"}
                       autoComplete="off"
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
@@ -518,7 +528,9 @@ export default function PlataformaEmpresasPage() {
                         type="text"
                         value={formEdicao.evolutionApiKey}
                         onChange={(e) => setFormEdicao({ ...formEdicao, evolutionApiKey: e.target.value })}
-                        placeholder="API Key"
+                        placeholder={empresaEditando.evolutionApiKeyConfigurada
+                          ? "Configurada — digite para substituir"
+                          : "API Key"}
                         autoComplete="off"
                         className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />
@@ -580,7 +592,9 @@ export default function PlataformaEmpresasPage() {
                       type="password"
                       value={formEdicao.emailPass}
                       onChange={(e) => setFormEdicao({ ...formEdicao, emailPass: e.target.value })}
-                      placeholder="Senha ou senha de app do SMTP"
+                      placeholder={empresaEditando.emailPassConfigurada
+                        ? "Configurada — digite para substituir"
+                        : "Senha ou senha de app do SMTP"}
                       autoComplete="off"
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
