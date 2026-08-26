@@ -69,7 +69,7 @@ export default async function DashboardPage() {
   // de uma nota baixa; a lista mostra os lançamentos mais recentes.
   const notasBaixas = todasNotas.filter((n) => n.valor < n.avaliacao.notaMax / 2);
   const totalAlunosComNotaBaixa = new Set(notasBaixas.map((n) => n.alunoId)).size;
-  const notasBaixasRecentes = notasBaixas.slice(0, 5);
+  const notasBaixasRecentes = notasBaixas;
 
   const totalPendente = pagamentosAbertos.reduce((s, p) => s + Number(p.valorCobrado), 0);
 
@@ -148,7 +148,7 @@ export default async function DashboardPage() {
               <p className="text-slate-500 text-sm">Nenhum aluno abaixo da média.</p>
             ) : (
               <>
-                <ul className="space-y-2">
+                <ul className="space-y-2 max-h-52 overflow-y-auto pr-2 overscroll-contain">
                 {notasBaixasRecentes.map((n) => (
                   <li key={n.id} className="flex items-center justify-between gap-4 text-sm">
                     <div>
