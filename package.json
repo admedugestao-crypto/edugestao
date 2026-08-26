@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:database-config": "node --experimental-strip-types --test tests/databaseConfig.test.ts",
+    "test:security-critical": "node --experimental-strip-types --test tests/securityCritical.test.ts",
     "seed": "tsx prisma/seed.ts"
   },
   "prisma": {
