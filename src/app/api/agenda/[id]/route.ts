@@ -85,7 +85,7 @@ export async function PATCH(
     if (vinculosFinanceiros.some((v) => v.pagamento.pago) && confirmarEstornoPagamento !== true) {
       return NextResponse.json(
         {
-          erro: "Esta aula possui pagamento quitado. Para voltar a Agendada, a baixa e a cobrança vinculada serão desfeitas. Deseja continuar?",
+          erro: "Esta aula possui pagamento quitado. Para voltar a Agendada, a baixa será desfeita e a cobrança ficará pendente. Deseja continuar?",
           codigo: "CONFIRMACAO_ESTORNO_PAGAMENTO",
           exigeConfirmacao: true,
         },
@@ -144,14 +144,11 @@ export async function PATCH(
       });
       const pagamentoIds = [...new Set(vinculos.map((v) => v.pagamentoId))];
       if (pagamentoIds.length > 0) {
-        // Primeiro desfaz a baixa; depois remove a cobrança, pois uma aula
-        // Agendada ainda não constitui fato gerador financeiro.
+        // Desfaz somente a baixa. A cobrança e o vínculo com a aula são
+        // preservados, passando a constar como pendentes para nova conferência.
         await tx.pagamento.updateMany({
           where: { id: { in: pagamentoIds }, empresaId: scope.empresaId },
           data: { pago: false, dataPagamento: null },
-        });
-        await tx.pagamento.deleteMany({
-          where: { id: { in: pagamentoIds }, empresaId: scope.empresaId },
         });
       }
     }
