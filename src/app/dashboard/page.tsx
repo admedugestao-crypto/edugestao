@@ -31,12 +31,15 @@ export default async function DashboardPage() {
   const [totalAlunos, todasNotas, proximasProvas, pagamentosAbertos, totalEscolas] =
     await Promise.all([
       prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
-      isAdmin ? Promise.resolve([]) : prisma.nota.findMany({
-        where: { empresaId: scope.empresaId, aluno: { professoraId } },
+      prisma.nota.findMany({
+        where: {
+          empresaId: scope.empresaId,
+          ...(!isAdmin ? { aluno: { professoraId } } : {}),
+        },
         include: {
           aluno: { select: { nome: true } },
           materia: true,
-          avaliacao: { select: { notaMax: true } },
+          avaliacao: { select: { nome: true, notaMax: true } },
         },
         orderBy: { criadoEm: "desc" },
       }),
@@ -61,9 +64,12 @@ export default async function DashboardPage() {
       prisma.escola.count({ where: { empresaId: scope.empresaId } }),
     ]);
 
-  const alunosBaixoDesempenho = todasNotas
-    .filter((n) => n.valor < n.avaliacao.notaMax / 2)
-    .slice(0, 5);
+  // Mantém o critério já adotado pelo sistema: nota inferior a 50% da nota
+  // máxima da avaliação. A contagem é por aluno, sem duplicar quem teve mais
+  // de uma nota baixa; a lista mostra os lançamentos mais recentes.
+  const notasBaixas = todasNotas.filter((n) => n.valor < n.avaliacao.notaMax / 2);
+  const totalAlunosComNotaBaixa = new Set(notasBaixas.map((n) => n.alunoId)).size;
+  const notasBaixasRecentes = notasBaixas.slice(0, 5);
 
   const totalPendente = pagamentosAbertos.reduce((s, p) => s + Number(p.valorCobrado), 0);
 
@@ -75,7 +81,7 @@ export default async function DashboardPage() {
     { label: "Alunos ativos",       valor: totalAlunos,           icon: Users,         cor: "bg-indigo-50 text-indigo-600",  link: "/dashboard/alunos" },
     { label: "Escolas cadastradas", valor: totalEscolas,           icon: School,        cor: "bg-emerald-50 text-emerald-600", link: "/dashboard/escolas" },
     { label: "A receber (em aberto)", valor: formatBRL(totalPendente), icon: DollarSign, cor: "bg-amber-50 text-amber-600", link: "/dashboard/pagamentos" },
-    ...(!isAdmin ? [{ label: "Notas lançadas", valor: todasNotas.length, icon: ClipboardList, cor: "bg-rose-50 text-rose-600", link: "/dashboard/notas" } as const] : []),
+    { label: "Alunos com notas baixas", valor: totalAlunosComNotaBaixa, icon: ClipboardList, cor: "bg-rose-50 text-rose-600", link: "/dashboard/notas" },
   ];
 
   return (
@@ -104,9 +110,8 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {!isAdmin && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div className={`grid grid-cols-1 gap-6 ${!isAdmin ? "lg:grid-cols-2" : ""}`}>
+          {!isAdmin && <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-2 mb-4">
               <CalendarClock size={18} className="text-indigo-600" />
               <h2 className="font-semibold text-slate-800">Próximas provas</h2>
@@ -132,31 +137,44 @@ export default async function DashboardPage() {
                 ))}
               </ul>
             )}
-          </div>
+          </div>}
 
           <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-2 mb-4">
               <AlertCircle size={18} className="text-rose-500" />
               <h2 className="font-semibold text-slate-800">Atenção necessária</h2>
             </div>
-            {alunosBaixoDesempenho.length === 0 ? (
+            {notasBaixasRecentes.length === 0 ? (
               <p className="text-slate-500 text-sm">Nenhum aluno abaixo da média.</p>
             ) : (
-              <ul className="space-y-2">
-                {alunosBaixoDesempenho.map((n) => (
-                  <li key={n.id} className="flex items-center justify-between text-sm">
+              <>
+                <ul className="space-y-2">
+                {notasBaixasRecentes.map((n) => (
+                  <li key={n.id} className="flex items-center justify-between gap-4 text-sm">
                     <div>
                       <span className="font-medium text-slate-700">{n.aluno.nome}</span>
-                      <span className="text-slate-500 ml-2">{n.materia.nome}</span>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        {n.materia.nome} · {n.avaliacao.nome}
+                      </p>
                     </div>
-                    <span className="text-rose-600 font-bold">{n.valor.toFixed(1)}</span>
+                    <span className="text-rose-600 font-bold whitespace-nowrap">
+                      {n.valor.toFixed(1)} / {n.avaliacao.notaMax.toFixed(1)}
+                    </span>
                   </li>
                 ))}
-              </ul>
+                </ul>
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+                  <p className="text-xs text-slate-500">
+                    Critério: abaixo de 50% da nota máxima.
+                  </p>
+                  <Link href="/dashboard/notas" className="text-xs text-indigo-600 hover:underline">
+                    Ver notas →
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>
-      )}
     </div>
   );
 }
