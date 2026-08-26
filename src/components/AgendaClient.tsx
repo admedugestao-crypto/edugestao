@@ -507,17 +507,16 @@ export default function AgendaClient({
       }
     }
 
-    // Verifica demais regras de agendamento
-    if (!forcar) {
-      const check = verificarRegraAgendamento();
-      if (check) {
-        if (check.tipo === "erro") {
-          setErroModal(check.msg);
-          return;
-        }
+    // Erros de conflito/duração nunca podem ser forçados. Apenas avisos de
+    // data ou horário podem ser aceitos explicitamente pelo usuário.
+    const check = verificarRegraAgendamento();
+    if (check?.tipo === "erro") {
+      setErroModal(check.msg);
+      return;
+    }
+    if (!forcar && check) {
         setAvisoAgendamento({ msg: check.msg, tipo: "geral" });
         return;
-      }
     }
 
     setAvisoAgendamento(null);
@@ -1368,10 +1367,14 @@ export default function AgendaClient({
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => {
-                        const tipoAtual = avisoAgendamento.tipo;
                         setAvisoAgendamento(null);
-                        if (tipoAtual === "disp") salvarNovaAula(false, true);
-                        else salvarNovaAula(true, true);
+                        // A confirmação explícita vale para todos os avisos
+                        // substituíveis (disponibilidade, data e horário). Sem
+                        // isso, um segundo aviso podia surgir em sequência e
+                        // dar a impressão de que a aula já havia sido criada.
+                        // Erros reais (conflito e duração mínima) já foram
+                        // verificados antes de exibir a confirmação inicial.
+                        salvarNovaAula(true, true);
                       }}
                       disabled={salvando}
                       className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white rounded-lg transition-colors disabled:opacity-50 ${isDisp ? "bg-orange-500 hover:bg-orange-600" : "bg-blue-500 hover:bg-blue-600"}`}>
