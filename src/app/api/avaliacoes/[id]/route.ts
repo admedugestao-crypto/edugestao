@@ -17,9 +17,25 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Data inválida." }, { status: 400 });
   }
 
-  const existente = await prisma.avaliacao.findUnique({ where: { id }, select: { empresaId: true } });
+  const [existente, unidadeOk, materiaOk] = await Promise.all([
+    prisma.avaliacao.findUnique({ where: { id }, select: { empresaId: true } }),
+    prisma.unidade.findFirst({
+      where: { id: body.unidadeId, empresaId: scope.empresaId },
+      select: { id: true },
+    }),
+    body.materiaId
+      ? prisma.materia.findFirst({
+          where: { id: body.materiaId, empresaId: scope.empresaId },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+  ]);
   if (!existente || existente.empresaId !== scope.empresaId) {
     return NextResponse.json({ erro: "Avaliação não encontrada." }, { status: 404 });
+  }
+  if (!unidadeOk) return NextResponse.json({ erro: "Unidade não encontrada." }, { status: 404 });
+  if (body.materiaId && !materiaOk) {
+    return NextResponse.json({ erro: "Matéria não encontrada." }, { status: 404 });
   }
 
   const avaliacao = await prisma.avaliacao.update({

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { autorizarCron } from "../src/lib/cronAuth.ts";
-import { normalizarIds } from "../src/lib/entityIds.ts";
+import { normalizarIds, todosIdsEncontrados } from "../src/lib/entityIds.ts";
 import { ocultarCredenciaisEmpresa } from "../src/lib/platformCredentials.ts";
 
 test("cron falha fechado quando CRON_SECRET não está configurado", () => {
@@ -38,6 +38,12 @@ test("normaliza IDs e elimina valores inválidos ou duplicados", () => {
     "materia-2",
   ]);
   assert.deepEqual(normalizarIds("materia-1"), []);
+});
+
+test("rejeita referências quando algum ID não pertence ao escopo consultado", () => {
+  assert.equal(todosIdsEncontrados(["materia-1", "materia-2"], ["materia-1"]), false);
+  assert.equal(todosIdsEncontrados(["materia-1"], ["materia-1", "materia-2"]), true);
+  assert.equal(todosIdsEncontrados([], []), true);
 });
 
 test("API da plataforma não expõe credenciais das empresas", () => {

@@ -4,6 +4,7 @@ import { getSessionScope } from "@/lib/tenant";
 import { validarAulaParaMinistrado, materiasCompativeis, type AulaCandidata } from "@/lib/conteudoAgenda";
 import { enviarNotificacaoConteudoMinistrado } from "@/lib/notificacoes";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
+import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
@@ -81,18 +82,38 @@ export async function POST(req: NextRequest) {
   const body     = await req.json();
   const dataAula = new Date(body.data);
   const planejado = body.planejado ?? false;
-  const aulaId: string | null = body.aulaId || null;
-  const materiaIds: string[] = Array.isArray(body.materiaIds) ? body.materiaIds : [];
+  const aulaId: string | null = typeof body.aulaId === "string" && body.aulaId.trim() ? body.aulaId.trim() : null;
+  const materiaIds = normalizarIds(body.materiaIds);
   const forcar   = body.forcar === true;
   // aulaIdEscolhido: usuário resolveu manualmente uma ambiguidade (aluno com
   // +1 aula candidata) escolhendo qual aula vincular.
   const aulaIdEscolhido: string | null = body.aulaIdEscolhido || null;
 
-  const alunoOk = await prisma.aluno.findFirst({
-    where: { id: body.alunoId, empresaId: scope.empresaId },
-    select: { id: true },
-  });
+  const [alunoOk, materiasOk, aulaOk] = await Promise.all([
+    prisma.aluno.findFirst({
+      where: { id: body.alunoId, empresaId: scope.empresaId },
+      select: { id: true },
+    }),
+    materiaIds.length > 0
+      ? prisma.materia.findMany({
+          where: { id: { in: materiaIds }, empresaId: scope.empresaId },
+          select: { id: true },
+        })
+      : Promise.resolve([]),
+    aulaId
+      ? prisma.agendaAula.findFirst({
+          where: { id: aulaId, empresaId: scope.empresaId, alunoId: body.alunoId },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+  ]);
   if (!alunoOk) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
+  if (!todosIdsEncontrados(materiaIds, materiasOk.map((materia) => materia.id))) {
+    return NextResponse.json({ erro: "Uma ou mais matérias não foram encontradas." }, { status: 404 });
+  }
+  if (aulaId && !aulaOk) {
+    return NextResponse.json({ erro: "Aula não encontrada para este aluno." }, { status: 404 });
+  }
 
   // Planejado: sem validação de agenda
   // Ministrado vindo da agenda (aulaId presente): pula validação — o cliente marca REALIZADA logo após

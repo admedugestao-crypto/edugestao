@@ -36,11 +36,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Data inválida." }, { status: 400 });
   }
 
-  const unidadeOk = await prisma.unidade.findFirst({
-    where: { id: body.unidadeId, empresaId: scope.empresaId },
-    select: { id: true },
-  });
+  const [unidadeOk, materiaOk] = await Promise.all([
+    prisma.unidade.findFirst({
+      where: { id: body.unidadeId, empresaId: scope.empresaId },
+      select: { id: true },
+    }),
+    body.materiaId
+      ? prisma.materia.findFirst({
+          where: { id: body.materiaId, empresaId: scope.empresaId },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+  ]);
   if (!unidadeOk) return NextResponse.json({ erro: "Unidade não encontrada." }, { status: 404 });
+  if (body.materiaId && !materiaOk) {
+    return NextResponse.json({ erro: "Matéria não encontrada." }, { status: 404 });
+  }
 
   const avaliacao = await prisma.avaliacao.create({
     data: {
