@@ -75,7 +75,18 @@ function CamposForm({
         <label className="block text-xs font-medium text-slate-600 mb-1">Unidade *</label>
         <select
           value={form.unidadeId}
-          onChange={(e) => setForm({ ...form, unidadeId: e.target.value, periodo: "" })}
+          onChange={(e) => {
+            const unidadeId = e.target.value;
+            const novaUnidade = unidades.find((u) => u.id === unidadeId);
+            const periodosValidos = getPeriodos(novaUnidade?.periodoAvaliacao);
+            setForm({
+              ...form,
+              unidadeId,
+              // Mantém o período quando as duas escolas usam o mesmo regime.
+              // Só exige nova escolha se o valor anterior não existir na nova unidade.
+              periodo: periodosValidos.includes(form.periodo) ? form.periodo : "",
+            });
+          }}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
         >
           <option value="">Selecione...</option>
@@ -127,15 +138,22 @@ function CamposForm({
             const unidadeSel = unidades.find((u) => u.id === form.unidadeId);
             const opcoes = getPeriodos(unidadeSel?.periodoAvaliacao);
             return (
-              <select
-                value={form.periodo}
-                onChange={(e) => setForm({ ...form, periodo: e.target.value })}
-                disabled={!form.unidadeId}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
-              >
-                <option value="">{form.unidadeId ? "Selecione..." : "Selecione a unidade primeiro"}</option>
-                {opcoes.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <>
+                <select
+                  value={form.periodo}
+                  onChange={(e) => setForm({ ...form, periodo: e.target.value })}
+                  disabled={!form.unidadeId}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white disabled:opacity-50"
+                >
+                  <option value="">{form.unidadeId ? "Selecione..." : "Selecione a unidade primeiro"}</option>
+                  {opcoes.map((p) => <option key={p} value={p}>{p}</option>)}
+                </select>
+                {form.unidadeId && !form.periodo && (
+                  <p className="mt-1 text-xs text-amber-600">
+                    Selecione o período da nova unidade para habilitar o salvamento.
+                  </p>
+                )}
+              </>
             );
           })()}
         </div>
