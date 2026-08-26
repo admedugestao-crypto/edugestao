@@ -4,6 +4,7 @@ import { getSessionScope } from "@/lib/tenant";
 import { validarAulaParaMinistrado } from "@/lib/conteudoAgenda";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 import { enviarNotificacaoConteudoMinistrado } from "@/lib/notificacoes";
+import { podeAcessarProfessora } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +27,11 @@ export async function POST(
       id: true, empresaId: true, alunoId: true, data: true, planejado: true, materiaId: true, aulaId: true,
       materia: { select: { nome: true } },
       materias: { select: { materiaId: true } },
+      aluno: { select: { professoraId: true } },
     },
   });
 
-  if (!conteudo || conteudo.empresaId !== scope.empresaId) {
+  if (!conteudo || conteudo.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, conteudo.aluno.professoraId)) {
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
   if (!conteudo.planejado) return NextResponse.json({ erro: "Conteúdo já está Ministrado." }, { status: 422 });

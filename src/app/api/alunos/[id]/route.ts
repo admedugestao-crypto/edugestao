@@ -4,6 +4,7 @@ import { getSessionScope } from "@/lib/tenant";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { parseDataLocal } from "@/lib/data";
+import { podeAcessarProfessora } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export async function GET(
     },
   });
 
-  if (!aluno || aluno.empresaId !== scope.empresaId) {
+  if (!aluno || aluno.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aluno.professoraId)) {
     return NextResponse.json({ erro: "Não encontrado" }, { status: 404 });
   }
 
@@ -44,8 +45,8 @@ export async function PUT(
 
   const { id } = await params;
 
-  const existente = await prisma.aluno.findUnique({ where: { id }, select: { empresaId: true } });
-  if (!existente || existente.empresaId !== scope.empresaId) {
+  const existente = await prisma.aluno.findUnique({ where: { id }, select: { empresaId: true, professoraId: true } });
+  if (!existente || existente.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, existente.professoraId)) {
     return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
   }
 
@@ -158,6 +159,7 @@ export async function DELETE(
 ) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+  if (!scope.isAdmin) return NextResponse.json({ erro: "Apenas administradores podem excluir alunos." }, { status: 403 });
 
   const { id } = await params;
 

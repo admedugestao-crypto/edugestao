@@ -126,7 +126,7 @@ export default async function PagamentosPage({
         mesInicial={mes}
         anoInicial={ano}
         isAdmin={isAdmin}
-        podeNovo={true}
+        podeNovo={isAdmin}
         alunoFiltro={alunoFiltro}
       />
     </div>
