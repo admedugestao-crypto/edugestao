@@ -10,6 +10,7 @@ import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal, { type ParcelaGerada } from "@/components/PagamentoGeradoModal";
 import SeletorMaterias from "@/components/SeletorMaterias";
 import BottomNavMobile from "@/components/BottomNavMobile";
+import DescricaoPorVozMobile from "@/components/DescricaoPorVozMobile";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -972,12 +973,13 @@ export default function AgendaMobile({
                 className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
             </div>
 
-            <div>
-              <label className="text-xs font-medium text-slate-500 block mb-1">Descrição</label>
-              <textarea rows={3} value={conteudoModal.form.descricao}
-                onChange={(e) => setConteudoModal((p) => p && ({ ...p, form: { ...p.form, descricao: e.target.value } }))}
-                className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm resize-none"/>
-            </div>
+            <DescricaoPorVozMobile
+              value={conteudoModal.form.descricao}
+              onChange={(descricao) => setConteudoModal((p) => p && ({
+                ...p,
+                form: { ...p.form, descricao },
+              }))}
+            />
 
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">Anexo</label>
