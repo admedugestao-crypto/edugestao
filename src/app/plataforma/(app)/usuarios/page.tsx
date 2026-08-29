@@ -239,7 +239,10 @@ export default function PlataformaUsuariosPage() {
       setErro("Escolha a empresa para esse perfil.");
       return;
     }
-    if (PERFIS_COM_DISPONIBILIDADE.includes(form.perfil) && form.disponibilidade.length === 0) {
+    // Na edição, permita transformar um usuário existente em professor antes
+    // de cadastrar seus horários. A API cria o vínculo de professora vazio e
+    // a disponibilidade pode ser preenchida em seguida na aba própria.
+    if (!editId && PERFIS_COM_DISPONIBILIDADE.includes(form.perfil) && form.disponibilidade.length === 0) {
       setErro("Professor(a) deve ter pelo menos um horário de disponibilidade cadastrado.");
       setAbaModal("disponibilidade");
       return;
