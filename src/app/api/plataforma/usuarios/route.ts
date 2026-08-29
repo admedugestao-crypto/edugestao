@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { requirePlataforma } from "@/lib/plataforma";
+import { normalizarEmail } from "@/lib/emailIdentity";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,9 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { nome, email, senha, empresaId, foto, whatsapp, disponibilidade } = body;
+  const { senha, empresaId, foto, whatsapp, disponibilidade } = body;
+  const nome = typeof body.nome === "string" ? body.nome.trim() : "";
+  const email = typeof body.email === "string" ? normalizarEmail(body.email) : "";
   const perfil: PerfilValido = PERFIS.includes(body.perfil) ? body.perfil : "PROFESSORA";
 
   if (!nome || !email || !senha) {
@@ -62,11 +65,23 @@ export async function POST(req: NextRequest) {
     if (!empresa) {
       return NextResponse.json({ erro: "Empresa não encontrada." }, { status: 404 });
     }
+    const existente = await prisma.usuario.findFirst({
+      where: {
+        email: { equals: email, mode: "insensitive" },
+        perfil: { not: "PLATAFORMA" },
+      },
+      select: { id: true },
+    });
+    if (existente) {
+      return NextResponse.json({ erro: "Este e-mail já está vinculado a outro usuário do EduGestão." }, { status: 409 });
+    }
   } else {
     // empresaId é sempre null para PLATAFORMA — a unicidade de e-mail não é
     // garantida pelo banco nesse caso (NULL não colide consigo mesmo), então
     // a checagem é feita aqui.
-    const existente = await prisma.usuario.findFirst({ where: { email, perfil: "PLATAFORMA" } });
+    const existente = await prisma.usuario.findFirst({
+      where: { email: { equals: email, mode: "insensitive" }, perfil: "PLATAFORMA" },
+    });
     if (existente) {
       return NextResponse.json({ erro: "Este e-mail já está cadastrado." }, { status: 409 });
     }

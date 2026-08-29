@@ -4,6 +4,7 @@ import { autorizarCron } from "../src/lib/cronAuth.ts";
 import { normalizarIds, todosIdsEncontrados } from "../src/lib/entityIds.ts";
 import { ocultarCredenciaisEmpresa } from "../src/lib/platformCredentials.ts";
 import { podeAcessarProfessora, podeGerenciarFinanceiro } from "../src/lib/permissions.ts";
+import { deveExigirTrocaSenha, normalizarEmail } from "../src/lib/emailIdentity.ts";
 
 test("cron falha fechado quando CRON_SECRET não está configurado", () => {
   const result = autorizarCron(new Headers(), undefined);
@@ -28,6 +29,17 @@ test("administrador acessa registros de qualquer professora", () => {
 test("somente administrador altera dados financeiros", () => {
   assert.equal(podeGerenciarFinanceiro({ isAdmin: true }), true);
   assert.equal(podeGerenciarFinanceiro({ isAdmin: false }), false);
+});
+
+test("normaliza e-mail de cadastro e login", () => {
+  assert.equal(normalizarEmail("  Usuario.Teste@GMAIL.COM "), "usuario.teste@gmail.com");
+});
+
+test("senha definida pela plataforma exige troca no primeiro acesso operacional", () => {
+  assert.equal(deveExigirTrocaSenha("SUPERADMIN"), true);
+  assert.equal(deveExigirTrocaSenha("PROFESSORA"), true);
+  assert.equal(deveExigirTrocaSenha("AUXILIAR"), true);
+  assert.equal(deveExigirTrocaSenha("PLATAFORMA"), false);
 });
 
 test("cron rejeita credencial ausente ou incorreta", () => {
