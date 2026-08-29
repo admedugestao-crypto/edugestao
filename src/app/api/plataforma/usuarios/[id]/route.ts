@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { requirePlataforma } from "@/lib/plataforma";
+import { deveExigirTrocaSenha, normalizarEmail } from "@/lib/emailIdentity";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     email?: string;
     ativo?: boolean;
     senhaHash?: string;
+    senhaTemporaria?: boolean;
     foto?: string | null;
     whatsapp?: string | null;
     empresaId?: string | null;
@@ -40,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   if (typeof body.email === "string") {
-    const email = body.email.trim().toLowerCase();
+    const email = normalizarEmail(body.email);
     if (!email || !email.includes("@")) {
       return NextResponse.json({ erro: "E-mail inválido." }, { status: 400 });
     }
@@ -57,6 +59,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ erro: "A senha deve ter pelo menos 6 caracteres." }, { status: 400 });
     }
     data.senhaHash = await bcrypt.hash(body.senha, 10);
+    const perfilAposEdicao: PerfilValido = PERFIS.includes(body.perfil) ? body.perfil : existente.perfil;
+    data.senhaTemporaria = deveExigirTrocaSenha(perfilAposEdicao);
   }
 
   // Perfil e empresa são decididos juntos: PLATAFORMA nunca tem empresa,

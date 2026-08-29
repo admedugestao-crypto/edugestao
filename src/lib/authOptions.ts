@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { normalizarEmail } from "@/lib/emailIdentity";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -23,7 +24,10 @@ export const authOptions: NextAuthOptions = {
         let usuario;
         try {
           usuario = await prisma.usuario.findFirst({
-            where: { email: credentials.email, perfil: { not: "PLATAFORMA" } },
+            where: {
+              email: { equals: normalizarEmail(credentials.email), mode: "insensitive" },
+              perfil: { not: "PLATAFORMA" },
+            },
             include: { professora: true, empresa: true },
           });
         } catch (e: any) {
@@ -62,7 +66,11 @@ export const authOptions: NextAuthOptions = {
         let usuario;
         try {
           usuario = await prisma.usuario.findFirst({
-            where: { email: credentials.email, empresaId: null, perfil: "PLATAFORMA" },
+            where: {
+              email: { equals: normalizarEmail(credentials.email), mode: "insensitive" },
+              empresaId: null,
+              perfil: "PLATAFORMA",
+            },
           });
         } catch (e: any) {
           console.error("DB ERROR:", e.message);
