@@ -8,7 +8,13 @@ export default function TrocarSenhaPage() {
   const [confirmar, setConfirmar] = useState("");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [saindo, setSaindo] = useState(false);
   const [sucesso, setSucesso] = useState(false);
+
+  async function voltarAoLogin() {
+    setSaindo(true);
+    await signOut({ callbackUrl: "/login" });
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -99,10 +105,19 @@ export default function TrocarSenhaPage() {
 
           <button
             type="submit"
-            disabled={carregando || sucesso}
+            disabled={carregando || saindo || sucesso}
             className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
           >
             {sucesso ? "Redirecionando..." : carregando ? "Salvando..." : "Salvar e continuar"}
+          </button>
+
+          <button
+            type="button"
+            onClick={voltarAoLogin}
+            disabled={carregando || saindo || sucesso}
+            className="w-full text-indigo-600 hover:text-indigo-800 disabled:opacity-60 font-medium py-1 text-sm transition-colors"
+          >
+            {saindo ? "Voltando ao login..." : "Entrar com outra conta"}
           </button>
         </form>
       </div>
