@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function PlataformaLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session || (session.user as any).perfil !== "PLATAFORMA") {
+  if (!session || (session.user as { perfil?: string }).perfil !== "PLATAFORMA") {
     redirect("/plataforma/login");
   }
 
@@ -35,6 +35,9 @@ export default async function PlataformaLayout({ children }: { children: React.R
           </Link>
           <Link href="/plataforma/usuarios" className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
             Usuários
+          </Link>
+          <Link href="/plataforma/conectados" className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+            Usuários conectados
           </Link>
         </nav>
         <div className="px-3 py-4 border-t border-slate-800">
