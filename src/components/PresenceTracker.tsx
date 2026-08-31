@@ -30,7 +30,7 @@ export default function PresenceTracker() {
   useEffect(() => {
     let ativo = true;
     async function registrar() {
-      if (!ativo || document.visibilityState === "hidden") return;
+      if (!ativo) return;
       await fetch("/api/presenca", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
