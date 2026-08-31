@@ -32,6 +32,7 @@ function tempoAtividade(data: string) {
 export default function UsuariosConectadosPage() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [atualizandoManual, setAtualizandoManual] = useState(false);
   const [erro, setErro] = useState("");
   const [atualizadoEm, setAtualizadoEm] = useState<Date | null>(null);
 
@@ -53,6 +54,12 @@ export default function UsuariosConectadosPage() {
       setCarregando(false);
     }
   }, []);
+
+  async function atualizarAgora() {
+    setAtualizandoManual(true);
+    await carregar();
+    setAtualizandoManual(false);
+  }
 
   useEffect(() => {
     const inicial = window.setTimeout(() => void carregar(), 0);
@@ -76,9 +83,10 @@ export default function UsuariosConectadosPage() {
           <h1 className="text-2xl font-bold text-slate-800">Usuários conectados</h1>
           <p className="mt-1 text-sm text-slate-500">Atualização automática a cada 5 segundos.</p>
         </div>
-        <button onClick={() => void carregar()} disabled={carregando}
+        <button onClick={() => void atualizarAgora()} disabled={carregando || atualizandoManual}
           className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
-          <RefreshCw size={16} className={carregando ? "animate-spin" : ""} /> Atualizar
+          <RefreshCw size={16} className={atualizandoManual ? "animate-spin" : ""} />
+          {atualizandoManual ? "Atualizando..." : "Atualizar agora"}
         </button>
       </div>
 
