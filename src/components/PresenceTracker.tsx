@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const CHAVE_SESSAO = "edugestao-presenca-id";
+const CHAVE_NAVEGADOR = "edugestao-presenca-navegador";
 
 function identificarDispositivo() {
   const ua = navigator.userAgent;
@@ -16,10 +16,10 @@ function identificarDispositivo() {
 }
 
 function obterSessaoId() {
-  let id = sessionStorage.getItem(CHAVE_SESSAO);
+  let id = localStorage.getItem(CHAVE_NAVEGADOR);
   if (!id) {
     id = crypto.randomUUID();
-    sessionStorage.setItem(CHAVE_SESSAO, id);
+    localStorage.setItem(CHAVE_NAVEGADOR, id);
   }
   return id;
 }
