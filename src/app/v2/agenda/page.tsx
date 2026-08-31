@@ -1,8 +1,12 @@
 import AgendaClient from "@/components/AgendaClient";
+import AgendaMobile from "@/components/AgendaMobile";
+import { auth } from "@/lib/auth";
+import { isMobileUserAgent } from "@/lib/device";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope, scopeWhere } from "@/lib/tenant";
 import { CalendarDays, Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import styles from "../v2.module.css";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +14,8 @@ export const dynamic = "force-dynamic";
 export default async function V2AgendaPage() {
   const scope = await getSessionScope();
   if (!scope) redirect("/login");
+  const session = await auth();
+  const mobile = isMobileUserAgent((await headers()).get("user-agent"));
   const professoraId = scope.professoraId;
   const isProfessor = !scope.isAdmin && Boolean(professoraId);
 
@@ -36,6 +42,26 @@ export default async function V2AgendaPage() {
       orderBy: { usuario: { nome: "asc" } },
     }),
   ]);
+
+  if (mobile) {
+    return (
+      <div className={styles.agendaMobileFrame}>
+        <AgendaMobile
+          variant="v2"
+          isProfessor={isProfessor}
+          isAdmin={scope.isAdmin}
+          nomeUsuario={session?.user?.name ?? ""}
+          professoraIdSessao={professoraId ?? ""}
+          professoras={professoras.map((professora) => ({ id: professora.id, nome: professora.usuario.nome }))}
+          disponibilidades={professoras.map((professora) => ({
+            professoraId: professora.id,
+            slots: (professora.disponibilidade as { dia: string; inicio: string; fim: string }[]) ?? [],
+          }))}
+          alunos={alunos.map((aluno) => ({ ...aluno, materias: aluno.materias.map((item) => item.materia) }))}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.agendaPage}>

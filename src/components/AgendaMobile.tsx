@@ -45,6 +45,7 @@ type ConteudoForm = {
   planejadoOriginal: boolean;
 };
 type ConteudoModalState = { aulaId: string; existente: boolean; form: ConteudoForm };
+type ConteudoApi = ConteudoForm & { materias: { materia: { id: string } }[]; planejado: boolean };
 
 const DIAS_PT   = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 const DIAS_FULL = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
@@ -82,11 +83,13 @@ function subtrair(janelas: { inicio: number; fim: number }[], ocupados: { inicio
 export default function AgendaMobile({
   isProfessor, isAdmin, nomeUsuario,
   professoraIdSessao, professoras, disponibilidades, alunos,
+  variant = "legacy",
 }: {
   isProfessor: boolean; isAdmin: boolean; nomeUsuario: string;
   professoraIdSessao: string;
   professoras: ProfOpt[]; disponibilidades: DispProf[];
   alunos: AlunoOpt[];
+  variant?: "legacy" | "v2";
 }) {
   const router = useRouter();
 
@@ -146,6 +149,8 @@ export default function AgendaMobile({
     }
   }, [semana, isProfessor, filtroProfId]);
 
+  // A agenda remota precisa acompanhar imediatamente a semana e o professor selecionados.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { carregar(); }, [carregar]);
 
   // ── Timeline do dia ────────────────────────────────────────────────────────
@@ -362,7 +367,7 @@ export default function AgendaMobile({
     try {
       const dataStr = aula.data.split("T")[0];
       const res = await fetch(`/api/conteudos?aulaId=${aula.id}`);
-      const existente = res.ok ? await res.json() : null;
+      const existente = res.ok ? await res.json() as ConteudoApi : null;
 
       setConteudoModal({
         aulaId: aula.id,
@@ -370,7 +375,7 @@ export default function AgendaMobile({
         form: existente ? {
           id: existente.id,
           alunoId: existente.alunoId,
-          materiaIds: existente.materias.map((m: any) => m.materia.id),
+          materiaIds: existente.materias.map((m) => m.materia.id),
           topico: existente.topico,
           descricao: existente.descricao ?? "",
           arquivoUrl: existente.arquivoUrl ?? "",
@@ -500,7 +505,7 @@ export default function AgendaMobile({
   const dsAtivo  = `${diaAtivo.getFullYear()}-${String(diaAtivo.getMonth()+1).padStart(2,"0")}-${String(diaAtivo.getDate()).padStart(2,"0")}`;
 
   return (
-    <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
+    <div className={`flex flex-col select-none overflow-hidden ${variant === "v2" ? "h-[calc(100dvh-126px)] bg-[#f6f8fc]" : "h-dvh bg-slate-100"}`}>
 
       {/* ── Feedback reposição ───────────────────────────────────────────── */}
       {msgReposicao && (
@@ -510,10 +515,10 @@ export default function AgendaMobile({
       )}
 
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
-      <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
+      <div className={variant === "v2" ? "bg-[#10203d] text-white px-4 py-4 flex items-center justify-between shrink-0" : "bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0"}>
         <div>
-          <p className="text-xs opacity-75">EduGestão</p>
-          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
+          <p className={variant === "v2" ? "text-[10px] uppercase tracking-[0.16em] text-[#62d5ad] font-bold" : "text-xs opacity-75"}>{variant === "v2" ? "Planejamento do tempo" : "EduGestão"}</p>
+          <p className={variant === "v2" ? "text-xl font-bold leading-tight mt-1" : "text-sm font-bold leading-tight truncate max-w-[160px]"}>{variant === "v2" ? "Agenda" : nomeUsuario}</p>
         </div>
         <div className="flex items-center gap-3">
           {loading && <RefreshCw size={15} className="animate-spin opacity-75"/>}
@@ -529,9 +534,9 @@ export default function AgendaMobile({
             className="opacity-90 hover:opacity-100">
             <Plus size={20}/>
           </button>
-          <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
+          {variant === "legacy" && <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
             <LogOut size={18}/>
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -1024,7 +1029,7 @@ export default function AgendaMobile({
         <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
 
-      <BottomNavMobile/>
+      {variant === "legacy" ? <BottomNavMobile/> : null}
     </div>
   );
 }
