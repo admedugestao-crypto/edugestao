@@ -40,7 +40,7 @@ export default function PresenceTracker() {
     }
 
     void registrar();
-    const intervalo = window.setInterval(registrar, 30_000);
+    const intervalo = window.setInterval(registrar, 5_000);
     const aoVoltar = () => void registrar();
     window.addEventListener("focus", aoVoltar);
     document.addEventListener("visibilitychange", aoVoltar);

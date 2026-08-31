@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ erro: "Não autorizado" }, { status: 403 });
   }
 
-  const desde = new Date(Date.now() - 2 * 60 * 1000);
+  const desde = new Date(Date.now() - 20 * 1000);
   const empresas = await prisma.empresa.findMany({
     select: {
       id: true, nome: true, slug: true, ativo: true,
