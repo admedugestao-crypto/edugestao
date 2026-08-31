@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
+import { format, addDays, addMonths, endOfMonth, endOfWeek, isSameDay, isSameMonth, isToday, startOfMonth, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
          CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, BookOpen, Trash2 } from "lucide-react";
@@ -95,6 +95,8 @@ export default function AgendaMobile({
 
   const [semana,    setSemana]    = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [diaAtivo,  setDiaAtivo]  = useState(new Date());
+  const [mesAtivo,  setMesAtivo]  = useState(() => startOfMonth(new Date()));
+  const [vista,     setVista]     = useState<"dia" | "mes">("dia");
   const [aulas,     setAulas]     = useState<Aula[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
@@ -136,8 +138,8 @@ export default function AgendaMobile({
   const carregar = useCallback(async () => {
     setLoading(true);
     try {
-      const ini = semana;
-      const fim = addDays(semana, 6);
+      const ini = vista === "mes" ? startOfWeek(startOfMonth(mesAtivo), { weekStartsOn: 1 }) : semana;
+      const fim = vista === "mes" ? endOfWeek(endOfMonth(mesAtivo), { weekStartsOn: 1 }) : addDays(semana, 6);
       const fmt = (d: Date) => d.toISOString().split("T")[0];
       let url = `/api/agenda?inicio=${fmt(ini)}&fim=${fmt(fim)}`;
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
@@ -147,7 +149,7 @@ export default function AgendaMobile({
     } finally {
       setLoading(false);
     }
-  }, [semana, isProfessor, filtroProfId]);
+  }, [semana, mesAtivo, vista, isProfessor, filtroProfId]);
 
   // A agenda remota precisa acompanhar imediatamente a semana e o professor selecionados.
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -503,6 +505,12 @@ export default function AgendaMobile({
 
   const timeline = timelineDia(diaAtivo);
   const dsAtivo  = `${diaAtivo.getFullYear()}-${String(diaAtivo.getMonth()+1).padStart(2,"0")}-${String(diaAtivo.getDate()).padStart(2,"0")}`;
+  const inicioGrade = startOfWeek(startOfMonth(mesAtivo), { weekStartsOn: 1 });
+  const fimGrade = endOfWeek(endOfMonth(mesAtivo), { weekStartsOn: 1 });
+  const diasDoMes = Array.from(
+    { length: Math.round((fimGrade.getTime() - inicioGrade.getTime()) / 86_400_000) + 1 },
+    (_, indice) => addDays(inicioGrade, indice),
+  );
 
   return (
     <div className={`flex flex-col select-none overflow-hidden ${variant === "v2" ? "h-[calc(100dvh-126px)] bg-[#f6f8fc]" : "h-dvh bg-slate-100"}`}>
@@ -540,6 +548,17 @@ export default function AgendaMobile({
         </div>
       </div>
 
+      {variant === "v2" && (
+        <div className="grid grid-cols-2 gap-1 bg-white border-b border-slate-200 px-3 py-2 shrink-0">
+          <button onClick={() => setVista("dia")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "dia" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
+            Dia e semana
+          </button>
+          <button onClick={() => setVista("mes")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "mes" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
+            Mês
+          </button>
+        </div>
+      )}
+
       {/* ── Filtro professor (admin) ──────────────────────────────────────── */}
       {isAdmin && professoras.length > 0 && (
         <div className="bg-white border-b border-slate-200 px-4 py-2 shrink-0">
@@ -551,7 +570,7 @@ export default function AgendaMobile({
       )}
 
       {/* ── Navegação de semana ───────────────────────────────────────────── */}
-      <div className="bg-white border-b border-slate-100 px-4 py-2 flex items-center justify-between shrink-0">
+      <div className={`${vista === "mes" ? "hidden" : "flex"} bg-white border-b border-slate-100 px-4 py-2 items-center justify-between shrink-0`}>
         <button onClick={() => setSemana((s) => addDays(s, -7))}
           className="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
           <ChevronLeft size={20} className="text-slate-600"/>
@@ -566,7 +585,7 @@ export default function AgendaMobile({
       </div>
 
       {/* ── Seletor de dia (scroll horizontal) ───────────────────────────── */}
-      <div className="bg-white border-b border-slate-100 px-2 py-2 flex gap-1 overflow-x-auto no-scrollbar shrink-0">
+      <div className={`${vista === "mes" ? "hidden" : "flex"} bg-white border-b border-slate-100 px-2 py-2 gap-1 overflow-x-auto no-scrollbar shrink-0`}>
         {diasSemana.map((dia, i) => {
           const ativo = isSameDay(dia, diaAtivo);
           const hoje  = isToday(dia);
@@ -588,8 +607,37 @@ export default function AgendaMobile({
         })}
       </div>
 
+      {vista === "mes" && (
+        <div className="flex-1 overflow-y-auto bg-white px-3 py-3">
+          <div className="flex items-center justify-between mb-3">
+            <button onClick={() => setMesAtivo((mes) => addMonths(mes, -1))} className="p-2 rounded-full bg-slate-50 text-slate-600" aria-label="Mês anterior"><ChevronLeft size={19}/></button>
+            <strong className="text-sm text-slate-800 capitalize">{format(mesAtivo, "MMMM 'de' yyyy", { locale: ptBR })}</strong>
+            <button onClick={() => setMesAtivo((mes) => addMonths(mes, 1))} className="p-2 rounded-full bg-slate-50 text-slate-600" aria-label="Próximo mês"><ChevronRight size={19}/></button>
+          </div>
+          <div className="grid grid-cols-7 mb-1 text-center text-[9px] font-bold uppercase tracking-wide text-slate-400">
+            {['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map((dia) => <span key={dia} className="py-1">{dia}</span>)}
+          </div>
+          <div className="grid grid-cols-7 overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 gap-px">
+            {diasDoMes.map((dia) => {
+              const aulasDia = aulas.filter((aula) => isSameDay(parseLocal(aula.data), dia) && aula.status !== "CANCELADA");
+              return (
+                <button key={dia.toISOString()} onClick={() => { setDiaAtivo(dia); setSemana(startOfWeek(dia, { weekStartsOn: 1 })); setVista("dia"); }}
+                  className={`min-h-16 p-1.5 text-left bg-white ${!isSameMonth(dia, mesAtivo) ? "opacity-35" : ""} ${isToday(dia) ? "ring-2 ring-inset ring-[#315be8]" : ""}`}>
+                  <span className={`text-[11px] font-bold ${isToday(dia) ? "text-[#315be8]" : "text-slate-700"}`}>{format(dia, "dd")}</span>
+                  <span className="mt-1 flex flex-wrap gap-0.5">
+                    {aulasDia.slice(0, 3).map((aula) => <i key={aula.id} className="h-1.5 w-1.5 rounded-full bg-[#315be8]" />)}
+                    {aulasDia.length > 3 ? <small className="text-[7px] text-slate-500">+{aulasDia.length - 3}</small> : null}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-center text-[10px] text-slate-400">Toque em um dia para abrir sua agenda.</p>
+        </div>
+      )}
+
       {/* ── Lista do dia ──────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+      <div className={`${vista === "mes" ? "hidden" : "block"} flex-1 overflow-y-auto px-3 py-3 space-y-2`}>
         {timeline.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">
             <p className="text-2xl mb-2">📅</p>
