@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
+import { plataformaAuth } from "@/lib/plataformaSession";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import SairButton from "./SairButton";
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 };
 
 export default async function PlataformaLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  if (!session || (session.user as { perfil?: string }).perfil !== "PLATAFORMA") {
+  const session = await plataformaAuth();
+  if (!session) {
     redirect("/plataforma/login");
   }
 

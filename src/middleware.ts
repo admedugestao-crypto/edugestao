@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { PLATAFORMA_COOKIE } from "@/lib/plataformaCookie";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -9,6 +10,7 @@ export async function middleware(request: NextRequest) {
     "/login", "/plataforma/login",
     "/esqueci-senha", "/api/esqueci-senha",
     "/plataforma/esqueci-senha", "/api/plataforma/esqueci-senha",
+    "/api/plataforma/sessao",
     "/redefinir-senha", "/api/redefinir-senha",
     "/api/auth",
     "/api/cron",
@@ -16,12 +18,12 @@ export async function middleware(request: NextRequest) {
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
   if (isPublic) return NextResponse.next();
 
+  const isPlataforma = pathname.startsWith("/plataforma") || pathname.startsWith("/api/plataforma");
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
+    ...(isPlataforma ? { cookieName: PLATAFORMA_COOKIE } : {}),
   });
-
-  const isPlataforma = pathname.startsWith("/plataforma") || pathname.startsWith("/api/plataforma");
 
   if (!token) {
     const loginUrl = new URL(isPlataforma ? "/plataforma/login" : "/login", request.url);
@@ -34,9 +36,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/plataforma/login", request.url));
   }
   if (!isPlataforma && token.perfil === "PLATAFORMA") {
-    return NextResponse.redirect(new URL("/plataforma", request.url));
+    return NextResponse.redirect(new URL("/plataforma/login", request.url));
   }
-
   // Senha temporária (criada pela plataforma) — obriga trocar antes de
   // acessar qualquer outra tela, exceto a própria página/rota de troca.
   const isTrocarSenha = pathname.startsWith("/trocar-senha") || pathname.startsWith("/api/trocar-senha");
