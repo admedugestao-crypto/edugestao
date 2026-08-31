@@ -78,6 +78,7 @@ model Empresa {
   materiaisBiblioteca  MaterialBiblioteca[]
   metodosEnsino        MetodoEnsino[]
   tiposAvaliacao       TipoAvaliacao[]
+  sessoesAtivas        SessaoAtiva[]
 
   @@map("empresas")
 }
@@ -100,12 +101,31 @@ model Usuario {
   criadoEm         DateTime  @default(now())
   atualizadoEm     DateTime  @updatedAt
 
-  empresa    Empresa?    @relation(fields: [empresaId], references: [id])
-  professora Professora?
+  empresa       Empresa?      @relation(fields: [empresaId], references: [id])
+  professora    Professora?
+  sessoesAtivas SessaoAtiva[]
 
   @@unique([empresaId, email])
   @@index([empresaId])
   @@map("usuarios")
+}
+
+model SessaoAtiva {
+  id              String
+  usuarioId       String
+  empresaId       String
+  rota            String
+  dispositivo     String
+  criadoEm        DateTime @default(now())
+  ultimaAtividade DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@id([id, usuarioId])
+  @@index([empresaId, ultimaAtividade])
+  @@index([usuarioId])
+  @@map("sessoes_ativas")
 }
 
 enum Perfil {

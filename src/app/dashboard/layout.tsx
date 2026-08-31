@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import { ambienteAtual } from "@/lib/ambiente";
+import PresenceTracker from "@/components/PresenceTracker";
 
 export default async function DashboardLayout({
   children,
@@ -25,6 +26,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden">
+      <PresenceTracker />
       <div className="print:hidden">
         <Sidebar usuario={usuario} ambiente={ambienteAtual()} />
       </div>

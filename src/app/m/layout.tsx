@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import PresenceTracker from "@/components/PresenceTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ export default async function MobileLayout({ children }: { children: React.React
   if (!session) redirect("/login");
   return (
     <div className="min-h-screen bg-slate-100">
+      <PresenceTracker />
       {children}
     </div>
   );
