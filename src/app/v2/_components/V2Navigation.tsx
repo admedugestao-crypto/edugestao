@@ -31,7 +31,7 @@ type NavigationProps = {
 
 const items = [
   { href: "/v2", label: "Visão geral", icon: LayoutDashboard, v2: true },
-  { href: "/dashboard/agenda", label: "Agenda", icon: CalendarDays },
+  { href: "/v2/agenda", label: "Agenda", icon: CalendarDays, v2: true },
   { href: "/dashboard/alunos", label: "Alunos", icon: Users },
   { href: "/dashboard/escolas", label: "Escolas", icon: School },
   { href: "/dashboard/disciplinas", label: "Disciplinas", icon: GraduationCap },
@@ -88,7 +88,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
         <nav className={styles.nav} aria-label="Navegação principal">
           <p className={styles.navEyebrow}>Organizar o dia</p>
           {links.map(({ href, label, icon: Icon, v2 }) => {
-            const active = v2 && pathname === href;
+            const active = v2 && (pathname === href || (href !== "/v2" && pathname.startsWith(`${href}/`)));
             return (
               <Link key={href} href={href} onClick={() => setAberto(false)} className={`${styles.navItem} ${active ? styles.navItemActive : ""}`}>
                 <Icon aria-hidden="true" size={18} />
@@ -111,7 +111,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
 
       <nav className={styles.mobileNav} aria-label="Atalhos principais">
         {links.slice(0, 5).map(({ href, label, icon: Icon, v2 }) => (
-          <Link key={href} href={href} className={v2 && pathname === href ? styles.mobileNavActive : ""}>
+          <Link key={href} href={href} className={v2 && (pathname === href || (href !== "/v2" && pathname.startsWith(`${href}/`))) ? styles.mobileNavActive : ""}>
             <Icon aria-hidden="true" size={20} /><span>{label}</span>
           </Link>
         ))}

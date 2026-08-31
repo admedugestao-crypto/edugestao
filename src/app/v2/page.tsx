@@ -47,13 +47,13 @@ export default async function V2Dashboard() {
           <h1>Seu dia em <em>perspectiva.</em></h1>
           <p>Olá, {primeiroNome}. Aqui está o que merece sua atenção agora.</p>
         </div>
-        <Link href="/dashboard/agenda" className={styles.primaryAction}>Organizar agenda <ArrowUpRight aria-hidden="true" size={18} /></Link>
+        <Link href="/v2/agenda" className={styles.primaryAction}>Organizar agenda <ArrowUpRight aria-hidden="true" size={18} /></Link>
       </header>
 
       <section className={styles.focusStrip} aria-label="Resumo do dia">
         <div className={styles.focusIntro}><Sparkles aria-hidden="true" size={18} /><span>Foco de hoje</span></div>
         <strong>{aulasHoje === 0 ? "Agenda livre para planejar a semana" : `${aulasHoje} ${aulasHoje === 1 ? "aula programada" : "aulas programadas"}`}</strong>
-        <Link href="/dashboard/agenda">Ver agenda <ArrowUpRight aria-hidden="true" size={16} /></Link>
+        <Link href="/v2/agenda">Ver agenda <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </section>
 
       <section className={styles.metrics} aria-label="Indicadores principais">
@@ -64,7 +64,7 @@ export default async function V2Dashboard() {
 
       <div className={styles.contentGrid}>
         <section className={styles.scheduleCard}>
-          <div className={styles.sectionHeading}><div><span>Próximos encontros</span><h2>A agenda continua daqui</h2></div><Link href="/dashboard/agenda">Agenda completa</Link></div>
+          <div className={styles.sectionHeading}><div><span>Próximos encontros</span><h2>A agenda continua daqui</h2></div><Link href="/v2/agenda">Agenda completa</Link></div>
           {proximasAulas.length === 0 ? (
             <div className={styles.emptyState}><CalendarCheck2 aria-hidden="true" /><strong>Nenhuma aula próxima</strong><p>Use este tempo para preparar conteúdos ou organizar uma nova aula.</p></div>
           ) : (
