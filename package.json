@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "DIRECT_URL=$DATABASE_URL prisma migrate deploy && prisma generate && DATABASE_URL=${DATABASE_URL:-postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder} next build",
+    "build": "DIRECT_URL=$(node -e \"process.stdout.write(process.env.DATABASE_URL.replace(':6543', ':5432'))\") prisma migrate deploy && prisma generate && DATABASE_URL=${DATABASE_URL:-postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder} next build",
     "start": "next start",
     "lint": "eslint",
     "test:database-config": "node --experimental-strip-types --test tests/databaseConfig.test.ts",
