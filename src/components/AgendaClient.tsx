@@ -2157,8 +2157,8 @@ function TelaConflitos({
 function Modal({ titulo, onClose, children, z = "z-50" }: { titulo: string; onClose: () => void; children: React.ReactNode; z?: string }) {
   return (
     <div className={`fixed inset-0 ${z} flex items-center justify-center bg-black/30 backdrop-blur-sm p-4`}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
           <h3 className="font-semibold text-slate-800">{titulo}</h3>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
             <X size={16}/>
