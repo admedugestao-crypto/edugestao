@@ -32,7 +32,7 @@ type NavigationProps = {
 const items = [
   { href: "/v2", label: "Visão geral", icon: LayoutDashboard, v2: true },
   { href: "/v2/agenda", label: "Agenda", icon: CalendarDays, v2: true },
-  { href: "/dashboard/alunos", label: "Alunos", icon: Users },
+  { href: "/v2/alunos", label: "Alunos", icon: Users, v2: true },
   { href: "/dashboard/escolas", label: "Escolas", icon: School },
   { href: "/dashboard/disciplinas", label: "Disciplinas", icon: GraduationCap },
   { href: "/dashboard/notas", label: "Avaliações", icon: BookOpenText },
