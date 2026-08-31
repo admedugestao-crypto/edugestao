@@ -21,16 +21,11 @@ export async function POST(req: NextRequest) {
   }
 
   const agora = new Date();
-  await prisma.$transaction([
-    prisma.sessaoAtiva.deleteMany({
-      where: { ultimaAtividade: { lt: new Date(agora.getTime() - 24 * 60 * 60 * 1000) } },
-    }),
-    prisma.sessaoAtiva.upsert({
-      where: { id_usuarioId: { id: sessaoId, usuarioId: user.id } },
-      create: { id: sessaoId, usuarioId: user.id, empresaId: user.empresaId, rota, dispositivo, ultimaAtividade: agora },
-      update: { empresaId: user.empresaId, rota, dispositivo, ultimaAtividade: agora },
-    }),
-  ]);
+  await prisma.sessaoAtiva.upsert({
+    where: { id_usuarioId: { id: sessaoId, usuarioId: user.id } },
+    create: { id: sessaoId, usuarioId: user.id, empresaId: user.empresaId, rota, dispositivo, ultimaAtividade: agora },
+    update: { empresaId: user.empresaId, rota, dispositivo, ultimaAtividade: agora },
+  });
 
   return NextResponse.json({ ok: true });
 }

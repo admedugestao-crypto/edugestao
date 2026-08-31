@@ -56,7 +56,7 @@ export default function UsuariosConectadosPage() {
 
   useEffect(() => {
     const inicial = window.setTimeout(() => void carregar(), 0);
-    const intervalo = window.setInterval(carregar, 30_000);
+    const intervalo = window.setInterval(carregar, 5_000);
     return () => {
       window.clearTimeout(inicial);
       window.clearInterval(intervalo);
@@ -74,7 +74,7 @@ export default function UsuariosConectadosPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Usuários conectados</h1>
-          <p className="mt-1 text-sm text-slate-500">Atividade registrada nos últimos 2 minutos.</p>
+          <p className="mt-1 text-sm text-slate-500">Atualização automática a cada 5 segundos.</p>
         </div>
         <button onClick={() => void carregar()} disabled={carregando}
           className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
