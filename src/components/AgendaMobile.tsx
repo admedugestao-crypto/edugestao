@@ -712,7 +712,7 @@ export default function AgendaMobile({
       {/* ── Modal nova aula ──────────────────────────────────────────────── */}
       {modalAberto && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setModalAberto(false)}>
-          <div className="bg-white rounded-t-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-t-3xl px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-800">{reposicaoOrigem ? "Repor Aula" : "Nova Aula"}</h2>
               <button onClick={() => setModalAberto(false)}><X size={20} className="text-slate-400"/></button>
@@ -814,8 +814,8 @@ export default function AgendaMobile({
       {/* ── Modal detalhe da aula ─────────────────────────────────────────── */}
       {detalhe && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setDetalhe(null)}>
-          <div className="bg-white rounded-t-3xl p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-start justify-between">
+          <div className="bg-white rounded-t-3xl px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-2.5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-base font-bold text-slate-800">{detalhe.aluno.nome}</h2>
                 <p className="text-sm text-slate-500">
@@ -847,7 +847,7 @@ export default function AgendaMobile({
               const materiaTravada = !!detalhe.conteudo;
               return (
                 <div>
-                  <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
+                  <label className="text-[11px] font-medium text-slate-500 block mb-1">Matéria</label>
                   <SeletorMaterias
                     materiasDisponiveis={materiasOpcoes}
                     selecionadas={materiaDetalheIds}
@@ -862,19 +862,19 @@ export default function AgendaMobile({
             })()}
 
             <div>
-              <p className="text-xs font-medium text-slate-500 mb-2">Status</p>
+              <p className="text-[11px] font-medium text-slate-500 mb-1">Status</p>
               {(() => {
                 const dataAula = parseLocal(detalhe.data);
                 const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
                 const isFutura = dataAula > hoje;
                 return (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {(Object.keys(STATUS_CFG) as StatusAula[]).map((s) => {
                       const bloqueado = isFutura && s !== "CANCELADA";
                       return (
                         <button key={s} disabled={bloqueado || carregandoConteudo}
                           onClick={() => s === "REALIZADA" ? abrirConteudoParaRealizada(detalhe) : atualizarStatus(detalhe.id, s)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${
+                          className={`inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                             bloqueado ? "opacity-30 cursor-not-allowed bg-white border-slate-200 text-slate-400"
                             : detalhe.status === s
                               ? `${STATUS_CFG[s].bg} ${STATUS_CFG[s].cor} border-current`
@@ -930,10 +930,10 @@ export default function AgendaMobile({
 
             {/* Observação */}
             <div>
-              <label className="text-xs font-medium text-slate-500 block mb-1">Observação / conteúdo da aula</label>
+              <label className="text-[11px] font-medium text-slate-500 block mb-1">Observação / conteúdo da aula</label>
               <textarea value={obsEdit} onChange={(e) => setObsEdit(e.target.value)} rows={2}
                 placeholder="O que foi trabalhado na aula..."
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm leading-5 resize-none"/>
               {(() => {
                 const materiaTravada = !!detalhe.conteudo;
                 const idsComprometidos = detalhe.materias.map((m) => m.materia.id);
@@ -944,7 +944,7 @@ export default function AgendaMobile({
                 const obsAlterada = obsEdit !== (detalhe.observacao ?? "");
                 const semAlteracao = !materiaAlterada && !obsAlterada;
                 return (
-                  <div className="mt-1.5">
+                  <div className="mt-1">
                     <button onClick={salvarDetalhes} disabled={salvandoObs || semAlteracao}
                       className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg disabled:opacity-40">
                       {salvandoObs ? "Salvando..." : "Salvar"}
@@ -983,11 +983,11 @@ export default function AgendaMobile({
             ) : (
               <div className="flex gap-2">
                 <button onClick={() => setConfirmExcluirAula(true)}
-                  className="shrink-0 flex items-center justify-center gap-1.5 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm font-medium">
+                  className="shrink-0 flex items-center justify-center gap-1.5 border border-red-200 text-red-600 rounded-xl px-4 py-2.5 text-sm font-medium">
                   <Trash2 size={15}/>
                 </button>
                 <button onClick={() => setDetalhe(null)}
-                  className="flex-1 border border-slate-200 rounded-xl py-3 text-sm text-slate-600">
+                  className="flex-1 border border-slate-200 rounded-xl py-2.5 text-sm text-slate-600">
                   Cancelar
                 </button>
               </div>
@@ -999,7 +999,7 @@ export default function AgendaMobile({
       {/* ── Modal conteúdo (ao marcar Realizada) ───────────────────────────── */}
       {conteudoModal && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setConteudoModal(null)}>
-          <div className="bg-white rounded-t-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-t-3xl px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-800">
                 {conteudoModal.existente ? "Editar Conteúdo" : "Registrar Conteúdo"}
