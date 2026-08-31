@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -19,18 +18,20 @@ export default function PlataformaLoginPage() {
     setErro("");
     setCarregando(true);
 
-    const res = await signIn("credentials-plataforma", {
-      email,
-      password: senha,
-      redirect: false,
+    const res = await fetch("/api/plataforma/sessao", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha }),
     });
+    const data = await res.json().catch(() => ({}));
 
     setCarregando(false);
 
-    if (res?.error) {
-      setErro("E-mail ou senha incorretos.");
+    if (!res.ok) {
+      setErro(data.erro ?? "E-mail ou senha incorretos.");
     } else {
       router.push("/plataforma");
+      router.refresh();
     }
   }
 

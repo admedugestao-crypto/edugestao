@@ -38,6 +38,10 @@ export default function UsuariosConectadosPage() {
   const carregar = useCallback(async () => {
     try {
       const res = await fetch("/api/plataforma/presencas", { cache: "no-store" });
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        throw new Error("Sua sessão da Plataforma expirou. Entre novamente.");
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.erro ?? "Erro ao carregar usuários conectados.");
       setEmpresas(data.empresas);
