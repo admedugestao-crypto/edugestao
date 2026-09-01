@@ -121,7 +121,7 @@ function dataVencimentoPadrao(mes: number, ano: number) {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 export default function PagamentosClient({
-  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro,
+  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome,
 }: {
   pagamentosIniciais: PagamentoItem[];
   mesInicial:         number;
@@ -129,6 +129,7 @@ export default function PagamentosClient({
   isAdmin:            boolean;
   podeNovo?:          boolean;
   alunoFiltro?:       string | null;
+  alunoFiltroNome?:   string | null;
 }) {
   const [mes,        setMes]        = useState(mesInicial);
   const [ano,        setAno]        = useState(anoInicial);
@@ -218,9 +219,11 @@ export default function PagamentosClient({
     }
   }
 
-  // ── Busca registros para um mês ─────────────────────────────────────────
+  // ── Busca registros do mês ou o histórico completo do aluno ─────────────
   const buscarPagamentos = useCallback(async (m: number, a: number) => {
-    const url = `/api/pagamentos?mes=${m}&ano=${a}${alunoFiltro ? `&aluno=${alunoFiltro}` : ""}`;
+    const url = alunoFiltro
+      ? `/api/pagamentos?aluno=${encodeURIComponent(alunoFiltro)}`
+      : `/api/pagamentos?mes=${m}&ano=${a}`;
     const res  = await fetch(url);
     return res.json() as Promise<PagamentoItem[]>;
   }, [alunoFiltro]);
@@ -464,7 +467,7 @@ export default function PagamentosClient({
   }
 
   // ── Filtro por aluno + status (Recebido/Pendente/Atrasados) ────────────────
-  const [filtroAlunoId, setFiltroAlunoId] = useState("");
+  const [filtroAlunoId, setFiltroAlunoId] = useState(alunoFiltro ?? "");
   const [filtroStatus, setFiltroStatus] = useState<"pago" | "pendente" | "atrasado" | null>(null);
 
   const alunosDoMes = useMemo(() => {
@@ -502,12 +505,12 @@ export default function PagamentosClient({
     <div className="space-y-6">
 
       {/* Banner filtro por aluno */}
-      {alunoFiltro && pagamentosIniciais.length > 0 && (
+      {alunoFiltro && (
         <div className="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2">
             <DollarSign size={16} className="text-indigo-600" />
             <p className="text-sm font-medium text-indigo-800">
-              Exibindo pagamentos de: <strong>{pagamentosIniciais[0].aluno.nome}</strong>
+              Histórico financeiro completo de: <strong>{alunoFiltroNome ?? pagamentosIniciais[0]?.aluno.nome ?? "Aluno selecionado"}</strong>
             </p>
           </div>
           <Link
@@ -521,7 +524,7 @@ export default function PagamentosClient({
       )}
 
       {/* Navegação de mês + filtro por aluno */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-4">
+      {!alunoFiltro && <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-4">
         <button onClick={() => navMes(-1)} disabled={carregando}
           className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 shrink-0">
           <ChevronLeft size={18} className="text-slate-600" />
@@ -547,7 +550,7 @@ export default function PagamentosClient({
             <option key={a.id} value={a.id}>{a.nome}</option>
           ))}
         </select>
-      </div>
+      </div>}
 
       {/* Cards resumo — clique em Recebido/Pendente/Atrasados filtra a tabela */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -613,7 +616,9 @@ export default function PagamentosClient({
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50">
           <p className="text-xs font-medium text-slate-500">
             {pagamentos.length === 0
-              ? "Nenhuma cobrança gerada para este mês"
+              ? alunoFiltro
+                ? "Nenhuma cobrança registrada para este aluno"
+                : "Nenhuma cobrança gerada para este mês"
               : pagamentosExibidos.length === 0
               ? "Nenhuma cobrança para esse filtro"
               : `${pagamentosExibidos.length} cobrança(s)`}

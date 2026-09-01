@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { PagamentoWhereInput } from "@/generated/prisma/models/Pagamento";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { DollarSign } from "lucide-react";
@@ -6,7 +7,7 @@ import PagamentosClient from "@/components/PagamentosClient";
 
 export const dynamic = "force-dynamic";
 
-/** Busca registros reais de pagamento do mês */
+/** Busca registros reais do mês ou o histórico completo de um aluno. */
 async function buscarPagamentos(
   empresaId: string,
   mes: number, ano: number,
@@ -14,9 +15,14 @@ async function buscarPagamentos(
   alunoFiltro: string | null,
   isAdmin: boolean,
 ) {
-  const where: any = { empresaId, mes, ano };
-  if (alunoFiltro)              where.alunoId = alunoFiltro;
-  if (!isAdmin && professoraId) where.aluno   = { ...(where.aluno ?? {}), professoraId };
+  const where: PagamentoWhereInput = { empresaId };
+  if (alunoFiltro) {
+    where.alunoId = alunoFiltro;
+  } else {
+    where.mes = mes;
+    where.ano = ano;
+  }
+  if (!isAdmin && professoraId) where.aluno = { professoraId };
 
   return prisma.pagamento.findMany({
     where,
@@ -49,7 +55,7 @@ async function buscarPagamentos(
       },
     },
     orderBy: [
-      { dataVencimento: "asc" },
+      { dataVencimento: alunoFiltro ? "desc" : "asc" },
       { aluno: { nome: "asc" } },
       { parcela: "asc" },
     ],
@@ -114,6 +120,16 @@ export default async function PagamentosPage({
 
   const isAdmin    = scope.isAdmin;
   const pagamentos = await buscarPagamentos(scope.empresaId, mes, ano, professoraId, alunoFiltro, isAdmin);
+  const alunoSelecionado = alunoFiltro
+    ? await prisma.aluno.findFirst({
+        where: {
+          id: alunoFiltro,
+          empresaId: scope.empresaId,
+          ...(!isAdmin && professoraId ? { professoraId } : {}),
+        },
+        select: { nome: true },
+      })
+    : null;
 
   return (
     <div className="space-y-5">
@@ -128,6 +144,7 @@ export default async function PagamentosPage({
         isAdmin={isAdmin}
         podeNovo={isAdmin}
         alunoFiltro={alunoFiltro}
+        alunoFiltroNome={alunoSelecionado?.nome ?? null}
       />
     </div>
   );

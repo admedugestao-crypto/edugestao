@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { PagamentoWhereInput } from "@/generated/prisma/models/Pagamento";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { podeGerenciarFinanceiro } from "@/lib/permissions";
@@ -16,12 +17,19 @@ export async function GET(req: NextRequest) {
   const ano         = parseInt(searchParams.get("ano")   ?? "0");
   const alunoFiltro = searchParams.get("aluno");
 
-  if (!mes || !ano) return NextResponse.json({ erro: "mes e ano obrigatórios" }, { status: 400 });
+  if (!alunoFiltro && (!mes || !ano)) {
+    return NextResponse.json({ erro: "mes e ano obrigatórios" }, { status: 400 });
+  }
 
-  const where: any = { empresaId: scope.empresaId, mes, ano };
-  if (alunoFiltro) where.alunoId = alunoFiltro;
+  const where: PagamentoWhereInput = { empresaId: scope.empresaId };
+  if (alunoFiltro) {
+    where.alunoId = alunoFiltro;
+  } else {
+    where.mes = mes;
+    where.ano = ano;
+  }
   // Admin vê pagamentos de todos os professores; professora vê só os próprios alunos
-  if (!scope.isAdmin && scope.professoraId) where.aluno = { ...(where.aluno ?? {}), professoraId: scope.professoraId };
+  if (!scope.isAdmin && scope.professoraId) where.aluno = { professoraId: scope.professoraId };
 
   const pagamentos = await prisma.pagamento.findMany({
     where,
@@ -54,7 +62,7 @@ export async function GET(req: NextRequest) {
       },
     },
     orderBy: [
-      { dataVencimento: "asc" },
+      { dataVencimento: alunoFiltro ? "desc" : "asc" },
       { aluno: { nome: "asc" } },
       { parcela: "asc" },
     ],
