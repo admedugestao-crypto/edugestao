@@ -967,14 +967,15 @@ export default function AlunoForm({
       )}
 
       {variant === "v2" && (
-        <div className="mt-3 flex shrink-0 items-center justify-between gap-3">
-          <button type="button" onClick={() => etapa === 0 ? router.push("/v2/alunos") : setEtapa((valor) => valor - 1)} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600">
-            {etapa === 0 ? "Cancelar" : "Voltar"}
+        <div data-v2-actions className="mt-3 flex shrink-0 items-center justify-between gap-3">
+          <button type="button" onClick={() => router.push("/v2/alunos")} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600">
+            Cancelar
           </button>
           {etapa < 4 && <button type="button" onClick={() => setEtapa((valor) => valor + 1)} className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white">Continuar</button>}
+          {etapa === 4 && <button type="submit" disabled={salvando} className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60">{salvando ? "Salvando..." : alunoInicial ? "Salvar alterações" : "Cadastrar aluno"}</button>}
         </div>
       )}
-      <div className={`${variant === "v2" && etapa !== 4 ? "hidden" : ""} flex items-center gap-3 flex-wrap ${variant === "v2" ? "mt-3 shrink-0" : ""}`}>
+      <div className={`${variant === "v2" ? "hidden" : ""} flex items-center gap-3 flex-wrap`}>
         <button
           type="submit"
           disabled={salvando}
