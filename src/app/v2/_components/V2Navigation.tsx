@@ -34,7 +34,7 @@ const items = [
   { href: "/v2/agenda", label: "Agenda", icon: CalendarDays, v2: true },
   { href: "/v2/alunos", label: "Alunos", icon: Users, v2: true },
   { href: "/v2/escolas", label: "Escolas", icon: School, v2: true },
-  { href: "/dashboard/disciplinas", label: "Disciplinas", icon: GraduationCap },
+  { href: "/v2/disciplinas", label: "Disciplinas", icon: GraduationCap, v2: true },
   { href: "/dashboard/notas", label: "Avaliações", icon: BookOpenText },
   { href: "/dashboard/biblioteca", label: "Biblioteca", icon: Library },
   { href: "/dashboard/pagamentos", label: "Financeiro", icon: CircleDollarSign },
