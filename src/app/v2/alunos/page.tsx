@@ -69,7 +69,7 @@ export default async function V2AlunosPage({
           <h1>Alunos em <em>perspectiva.</em></h1>
           <span>{alunos.length} {alunos.length === 1 ? "aluno encontrado" : "alunos encontrados"}</span>
         </div>
-        <Link href="/dashboard/alunos/novo" className={styles.primaryAction}>
+        <Link href="/v2/alunos/novo" className={styles.primaryAction}>
           <Plus aria-hidden="true" size={17} /> Novo aluno
         </Link>
       </header>
@@ -96,7 +96,7 @@ export default async function V2AlunosPage({
           </div>
         </div>
         <div className={styles.studentsGrid}>
-          <AlunosTabela alunos={alunos} isAdmin={scope.isAdmin} mes={mes} ano={ano} />
+          <AlunosTabela alunos={alunos} isAdmin={scope.isAdmin} mes={mes} ano={ano} basePath="/v2/alunos" />
         </div>
       </section>
     </div>

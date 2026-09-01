@@ -125,11 +125,13 @@ export default function AlunosTabela({
   isAdmin = false,
   mes,
   ano,
+  basePath = "/dashboard/alunos",
 }: {
   alunos: Aluno[];
   isAdmin?: boolean;
   mes?: number;
   ano?: number;
+  basePath?: string;
 }) {
   const [alunos, setAlunos] = useState(alunosIniciais);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; nome: string } | null>(null);
@@ -253,11 +255,11 @@ export default function AlunosTabela({
                 {/* Ações */}
                 <td className="py-3 px-3">
                   <div className="flex gap-1 justify-end">
-                    <Link href={`/dashboard/alunos/${a.id}`}
+                    <Link href={`${basePath}/${a.id}`}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="Ver aluno">
                       <Eye size={15} />
                     </Link>
-                    <Link href={`/dashboard/alunos/${a.id}/editar`}
+                    <Link href={`${basePath}/${a.id}/editar`}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" title="Editar aluno">
                       <Pencil size={15} />
                     </Link>
