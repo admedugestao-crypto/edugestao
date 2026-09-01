@@ -47,10 +47,12 @@ export default function NotasClient({
   alunos,
   avaliacoes,
   notasIniciais,
+  variant = "default",
 }: {
   alunos: Aluno[];
   avaliacoes: Avaliacao[];
   notasIniciais: Nota[];
+  variant?: "default" | "v2";
 }) {
   const [alunoSel, setAlunoSel] = useState<string>("");
   const [notas, setNotas] = useState<Record<string, number>>(() =>
@@ -100,7 +102,7 @@ export default function NotasClient({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-v2-grades={variant === "v2" ? "true" : undefined}>
       {/* Seleção de aluno */}
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <label className="block text-xs font-medium text-slate-600 mb-2">
@@ -220,8 +222,8 @@ export default function NotasClient({
 
       {/* ── Modal Confirmar Exclusão ─────────────────────────────────────── */}
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-grade-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-grade-dialog={variant === "v2" ? "true" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
             <p className="text-sm text-slate-600">
               Tem certeza que deseja excluir a avaliação{" "}
