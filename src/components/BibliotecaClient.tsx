@@ -37,10 +37,12 @@ export default function BibliotecaClient({
   materiaisIniciais,
   materias,
   metodos,
+  variant = "default",
 }: {
   materiaisIniciais: Material[];
   materias: Materia[];
   metodos: MetodoEnsino[];
+  variant?: "default" | "v2";
 }) {
   const [materiais, setMateriais] = useState(materiaisIniciais);
   const [busca, setBusca] = useState("");
@@ -80,8 +82,10 @@ export default function BibliotecaClient({
       const res = await fetch("/api/upload", { method: "POST", body: formData });
 
       const textoResposta = await res.text();
-      let data: any = null;
-      try { data = JSON.parse(textoResposta); } catch { /* resposta nao-JSON tratada abaixo */ }
+      let data: { url: string; nome: string; erro?: string } | null = null;
+      try {
+        data = JSON.parse(textoResposta) as { url: string; nome: string; erro?: string };
+      } catch { /* resposta nao-JSON tratada abaixo */ }
 
       if (!res.ok || !data) {
         if (res.status === 413 || !data) {
@@ -198,7 +202,7 @@ export default function BibliotecaClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-v2-library={variant === "v2" ? "true" : undefined}>
       {/* Filtros */}
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex flex-wrap gap-3 items-center">
@@ -315,8 +319,8 @@ export default function BibliotecaClient({
 
       {/* Modal Novo Material */}
       {modalNovo && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-library-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Novo Material</h2>
             <div className="space-y-3">
               <div>
@@ -426,8 +430,8 @@ export default function BibliotecaClient({
 
       {/* Modal Editar Material */}
       {editando && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-library-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Material</h2>
             <div className="space-y-3">
               <div>
@@ -531,8 +535,8 @@ export default function BibliotecaClient({
 
       {/* Confirmar exclusão */}
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-library-dialog={variant === "v2" ? "confirm" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
             <p className="text-sm text-slate-600">
               Tem certeza que deseja excluir <strong>{confirmDelete.titulo}</strong>?

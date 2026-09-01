@@ -36,7 +36,7 @@ const items = [
   { href: "/v2/escolas", label: "Escolas", icon: School, v2: true },
   { href: "/v2/disciplinas", label: "Disciplinas", icon: GraduationCap, v2: true },
   { href: "/v2/avaliacoes", label: "Avaliações", icon: BookOpenText, v2: true },
-  { href: "/dashboard/biblioteca", label: "Biblioteca", icon: Library },
+  { href: "/v2/biblioteca", label: "Biblioteca", icon: Library, v2: true },
   { href: "/dashboard/pagamentos", label: "Financeiro", icon: CircleDollarSign },
   { href: "/dashboard/notificacoes", label: "Notificações", icon: Bell, adminOnly: true },
 ];
