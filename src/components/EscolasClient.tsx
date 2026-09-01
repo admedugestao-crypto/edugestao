@@ -68,9 +68,11 @@ type ConfirmDelete = { tipo: "escola"; id: string; nome: string } | { tipo: "uni
 export default function EscolasClient({
   escolasIniciais,
   metodos,
+  variant = "default",
 }: {
   escolasIniciais: Escola[];
   metodos: MetodoEnsino[];
+  variant?: "default" | "v2";
 }) {
   const [escolas, setEscolas] = useState(escolasIniciais);
   const [expandida, setExpandida] = useState<string | null>(null);
@@ -255,7 +257,7 @@ export default function EscolasClient({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-v2-schools={variant === "v2" ? "true" : undefined}>
       <button
         onClick={() => setModalEscola(true)}
         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
@@ -382,8 +384,8 @@ export default function EscolasClient({
 
       {/* ── Modal Nova Escola ───────────────────────────────────────────────── */}
       {modalEscola && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Escola</h2>
             <div className="space-y-3">
               <div>
@@ -537,8 +539,8 @@ export default function EscolasClient({
 
       {/* ── Modal Nova Unidade ──────────────────────────────────────────────── */}
       {modalUnidade && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "compact" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Unidade</h2>
             <div className="space-y-3">
               <div>
@@ -601,8 +603,8 @@ export default function EscolasClient({
 
       {/* ── Modal Editar Escola ─────────────────────────────────────────────── */}
       {editEscola && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Escola</h2>
             <div className="space-y-3">
               <div>
@@ -708,8 +710,8 @@ export default function EscolasClient({
 
       {/* ── Modal Editar Unidade ────────────────────────────────────────────── */}
       {editUnidade && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "compact" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Unidade</h2>
             <div className="space-y-3">
               <div>
@@ -771,8 +773,8 @@ export default function EscolasClient({
 
       {/* ── Modal Confirmar Exclusão ────────────────────────────────────────── */}
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-school-dialog={variant === "v2" ? "confirm" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
             <p className="text-sm text-slate-600 mb-1">
               Tem certeza que deseja excluir{" "}
