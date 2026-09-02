@@ -15,7 +15,7 @@ export async function GET() {
   const empresas = await prisma.empresa.findMany({
     orderBy: { criadoEm: "desc" },
     select: {
-      id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true,
+      id: true, nome: true, slug: true, logoUrl: true, ativo: true, criadoEm: true, prazoAlertaProvaDias: true,
       cep: true, logradouro: true, numero: true, complemento: true,
       bairro: true, cidade: true, estado: true, codigoIbge: true,
       evolutionApiUrl: true, evolutionApiInstance: true,
@@ -38,6 +38,10 @@ export async function POST(req: NextRequest) {
     empresaNome, nome, email, senha, logoUrl,
     cep, logradouro, numero, complemento, bairro, cidade, estado, codigoIbge,
   } = body;
+  const prazoAlertaProvaDias = body.prazoAlertaProvaDias === undefined ? 7 : body.prazoAlertaProvaDias;
+  if (!Number.isInteger(prazoAlertaProvaDias) || prazoAlertaProvaDias < 1 || prazoAlertaProvaDias > 365) {
+    return NextResponse.json({ erro: "Informe um prazo de alerta entre 1 e 365 dias inteiros." }, { status: 400 });
+  }
 
   if (!empresaNome || !nome || !email || !senha) {
     return NextResponse.json({ erro: "Preencha todos os campos." }, { status: 400 });
@@ -63,7 +67,7 @@ export async function POST(req: NextRequest) {
   const usuario = await prisma.$transaction(async (tx) => {
     const empresa = await tx.empresa.create({
       data: {
-        nome: empresaNome,
+        prazoAlertaProvaDias, nome: empresaNome,
         slug,
         logoUrl: typeof logoUrl === "string" ? logoUrl : null,
         cep: typeof cep === "string" ? cep.trim() || null : null,

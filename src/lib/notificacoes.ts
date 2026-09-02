@@ -65,16 +65,16 @@ export function montarMensagem(params: {
   ].join("\n");
 }
 
-// ── Busca avaliações nos próximos 30 dias (escopado a uma empresa) ──────────
-async function buscarAvaliacoes(empresaId: string) {
+// Busca avaliações dentro do prazo de alerta configurado para cada empresa.
+async function buscarAvaliacoes(empresaId: string, prazoAlertaProvaDias: number) {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
-  const em30dias = new Date(hoje);
-  em30dias.setDate(em30dias.getDate() + 30);
-  em30dias.setHours(23, 59, 59, 999);
+  const limite = new Date(hoje);
+  limite.setDate(limite.getDate() + prazoAlertaProvaDias);
+  limite.setHours(23, 59, 59, 999);
 
   return prisma.avaliacao.findMany({
-    where: { empresaId, data: { gte: hoje, lte: em30dias } },
+    where: { empresaId, data: { gte: hoje, lte: limite } },
     include: { unidade: { include: { escola: true } }, materia: true },
   });
 }
@@ -195,11 +195,11 @@ export async function processarNotificacoes(): Promise<{
   const resultado = { enviadas: 0, pendentes: [] as any[], erros: [] as string[] };
   const empresas = await prisma.empresa.findMany({
     where: { ativo: true, whatsappPausado: false },
-    select: { id: true, nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true },
+    select: { id: true, nome: true, prazoAlertaProvaDias: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true },
   });
 
   for (const empresa of empresas) {
-    const avaliacoes = await buscarAvaliacoes(empresa.id);
+    const avaliacoes = await buscarAvaliacoes(empresa.id, empresa.prazoAlertaProvaDias);
 
     for (const av of avaliacoes) {
       const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);
@@ -270,11 +270,11 @@ export async function processarNotificacoesEmail(): Promise<{
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const empresas = await prisma.empresa.findMany({
     where: { ativo: true, emailPausado: false },
-    select: { id: true, emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
+    select: { id: true, prazoAlertaProvaDias: true, emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
   });
 
   for (const empresa of empresas) {
-    const avaliacoes = await buscarAvaliacoes(empresa.id);
+    const avaliacoes = await buscarAvaliacoes(empresa.id, empresa.prazoAlertaProvaDias);
 
     for (const av of avaliacoes) {
       const dataProva = new Date(av.data); dataProva.setHours(0, 0, 0, 0);

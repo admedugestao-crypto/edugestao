@@ -9,6 +9,7 @@ type Empresa = {
   slug: string;
   logoUrl: string | null;
   ativo: boolean;
+  prazoAlertaProvaDias: number;
   criadoEm: string;
   fonnteTokenConfigurado: boolean;
   evolutionApiUrl: string | null;
@@ -33,9 +34,10 @@ type Empresa = {
 const enderecoVazio: EnderecoEmpresa = {
   cep: "", logradouro: "", numero: "", complemento: "", bairro: "", cidade: "", estado: "", codigoIbge: "",
 };
-const formVazio = { empresaNome: "", nome: "", email: "", senha: "", ...enderecoVazio };
+const formVazio = { prazoAlertaProvaDias: "7", empresaNome: "", nome: "", email: "", senha: "", ...enderecoVazio };
 const formEdicaoVazio = {
   nome: "", slug: "", ativo: true,
+  prazoAlertaProvaDias: "7",
   fonnteToken: "", evolutionApiUrl: "", evolutionApiKey: "", evolutionApiInstance: "",
   emailHost: "", emailPort: "", emailUser: "", emailPass: "", emailFrom: "",
   ...enderecoVazio,
@@ -91,7 +93,7 @@ export default function PlataformaEmpresasPage() {
       const res = await fetch("/api/plataforma/empresas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, logoUrl }),
+        body: JSON.stringify({ ...form, logoUrl, prazoAlertaProvaDias: Number(form.prazoAlertaProvaDias) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -122,6 +124,7 @@ export default function PlataformaEmpresasPage() {
     setEmpresaEditando(empresa);
     setFormEdicao({
       nome: empresa.nome, slug: empresa.slug, ativo: empresa.ativo,
+      prazoAlertaProvaDias: String(empresa.prazoAlertaProvaDias),
       fonnteToken: "",
       evolutionApiUrl: empresa.evolutionApiUrl ?? "",
       evolutionApiKey: "",
@@ -163,7 +166,7 @@ export default function PlataformaEmpresasPage() {
       const res = await fetch(`/api/plataforma/empresas/${empresaEditando.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, prazoAlertaProvaDias: Number(formEdicao.prazoAlertaProvaDias) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -357,6 +360,15 @@ export default function PlataformaEmpresasPage() {
                 />
               </div>
 
+              <div>
+                <label htmlFor="prazo-prova-nova" className="block text-sm font-medium text-slate-700 mb-1">Alertar professor a partir de (dias antes da prova)</label>
+                <input id="prazo-prova-nova" type="number" min={1} max={365} step={1} required
+                  value={form.prazoAlertaProvaDias}
+                  onChange={(e) => setForm({ ...form, prazoAlertaProvaDias: e.target.value })}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <p className="text-xs text-slate-500 mt-1">7 dias = 1 semana. Alertas por WhatsApp e e-mail até a véspera da prova.</p>
+              </div>
+
               {erro && (
                 <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erro}</p>
               )}
@@ -475,6 +487,14 @@ export default function PlataformaEmpresasPage() {
                       <option value="ativa">Ativa</option>
                       <option value="inativa">Inativa</option>
                     </select>
+                  </div>
+                  <div>
+                    <label htmlFor="prazo-prova-edicao" className="block text-sm font-medium text-slate-700 mb-1">Alertar professor a partir de (dias antes da prova)</label>
+                    <input id="prazo-prova-edicao" type="number" min={1} max={365} step={1} required
+                      value={formEdicao.prazoAlertaProvaDias}
+                      onChange={(e) => setFormEdicao({ ...formEdicao, prazoAlertaProvaDias: e.target.value })}
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    <p className="text-xs text-slate-500 mt-1">7 dias = 1 semana. Alertas por WhatsApp e e-mail até a véspera da prova.</p>
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
                     <div>
