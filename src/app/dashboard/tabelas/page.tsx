@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionScope } from "@/lib/tenant";
-import { Table2, ListChecks, ClipboardList, ChevronRight } from "lucide-react";
+import { Table2, ListChecks, ClipboardList, ChevronRight, Clock3 } from "lucide-react";
 
 const tabelas = [
   {
@@ -33,7 +33,12 @@ export default async function TabelasPage() {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tabelas.map(({ href, titulo, descricao, icon: Icon }) => (
+        {[...tabelas, ...(scope.isAdmin ? [{
+          href: "/dashboard/tabelas/disponibilidade-professores",
+          titulo: "Disponibilidade dos Professores",
+          descricao: "Horários disponíveis de cada professor para geração e validação da agenda.",
+          icon: Clock3,
+        }] : [])].map(({ href, titulo, descricao, icon: Icon }) => (
           <Link
             key={href}
             href={href}

@@ -1,11 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Eye, EyeOff, Plus, Pencil, Trash2, Camera, PlusCircle, X } from "lucide-react";
-
-type Horario = { dia: string; inicio: string; fim: string };
-
-const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+import { Eye, EyeOff, Plus, Pencil, Trash2, Camera } from "lucide-react";
 
 type Perfil = "PLATAFORMA" | "SUPERADMIN" | "PROFESSORA" | "SUPERADMIN_PROFESSORA" | "AUXILIAR";
 
@@ -25,8 +21,6 @@ const PERFIL_COR: Record<Perfil, string> = {
   AUXILIAR: "bg-amber-100 text-amber-700",
 };
 
-const PERFIS_COM_DISPONIBILIDADE: Perfil[] = ["PROFESSORA", "SUPERADMIN_PROFESSORA"];
-
 type Usuario = {
   id: string;
   nome: string;
@@ -37,7 +31,6 @@ type Usuario = {
   whatsapp: string | null;
   criadoEm: string;
   empresa: { id: string; nome: string; slug: string } | null;
-  disponibilidade: Horario[];
 };
 
 type Empresa = { id: string; nome: string; slug: string; ativo: boolean };
@@ -51,12 +44,11 @@ type FormUsuario = {
   ativo: boolean;
   foto: string;
   whatsapp: string;
-  disponibilidade: Horario[];
 };
 
 const formVazio: FormUsuario = {
   nome: "", email: "", senha: "", perfil: "PROFESSORA", empresaId: "",
-  ativo: true, foto: "", whatsapp: "", disponibilidade: [],
+  ativo: true, foto: "", whatsapp: "",
 };
 
 function Avatar({ foto, nome, size = "md" }: { foto: string | null; nome: string; size?: "sm" | "md" | "lg" }) {
@@ -119,14 +111,11 @@ export default function PlataformaUsuariosPage() {
   const [filtroEmpresa, setFiltroEmpresa] = useState("");
 
   const [modal, setModal] = useState(false);
-  const [abaModal, setAbaModal] = useState<"dados" | "disponibilidade">("dados");
   const [form, setForm] = useState<FormUsuario>(formVazio);
   const [editId, setEditId] = useState<string | null>(null);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erro, setErro] = useState("");
-  const [erroDisp, setErroDisp] = useState("");
   const [salvando, setSalvando] = useState(false);
-  const [salvandoDisp, setSalvandoDisp] = useState(false);
 
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; nome: string } | null>(null);
   const [erroDelete, setErroDelete] = useState("");
@@ -158,9 +147,7 @@ export default function PlataformaUsuariosPage() {
     setForm(formVazio);
     setEditId(null);
     setErro("");
-    setErroDisp("");
     setMostrarSenha(false);
-    setAbaModal("dados");
     setModal(true);
   }
 
@@ -174,51 +161,11 @@ export default function PlataformaUsuariosPage() {
       ativo: u.ativo,
       foto: u.foto ?? "",
       whatsapp: u.whatsapp ?? "",
-      disponibilidade: u.disponibilidade ?? [],
     });
     setEditId(u.id);
     setErro("");
-    setErroDisp("");
     setMostrarSenha(false);
-    setAbaModal("dados");
     setModal(true);
-  }
-
-  async function salvarDisponibilidade() {
-    setErroDisp("");
-    if (!editId) return;
-    for (let i = 0; i < form.disponibilidade.length; i++) {
-      const h = form.disponibilidade[i];
-      if (h.inicio >= h.fim) {
-        setErroDisp(`Hora fim deve ser maior que hora início (${h.dia}).`);
-        return;
-      }
-      for (let j = i + 1; j < form.disponibilidade.length; j++) {
-        const o = form.disponibilidade[j];
-        if (h.dia === o.dia && h.inicio < o.fim && o.inicio < h.fim) {
-          setErroDisp(`Conflito em ${h.dia}: ${h.inicio}–${h.fim} sobrepõe ${o.inicio}–${o.fim}.`);
-          return;
-        }
-      }
-    }
-    setSalvandoDisp(true);
-    try {
-      const res = await fetch(`/api/plataforma/usuarios/${editId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ disponibilidade: form.disponibilidade }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setErroDisp(data.erro ?? "Erro ao salvar.");
-        return;
-      }
-      await carregar();
-      setErroDisp("✓ Disponibilidade salva com sucesso!");
-      setTimeout(() => setErroDisp(""), 3000);
-    } finally {
-      setSalvandoDisp(false);
-    }
   }
 
   async function salvar() {
@@ -239,15 +186,6 @@ export default function PlataformaUsuariosPage() {
       setErro("Escolha a empresa para esse perfil.");
       return;
     }
-    // Na edição, permita transformar um usuário existente em professor antes
-    // de cadastrar seus horários. A API cria o vínculo de professora vazio e
-    // a disponibilidade pode ser preenchida em seguida na aba própria.
-    if (!editId && PERFIS_COM_DISPONIBILIDADE.includes(form.perfil) && form.disponibilidade.length === 0) {
-      setErro("Professor(a) deve ter pelo menos um horário de disponibilidade cadastrado.");
-      setAbaModal("disponibilidade");
-      return;
-    }
-
     setSalvando(true);
     try {
       const url = editId ? `/api/plataforma/usuarios/${editId}` : "/api/plataforma/usuarios";
@@ -262,7 +200,6 @@ export default function PlataformaUsuariosPage() {
         whatsapp: form.whatsapp,
       };
       if (form.senha) body.senha = form.senha;
-      if (!editId && PERFIS_COM_DISPONIBILIDADE.includes(form.perfil)) body.disponibilidade = form.disponibilidade;
 
       const res = await fetch(url, {
         method,
@@ -437,25 +374,8 @@ export default function PlataformaUsuariosPage() {
               <h2 className="text-lg font-bold text-slate-800 mb-4">
                 {editId ? "Editar usuário" : "Novo usuário"}
               </h2>
-              {PERFIS_COM_DISPONIBILIDADE.includes(form.perfil) && (
-                <div className="flex border-b border-slate-200 mb-5">
-                  {(["dados", "disponibilidade"] as const).map((aba) => (
-                    <button
-                      key={aba}
-                      onClick={() => setAbaModal(aba)}
-                      className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
-                        abaModal === aba ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"
-                      }`}
-                    >
-                      {aba === "dados" ? "Dados" : "Disponibilidade"}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
             <div className="px-6 pb-6">
-
-            {abaModal === "dados" && (
               <>
                 <div className="flex justify-center mb-5">
                   <FotoUpload foto={form.foto} nome={form.nome} onChange={(base64) => setForm({ ...form, foto: base64 })} />
@@ -546,71 +466,6 @@ export default function PlataformaUsuariosPage() {
                   </button>
                 </div>
               </>
-            )}
-
-            {abaModal === "disponibilidade" && (
-              <>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs text-slate-500">Horários disponíveis para atendimento por dia da semana.</p>
-                  <button type="button"
-                    onClick={() => setForm({ ...form, disponibilidade: [...form.disponibilidade, { dia: "Segunda", inicio: "08:00", fim: "12:00" }] })}
-                    className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium shrink-0 ml-3">
-                    <PlusCircle size={13}/> Adicionar
-                  </button>
-                </div>
-                {form.disponibilidade.length === 0 && (
-                  <p className="text-xs text-slate-400 italic mb-4">Nenhum horário cadastrado.</p>
-                )}
-                <div className="space-y-2 mb-4">
-                  {form.disponibilidade.map((h, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg p-2">
-                      <select value={h.dia}
-                        onChange={(e) => { const d = [...form.disponibilidade]; d[i] = { ...d[i], dia: e.target.value }; setForm({ ...form, disponibilidade: d }); }}
-                        className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
-                        {DIAS.map((d) => <option key={d} value={d}>{d}</option>)}
-                      </select>
-                      <input type="time" value={h.inicio}
-                        onChange={(e) => { const d = [...form.disponibilidade]; d[i] = { ...d[i], inicio: e.target.value }; setForm({ ...form, disponibilidade: d }); }}
-                        className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                      <span className="text-xs text-slate-400">até</span>
-                      <input type="time" value={h.fim}
-                        onChange={(e) => { const d = [...form.disponibilidade]; d[i] = { ...d[i], fim: e.target.value }; setForm({ ...form, disponibilidade: d }); }}
-                        className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                      <button type="button"
-                        onClick={() => setForm({ ...form, disponibilidade: form.disponibilidade.filter((_, j) => j !== i) })}
-                        className="text-slate-400 hover:text-red-500 transition-colors ml-auto">
-                        <X size={14}/>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                {erroDisp && (
-                  <p className={`text-sm rounded-lg px-3 py-2 mb-3 ${erroDisp.startsWith("✓") ? "text-emerald-700 bg-emerald-50" : "text-red-600 bg-red-50"}`}>
-                    {erroDisp}
-                  </p>
-                )}
-                <div className="flex gap-3">
-                  {editId ? (
-                    <>
-                      <button onClick={salvarDisponibilidade} disabled={salvandoDisp}
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors">
-                        {salvandoDisp ? "Salvando..." : "Salvar disponibilidade"}
-                      </button>
-                      <button onClick={() => { setModal(false); setErroDisp(""); }}
-                        className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
-                        Fechar
-                      </button>
-                    </>
-                  ) : (
-                    <button onClick={() => setAbaModal("dados")}
-                      className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors">
-                      Voltar para Dados
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-
             </div>
           </div>
         </div>
