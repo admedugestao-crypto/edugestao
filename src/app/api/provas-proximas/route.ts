@@ -5,7 +5,8 @@ import { getSessionScope } from "@/lib/tenant";
 export const dynamic = "force-dynamic";
 
 // GET /api/provas-proximas?professoraId=X
-// Provas nos próximos 30 dias, nas turmas (unidade+série) dos alunos ativos da professora.
+// Provas dentro do prazo de alerta configurado para a empresa, nas turmas
+// (unidade+série) dos alunos ativos da professora.
 export async function GET(req: NextRequest) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
@@ -21,8 +22,16 @@ export async function GET(req: NextRequest) {
   }
   if (!professoraId) return NextResponse.json([]);
 
+  const empresa = await prisma.empresa.findUnique({
+    where: { id: scope.empresaId },
+    select: { prazoAlertaProvaDias: true },
+  });
+  if (!empresa) return NextResponse.json([]);
+
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-  const em30dias = new Date(hoje); em30dias.setDate(em30dias.getDate() + 30); em30dias.setHours(23, 59, 59, 999);
+  const limiteAlerta = new Date(hoje);
+  limiteAlerta.setDate(limiteAlerta.getDate() + empresa.prazoAlertaProvaDias);
+  limiteAlerta.setHours(23, 59, 59, 999);
 
   const alunosProf = await prisma.aluno.findMany({
     where: { professoraId, empresaId: scope.empresaId, status: "ATIVO" },
@@ -33,7 +42,7 @@ export async function GET(req: NextRequest) {
   if (combos.length === 0) return NextResponse.json([]);
 
   const avaliacoes = await prisma.avaliacao.findMany({
-    where: { empresaId: scope.empresaId, data: { gte: hoje, lte: em30dias }, OR: combos },
+    where: { empresaId: scope.empresaId, data: { gte: hoje, lte: limiteAlerta }, OR: combos },
     select: {
       id: true, nome: true, data: true, serie: true,
       materia: { select: { nome: true, cor: true } },
