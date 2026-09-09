@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { SERIES } from "@/lib/series";
@@ -56,6 +56,14 @@ const formVazio: FormAv = { unidadeId: "", materiaId: "", serie: "", nome: "", d
 
 type Unidade = { id: string; nome: string; escola: string; periodoAvaliacao: string | null };
 
+const ERRO_DATA = "Data inválida ou incompleta. Informe uma data existente no formato dia/mês/ano (ex.: 30/11/2026), entre 2020 e 2100.";
+
+function dataValida(data: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || data < "2020-01-01" || data > "2100-12-31") return false;
+  const valor = new Date(`${data}T00:00:00.000Z`);
+  return !Number.isNaN(valor.getTime()) && valor.toISOString().slice(0, 10) === data;
+}
+
 function CamposForm({
   form,
   setForm,
@@ -69,6 +77,8 @@ function CamposForm({
   materias: Materia[];
   tipos: TipoAvaliacao[];
 }) {
+  const dataId = useId();
+  const [erroData, setErroData] = useState(false);
   return (
     <div className="space-y-3">
       <div>
@@ -160,8 +170,23 @@ function CamposForm({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
-          <input type="date" min="2020-01-01" max="2100-12-31" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label htmlFor={dataId} className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
+          <input
+            id={dataId}
+            type="date"
+            min="2020-01-01"
+            max="2100-12-31"
+            value={form.data}
+            onChange={(e) => {
+              setForm({ ...form, data: e.target.value });
+              if (erroData) setErroData(!dataValida(e.target.value));
+            }}
+            onBlur={(e) => setErroData(!dataValida(e.target.value))}
+            aria-invalid={erroData}
+            aria-describedby={erroData ? `${dataId}-erro` : undefined}
+            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${erroData ? "border-red-500" : "border-slate-200"}`}
+          />
+          {erroData && <p id={`${dataId}-erro`} role="alert" className="text-xs text-red-600 mt-1">{ERRO_DATA}</p>}
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Nota máx. *</label>
@@ -320,6 +345,10 @@ export default function CalendarioClient({
   );
 
   async function criarAvaliacao() {
+    if (!dataValida(nova.data)) {
+      setErroForm(ERRO_DATA);
+      return;
+    }
     setErroForm("");
     setSalvando(true);
     try {
@@ -343,6 +372,10 @@ export default function CalendarioClient({
 
   async function salvarAvaliacao() {
     if (!editAv) return;
+    if (!dataValida(editAv.data)) {
+      setErroForm(ERRO_DATA);
+      return;
+    }
     setErroForm("");
     setSalvando(true);
     try {
@@ -486,7 +519,7 @@ export default function CalendarioClient({
             <div className="flex gap-3 mt-5">
               <button
                 onClick={criarAvaliacao}
-                disabled={!nova.unidadeId || !nova.serie || !nova.materiaId || !nova.nome || !nova.periodo || !nova.data || !nova.notaMax || salvando}
+                disabled={!nova.unidadeId || !nova.serie || !nova.materiaId || !nova.nome || !nova.periodo || !nova.notaMax || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Criar avaliação"}
@@ -509,7 +542,7 @@ export default function CalendarioClient({
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarAvaliacao}
-                disabled={!editAv.unidadeId || !editAv.serie || !editAv.materiaId || !editAv.nome || !editAv.periodo || !editAv.data || !editAv.notaMax || salvando}
+                disabled={!editAv.unidadeId || !editAv.serie || !editAv.materiaId || !editAv.nome || !editAv.periodo || !editAv.notaMax || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Salvar"}
