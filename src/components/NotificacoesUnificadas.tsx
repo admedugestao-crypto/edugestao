@@ -159,9 +159,10 @@ function ContextMenu({
 
 // ── Componente raiz ────────────────────────────────────────────────────────────
 export default function NotificacoesUnificadas({
-  avaliacoes, historicoWhatsapp, whatsappConfigurado, provedor, whatsappPausado,
+  variant = "classic", avaliacoes, historicoWhatsapp, whatsappConfigurado, provedor, whatsappPausado,
   historicoEmail, emailAtivo, emailPausado, historicoAulas, aulasProximas, historicoConteudo,
 }: {
+  variant?: "classic" | "v2";
   avaliacoes: Avaliacao[];
   historicoWhatsapp: HistoricoWhatsapp[];
   whatsappConfigurado: boolean;
@@ -177,11 +178,11 @@ export default function NotificacoesUnificadas({
   const [aba, setAba] = useState<"whatsapp" | "email">("whatsapp");
 
   return (
-    <div className="space-y-5">
+    <div data-v2-notifications={variant === "v2" || undefined} className="space-y-5">
       {/* Abas */}
       <div className="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit">
         <button
-          onClick={() => setAba("whatsapp")}
+          aria-pressed={aba === "whatsapp"} onClick={() => setAba("whatsapp")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             aba === "whatsapp" ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"
           }`}
@@ -189,7 +190,7 @@ export default function NotificacoesUnificadas({
           <MessageSquare size={15} />WhatsApp
         </button>
         <button
-          onClick={() => setAba("email")}
+          aria-pressed={aba === "email"} onClick={() => setAba("email")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             aba === "email" ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"
           }`}
