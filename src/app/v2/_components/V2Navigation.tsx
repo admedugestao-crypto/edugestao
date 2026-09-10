@@ -2,6 +2,7 @@
 
 import {
   Bell,
+  Table2,
   ClipboardList,
   BookOpenText,
   CalendarDays,
@@ -37,6 +38,7 @@ const items = [
   { href: "/v2/escolas", label: "Escolas", icon: School, v2: true },
   { href: "/v2/disciplinas", label: "Disciplinas", icon: GraduationCap, v2: true },
   { href: "/v2/avaliacoes", label: "Avaliações", icon: BookOpenText, v2: true },
+  { href: "/v2/tabelas", label: "Tabelas", icon: Table2, v2: true },
   { href: "/v2/notas", label: "Notas", icon: ClipboardList, v2: true },
   { href: "/v2/biblioteca", label: "Biblioteca", icon: Library, v2: true },
   { href: "/v2/pagamentos", label: "Financeiro", icon: CircleDollarSign, v2: true },
