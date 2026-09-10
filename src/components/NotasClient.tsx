@@ -59,6 +59,7 @@ export default function NotasClient({
     Object.fromEntries(notasIniciais.map((n) => [`${n.alunoId}-${n.avaliacaoId}-${n.materiaId}`, n.valor]))
   );
   const [salvando, setSalvando] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ key: string; erro: boolean; texto: string } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; nome: string } | null>(null);
   const [erroDelete, setErroDelete] = useState("");
   const [excluindo, setExcluindo] = useState(false);
@@ -75,14 +76,29 @@ export default function NotasClient({
   async function salvarNota(avaliacaoId: string, materiaId: string) {
     const key = notaKey(avaliacaoId, materiaId);
     const valor = notas[key];
-    if (valor === undefined) return;
+    const max = avaliacoes.find((av) => av.id === avaliacaoId)?.notaMax;
+    if (!Number.isFinite(valor) || valor < 0 || max === undefined || valor > max) {
+      setFeedback({ key, erro: true, texto: `Informe uma nota entre 0 e ${max ?? 0}.` });
+      return;
+    }
     setSalvando(key);
-    await fetch("/api/notas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ alunoId: alunoSel, avaliacaoId, materiaId, valor }),
-    });
-    setSalvando(null);
+    setFeedback(null);
+    try {
+      const res = await fetch("/api/notas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ alunoId: alunoSel, avaliacaoId, materiaId, valor }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.erro ?? "Não foi possível salvar a nota.");
+      }
+      setFeedback({ key, erro: false, texto: "Nota salva." });
+    } catch (error) {
+      setFeedback({ key, erro: true, texto: error instanceof Error ? error.message : "Falha de conexão. Tente novamente." });
+    } finally {
+      setSalvando(null);
+    }
   }
 
   async function excluirAvaliacao() {
@@ -109,6 +125,7 @@ export default function NotasClient({
           Selecionar aluno
         </label>
         <select
+          aria-label="Selecionar aluno"
           value={alunoSel}
           onChange={(e) => setAlunoSel(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -139,7 +156,7 @@ export default function NotasClient({
                 Nenhuma avaliação prevista no calendário para esta unidade / série.
               </p>
               <Link
-                href="/dashboard/calendario"
+                href={variant === "v2" ? "/v2/avaliacoes" : "/dashboard/calendario"}
                 className="text-indigo-600 hover:underline text-sm font-medium"
               >
                 Ir para o Calendário de Provas →
@@ -180,25 +197,34 @@ export default function NotasClient({
                           <td key={materia.id} className="py-2 px-3 text-center">
                             <div className="flex items-center gap-1 justify-center">
                               <input
+                                aria-label={`Nota de ${materia.nome} em ${av.nome}`}
                                 type="number"
                                 min={0}
                                 max={av.notaMax}
                                 step={0.1}
                                 value={val ?? ""}
-                                onChange={(e) =>
-                                  setNotas({ ...notas, [key]: parseFloat(e.target.value) })
-                                }
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setFeedback(null);
+                                  setNotas((prev) => {
+                                    const next = { ...prev };
+                                    if (value === "") delete next[key];
+                                    else next[key] = Number(value);
+                                    return next;
+                                  });
+                                }}
                                 className="w-16 text-center border border-slate-200 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                               />
                               <button
                                 onClick={() => salvarNota(av.id, materia.id)}
-                                disabled={salvando === key}
+                                disabled={salvando !== null}
                                 className="p-1 rounded text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
                                 title="Salvar nota"
                               >
                                 <Save size={13} />
                               </button>
                             </div>
+                            {feedback?.key === key && <p role={feedback.erro ? "alert" : "status"} className={`mt-1 text-xs ${feedback.erro ? "text-red-600" : "text-emerald-700"}`}>{feedback.texto}</p>}
                           </td>
                         );
                       })}
