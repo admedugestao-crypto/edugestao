@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState } from "react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -161,7 +163,7 @@ function CamposForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
-          <input type="date" min="2020-01-01" max="2100-12-31" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <DateInput required type="date" min="2020-01-01" max="2100-12-31" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Nota máx. *</label>

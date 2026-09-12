@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -318,7 +320,7 @@ function CamposFormMobile({
 
       <div>
         <label className="text-xs font-medium text-slate-500 block mb-1">Data *</label>
-        <input type="date" value={form.data}
+        <DateInput required type="date" value={form.data}
           onChange={(e) => {
             const hoje = new Date().toISOString().split("T")[0];
             const futuro = e.target.value > hoje;

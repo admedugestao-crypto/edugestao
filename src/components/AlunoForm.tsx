@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -253,7 +255,7 @@ export default function AlunoForm({
       setExcluindo(false);
       return;
     }
-    window.location.href = "/dashboard/alunos";
+    window.location.href = variant === "v2" ? "/v2/alunos" : "/dashboard/alunos";
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -417,7 +419,7 @@ export default function AlunoForm({
             <label className="block text-xs font-medium text-slate-600 mb-1">
               Data de nascimento *
             </label>
-            <input
+            <DateInput
               name="dataNascimento"
               type="date"
               required
@@ -909,7 +911,7 @@ export default function AlunoForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Data de início *</label>
-            <input
+            <DateInput
               type="date"
               name="dataInicioContrato"
               value={dataInicio}
@@ -922,7 +924,7 @@ export default function AlunoForm({
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Data de término *</label>
-            <input
+            <DateInput
               type="date"
               name="dataFimContrato"
               value={dataFim}

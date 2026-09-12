@@ -80,6 +80,7 @@ export default async function V2AgendaPage() {
 
       <section className={styles.agendaSurface} aria-label="Calendário de aulas">
         <AgendaClient
+          conteudosPath="/v2/conteudos"
           alunos={alunos.map((aluno) => ({ ...aluno, materias: aluno.materias.map((item) => item.materia) }))}
           materias={materias}
           professoras={professoras.map((professora) => ({ id: professora.id, nome: professora.usuario.nome }))}

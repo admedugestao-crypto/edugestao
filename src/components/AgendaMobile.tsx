@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { format, addDays, addMonths, endOfMonth, endOfWeek, isSameDay, isSameMonth, isToday, startOfMonth, startOfWeek } from "date-fns";
@@ -753,7 +755,7 @@ export default function AgendaMobile({
 
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">Data *</label>
-              <input type="date" value={novaAula.data} onChange={(e) => setNovaAula((p) => ({ ...p, data: e.target.value }))}
+              <DateInput required type="date" value={novaAula.data} onChange={(e) => setNovaAula((p) => ({ ...p, data: e.target.value }))}
                 className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
             </div>
 

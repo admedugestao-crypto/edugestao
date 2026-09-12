@@ -1,0 +1,21 @@
+.page { height:100dvh; display:flex; flex-direction:column; padding:32px 36px; min-width:0; overflow:hidden; color:#172440; }
+.header { flex:none; margin-bottom:24px; }
+.header h1 { font-size:clamp(28px,3vw,44px); font-weight:750; letter-spacing:-.04em; line-height:1.15; }
+.header p { margin-top:12px; color:#6b7b95; font-size:14px; }
+.page :global([data-v2-content]) { display:flex; flex-direction:column; gap:16px; flex:1; min-height:0; }
+.page :global([data-v2-content]>*) { margin-block:0; flex-shrink:0; }
+.page :global([data-v2-content]>button) { align-self:flex-start; min-height:46px; padding:12px 20px; border-radius:14px; background:#315bf4; }
+.page :global([data-v2-content]>div:not([data-content-list]):not(.fixed)) { border-radius:18px; }
+.page :global([data-content-list]) { flex:1; min-height:0; overflow:auto; padding-right:6px; }
+.page :global([data-content-list]>div) { border-radius:18px; padding:18px; border-color:#dce4f0; }
+.page :global([data-v2-content] input),.page :global([data-v2-content] select) { min-height:40px; }
+.page :global([data-v2-content]>.fixed) { background:#0b1730a8; backdrop-filter:blur(4px); }
+.page :global([data-v2-content]>.fixed>div) { max-height:calc(100dvh - 32px); border-radius:20px; }
+.page :global(button:focus-visible),.page :global(a:focus-visible) { outline:2px solid #315bf4; outline-offset:3px; }
+@media(max-width:720px) {
+ .page { height:calc(100dvh - 126px); padding:16px 12px; }
+ .header { margin-bottom:14px; }.header p { font-size:12px; line-height:1.5; }
+ .page :global([data-v2-content]) { gap:10px; }
+ .page :global([data-content-list]>div) { padding:12px; }
+ .page :global([data-v2-content]>.fixed) { padding:12px; }
+}

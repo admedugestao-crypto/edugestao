@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -129,8 +131,9 @@ function subtrairOcupados(
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function AgendaClient({
   alunos, materias, professoras = [], isProfessor = true,
-  disponibilidades = [], professoraIdSessao = "",
+  disponibilidades = [], professoraIdSessao = "", conteudosPath = "/dashboard/conteudos",
 }: {
+  conteudosPath?: string;
   alunos: AlunoOpt[];
   materias: Materia[];
   professoras?: ProfessoraOpt[];
@@ -592,7 +595,7 @@ export default function AgendaClient({
         materiaIds: materiaIdsParaConteudo.join(","),
         data:       aulaDetalhe.data.split("T")[0],
       });
-      router.push(`/dashboard/conteudos?${params.toString()}`);
+      router.push(`${conteudosPath}?${params.toString()}`);
       return;
     }
     setErroStatus(null);
@@ -1331,7 +1334,7 @@ export default function AgendaClient({
             </div>
             <div>
               <label className="text-xs font-medium text-slate-600">Data *</label>
-              <input type="date" value={novaAula.data} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, data: e.target.value })); }}
+              <DateInput required type="date" value={novaAula.data} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, data: e.target.value })); }}
                 className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -1502,12 +1505,12 @@ export default function AgendaClient({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-600">Data início</label>
-                <input type="date" value={limparInicio} onChange={(e) => setLimparInicio(e.target.value)}
+                <DateInput required type="date" value={limparInicio} onChange={(e) => setLimparInicio(e.target.value)}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"/>
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-600">Data fim</label>
-                <input type="date" value={limparFim} onChange={(e) => setLimparFim(e.target.value)}
+                <DateInput required type="date" value={limparFim} onChange={(e) => setLimparFim(e.target.value)}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"/>
               </div>
             </div>

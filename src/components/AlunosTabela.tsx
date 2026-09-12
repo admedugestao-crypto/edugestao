@@ -263,7 +263,7 @@ export default function AlunosTabela({
                       className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" title="Editar aluno">
                       <Pencil size={15} />
                     </Link>
-                    <Link href={`/dashboard/pagamentos?aluno=${a.id}`}
+                    <Link href={`${basePath === "/v2/alunos" ? "/v2/pagamentos" : "/dashboard/pagamentos"}?aluno=${a.id}`}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Pagamentos do aluno">
                       <DollarSign size={15} />
                     </Link>

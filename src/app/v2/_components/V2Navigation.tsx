@@ -40,6 +40,7 @@ const items = [
   { href: "/v2/avaliacoes", label: "Avaliações", icon: BookOpenText, v2: true },
   { href: "/v2/tabelas", label: "Tabelas", icon: Table2, v2: true },
   { href: "/v2/notas", label: "Notas", icon: ClipboardList, v2: true },
+  { href: "/v2/conteudos", label: "Conteúdos", icon: BookOpenText, v2: true },
   { href: "/v2/biblioteca", label: "Biblioteca", icon: Library, v2: true },
   { href: "/v2/pagamentos", label: "Financeiro", icon: CircleDollarSign, v2: true },
   { href: "/v2/notificacoes", label: "Notificações", icon: Bell, adminOnly: true, v2: true },

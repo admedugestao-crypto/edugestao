@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState } from "react";
 import { Plus, ChevronDown, ChevronRight, MapPin, Building2, Pencil, Trash2, CalendarRange } from "lucide-react";
 
@@ -431,7 +433,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo1Inicio}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo1Inicio: e.target.value })}
@@ -440,7 +442,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo1Fim}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo1Fim: e.target.value })}
@@ -451,7 +453,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo2Inicio}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo2Inicio: e.target.value })}
@@ -460,7 +462,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo2Fim}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo2Fim: e.target.value })}
@@ -648,7 +650,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo1Inicio}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo1Inicio: e.target.value })}
@@ -657,7 +659,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo1Fim}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo1Fim: e.target.value })}
@@ -668,7 +670,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo2Inicio}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo2Inicio: e.target.value })}
@@ -677,7 +679,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo2Fim}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo2Fim: e.target.value })}
