@@ -181,3 +181,5 @@
   .dashboard .metrics article { padding-top:11px; padding-bottom:11px; }
   .dashboard .scheduleCard,.dashboard .quickCard { padding-top:12px; padding-bottom:12px; }
 }
+.companyLogoButton { flex:none; width:34px; height:34px; display:grid; place-items:center; border:1px solid #ffffff30; border-radius:8px; background:#ffffff0d; cursor:pointer; color:white; }
+.companyLogoButton:hover { border-color:var(--mint); }.companyLogoButton:focus-visible { outline:2px solid var(--mint); outline-offset:3px; }

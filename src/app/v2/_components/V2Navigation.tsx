@@ -23,6 +23,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import styles from "../v2.module.css";
+import CompanyLogoEditor from "./CompanyLogoEditor";
 
 type NavigationProps = {
   ambiente: "Produção" | "Desenvolvimento";
@@ -53,12 +54,16 @@ function iniciais(nome: string) {
 export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }: NavigationProps) {
   const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
+  const [editingLogo, setEditingLogo] = useState(false);
+  const [savedLogo, setSavedLogo] = useState<string | null>(null);
+  const logoUrl = savedLogo ?? empresaLogoUrl;
   const isAdmin = usuario.perfil === "SUPERADMIN" || usuario.perfil === "SUPERADMIN_PROFESSORA";
 
   const links = items.filter((item) => !item.adminOnly || isAdmin);
 
   return (
     <>
+      {editingLogo && <CompanyLogoEditor url={logoUrl} nome={empresaNome} onClose={() => setEditingLogo(false)} onSaved={setSavedLogo} />}
       <header className={styles.mobileHeader}>
         <button className={styles.iconButton} onClick={() => setAberto(true)} aria-label="Abrir menu">
           <Menu aria-hidden="true" size={21} />
@@ -82,7 +87,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
         </div>
 
         <div className={styles.companyBlock}>
-          {empresaLogoUrl ? <Image src={empresaLogoUrl} alt="" width={30} height={30} unoptimized className={styles.companyLogo} /> : null}
+          {isAdmin ? <button type="button" className={styles.companyLogoButton} aria-label="Ajustar ícone da empresa" title="Ajustar ícone da empresa" onClick={() => setEditingLogo(true)}>{logoUrl ? <Image src={logoUrl} alt="" width={30} height={30} unoptimized className={styles.companyLogo} /> : iniciais(empresaNome)}</button> : logoUrl ? <Image src={logoUrl} alt="" width={30} height={30} unoptimized className={styles.companyLogo} /> : null}
           <div className={styles.companyCopy}>
             <span>Espaço de trabalho</span>
             <strong>{empresaNome}</strong>
