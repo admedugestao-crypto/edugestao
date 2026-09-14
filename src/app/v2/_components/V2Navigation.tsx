@@ -38,6 +38,7 @@ const items = [
   { href: "/v2/alunos", label: "Alunos", icon: Users, v2: true },
   { href: "/v2/escolas", label: "Escolas", icon: School, v2: true },
   { href: "/v2/disciplinas", label: "Disciplinas", icon: GraduationCap, v2: true },
+  { href: "/v2/calendario", label: "Calendário", icon: CalendarDays, v2: true },
   { href: "/v2/avaliacoes", label: "Avaliações", icon: BookOpenText, v2: true },
   { href: "/v2/tabelas", label: "Tabelas", icon: Table2, v2: true },
   { href: "/v2/notas", label: "Notas", icon: ClipboardList, v2: true },
