@@ -235,6 +235,15 @@ export default function AlunoForm({
   function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 2 * 1024 * 1024) {
+        e.target.value = "";
+        if (fotoPreview?.startsWith("blob:")) URL.revokeObjectURL(fotoPreview);
+        setFotoPreview(alunoInicial?.fotoUrl ?? null);
+        setErro("Selecione uma foto JPG, PNG ou WebP de até 2 MB.");
+        return;
+      }
+      setErro("");
+      if (fotoPreview?.startsWith("blob:")) URL.revokeObjectURL(fotoPreview);
       setFotoPreview(URL.createObjectURL(file));
     }
   }
@@ -383,13 +392,13 @@ export default function AlunoForm({
             >
               {fotoPreview ? "Trocar foto" : "Adicionar foto"}
             </button>
-            <p className="text-xs text-slate-500 mt-1">JPG ou PNG, máx. 2MB</p>
+            <p className="text-xs text-slate-500 mt-1">JPG, PNG ou WebP, máx. 2 MB</p>
           </div>
           <input
             ref={fileRef}
             type="file"
             name="foto"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             onChange={handleFoto}
             className="hidden"
           />

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope, scopeWhere } from "@/lib/tenant";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { salvarFotoAluno, descartarFotoAluno, FotoAlunoInvalida } from "@/lib/foto-aluno";
 import { parseDataLocal } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -57,20 +56,13 @@ export async function POST(req: NextRequest) {
   }
 
   let fotoUrl: string | null = null;
-  const foto = form.get("foto") as File | null;
-  if (foto && foto.size > 0) {
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "alunos");
-    await mkdir(uploadDir, { recursive: true });
-    const filename = `${Date.now()}-${foto.name.replace(/\s+/g, "_")}`;
-    const buffer = Buffer.from(await foto.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), buffer);
-    fotoUrl = `/uploads/alunos/${filename}`;
-  }
+
 
   const materias: string[] = JSON.parse((form.get("materias") as string) || "[]");
   const dataNasc = form.get("dataNascimento") as string;
 
   try {
+    fotoUrl = (await salvarFotoAluno(form.get("foto"), scope.empresaId)) ?? null;
     const aluno = await prisma.aluno.create({
       data: {
         empresaId: scope.empresaId,
@@ -109,7 +101,9 @@ export async function POST(req: NextRequest) {
       valorCobranca: aluno.valorCobranca != null ? Number(aluno.valorCobranca) : null,
     }, { status: 201 });
   } catch (err: any) {
+    await descartarFotoAluno(fotoUrl);
+    if (err instanceof FotoAlunoInvalida) return NextResponse.json({ erro: err.message }, { status: 400 });
     console.error("[POST /api/alunos]", err);
-    return NextResponse.json({ erro: err?.message ?? "Erro interno ao salvar aluno." }, { status: 500 });
+    return NextResponse.json({ erro: "Não foi possível salvar o aluno. Tente novamente. Se enviou uma foto, verifique o arquivo ou tente salvar sem ela." }, { status: 500 });
   }
 }
