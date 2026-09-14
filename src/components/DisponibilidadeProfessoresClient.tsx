@@ -21,6 +21,19 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
     setMensagem("");
   }
 
+  async function removerHorario(indice: number) {
+    if (!professora) return;
+    const horarios = professora.disponibilidade.filter((_, i) => i !== indice);
+    setSalvando(true); setMensagem("");
+    try {
+      const res = await fetch("/api/professoras/" + professora.id + "/disponibilidade", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ disponibilidade: horarios, validarApenas: true }) });
+      const data = await res.json();
+      if (!res.ok) { setMensagem(data.erro || "Não foi possível remover o horário."); return; }
+      alterar(horarios);
+    } catch { setMensagem("Falha de conexão. O horário não foi removido."); }
+    finally { setSalvando(false); }
+  }
+
   async function salvar() {
     if (!professora) return;
     setSalvando(true);
@@ -74,7 +87,7 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
               <input aria-label={`Início da faixa ${i + 1}`} disabled={salvando} type="time" value={h.inicio} onChange={(e) => alterar(professora.disponibilidade.map((item, j) => j === i ? { ...item, inicio: e.target.value } : item))} className="border border-slate-200 rounded-lg px-2 py-2 text-sm" />
               <span className="text-sm text-slate-400">até</span>
               <input aria-label={`Fim da faixa ${i + 1}`} disabled={salvando} type="time" value={h.fim} onChange={(e) => alterar(professora.disponibilidade.map((item, j) => j === i ? { ...item, fim: e.target.value } : item))} className="border border-slate-200 rounded-lg px-2 py-2 text-sm" />
-              <button type="button" aria-label="Remover horário" disabled={salvando} onClick={() => alterar(professora.disponibilidade.filter((_, j) => j !== i))} className="text-slate-400 hover:text-red-600 flex justify-center"><Trash2 size={16} /></button>
+              <button type="button" aria-label="Remover horário" disabled={salvando} onClick={() => removerHorario(i)} className="text-slate-400 hover:text-red-600 flex justify-center"><Trash2 size={16} /></button>
             </div>
           ))}
         </div>
