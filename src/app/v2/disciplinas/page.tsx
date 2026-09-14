@@ -1,7 +1,7 @@
 import DisciplinasClient from "@/components/DisciplinasClient";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
-import { BookOpenCheck, GraduationCap, Palette } from "lucide-react";
+import { GraduationCap, Palette } from "lucide-react";
 import { redirect } from "next/navigation";
 import styles from "../v2.module.css";
 
@@ -29,7 +29,6 @@ export default async function V2DisciplinasPage() {
         </div>
         <div className={styles.subjectsSummary} aria-label="Resumo das disciplinas">
           <span><Palette aria-hidden="true" size={16} /><b>{materias.length}</b> cadastradas</span>
-          <span><BookOpenCheck aria-hidden="true" size={16} /><b>{minhasIds.length}</b> ativas</span>
         </div>
       </header>
 

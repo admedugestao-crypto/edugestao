@@ -109,7 +109,7 @@ export default function DisciplinasClient({
     <div className="space-y-4" data-v2-subjects={variant === "v2" ? "true" : undefined}>
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
-          Clique no nome para ativar / desativar
+          Selecione as disciplinas que você leciona
         </p>
         <div className="flex flex-wrap gap-2">
           {materias.map((m) => {
@@ -171,10 +171,10 @@ export default function DisciplinasClient({
 
       <div className="bg-indigo-50 rounded-xl border border-indigo-100 p-4">
         <p className="text-sm font-medium text-indigo-800">
-          {minhasIds.size} disciplina{minhasIds.size !== 1 ? "s" : ""} ativa{minhasIds.size !== 1 ? "s" : ""}
+          {minhasIds.size} disciplina{minhasIds.size !== 1 ? "s" : ""} vinculada{minhasIds.size !== 1 ? "s" : ""} ao seu perfil
         </p>
         <p className="text-xs text-indigo-600 mt-0.5">
-          Essas disciplinas aparecerão ao cadastrar novos alunos.
+          Clique no nome para incluir ou remover a disciplina do seu perfil de professor.
         </p>
       </div>
 
