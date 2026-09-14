@@ -25,7 +25,7 @@ export default async function V2DisciplinasPage() {
         <div>
           <p><GraduationCap aria-hidden="true" size={15} /> Mapa curricular</p>
           <h1>Disciplinas com <em>identidade.</em></h1>
-          <span>Escolha o que você leciona e reconheça cada matéria pela própria cor.</span>
+          <span>Cadastre as disciplinas e defina uma cor para identificar cada matéria.</span>
         </div>
         <div className={styles.subjectsSummary} aria-label="Resumo das disciplinas">
           <span><Palette aria-hidden="true" size={16} /><b>{materias.length}</b> cadastradas</span>

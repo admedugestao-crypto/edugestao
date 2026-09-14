@@ -109,15 +109,15 @@ export default function DisciplinasClient({
     <div className="space-y-4" data-v2-subjects={variant === "v2" ? "true" : undefined}>
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
-          Selecione as disciplinas que você leciona
+          {variant === "v2" ? "Disciplinas cadastradas" : "Selecione as disciplinas que você leciona"}
         </p>
         <div className="flex flex-wrap gap-2">
           {materias.map((m) => {
-            const ativa = minhasIds.has(m.id);
+            const ativa = variant !== "v2" && minhasIds.has(m.id);
             return (
               <div key={m.id} className="flex items-center gap-0.5">
                 <button
-                  onClick={() => toggleMateria(m.id)}
+                  onClick={() => variant === "v2" ? (setErroEdit(""), setEditMateria({ ...m })) : toggleMateria(m.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-l-full text-sm font-medium border transition-all ${
                     ativa
                       ? "text-white border-transparent"
@@ -169,7 +169,7 @@ export default function DisciplinasClient({
         </div>
       </div>
 
-      <div className="bg-indigo-50 rounded-xl border border-indigo-100 p-4">
+      {variant !== "v2" && <div className="bg-indigo-50 rounded-xl border border-indigo-100 p-4">
         <p className="text-sm font-medium text-indigo-800">
           {minhasIds.size} disciplina{minhasIds.size !== 1 ? "s" : ""} vinculada{minhasIds.size !== 1 ? "s" : ""} ao seu perfil
         </p>
@@ -178,6 +178,7 @@ export default function DisciplinasClient({
         </p>
       </div>
 
+      }
       {/* ── Modal Nova Disciplina ─────────────────────────────────────────── */}
       {modal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-subject-modal={variant === "v2" ? "true" : undefined}>

@@ -15,15 +15,18 @@ export default async function DisponibilidadeProfessoresPage() {
   const professoras = await prisma.professora.findMany({
     where: { empresaId: scope.empresaId, usuario: { ativo: true } },
     orderBy: { usuario: { nome: "asc" } },
-    select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } },
+    select: { id: true, materias: { select: { materiaId: true } }, disponibilidade: true, usuario: { select: { nome: true } } },
   });
+
+  const materias = await prisma.materia.findMany({ where: { empresaId: scope.empresaId }, select: { id: true, nome: true }, orderBy: { nome: "asc" } });
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}><div><h1>Disponibilidade dos Professores</h1><p>Defina os dias e horários usados na geração e validação da agenda.</p></div><Link href="/v2/tabelas">Voltar às tabelas</Link></header>
+      <header className={styles.header}><div><h1>Disciplinas e disponibilidade dos professores</h1><p>Defina as disciplinas lecionadas e os horários disponíveis de cada professor.</p></div><Link href="/v2/tabelas">Voltar às tabelas</Link></header>
       <section className={styles.content} aria-label="Disponibilidade dos Professores">
-      <DisponibilidadeProfessoresClient professorasIniciais={professoras.map((p) => ({
+      <DisponibilidadeProfessoresClient materias={materias} professorasIniciais={professoras.map((p) => ({
         id: p.id,
+        materiaIds: p.materias.map(m => m.materiaId),
         nome: p.usuario.nome,
         disponibilidade: Array.isArray(p.disponibilidade) ? p.disponibilidade as { dia: string; inicio: string; fim: string }[] : [],
       }))} />

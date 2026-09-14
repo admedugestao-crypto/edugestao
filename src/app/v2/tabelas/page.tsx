@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const tabelas = [
   { slug: "metodos-ensino", titulo: "Métodos de Ensino", descricao: "Organize os métodos usados nos materiais da Biblioteca.", icon: ListChecks, admin: false },
   { slug: "tipos-avaliacao", titulo: "Tipos de Avaliação", descricao: "Defina os tipos disponíveis no cadastro de avaliações.", icon: ClipboardList, admin: false },
-  { slug: "disponibilidade-professores", titulo: "Disponibilidade dos Professores", descricao: "Configure os dias e horários de cada professor para a agenda.", icon: Clock3, admin: true },
+  { slug: "disponibilidade-professores", titulo: "Disciplinas e disponibilidade dos professores", descricao: "Configure os dias e horários de cada professor para a agenda.", icon: Clock3, admin: true },
 ];
 
 export default async function TabelasPage() {

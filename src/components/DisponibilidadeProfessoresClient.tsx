@@ -1,13 +1,15 @@
 "use client";
 
+import DisciplinasProfessor from "./DisciplinasProfessor";
+
 import { useState } from "react";
 import { Plus, Save, Trash2 } from "lucide-react";
 
 type Horario = { dia: string; inicio: string; fim: string };
-type Professora = { id: string; nome: string; disponibilidade: Horario[] };
+type Professora = { id: string; nome: string; disponibilidade: Horario[]; materiaIds?: string[] };
 const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
-export default function DisponibilidadeProfessoresClient({ professorasIniciais }: { professorasIniciais: Professora[] }) {
+export default function DisponibilidadeProfessoresClient({ professorasIniciais, materias }: { professorasIniciais: Professora[]; materias?: { id: string; nome: string }[] }) {
   const [professoras, setProfessoras] = useState(professorasIniciais);
   const [professoraId, setProfessoraId] = useState(professorasIniciais[0]?.id ?? "");
   const [salvando, setSalvando] = useState(false);
@@ -49,6 +51,7 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais }
         </select>
       </div>
 
+      {materias && professoras.map(p => <div key={p.id} hidden={p.id !== professoraId}><DisciplinasProfessor professoraId={p.id} materias={materias} iniciais={p.materiaIds ?? []}/></div>)}
       <div data-availability-actions className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold text-slate-800">Horários disponíveis</h2>
