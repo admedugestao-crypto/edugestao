@@ -44,6 +44,13 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   });
   if (!professoraOk) return NextResponse.json({ erro: "Professora não encontrada." }, { status: 404 });
 
+  const alunosVinculados = await prisma.aluno.count({
+    where: { empresaId: scope.empresaId, professoraId, materias: { some: { materiaId } } },
+  });
+  if (alunosVinculados > 0) {
+    return NextResponse.json({ erro: `Não é possível remover esta disciplina do professor: ela está vinculada a ${alunosVinculados} aluno(s) dele. Atualize os vínculos desses alunos antes de remover a disciplina.` }, { status: 409 });
+  }
+
   await prisma.professoraMateria.deleteMany({
     where: { professoraId, materiaId },
   });
