@@ -33,6 +33,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
   }
 
+  const unidades = body.unidades;
+  if (unidades !== undefined) {
+    if (!Array.isArray(unidades) || unidades.some((u: { id?: unknown; nome?: unknown }) => !u || typeof u.id !== "string" || typeof u.nome !== "string" || !u.nome.trim())) return NextResponse.json({ erro: "Informe o nome de cada unidade." }, { status: 400 });
+    const ids = unidades.map((u: { id: string }) => u.id);
+    const count = await prisma.unidade.count({ where: { id: { in: ids }, escolaId: id, empresaId: scope.empresaId } });
+    if (count !== ids.length) return NextResponse.json({ erro: "Unidade inválida para esta escola." }, { status: 400 });
+    if (unidades.some((u: Record<string, unknown>) => ["cidade", "estado", "turno"].some(k => u[k] != null && typeof u[k] !== "string"))) return NextResponse.json({ erro: "Dados da unidade inválidos." }, { status: 400 });
+  }
   const escola = await prisma.escola.update({
     where: { id },
     data: {
@@ -41,6 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       metodoId: body.metodoId || null,
       periodoAvaliacao: body.periodoAvaliacao || null,
       ...datas,
+      ...(unidades !== undefined && { unidades: { update: unidades.map((u: { id: string; nome: string; cidade?: string; estado?: string; turno?: string }) => ({ where: { id: u.id }, data: { nome: u.nome.trim(), cidade: u.cidade || null, estado: u.estado || null, turno: u.turno || null } })) } }),
     },
     include: { unidades: { orderBy: { nome: "asc" } }, metodoEnsino: true },
   });

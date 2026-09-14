@@ -96,7 +96,9 @@ export default function EscolasClient({
   const [novaUnidade, setNovaUnidade] = useState({ nome: "", cidade: "", estado: "", turno: "" });
 
   // modais editar
+  const [erroSalvarEscola, setErroSalvarEscola] = useState("");
   const [editEscola, setEditEscola] = useState<{
+    unidades: Unidade[];
     id: string;
     nome: string;
     rede: string;
@@ -175,11 +177,14 @@ export default function EscolasClient({
   async function salvarEscola() {
     if (!editEscola) return;
     setSalvando(true);
+    setErroSalvarEscola("");
+    try {
     const res = await fetch(`/api/escolas/${editEscola.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         nome: editEscola.nome,
+        unidades: editEscola.unidades,
         rede: editEscola.rede,
         metodoId: editEscola.metodoId || null,
         periodoAvaliacao: editEscola.periodoAvaliacao,
@@ -190,9 +195,11 @@ export default function EscolasClient({
       }),
     });
     const atualizada = await res.json();
+    if (!res.ok) throw new Error(atualizada.erro || "Não foi possível salvar a escola.");
     setEscolas((prev) => prev.map((e) => (e.id === atualizada.id ? { ...e, ...atualizada } : e)));
     setEditEscola(null);
-    setSalvando(false);
+    } catch (error) { setErroSalvarEscola(error instanceof Error ? error.message : "Falha ao salvar a escola."); }
+    finally { setSalvando(false); }
   }
 
   // ── Editar unidade ─────────────────────────────────────────────────────────
@@ -309,6 +316,7 @@ export default function EscolasClient({
               onClick={() =>
                 setEditEscola({
                   id: escola.id,
+                  unidades: escola.unidades.map(u => ({ ...u })),
                   nome: escola.nome,
                   rede: escola.rede ?? "",
                   metodoId: escola.metodoId ?? "",
@@ -687,6 +695,15 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
+              <section className="col-span-full border-t border-slate-100 pt-3">
+                <h3 className="text-xs font-semibold text-slate-500 uppercase mb-3">Unidades da escola</h3>
+                {editEscola.unidades.map((unidade, indice) => <fieldset key={unidade.id} className="grid grid-cols-2 gap-3 mb-4" disabled={salvando}>
+                  <legend className="text-sm font-semibold mb-2">{unidade.nome}</legend>
+                  {([['nome', 'Nome da unidade *'], ['cidade', 'Cidade'], ['estado', 'Estado'], ['turno', 'Turno']] as const).map(([campo, label]) => <label key={campo} className="block text-xs font-medium text-slate-600">{label}<input aria-label={label} value={unidade[campo] ?? ''} maxLength={campo === 'estado' ? 2 : undefined} onChange={e => setEditEscola({ ...editEscola, unidades: editEscola.unidades.map((u, i) => i === indice ? { ...u, [campo]: e.target.value } : u) })} className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"/></label>)}
+                </fieldset>)}
+                {editEscola.unidades.length === 0 && <p className="text-sm text-slate-500">Nenhuma unidade cadastrada. Use Adicionar unidade na lista de escolas.</p>}
+              </section>
+              {erroSalvarEscola && <p role="alert" className="col-span-full text-sm text-red-600">{erroSalvarEscola}</p>}
               {erroPeriodoEdit && (
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoEdit}</p>
               )}
@@ -694,7 +711,7 @@ export default function EscolasClient({
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarEscola}
-                disabled={!editEscola.nome || !!erroPeriodoEdit || salvando}
+                disabled={!editEscola.nome || editEscola.unidades.some(u => !u.nome.trim()) || !!erroPeriodoEdit || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Salvar"}
