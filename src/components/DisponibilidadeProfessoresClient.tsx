@@ -2,7 +2,7 @@
 
 import DisciplinasProfessor from "./DisciplinasProfessor";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus, Save, Trash2 } from "lucide-react";
 
 type Horario = { dia: string; inicio: string; fim: string };
@@ -12,6 +12,9 @@ const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domi
 export default function DisponibilidadeProfessoresClient({ professorasIniciais, materias }: { professorasIniciais: Professora[]; materias?: { id: string; nome: string }[] }) {
   const [professoras, setProfessoras] = useState(professorasIniciais);
   const [professoraId, setProfessoraId] = useState(professorasIniciais[0]?.id ?? "");
+  const novaFaixaRef = useRef<HTMLDivElement>(null);
+  const [focarNovaFaixa, setFocarNovaFaixa] = useState(false);
+  useEffect(() => { if (focarNovaFaixa) { novaFaixaRef.current?.scrollIntoView({ block: "nearest" }); novaFaixaRef.current?.querySelector("select")?.focus({ preventScroll: true }); setFocarNovaFaixa(false); } }, [focarNovaFaixa]);
   const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const professora = professoras.find((p) => p.id === professoraId);
@@ -68,9 +71,9 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
       <div data-availability-actions className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold text-slate-800">Horários disponíveis</h2>
-          <p className="text-xs text-slate-500">Cadastre uma ou mais faixas para cada dia.</p>
+          <p className="text-xs text-slate-500">Cadastre uma ou mais faixas para cada dia e clique em Salvar disponibilidade. Novos horários aparecem no início da lista.</p>
         </div>
-        <button type="button" disabled={salvando} onClick={() => alterar([...(professora?.disponibilidade ?? []), { dia: "Segunda", inicio: "08:00", fim: "12:00" }])} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-medium hover:bg-indigo-100">
+        <button type="button" disabled={salvando} onClick={() => { alterar([{ dia: "Segunda", inicio: "", fim: "" }, ...(professora?.disponibilidade ?? [])]); setFocarNovaFaixa(true); }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-medium hover:bg-indigo-100">
           <Plus size={16} /> Adicionar horário
         </button>
       </div>
@@ -80,7 +83,7 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
       ) : (
         <div className="space-y-2">
           {professora?.disponibilidade.map((h, i) => (
-            <div data-availability-row key={`${h.dia}-${i}`} className="grid grid-cols-[minmax(120px,1fr)_120px_auto_120px_36px] items-center gap-2 bg-slate-50 rounded-lg p-2">
+            <div ref={i === 0 ? novaFaixaRef : undefined} data-availability-row key={`${h.dia}-${i}`} className="grid grid-cols-[minmax(120px,1fr)_120px_auto_120px_36px] items-center gap-2 bg-slate-50 rounded-lg p-2">
               <select aria-label={`Dia da faixa ${i + 1}`} disabled={salvando} value={h.dia} onChange={(e) => alterar(professora.disponibilidade.map((item, j) => j === i ? { ...item, dia: e.target.value } : item))} className="border border-slate-200 rounded-lg px-2 py-2 text-sm bg-white">
                 {DIAS.map((dia) => <option key={dia}>{dia}</option>)}
               </select>
