@@ -397,7 +397,7 @@ export default function AlunoForm({
       </div>
 
       {/* Dados pessoais */}
-      <div className={`${variant === "v2" && etapa !== 1 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
+      <div className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <User size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Dados pessoais</h2>
@@ -475,7 +475,7 @@ export default function AlunoForm({
       </div>
 
       {/* Endereço */}
-      <div className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
+      <div className={`${variant === "v2" && etapa !== 1 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <MapPin size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Endereço residencial</h2>
