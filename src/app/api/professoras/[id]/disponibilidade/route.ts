@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
     const aulas = await prisma.agendaAula.findMany({ where: { empresaId: scope.empresaId, professoraId: id, status: "AGENDADA", data: { gte: hoje } }, select: { data: true, horaInicio: true, horaFim: true } });
     const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-    const conflito = aulas.find(a => removidas.some(f => f.dia === dias[a.data.getUTCDay()] && a.horaInicio < f.fim && a.horaFim > f.inicio));
+    const conflito = aulas.find(a => removidas.some(f => f.dia === dias[a.data.getUTCDay()] && (!a.horaInicio || !a.horaFim || (a.horaInicio < f.fim && a.horaFim > f.inicio))));
     if (conflito) return NextResponse.json({ erro: "Não é possível excluir ou reduzir este horário: existem aulas agendadas nessa faixa. Reagende ou cancele essas aulas antes de alterar a disponibilidade." }, { status: 409 });
   }
   if (body.validarApenas === true) return NextResponse.json({ ok: true });
