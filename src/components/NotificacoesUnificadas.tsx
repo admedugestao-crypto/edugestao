@@ -292,10 +292,17 @@ function AbaWhatsapp({
       tipo: "Prova" as const,
       destinatario: n.professora.usuario.nome,
       descricao: n.avaliacao.nome + (n.avaliacao.materia ? ` · ${n.avaliacao.materia.nome}` : ""),
-      detalhe: <BadgeDias dias={n.diasAntes} />,
+      detalhe: (
+        <div className="space-y-1">
+          <p className="text-xs text-slate-600">
+            {n.avaliacao.unidade.escola.nome} · {n.avaliacao.unidade.nome}
+          </p>
+          <BadgeDias dias={n.diasAntes} />
+        </div>
+      ),
       criadoEm: n.criadoEm,
       enviada: statusLocal[n.id] ?? n.enviada,
-      searchText: `${n.professora.usuario.nome} ${n.avaliacao.nome} ${n.avaliacao.materia?.nome ?? ""}`.toLowerCase(),
+      searchText: `${n.professora.usuario.nome} ${n.avaliacao.nome} ${n.avaliacao.materia?.nome ?? ""} ${n.avaliacao.unidade.escola.nome} ${n.avaliacao.unidade.nome}`.toLowerCase(),
       onContextMenu: (e: React.MouseEvent) => abrirMenu(e, n.id, statusLocal[n.id] ?? n.enviada),
     }));
     const linhasAula = historicoAulas.map((n) => {
