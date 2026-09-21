@@ -321,7 +321,7 @@ export default function AgendaClient({
       } else {
         const partes: string[] = [];
         if (data.criadas   > 0) partes.push(`${data.criadas} aula(s) gerada(s) até 31/12`);
-        if (data.ignoradas > 0) partes.push(`${data.ignoradas} já existiam`);
+        if (data.ignoradas > 0) partes.push(`${data.ignoradas} ignorada(s) (existentes ou datas indisponíveis)`);
         if (nConflitos     > 0) partes.push(`${nConflitos} conflito(s) de horário`);
         if (nSemAgenda     > 0) partes.push(`${nSemAgenda} aluno(s) sem agenda no cadastro`);
         if (nForaDisp      > 0) partes.push(`${nForaDisp} aula(s) fora da disponibilidade`);
@@ -2111,7 +2111,7 @@ function TelaConflitos({
           {foraDisponibilidade.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-2">
-                🕐 Fora da disponibilidade — {foraDisponibilidade.length} aula(s) gerada(s) fora do horário do professor
+                🕐 Fora da disponibilidade — {foraDisponibilidade.length} aula(s) não gerada(s) por indisponibilidade do professor
               </p>
               <table className="w-full text-sm border-collapse">
                 <thead>

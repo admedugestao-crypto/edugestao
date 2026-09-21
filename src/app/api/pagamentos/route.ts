@@ -1,3 +1,4 @@
+import { erroPagamento } from "@/lib/validarPagamento";
 import { NextRequest, NextResponse } from "next/server";
 import type { PagamentoWhereInput } from "@/generated/prisma/models/Pagamento";
 import { prisma } from "@/lib/prisma";
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
     where.ano = ano;
   }
   // Admin vê pagamentos de todos os professores; professora vê só os próprios alunos
-  if (!scope.isAdmin && scope.professoraId) where.aluno = { professoraId: scope.professoraId };
+  if (!scope.isAdmin) where.aluno = { professoraId: scope.professoraId ?? "__sem_professora__" };
 
   const pagamentos = await prisma.pagamento.findMany({
     where,
@@ -118,16 +119,23 @@ export async function POST(req: NextRequest) {
   if (!podeGerenciarFinanceiro(scope)) return NextResponse.json({ erro: "Apenas administradores podem criar cobranças." }, { status: 403 });
 
   const body = await req.json();
+  const erro = erroPagamento(body, true);
+  if (erro) return NextResponse.json({ erro }, { status: 400 });
   const { alunoId, mes, ano, parcela = 1, pago, valorCobrado, dataVencimento, quantidadeAulas, observacao } = body;
 
   const alunoOk = await prisma.aluno.findFirst({ where: { id: alunoId, empresaId: scope.empresaId }, select: { id: true } });
   if (!alunoOk) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
 
+  if (pago === true) {
+    const existente = await prisma.pagamento.findUnique({ where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } }, select: { id: true } });
+    if (existente && await prisma.pagamentoAula.count({ where: { pagamentoId: existente.id, agendaAula: { status: "AGENDADA" } } }) > 0)
+      return NextResponse.json({ erro: "Lance o resultado das aulas vinculadas antes de confirmar o pagamento." }, { status: 422 });
+  }
   const pagamento = await prisma.pagamento.upsert({
     where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } },
     update: {
       pago,
-      dataPagamento:   pago ? new Date() : null,
+      dataPagamento:   pago === undefined ? undefined : pago ? new Date() : null,
       quantidadeAulas: quantidadeAulas ?? undefined,
       observacao:      observacao      ?? undefined,
       valorCobrado:    valorCobrado    ?? undefined,

@@ -122,11 +122,13 @@ export default function EscolasClient({
 
   // ── Criar escola (+ primeira unidade) ──────────────────────────────────────
   async function criarEscola() {
-    setSalvando(true);
+    setSalvando(true); setErroSalvarEscola("");
+    try {
     const res = await fetch("/api/escolas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        primeiraUnidade,
         nome: novaEscola.nome,
         rede: novaEscola.rede,
         metodoId: novaEscola.metodoId || null,
@@ -137,23 +139,14 @@ export default function EscolasClient({
         periodoLetivo2Fim: novaEscola.periodoLetivo2Fim || null,
       }),
     });
-    const escola: Escola = await res.json();
-
-    if (primeiraUnidade.nome) {
-      const resU = await fetch(`/api/escolas/${escola.id}/unidades`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(primeiraUnidade),
-      });
-      const unidade = await resU.json();
-      escola.unidades = [unidade];
-    }
+    const escola = await res.json();
+    if (!res.ok) { setErroSalvarEscola(escola.erro || "Não foi possível criar a escola."); return; }
 
     setEscolas((prev) => [...prev, escola]);
     setModalEscola(false);
     setNovaEscola({ nome: "", rede: "", metodoId: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" });
     setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" });
-    setSalvando(false);
+    } catch { setErroSalvarEscola("Falha de conexão. Confira os dados e tente novamente."); } finally { setSalvando(false); }
   }
 
   // ── Criar unidade extra ────────────────────────────────────────────────────
@@ -478,6 +471,7 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
+              {erroSalvarEscola && <p role="alert" className="text-sm text-red-600">{erroSalvarEscola}</p>}
               {erroPeriodoNova && (
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoNova}</p>
               )}

@@ -27,9 +27,11 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
   async function removerHorario(indice: number) {
     if (!professora) return;
     const horarios = professora.disponibilidade.filter((_, i) => i !== indice);
+    const removido = professora.disponibilidade[indice];
+    if (!removido.dia || !removido.inicio || !removido.fim) { alterar(horarios); return; }
     setSalvando(true); setMensagem("");
     try {
-      const res = await fetch("/api/professoras/" + professora.id + "/disponibilidade", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ disponibilidade: horarios, validarApenas: true }) });
+      const res = await fetch("/api/professoras/" + professora.id + "/disponibilidade", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ disponibilidade: horarios.filter(h => h.dia && h.inicio && h.fim), validarApenas: true }) });
       const data = await res.json();
       if (!res.ok) { setMensagem(data.erro || "Não foi possível remover o horário."); return; }
       alterar(horarios);

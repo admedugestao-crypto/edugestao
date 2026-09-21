@@ -188,10 +188,12 @@ export default function BibliotecaMobile({
     if (!confirmDelete) return;
     setSalvando(true);
     try {
-      await fetch(`/api/biblioteca/${confirmDelete.id}`, { method: "DELETE" });
+      setErro("");
+      const res = await fetch(`/api/biblioteca/${confirmDelete.id}`, { method: "DELETE" });
+      if (!res.ok) { const data = await res.json().catch(() => ({})); setErro(data.erro || "Não foi possível excluir o material."); return; }
       setMateriais((prev) => prev.filter((m) => m.id !== confirmDelete.id));
       setConfirmDelete(null);
-    } finally {
+    } catch { setErro("Falha de conexão. O material não foi excluído."); } finally {
       setSalvando(false);
     }
   }
@@ -387,6 +389,7 @@ export default function BibliotecaMobile({
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm">
             <h2 className="font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
+            {erro && <p role="alert" className="text-sm text-red-600">{erro}</p>}
             <p className="text-sm text-slate-600">Excluir <strong>{confirmDelete.titulo}</strong>?</p>
             <div className="flex gap-3 mt-4">
               <button onClick={excluir} disabled={salvando}

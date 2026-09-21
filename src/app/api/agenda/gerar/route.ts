@@ -1,3 +1,5 @@
+import { obterFeriadosBrasil } from "@/lib/feriados";
+import { dataFinanceiraValida } from "@/lib/validarPagamento";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
@@ -37,15 +39,15 @@ export async function POST(req: NextRequest) {
   const body = await req.json() as { semanaInicio: string; professoraId?: string };
   const { semanaInicio } = body;
   const professoraIdBody = body.professoraId ?? null; // Admin pode passar professoraId específica
-  if (!semanaInicio) return NextResponse.json({ erro: "semanaInicio é obrigatório" }, { status: 400 });
+  if (!dataFinanceiraValida(semanaInicio)) return NextResponse.json({ erro: "semanaInicio é obrigatório" }, { status: 400 });
 
   const [ay, am, ad] = semanaInicio.split("-").map(Number);
-  const baseSemana = new Date(ay, am - 1, ad, 0, 0, 0, 0);
+  const baseSemana = new Date(Date.UTC(ay, am - 1, ad));
 
   const agora  = new Date();                          // data+hora exata da geração (UTC no servidor)
   // Converte para horário de Brasília (UTC-3) para comparar com horaInicio das aulas
   const agoraBrasil = new Date(agora.getTime() - 3 * 60 * 60 * 1000);
-  const hoje   = new Date(agora); hoje.setHours(0, 0, 0, 0);
+  const hoje = new Date(Date.UTC(agoraBrasil.getUTCFullYear(), agoraBrasil.getUTCMonth(), agoraBrasil.getUTCDate()));
   // Gera a partir de hoje; para o dia atual verifica hora (veja cheque abaixo)
   const inicio = baseSemana >= hoje ? baseSemana : hoje;
 
@@ -53,11 +55,15 @@ export async function POST(req: NextRequest) {
   // horário de início já passou no momento da geração
   const horaAgora = `${String(agoraBrasil.getUTCHours()).padStart(2, "0")}:${String(agoraBrasil.getUTCMinutes()).padStart(2, "0")}`;
 
-  const anoCorrente = hoje.getFullYear();
+  const anoCorrente = hoje.getUTCFullYear();
   const fimAnoInt   = anoCorrente * 10000 + 1231;
+  const empresa = await prisma.empresa.findUnique({ where: { id: scope.empresaId }, select: { estado: true, cidade: true, codigoIbge: true } });
+  const feriados = await obterFeriadosBrasil(anoCorrente, empresa?.estado, empresa?.cidade, empresa?.codigoIbge);
+  const diasFeriados = new Set(feriados.feriados.map(f => f.data));
+  const feriadosLocais = await prisma.calendarioEscolar.findMany({ where: { empresaId: scope.empresaId, tipo: "FERIADO", dataInicio: { lte: new Date(Date.UTC(anoCorrente, 11, 31, 23, 59, 59)) }, dataFim: { gte: new Date(Date.UTC(anoCorrente, 0, 1)) } }, select: { dataInicio: true, dataFim: true } });
 
   function toInt(d: Date) {
-    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+    return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
   }
 
   if (toInt(inicio) > fimAnoInt)
@@ -138,12 +144,12 @@ export async function POST(req: NextRequest) {
     // Período contratual
     let inicioAluno = new Date(inicio);
     if (aluno.dataInicioContrato) {
-      const ci = new Date(aluno.dataInicioContrato); ci.setHours(0,0,0,0);
+      const ci = new Date(aluno.dataInicioContrato); ci.setUTCHours(0,0,0,0);
       if (ci > inicioAluno) inicioAluno = ci;
     }
     let fimAluno = fimAnoInt;
     if (aluno.dataFimContrato) {
-      const cf = new Date(aluno.dataFimContrato); cf.setHours(0,0,0,0);
+      const cf = new Date(aluno.dataFimContrato); cf.setUTCHours(0,0,0,0);
       const cfInt = toInt(cf);
       if (cfInt < fimAluno) fimAluno = cfInt;
     }
@@ -161,30 +167,37 @@ export async function POST(req: NextRequest) {
 
     // Itera sobre cada entrada da agenda semanal
     for (const entrada of getEntradas(aluno)) {
+      if (!Number.isInteger(entrada.diaSemana) || entrada.diaSemana < 0 || entrada.diaSemana > 6 || !/^([01]\d|2[0-2]):[0-5]\d$/.test(entrada.horaAula)) {
+        semAgendaLista.push({ alunoNome: aluno.nome, motivo: "Horário semanal inválido; revise o cadastro." }); continue;
+      }
       const diaSemanaEntrada = entrada.diaSemana;
       const horaInicio       = entrada.horaAula;
       const [h, m]           = horaInicio.split(":").map(Number);
       const horaFim          = `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
       let dataAula = new Date(inicioAluno);
-      while (dataAula.getDay() !== diaSemanaEntrada) {
-        dataAula.setDate(dataAula.getDate() + 1);
+      while (dataAula.getUTCDay() !== diaSemanaEntrada) {
+        dataAula.setUTCDate(dataAula.getUTCDate() + 1);
       }
 
       while (toInt(dataAula) <= fimAluno) {
-        const dY = dataAula.getFullYear();
-        const dM = dataAula.getMonth();
-        const dD = dataAula.getDate();
+        const dY = dataAula.getUTCFullYear();
+        const dM = dataAula.getUTCMonth();
+        const dD = dataAula.getUTCDate();
 
         const dataUTC  = new Date(Date.UTC(dY, dM, dD));
         const rangeGte = new Date(Date.UTC(dY, dM, dD));
         const rangeLt  = new Date(Date.UTC(dY, dM, dD + 1));
 
+        if (diasFeriados.has(dataUTC.toISOString().slice(0, 10)) || feriadosLocais.some(f => dataUTC >= f.dataInicio && dataUTC <= f.dataFim)) {
+          ignoradas++; dataAula.setUTCDate(dataAula.getUTCDate() + 7); continue;
+        }
+
         // Pula silenciosamente aulas dentro do período de férias da escola
         if (feriasInicio !== null && feriasFim !== null) {
           const dataAulaInt = toInt(dataAula);
           if (dataAulaInt > feriasInicio && dataAulaInt < feriasFim) {
-            dataAula.setDate(dataAula.getDate() + 7);
+            dataAula.setUTCDate(dataAula.getUTCDate() + 7);
             continue;
           }
         }
@@ -193,7 +206,7 @@ export async function POST(req: NextRequest) {
         const ehHoje = toInt(dataAula) === toInt(hoje);
         if (ehHoje && horaInicio <= horaAgora) {
           ignoradas++;
-          dataAula.setDate(dataAula.getDate() + 7);
+          dataAula.setUTCDate(dataAula.getUTCDate() + 7);
           continue;
         }
 
@@ -216,7 +229,7 @@ export async function POST(req: NextRequest) {
             conflitoHoraInicio: aulaConflitante.horaInicio!,
             conflitoHoraFim:    aulaConflitante.horaFim!,
           });
-          dataAula.setDate(dataAula.getDate() + 7);
+          dataAula.setUTCDate(dataAula.getUTCDate() + 7);
           continue;
         }
 
@@ -236,13 +249,14 @@ export async function POST(req: NextRequest) {
             });
           }
           ignoradas++;
-          dataAula.setDate(dataAula.getDate() + 7);
+          dataAula.setUTCDate(dataAula.getUTCDate() + 7);
           continue;
         }
 
         // Verificar disponibilidade do professor
         const slots = dispMap.get(profId!) ?? [];
-        const nomeDia = DIAS_SEMANA[dataAula.getDay()];
+        const nomeDia = DIAS_SEMANA[dataAula.getUTCDay()];
+        const avisosAntes = foraDispLista.length;
         if (slots.length > 0) {
           const slotsDia = slots.filter((s: any) => s.dia === nomeDia);
           if (slotsDia.length === 0) {
@@ -268,6 +282,8 @@ export async function POST(req: NextRequest) {
           }
         }
 
+        if (foraDispLista.length > avisosAntes) { ignoradas++; dataAula.setUTCDate(dataAula.getUTCDate() + 7); continue; }
+
         // Uma única aula, vinculada a todas as matérias parametrizadas no cadastro do aluno
         const materiaIds = aluno.materias.map((m) => m.materiaId);
         await prisma.agendaAula.create({
@@ -283,7 +299,7 @@ export async function POST(req: NextRequest) {
         });
         criadas++;
 
-        dataAula.setDate(dataAula.getDate() + 7);
+        dataAula.setUTCDate(dataAula.getUTCDate() + 7);
       }
     }
   }

@@ -1,3 +1,4 @@
+import { lerMateriasAluno, referenciasAlunoValidas } from "@/lib/referenciasAluno";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope, scopeWhere } from "@/lib/tenant";
@@ -58,7 +59,10 @@ export async function POST(req: NextRequest) {
   let fotoUrl: string | null = null;
 
 
-  const materias: string[] = JSON.parse((form.get("materias") as string) || "[]");
+  const materias = lerMateriasAluno(form.get("materias"));
+  if (!materias) return NextResponse.json({ erro: "Disciplinas inválidas." }, { status: 400 });
+  if (!await referenciasAlunoValidas(scope.empresaId, String(form.get("unidadeId") || ""), professoraId, materias))
+    return NextResponse.json({ erro: "Unidade, professor ou disciplina não encontrados nesta empresa." }, { status: 404 });
   const dataNasc = form.get("dataNascimento") as string;
 
   try {

@@ -193,10 +193,12 @@ export default function BibliotecaClient({
     if (!confirmDelete) return;
     setSalvando(true);
     try {
-      await fetch(`/api/biblioteca/${confirmDelete.id}`, { method: "DELETE" });
+      setErro("");
+      const res = await fetch(`/api/biblioteca/${confirmDelete.id}`, { method: "DELETE" });
+      if (!res.ok) { const data = await res.json().catch(() => ({})); setErro(data.erro || "Não foi possível excluir o material."); return; }
       setMateriais((prev) => prev.filter((m) => m.id !== confirmDelete.id));
       setConfirmDelete(null);
-    } finally {
+    } catch { setErro("Falha de conexão. O material não foi excluído."); } finally {
       setSalvando(false);
     }
   }
@@ -538,6 +540,7 @@ export default function BibliotecaClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-library-dialog={variant === "v2" ? "confirm" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
+            {erro && <p role="alert" className="text-sm text-red-600">{erro}</p>}
             <p className="text-sm text-slate-600">
               Tem certeza que deseja excluir <strong>{confirmDelete.titulo}</strong>?
             </p>

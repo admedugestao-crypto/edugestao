@@ -7,7 +7,7 @@ export function formatarWhatsapp(num: string): string {
   // Remove zero(s) de tronco à esquerda (ex: "031999999999" → "31999999999") —
   // nenhum DDD real começa com 0, então sobra sempre indica erro de digitação.
   const digits = num.replace(/\D/g, "").replace(/^0+/, "");
-  if (digits.startsWith("55")) return digits;
+  if (digits.startsWith("55") && digits.length >= 12) return digits;
   return `55${digits}`;
 }
 
@@ -28,7 +28,7 @@ export function montarMensagem(params: {
   const { nomeEmpresa, nomeProfessor, nomeAvaliacao, nomeMateria, nomeEscola, nomeUnidade, serie, dataProva, diasRestantes, nomesAlunos, observacao } = params;
 
   const dataFormatada = dataProva.toLocaleDateString("pt-BR", {
-    weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
+    weekday: "long", day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC",
   });
 
   const dataSimples = dataProva.toLocaleDateString("pt-BR", {
@@ -431,11 +431,10 @@ export async function processarNotificacoesAula(): Promise<{
 }> {
   const resultado = { enviadas: 0, erros: [] as string[] };
 
-  const amanha = new Date();
-  amanha.setDate(amanha.getDate() + 1);
-  amanha.setHours(0, 0, 0, 0);
-  const fimAmanha = new Date(amanha);
-  fimAmanha.setHours(23, 59, 59, 999);
+  const diaBrasil = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  const amanha = new Date(diaBrasil + "T00:00:00.000Z");
+  amanha.setUTCDate(amanha.getUTCDate() + 1);
+  const fimAmanha = new Date(amanha.getTime() + 86_400_000 - 1);
 
   // empresaId é redundante aqui (aula/notificacao já herdam da agenda), mas
   // deixa a query explícita e resistente a joins futuros. O filtro de contato
@@ -447,7 +446,7 @@ export async function processarNotificacoesAula(): Promise<{
       data: { gte: amanha, lte: fimAmanha },
       status: "AGENDADA",
       aluno: { OR: [{ telefoneResponsavel: { not: null } }, { emailResponsavel: { not: null } }] },
-      empresa: { whatsappPausado: false },
+      empresa: { ativo: true, OR: [{ whatsappPausado: false }, { emailPausado: false }] },
     },
     include: {
       aluno: true,
@@ -456,7 +455,7 @@ export async function processarNotificacoesAula(): Promise<{
       notificacao: true,
       empresa: {
         select: {
-          nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
+          nome: true, whatsappPausado: true, emailPausado: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
         },
       },
@@ -495,9 +494,9 @@ export async function processarNotificacoesAula(): Promise<{
   for (const bloco of blocos) {
     const primeira = bloco[0];
     const dataFormatada = new Date(primeira.data).toLocaleDateString("pt-BR", {
-      weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
+      weekday: "long", day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC",
     });
-    const usaWhatsapp = whatsappConfiguradoEmpresa(primeira.empresa);
+    const usaWhatsapp = !primeira.empresa.whatsappPausado && whatsappConfiguradoEmpresa(primeira.empresa);
 
     try {
       if (usaWhatsapp && primeira.aluno.telefoneResponsavel) {
@@ -515,7 +514,7 @@ export async function processarNotificacoesAula(): Promise<{
 
         if (envio.ok) resultado.enviadas++;
         else resultado.erros.push(`${primeira.aluno.nome} (${numero}): ${envio.erro}`);
-      } else if (!usaWhatsapp && primeira.aluno.emailResponsavel) {
+      } else if (!primeira.empresa.emailPausado && primeira.aluno.emailResponsavel) {
         const emailResponsavel = primeira.aluno.emailResponsavel;
         const dados = montarDadosAulaEmail(bloco, primeira.empresa.nome, dataFormatada);
         const envio = await enviarEmailAula({ ...dados, emailResponsavel }, primeira.empresa);

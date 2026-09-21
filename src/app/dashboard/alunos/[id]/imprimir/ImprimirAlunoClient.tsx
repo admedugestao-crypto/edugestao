@@ -136,6 +136,7 @@ export default function ImprimirAlunoClient({ aluno }: { aluno: AlunoImpressao }
               <div className="shrink-0">
                 {aluno.fotoUrl ? (
                   <Image
+                    unoptimized
                     src={aluno.fotoUrl}
                     alt={aluno.nome}
                     width={96}

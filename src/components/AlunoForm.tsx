@@ -389,6 +389,7 @@ export default function AlunoForm({
           >
             {fotoPreview ? (
               <Image
+                unoptimized
                 src={fotoPreview}
                 alt="foto"
                 width={80}

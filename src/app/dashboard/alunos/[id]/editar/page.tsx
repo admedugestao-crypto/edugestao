@@ -1,3 +1,4 @@
+import { podeAcessarProfessora } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { notFound, redirect } from "next/navigation";
@@ -45,7 +46,7 @@ export default async function EditarAlunoPage({
       : Promise.resolve(null),
   ]);
 
-  if (!aluno || aluno.empresaId !== scope.empresaId) notFound();
+  if (!aluno || aluno.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aluno.professoraId)) notFound();
 
   const dispProfessora = isAdmin ? null : ((professoraSession?.disponibilidade as any) ?? []);
 

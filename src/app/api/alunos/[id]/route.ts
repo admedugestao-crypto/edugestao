@@ -1,3 +1,4 @@
+import { lerMateriasAluno, referenciasAlunoValidas } from "@/lib/referenciasAluno";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
@@ -55,7 +56,10 @@ export async function PUT(
   let fotoUrl: string | undefined = undefined;
 
 
-  const materias: string[] = JSON.parse((form.get("materias") as string) || "[]");
+  const materias = lerMateriasAluno(form.get("materias"));
+  if (!materias) return NextResponse.json({ erro: "Disciplinas inválidas." }, { status: 400 });
+  if (!await referenciasAlunoValidas(scope.empresaId, String(form.get("unidadeId") || ""), scope.isAdmin ? String(form.get("professoraId") || existente.professoraId || "") || null : existente.professoraId, materias))
+    return NextResponse.json({ erro: "Unidade, professor ou disciplina não encontrados nesta empresa." }, { status: 404 });
   const dataNasc = form.get("dataNascimento") as string;
   const novoStatus = (form.get("status") as string) || "ATIVO";
 

@@ -1,3 +1,4 @@
+import { erroPagamento } from "@/lib/validarPagamento";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
@@ -13,6 +14,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body   = await req.json();
+  const erro = erroPagamento(body, false);
+  if (erro) return NextResponse.json({ erro }, { status: 400 });
 
   const existente = await prisma.pagamento.findUnique({ where: { id }, select: { empresaId: true } });
   if (!existente || existente.empresaId !== scope.empresaId) {
