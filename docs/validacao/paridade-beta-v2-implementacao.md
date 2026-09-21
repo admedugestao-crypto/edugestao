@@ -32,3 +32,11 @@ Base V2: d2f6b7e. Integração em dev com c4f35f2 (Beta/dev). Produção af8b61d
 Não foram usados dados reais nem enviados WhatsApp/e-mail. Fluxos completos autenticados, integrações reais e aplicativos Android/iOS permanecem na homologação. Defeitos compartilhados de cobrança/feriados/integrações e demais itens da etapa 3 não foram incluídos. Não há autorização para promover à produção.
 
 A alteração do prazo já existe na branch dev e em produção: não criar outra migração com o mesmo campo. Conferir o schema do ambiente antes de aplicar migrations; nenhum comando de migração foi executado contra banco real nesta execução.
+
+## Publicação pendente
+
+Implementação registrada no commit 8ebd797, branch local dev. O push para https://github.com/admedugestao-crypto/edugestao.git, branch dev, foi rejeitado pela revisão automática de aprovação, que exigiu autorização explícita do usuário para o destino e publicação do código. Nenhum push foi executado.
+
+O envio proposto incorpora a base V2 e seus ajustes na branch remota dev (75 arquivos em relação ao dev anterior), mantendo os arquivos operacionais já existentes em dev. Não altera master nem a branch remota codex/v2-financeiro-preview. O build de Preview e a verificação do ambiente publicado ficam pendentes dessa autorização.
+
+Vercel CLI não possuía credenciais; o fluxo de login iniciado por whoami foi cancelado. A publicação planejada usa a integração Git/Vercel existente. A validação remota autenticada poderá exigir acesso ao Preview.
