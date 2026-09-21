@@ -1,6 +1,7 @@
 "use client";
 
 import DateInput from "@/components/DateInput";
+import { dataExiste, MENSAGEM_DATA_INVALIDA } from "@/lib/validarData";
 
 import { useState } from "react";
 import { format, isAfter } from "date-fns";
@@ -322,6 +323,10 @@ export default function CalendarioClient({
   );
 
   async function criarAvaliacao() {
+    if (!dataExiste(nova.data) || nova.data < "2020-01-01" || nova.data > "2100-12-31") {
+      setErroForm(`${MENSAGEM_DATA_INVALIDA} Use uma data entre 2020 e 2100.`);
+      return;
+    }
     setErroForm("");
     setSalvando(true);
     try {
@@ -345,6 +350,10 @@ export default function CalendarioClient({
 
   async function salvarAvaliacao() {
     if (!editAv) return;
+    if (!dataExiste(editAv.data) || editAv.data < "2020-01-01" || editAv.data > "2100-12-31") {
+      setErroForm(`${MENSAGEM_DATA_INVALIDA} Use uma data entre 2020 e 2100.`);
+      return;
+    }
     setErroForm("");
     setSalvando(true);
     try {

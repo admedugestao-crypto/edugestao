@@ -32,6 +32,7 @@ model Empresa {
   ativo           Boolean  @default(true)
   whatsappPausado Boolean  @default(false)
   emailPausado    Boolean  @default(false)
+  prazoAlertaProvaDias Int @default(7)
   criadoEm        DateTime @default(now())
 
   // Credenciais de envio de WhatsApp, uma conta própria por empresa (sem

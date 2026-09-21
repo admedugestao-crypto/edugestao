@@ -1,3 +1,4 @@
+import { podeAcessarProfessora } from "@/lib/permissions";
 import AlunoForm from "@/components/AlunoForm";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
@@ -17,7 +18,7 @@ export default async function EditarAlunoV2Page({ params }: { params: Promise<{ 
     scope.isAdmin ? prisma.professora.findMany({ where: { empresaId: scope.empresaId }, select: { id: true, disponibilidade: true, usuario: { select: { nome: true } } }, orderBy: { usuario: { nome: "asc" } } }) : Promise.resolve([]),
     scope.isAdmin ? Promise.resolve(null) : prisma.professora.findUnique({ where: { usuarioId: scope.userId }, select: { disponibilidade: true } }),
   ]);
-  if (!aluno || aluno.empresaId !== scope.empresaId) notFound();
+  if (!aluno || aluno.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aluno.professoraId)) notFound();
   const inicial = { ...aluno, valorCobranca: aluno.valorCobranca == null ? null : Number(aluno.valorCobranca), unidade: { ...aluno.unidade, escolaId: aluno.unidade.escolaId ?? aluno.unidadeId }, materias: aluno.materias.map((item) => ({ materiaId: item.materiaId })) };
   return <div className={styles.studentFormPage}>
     <header className={styles.studentFormHeader}><div><p><Pencil size={15}/> Atualizar cadastro</p><h1>Editar <em>aluno.</em></h1><span>{aluno.nome}</span></div></header>

@@ -1,6 +1,7 @@
 "use client";
 
 import DateInput from "@/components/DateInput";
+import { dataExiste } from "@/lib/validarData";
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -269,6 +270,20 @@ export default function AlunoForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const formulario = e.currentTarget;
+    if (variant === "v2") {
+      const campos = Array.from(formulario.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea"));
+      const invalido = campos.find((campo) => !campo.disabled && (
+        !campo.checkValidity() || (campo instanceof HTMLInputElement && campo.type === "date" && campo.value !== "" && !dataExiste(campo.value))
+      ));
+      if (invalido) {
+        const painel = invalido.closest<HTMLElement>("[data-etapa]");
+        if (painel) setEtapa(Number(painel.dataset.etapa));
+        setErro(invalido.validationMessage || "Revise o campo indicado antes de salvar.");
+        requestAnimationFrame(() => { invalido.focus(); invalido.reportValidity(); });
+        return;
+      }
+    }
     setSalvando(true);
     setErro("");
 
@@ -362,7 +377,7 @@ export default function AlunoForm({
       )}
       <div className={variant === "v2" ? "min-h-0 flex-1" : "contents"}>
       {/* Foto */}
-      <div className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+      <div data-etapa="0" className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
           <Camera size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Foto do aluno</h2>
@@ -406,7 +421,7 @@ export default function AlunoForm({
       </div>
 
       {/* Dados pessoais */}
-      <div className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
+      <div data-etapa="0" className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <User size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Dados pessoais</h2>
@@ -484,7 +499,7 @@ export default function AlunoForm({
       </div>
 
       {/* Endereço */}
-      <div className={`${variant === "v2" && etapa !== 1 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
+      <div data-etapa="1" className={`${variant === "v2" && etapa !== 1 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <MapPin size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Endereço residencial</h2>
@@ -571,7 +586,7 @@ export default function AlunoForm({
       </div>
 
       {/* Escola */}
-      <div className={`${variant === "v2" && etapa !== 2 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+      <div data-etapa="2" className={`${variant === "v2" && etapa !== 2 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
           <School size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Escola</h2>
@@ -710,7 +725,7 @@ export default function AlunoForm({
       </div>
 
       {/* Disciplinas */}
-      <div className={`${variant === "v2" && etapa !== 2 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
+      <div data-etapa="2" className={`${variant === "v2" && etapa !== 2 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <BookOpen size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Disciplinas atendidas *</h2>
@@ -739,7 +754,7 @@ export default function AlunoForm({
       </div>
 
       {/* Agenda */}
-      <div className={`${variant === "v2" && etapa !== 3 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+      <div data-etapa="3" className={`${variant === "v2" && etapa !== 3 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <CalendarDays size={17} className="text-indigo-600" />
@@ -785,7 +800,7 @@ export default function AlunoForm({
       </div>
 
       {/* Cobrança */}
-      <div className={`${variant === "v2" && etapa !== 4 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
+      <div data-etapa="4" className={`${variant === "v2" && etapa !== 4 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
           <DollarSign size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Cobrança *</h2>
@@ -912,7 +927,7 @@ export default function AlunoForm({
       </div>
 
       {/* Período contratual */}
-      <div className={`${variant === "v2" && etapa !== 3 ? "hidden" : ""} bg-white rounded-xl border p-5 ${variant === "v2" ? "mt-3" : ""} ${erroPeriodo ? "border-red-300" : "border-slate-200"}`}>
+      <div data-etapa="3" className={`${variant === "v2" && etapa !== 3 ? "hidden" : ""} bg-white rounded-xl border p-5 ${variant === "v2" ? "mt-3" : ""} ${erroPeriodo ? "border-red-300" : "border-slate-200"}`}>
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Período contratual *</h2>
@@ -957,7 +972,7 @@ export default function AlunoForm({
       </div>
 
       {/* Observações */}
-      <div className={`${variant === "v2" && etapa !== 4 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
+      <div data-etapa="4" className={`${variant === "v2" && etapa !== 4 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <label className="block text-xs font-medium text-slate-600 mb-2">
           Observações
         </label>
@@ -978,7 +993,8 @@ export default function AlunoForm({
       )}
 
       {variant === "v2" && (
-        <div data-v2-actions className="mt-3 flex shrink-0 items-center justify-between gap-3">
+        <div data-v2-actions className="mt-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
+          {alunoInicial && <button type="button" onClick={() => { setErroExcluir(""); setConfirmExcluir(true); }} className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700">Excluir aluno</button>}
           <button type="button" onClick={() => router.push("/v2/alunos")} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600">
             Cancelar
           </button>

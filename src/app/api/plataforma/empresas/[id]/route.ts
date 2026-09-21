@@ -16,6 +16,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const data: {
     ativo?: boolean; nome?: string; slug?: string; logoUrl?: string | null;
+    prazoAlertaProvaDias?: number;
     fonnteToken?: string | null;
     evolutionApiUrl?: string | null; evolutionApiKey?: string | null; evolutionApiInstance?: string | null;
     emailHost?: string | null; emailPort?: string | null; emailUser?: string | null;
@@ -26,6 +27,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   } = {};
 
   if (typeof body.ativo === "boolean") data.ativo = body.ativo;
+  if (body.prazoAlertaProvaDias !== undefined) {
+    if (!Number.isInteger(body.prazoAlertaProvaDias) || body.prazoAlertaProvaDias < 1 || body.prazoAlertaProvaDias > 365) {
+      return NextResponse.json({ erro: "Informe um prazo de alerta entre 1 e 365 dias inteiros." }, { status: 400 });
+    }
+    data.prazoAlertaProvaDias = body.prazoAlertaProvaDias;
+  }
 
   if (typeof body.nome === "string") {
     if (!body.nome.trim()) return NextResponse.json({ erro: "Nome não pode ser vazio." }, { status: 400 });

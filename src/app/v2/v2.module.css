@@ -183,3 +183,12 @@
 }
 .companyLogoButton { flex:none; width:34px; height:34px; display:grid; place-items:center; border:1px solid #ffffff30; border-radius:8px; background:#ffffff0d; cursor:pointer; color:white; }
 .companyLogoButton:hover { border-color:var(--mint); }.companyLogoButton:focus-visible { outline:2px solid var(--mint); outline-offset:3px; }
+
+@media print {
+  .appShell { display:block; min-height:0; background:white; }
+  .sidebar,.mobileHeader,.mobileNav,.backdrop { display:none !important; }
+  .main { margin:0 !important; padding:0 !important; height:auto !important; overflow:visible !important; }
+}
+
+.pedagogicalGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px; }
+@media (max-width:760px) { .pedagogicalGrid { grid-template-columns:1fr; } }

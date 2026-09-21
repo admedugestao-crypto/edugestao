@@ -20,7 +20,7 @@ export default async function V2Dashboard() {
   const fim = new Date(inicio);
   fim.setDate(fim.getDate() + 1);
 
-  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas] = await Promise.all([
+  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, totalEscolas, notas, provas] = await Promise.all([
     prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
     prisma.agendaAula.count({ where: { ...scopeWhere(scope), data: { gte: inicio, lt: fim } } }),
     prisma.pagamento.findMany({
@@ -33,8 +33,20 @@ export default async function V2Dashboard() {
       take: 4,
       include: { aluno: { select: { nome: true } } },
     }),
+    prisma.escola.count({ where: { empresaId: scope.empresaId } }),
+    prisma.nota.findMany({
+      where: { empresaId: scope.empresaId, ...(!scope.isAdmin ? { aluno: { professoraId: scope.professoraId } } : {}) },
+      include: { aluno: { select: { nome: true } }, materia: true, avaliacao: { select: { nome: true, notaMax: true } } },
+      orderBy: { criadoEm: "desc" },
+    }),
+    scope.isAdmin ? Promise.resolve([]) : prisma.avaliacao.findMany({
+      where: { empresaId: scope.empresaId, data: { gte: hoje }, ...(scope.professoraId ? { unidade: { alunos: { some: { professoraId: scope.professoraId, status: "ATIVO" } } } } : {}) },
+      include: { unidade: { include: { escola: true } }, materia: true }, orderBy: { data: "asc" }, take: 6,
+    }),
   ]);
 
+  const notasBaixas = notas.filter(n => n.valor < n.avaliacao.notaMax / 2);
+  const alunosComNotaBaixa = new Set(notasBaixas.map(n => n.alunoId)).size;
   const pendente = pagamentos.reduce((total, item) => total + Number(item.valorCobrado), 0);
   const primeiroNome = session?.user?.name?.split(" ")[0] ?? "professora";
   const dataLonga = hoje.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
@@ -87,6 +99,17 @@ export default async function V2Dashboard() {
           <Link href="/v2/pagamentos"><Clock3 aria-hidden="true" /><span><strong>Revisar pendências</strong><small>Pagamentos que precisam de atenção</small></span><ArrowUpRight aria-hidden="true" /></Link>
         </aside>
       </div>
+      <section className={styles.pedagogicalGrid} aria-label="Acompanhamento pedagógico">
+        <article className={styles.scheduleCard}>
+          <div className={styles.sectionHeading}><div><span>{alunosComNotaBaixa} aluno(s) com notas baixas</span><h2>Atenção necessária</h2></div><Link href="/v2/notas">Ver notas</Link></div>
+          <p className="text-xs text-slate-500 mb-3">Notas abaixo de 50% da nota máxima.</p>
+          {!notasBaixas.length ? <p>Nenhum aluno abaixo da média.</p> : <ul className="max-h-52 overflow-y-auto space-y-3">{notasBaixas.map(n => <li key={n.id} className="flex justify-between gap-3 text-sm"><div><strong>{n.aluno.nome}</strong><p>{n.materia.nome} · {n.avaliacao.nome}</p></div><span>{n.valor.toFixed(1)} / {n.avaliacao.notaMax.toFixed(1)}</span></li>)}</ul>}
+        </article>
+        <article className={styles.scheduleCard}>
+          <div className={styles.sectionHeading}><div><span>Rede de ensino</span><h2>{totalEscolas} escola(s) cadastrada(s)</h2></div><Link href="/v2/escolas">Ver escolas</Link></div>
+          {!scope.isAdmin && <><h3 className="font-semibold mb-3">Próximas provas</h3>{!provas.length ? <p>Nenhuma prova agendada.</p> : <ul className="max-h-52 overflow-y-auto space-y-3">{provas.map(p => <li key={p.id} className="text-sm"><strong>{p.nome}</strong><p>{p.unidade.escola.nome} · {p.serie} · {p.materia?.nome} · {p.periodo}</p><time>{p.data.toLocaleDateString("pt-BR", { timeZone: "UTC" })}</time></li>)}</ul>}<Link href="/v2/calendario" className="mt-3 inline-block">Ver calendário →</Link></>}
+        </article>
+      </section>
     </div>
   );
 }

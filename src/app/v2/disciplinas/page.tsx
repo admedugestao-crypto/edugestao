@@ -1,3 +1,4 @@
+import Link from "next/link";
 import DisciplinasClient from "@/components/DisciplinasClient";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
@@ -32,6 +33,7 @@ export default async function V2DisciplinasPage() {
         </div>
       </header>
 
+      <Link href={scope.isAdmin ? "/v2/tabelas/disponibilidade-professores" : "/v2/tabelas/minhas-disciplinas"}>Gerenciar disciplinas dos professores em Tabelas →</Link>
       <section className={styles.subjectsSurface} aria-label="Disciplinas cadastradas">
         <DisciplinasClient
           todasMaterias={materias}

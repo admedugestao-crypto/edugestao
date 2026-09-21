@@ -1,0 +1,31 @@
+
+> edugestao@0.1.0 dev
+> next dev -p 3001
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://10.0.0.74:3001
+- Environments: .env.local, .env
+✓ Ready in 1732ms
+
+ GET /login 200 in 3.4s (next.js: 1365ms, proxy.ts: 241ms, application-code: 1802ms)
+ GET /login 200 in 3.5s (next.js: 1850ms, proxy.ts: 280ms, application-code: 1359ms)
+ GET /login 200 in 648ms (next.js: 99ms, proxy.ts: 33ms, application-code: 516ms)
+ GET /plataforma/usuarios 200 in 3.6s (next.js: 1972ms, proxy.ts: 275ms, application-code: 1373ms)
+ GET /login 200 in 598ms (next.js: 157ms, proxy.ts: 38ms, application-code: 402ms)
+ GET /login 200 in 255ms (next.js: 62ms, proxy.ts: 21ms, application-code: 173ms)
+ GET /login 200 in 919ms (next.js: 12ms, proxy.ts: 11ms, application-code: 896ms)
+ GET /login 200 in 766ms (next.js: 51ms, proxy.ts: 16ms, application-code: 699ms)
+ GET /api/plataforma/empresas 200 in 2.0s (next.js: 381ms, proxy.ts: 32ms, application-code: 1595ms)
+ GET /api/plataforma/usuarios 200 in 2.3s (next.js: 301ms, proxy.ts: 35ms, application-code: 1919ms)
+ DELETE /api/plataforma/usuarios/cmrhsrgoz000004i5sd677nha 409 in 4.4s (next.js: 1954ms, proxy.ts: 8ms, application-code: 2.4s)
+ GET /api/auth/providers 200 in 2.0s (next.js: 1981ms, proxy.ts: 4ms, application-code: 38ms)
+ GET /api/auth/csrf 200 in 791ms (next.js: 769ms, proxy.ts: 6ms, application-code: 16ms)
+ POST /api/auth/callback/credentials 401 in 2.6s (next.js: 11ms, proxy.ts: 9ms, application-code: 2.6s)
+ PATCH /api/plataforma/usuarios/cmrhsrgoz000004i5sd677nha 200 in 2.9s (next.js: 695ms, proxy.ts: 6ms, application-code: 2.2s)
+ GET /api/plataforma/empresas 200 in 1301ms (next.js: 16ms, proxy.ts: 17ms, application-code: 1269ms)
+ GET /api/plataforma/usuarios 200 in 1550ms (next.js: 10ms, proxy.ts: 19ms, application-code: 1522ms)
+ GET /api/auth/providers 200 in 728ms (next.js: 713ms, proxy.ts: 6ms, application-code: 9ms)
+ GET /api/auth/csrf 200 in 42ms (next.js: 9ms, proxy.ts: 4ms, application-code: 29ms)
+ POST /api/auth/callback/credentials 200 in 2.9s (next.js: 13ms, proxy.ts: 5ms, application-code: 2.9s)
+ GET /dashboard 200 in 3.4s (next.js: 1683ms, proxy.ts: 9ms, application-code: 1692ms)

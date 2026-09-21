@@ -18,6 +18,7 @@ export default async function TabelasPage() {
   return <div className={styles.page}>
     <header className={styles.header}><div><h1>Tabelas auxiliares</h1><p>Gerencie os cadastros que organizam as avaliações, os materiais e os horários.</p></div></header>
     <div className={styles.cards}>
+      {!scope.isAdmin && scope.professoraId && <Link href="/v2/tabelas/minhas-disciplinas" className={styles.card}><span className={styles.icon}><ClipboardList size={23}/></span><div><h2>Minhas disciplinas</h2><p>Gerencie as disciplinas que você leciona.</p></div><ChevronRight size={18}/></Link>}
       {tabelas.filter((item) => !item.admin || scope.isAdmin).map(({ slug, titulo, descricao, icon: Icon }) =>
         <Link key={slug} href={`/v2/tabelas/${slug}`} className={styles.card}>
           <span className={styles.icon}><Icon size={23} aria-hidden="true" /></span>

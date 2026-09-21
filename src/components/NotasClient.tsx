@@ -156,7 +156,7 @@ export default function NotasClient({
                 Nenhuma avaliação prevista no calendário para esta unidade / série.
               </p>
               <Link
-                href={variant === "v2" ? "/v2/avaliacoes" : "/dashboard/calendario"}
+                href={variant === "v2" ? "/v2/calendario" : "/dashboard/calendario"}
                 className="text-indigo-600 hover:underline text-sm font-medium"
               >
                 Ir para o Calendário de Provas →

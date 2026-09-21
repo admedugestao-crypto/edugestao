@@ -96,7 +96,7 @@ export default async function V2AlunosPage({
           </div>
         </div>
         <div className={styles.studentsGrid}>
-          <AlunosTabela alunos={alunos} isAdmin={scope.isAdmin} mes={mes} ano={ano} basePath="/v2/alunos" />
+          <AlunosTabela key={`${status}-${q}-${campo}`} alunos={alunos} isAdmin={scope.isAdmin} mes={mes} ano={ano} basePath="/v2/alunos" />
         </div>
       </section>
     </div>

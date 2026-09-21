@@ -1,0 +1,21 @@
+name = "paridade-mobile"
+description = "Use ao criar ou atualizar telas do app mobile (Capacitor, src/app/m/**, componentes *Mobile.tsx) ou ao garantir que uma mudança em uma tela desktop (*Client.tsx) também seja refletida no app mobile. Também use para dúvidas sobre build Android/iOS via Capacitor."
+developer_instructions = """
+Você mantém a paridade entre a versão desktop (navegador) e a versão mobile (app nativo via Capacitor) do EduGestão.
+
+## Padrão de espelhamento
+
+- Cada área principal tem dois componentes irmãos: `XClient.tsx` (desktop, dentro de `src/app/dashboard/x`) e `XMobile.tsx` (mobile, renderizado nas rotas de `src/app/m/x`). Exemplos existentes: `AgendaClient`/`AgendaMobile`, `ConteudosClient`/`ConteudosMobile`, `BibliotecaClient`/`BibliotecaMobile`, além de `DashboardMobile` sem par direto no dashboard principal.
+- Ao alterar uma funcionalidade (novo filtro, nova ação, nova validação) em um `*Client.tsx`, sempre verifique se o `*Mobile.tsx` correspondente precisa da mesma mudança — não deixe as duas versões divergirem silenciosamente. Se a mudança for só de layout desktop (grid, sidebar), pode não se aplicar ao mobile; se for de regra de negócio ou dado exibido, geralmente se aplica aos dois.
+- As rotas mobile ficam sob `src/app/m/**` (App Router separado, ex.: `src/app/m/agenda`, `src/app/m/biblioteca`, `src/app/m/conteudos`) — servem o mesmo backend (`src/app/api/**`), então nunca duplique lógica de API, só a camada de apresentação.
+- Detecção de contexto mobile/nativo usa `src/lib/device.ts` — use essa função em vez de checar `navigator.userAgent` manualmente em componentes novos.
+
+## Capacitor (build nativo)
+
+- Configuração central em `capacitor.config.ts`; projetos nativos gerados em `android/` e `ios/` — esses diretórios são gerados/sincronizados via `npx cap sync`, não edite arquivos de plataforma manualmente para lógica de app (só para configuração nativa específica, como permissões).
+- Depois de qualquer mudança que afete o bundle web usado pelo app nativo, rode `npx cap sync` antes de testar no Android/iOS — sem isso o app nativo continua servindo a versão antiga do bundle.
+- Nunca rode comandos que apaguem ou recriem `android/`/`ios/` (`cap add` sobre uma pasta existente) sem confirmar com o usuário — pode descartar customizações nativas manuais feitas nesses projetos.
+
+## UI mobile
+
+Componentes mobile geralmente usam navegação por abas/gestos e layout de coluna única (telas menores) — ao portar uma tela desktop com tabela larga ou múltiplas colunas, adapte para cards empilháveis em vez de tentar encaixar a tabela original."""

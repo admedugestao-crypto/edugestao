@@ -1,0 +1,435 @@
+
+<!-- saved from url=(0228)file:///C:/Users/isaac/AppData/Local/Temp/claude/C-%2DUsers-isaac-OneDrive-Desktop-EduGestao-%2Dclaude-worktrees-user-registration-display-issue-e6bef2/42381e73-ad7b-4639-9b05-2842dae4ee32/scratchpad/regras-agenda-edugestao.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Regras da Agenda — EduGestão</title>
+<style>
+  :root {
+    --bg: #F7F7FB;
+    --surface: #FFFFFF;
+    --surface2: #F1F1F8;
+    --ink: #211F33;
+    --muted: #5D5A75;
+    --line: #E3E2EE;
+    --edge: #8B88A6;
+    --accent: #4F46E5;
+    --accent-soft: #EEF0FE;
+    --ok: #0E8F62;
+    --ok-soft: #E7F6EF;
+    --danger: #D33131;
+    --danger-soft: #FBEBEB;
+    --warn: #B45309;
+    --warn-soft: #FCF3E3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16151F;
+      --surface: #1F1E2C;
+      --surface2: #262536;
+      --ink: #EAE9F4;
+      --muted: #A3A0BC;
+      --line: #34324A;
+      --edge: #77748F;
+      --accent: #9AA0F7;
+      --accent-soft: #2A2C4A;
+      --ok: #43D398;
+      --ok-soft: #16352A;
+      --danger: #F08080;
+      --danger-soft: #3A2022;
+      --warn: #E8A44C;
+      --warn-soft: #3A2E1A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16151F; --surface: #1F1E2C; --surface2: #262536;
+    --ink: #EAE9F4; --muted: #A3A0BC; --line: #34324A; --edge: #77748F;
+    --accent: #9AA0F7; --accent-soft: #2A2C4A;
+    --ok: #43D398; --ok-soft: #16352A;
+    --danger: #F08080; --danger-soft: #3A2022;
+    --warn: #E8A44C; --warn-soft: #3A2E1A;
+  }
+  :root[data-theme="light"] {
+    --bg: #F7F7FB; --surface: #FFFFFF; --surface2: #F1F1F8;
+    --ink: #211F33; --muted: #5D5A75; --line: #E3E2EE; --edge: #8B88A6;
+    --accent: #4F46E5; --accent-soft: #EEF0FE;
+    --ok: #0E8F62; --ok-soft: #E7F6EF;
+    --danger: #D33131; --danger-soft: #FBEBEB;
+    --warn: #B45309; --warn-soft: #FCF3E3;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 14.5px/1.65 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 44px 24px 80px; }
+
+  header.doc { border-bottom: 1px solid var(--line); padding-bottom: 26px; margin-bottom: 8px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 10px;
+  }
+  h1 { font-size: 27px; line-height: 1.25; font-weight: 700; margin: 0 0 10px; text-wrap: balance; }
+  .meta { color: var(--muted); font-size: 13px; margin: 0; }
+
+  section { margin-top: 44px; }
+  h2 { font-size: 18px; font-weight: 700; margin: 0 0 6px; text-wrap: balance; }
+  h2 .idx { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 6px; }
+  .lead { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+
+  figure { margin: 18px 0 0; }
+  .diagram {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 14px; overflow-x: auto;
+  }
+  .diagram svg { display: block; min-width: 640px; max-width: 100%; height: auto; margin: 0 auto; }
+  figcaption { color: var(--muted); font-size: 12.5px; margin-top: 10px; max-width: 70ch; }
+
+  /* SVG vocabulary */
+  svg text { font-family: inherit; font-size: 12.5px; fill: var(--ink); }
+  svg .sub  { font-size: 11px; fill: var(--muted); }
+  svg .elab { font-size: 11px; fill: var(--muted); }
+  svg .box    { fill: var(--surface2); stroke: var(--edge); stroke-width: 1.1; }
+  svg .status { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.3; }
+  svg .hot    { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.3; }
+  svg .good   { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 1.2; }
+  svg .bad    { fill: var(--danger-soft); stroke: var(--danger); stroke-width: 1.2; }
+  svg .note   { fill: none; stroke: var(--edge); stroke-dasharray: 4 3; }
+  svg .flow { stroke: var(--edge); stroke-width: 1.3; fill: none; }
+
+  /* chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .chip {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    border: 1px solid var(--line); background: var(--surface);
+    border-radius: 999px; padding: 7px 14px; font-size: 13.5px; font-weight: 600;
+  }
+  .chip small { font-weight: 500; color: var(--muted); font-size: 11.5px; }
+  .chip.cobrada { border-color: var(--ok); }
+  .chip.cobrada small { color: var(--ok); font-weight: 600; }
+
+  /* two-column cards */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  @media (max-width: 640px) { .duo { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+  .card.trava h3 { color: var(--danger); }
+  .card.livre h3 { color: var(--ok); }
+  .card ul { margin: 0; padding-left: 18px; }
+  .card li { margin: 4px 0; }
+  .card li em { color: var(--muted); font-style: normal; font-size: 12.5px; }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: top; }
+  th { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); background: var(--surface2); }
+  tr:last-child td { border-bottom: none; }
+  td strong { font-weight: 600; }
+
+  ul.plain { margin: 12px 0 0; padding-left: 20px; }
+  ul.plain li { margin: 6px 0; max-width: 68ch; }
+
+  .callout {
+    margin-top: 16px; border-left: 3px solid var(--warn); background: var(--warn-soft);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 13.5px; max-width: 72ch;
+  }
+
+  footer.doc { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 12.5px; }
+  footer.doc code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 11.5px; background: var(--surface2); border-radius: 4px; padding: 1px 5px; }
+</style>
+
+</head><body><div class="wrap">
+  <header class="doc">
+    <p class="eyebrow">EduGestão · Agenda × Conteúdo × Cobrança</p>
+    <h1>Regras de status da aula, conteúdo e pagamento</h1>
+    <p class="meta">Atualizado em 06/08/2026 · reflete a versão publicada na dev (multi-empresa)</p>
+  </header>
+
+  <section>
+    <h2><span class="idx">1</span>Os cinco status e o que é cobrado</h2>
+    <p class="lead">O motor de cobrança só conta aulas em status <strong>cobrado</strong>. Todo o restante das regras deriva disso: entrar num status cobrado cria vínculo com pagamento; sair dele exige desfazer esse vínculo.</p>
+    <div class="chips">
+      <div class="chip">Agendada <small>não cobrada · nunca tem pagamento vinculado</small></div>
+      <div class="chip cobrada">Realizada <small>cobrada</small></div>
+      <div class="chip cobrada">Falta do Aluno <small>cobrada</small></div>
+      <div class="chip">Cancelada <small>não cobrada</small></div>
+      <div class="chip">Falta do Professor <small>não cobrada</small></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="idx">2</span>Marcar uma aula como Realizada</h2>
+    <p class="lead">Realizada exige duas coisas: a aula já ter terminado e um Conteúdo registrado. Enquanto a aula não termina, só Cancelar fica disponível.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 780 216" role="img" aria-label="Fluxo para marcar uma aula como Realizada: se a aula ainda não terminou, apenas Cancelar fica disponível; se terminou, o botão Realizada abre a tela de Conteúdos e, ao salvar o conteúdo, o status muda para Realizada.">
+          <defs>
+            <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="var(--edge)"></path>
+            </marker>
+          </defs>
+          <rect class="status" x="16" y="36" width="130" height="44" rx="9"></rect>
+          <text x="81" y="62" text-anchor="middle">Aula Agendada</text>
+
+          <path class="flow" d="M146 58 H184" marker-end="url(#arrB)"></path>
+
+          <rect class="box" x="186" y="28" width="160" height="60" rx="9"></rect>
+          <text x="266" y="48" text-anchor="middle">Aula já terminou?</text>
+          <text class="sub" x="266" y="63" text-anchor="middle">data passada, ou hoje</text>
+          <text class="sub" x="266" y="77" text-anchor="middle">após o horário de fim</text>
+
+          <path class="flow" d="M346 58 H384" marker-end="url(#arrB)"></path>
+          <text class="elab" x="365" y="50" text-anchor="middle">sim</text>
+
+          <rect class="box" x="386" y="30" width="180" height="56" rx="9"></rect>
+          <text x="476" y="53" text-anchor="middle">Botão “Realizada” abre</text>
+          <text x="476" y="69" text-anchor="middle">Conteúdos pré-preenchido</text>
+
+          <path class="flow" d="M566 58 H604" marker-end="url(#arrB)"></path>
+
+          <rect class="box" x="606" y="30" width="158" height="56" rx="9"></rect>
+          <text x="685" y="53" text-anchor="middle">Salvar o Conteúdo</text>
+          <text class="sub" x="685" y="69" text-anchor="middle">fica vinculado à aula</text>
+
+          <path class="flow" d="M685 86 V120" marker-end="url(#arrB)"></path>
+
+          <rect class="good" x="610" y="122" width="150" height="38" rx="9"></rect>
+          <text x="685" y="145" text-anchor="middle">Status: Realizada</text>
+
+          <path class="flow" d="M266 88 V130" marker-end="url(#arrB)"></path>
+          <text class="elab" x="276" y="114">não</text>
+
+          <rect class="box" x="126" y="132" width="284" height="56" rx="9"></rect>
+          <text x="268" y="155" text-anchor="middle">Aula futura ou em andamento: só Cancelar.</text>
+          <text class="sub" x="268" y="171" text-anchor="middle">Matéria e observação seguem editáveis.</text>
+        </svg>
+      </div>
+      <figcaption>A trava também existe no servidor: a API recusa mudar para Realizada sem Conteúdo vinculado, mesmo se a chamada não vier pela tela. Conteúdo “planejado” é convertido para “ministrado” nesse momento.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="idx">3</span>Sair de Realizada — o que acontece em cada destino</h2>
+    <p class="lead">Voltar atrás numa aula Realizada sempre exclui o Conteúdo vinculado. O que muda entre os destinos é o efeito sobre a cobrança.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 780 384" role="img" aria-label="Árvore de decisão ao trocar o status de uma aula Realizada. Para Agendada: exclui o conteúdo, desmarca e exclui os pagamentos vinculados. Para Falta do Aluno: exclui o conteúdo e mantém o pagamento. Para Cancelada ou Falta do Professor: bloqueado se o pagamento já foi pago; permitido se não pago.">
+          <defs>
+            <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="var(--edge)"></path>
+            </marker>
+          </defs>
+
+          <rect class="status" x="290" y="14" width="200" height="46" rx="10"></rect>
+          <text x="390" y="34" text-anchor="middle">Aula Realizada</text>
+          <text class="sub" x="390" y="50" text-anchor="middle">trocar o status para…</text>
+
+          <path class="flow" d="M390 60 V82 H135 V106" marker-end="url(#arrA)"></path>
+          <path class="flow" d="M390 60 V106" marker-end="url(#arrA)"></path>
+          <path class="flow" d="M390 60 V82 H645 V106" marker-end="url(#arrA)"></path>
+
+          <rect class="box" x="60" y="108" width="150" height="34" rx="9"></rect>
+          <text x="135" y="129.5" text-anchor="middle">Agendada</text>
+
+          <rect class="box" x="310" y="108" width="160" height="34" rx="9"></rect>
+          <text x="390" y="129.5" text-anchor="middle">Falta do Aluno</text>
+
+          <rect class="box" x="520" y="108" width="250" height="34" rx="9"></rect>
+          <text x="645" y="129.5" text-anchor="middle">Cancelada / Falta do Professor</text>
+
+          <!-- coluna Agendada -->
+          <path class="flow" d="M135 142 V164" marker-end="url(#arrA)"></path>
+          <rect class="box" x="40" y="166" width="190" height="36" rx="9"></rect>
+          <text x="135" y="188.5" text-anchor="middle">Exclui o Conteúdo vinculado</text>
+
+          <path class="flow" d="M135 202 V224" marker-end="url(#arrA)"></path>
+          <rect class="hot" x="20" y="226" width="230" height="56" rx="9"></rect>
+          <text x="135" y="248" text-anchor="middle">Desmarca (não pago) e exclui</text>
+          <text x="135" y="264" text-anchor="middle">os pagamentos vinculados, se houver</text>
+
+          <path class="flow" d="M135 282 V304" marker-end="url(#arrA)"></path>
+          <rect class="note" x="20" y="306" width="230" height="52" rx="9"></rect>
+          <text class="elab" x="135" y="327" text-anchor="middle">“Gerar cobranças” depois recria</text>
+          <text class="elab" x="135" y="342" text-anchor="middle">o período já sem esta aula</text>
+
+          <!-- coluna Falta do Aluno -->
+          <path class="flow" d="M390 142 V164" marker-end="url(#arrA)"></path>
+          <rect class="box" x="295" y="166" width="190" height="36" rx="9"></rect>
+          <text x="390" y="188.5" text-anchor="middle">Exclui o Conteúdo vinculado</text>
+
+          <path class="flow" d="M390 202 V224" marker-end="url(#arrA)"></path>
+          <rect class="good" x="285" y="226" width="210" height="56" rx="9"></rect>
+          <text x="390" y="248" text-anchor="middle">Pagamento mantido —</text>
+          <text x="390" y="264" text-anchor="middle">falta do aluno continua cobrada</text>
+
+          <!-- coluna Cancelada / Falta do Professor -->
+          <path class="flow" d="M645 142 V164" marker-end="url(#arrA)"></path>
+          <rect class="box" x="545" y="166" width="200" height="44" rx="9"></rect>
+          <text x="645" y="184" text-anchor="middle">Pagamento vinculado</text>
+          <text x="645" y="200" text-anchor="middle">já pago?</text>
+
+          <path class="flow" d="M645 210 V234" marker-end="url(#arrA)"></path>
+          <text class="elab" x="654" y="228">sim</text>
+          <rect class="bad" x="570" y="236" width="150" height="48" rx="9"></rect>
+          <text x="645" y="256" text-anchor="middle">Bloqueado</text>
+          <text class="sub" x="645" y="272" text-anchor="middle">não permite a troca</text>
+
+          <path class="flow" d="M575 210 V318" marker-end="url(#arrA)"></path>
+          <text class="elab" x="567" y="250" text-anchor="end">não</text>
+          <rect class="box" x="520" y="320" width="250" height="52" rx="9"></rect>
+          <text x="645" y="341" text-anchor="middle">Não pago: troca permitida —</text>
+          <text x="645" y="357" text-anchor="middle">o Conteúdo é excluído</text>
+        </svg>
+      </div>
+      <figcaption>A mesma reversão de cobrança vale para <strong>Falta do Aluno → Agendada</strong>: como a aula deixa de ser cobrada, o pagamento vinculado é desmarcado e excluído. E o inverso confirma o invariante: aula Agendada nunca fica com pagamento vinculado.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="idx">4</span>O que um pagamento pago trava — e o que não trava</h2>
+    <p class="lead">O bloqueio por pagamento quitado protege o histórico financeiro. A exceção deliberada é voltar para Agendada, que em vez de bloquear, desfaz a cobrança.</p>
+    <div class="duo">
+      <div class="card trava">
+        <h3>Pagamento pago impede</h3>
+        <ul>
+          <li>Mudar para <strong>Cancelada</strong></li>
+          <li>Mudar para <strong>Falta do Professor</strong></li>
+          <li><strong>Excluir</strong> a aula</li>
+          <li><strong>Repor</strong> a aula <em>(mesma checagem da exclusão)</em></li>
+        </ul>
+      </div>
+      <div class="card livre">
+        <h3>Pagamento pago não impede</h3>
+        <ul>
+          <li>Voltar para <strong>Agendada</strong> <em>— desmarca o pagamento como não pago e o exclui, junto com o Conteúdo</em></li>
+          <li><strong>Realizada → Falta do Aluno</strong> <em>— o pagamento segue valendo, pois falta do aluno é cobrada</em></li>
+          <li>Editar a <strong>observação</strong> da aula</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">⚠️ Atenção ao efeito em cascata: cobranças mensais/quinzenais agrupam várias aulas. Reverter <strong>uma</strong> aula para Agendada exclui a cobrança do período inteiro (que ficaria com valor errado). As demais aulas voltam a ser cobradas ao rodar “Gerar cobranças” — e o pagamento precisará ser quitado de novo, se for o caso.</div>
+  </section>
+
+  <section>
+    <h2><span class="idx">5</span>Excluir uma aula (e o fluxo de reposição)</h2>
+    <p class="lead">A exclusão pergunta se a aula será reposta. Se sim, a cobrança da aula original é preservada como pagamento manual, e a reposição nasce fora do motor de cobrança para não ser cobrada duas vezes.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 780 332" role="img" aria-label="Fluxo de exclusão de aula: bloqueado se houver pagamento pago vinculado; caso contrário, pergunta se será reposta. Sem reposição, exclui a aula e o conteúdo. Com reposição, cria a aula de reposição fora do motor de cobrança, cria cobrança manual da aula original e exclui a original.">
+          <defs>
+            <marker id="arrC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="var(--edge)"></path>
+            </marker>
+          </defs>
+
+          <rect class="status" x="60" y="16" width="160" height="40" rx="10"></rect>
+          <text x="140" y="41" text-anchor="middle">Excluir aula</text>
+
+          <path class="flow" d="M140 56 V86" marker-end="url(#arrC)"></path>
+
+          <rect class="box" x="40" y="88" width="200" height="44" rx="9"></rect>
+          <text x="140" y="106" text-anchor="middle">Pagamento vinculado</text>
+          <text x="140" y="122" text-anchor="middle">já pago?</text>
+
+          <path class="flow" d="M240 110 H298" marker-end="url(#arrC)"></path>
+          <text class="elab" x="262" y="102" text-anchor="middle">sim</text>
+
+          <rect class="bad" x="300" y="88" width="200" height="44" rx="9"></rect>
+          <text x="400" y="106" text-anchor="middle">Bloqueado — não permite</text>
+          <text x="400" y="122" text-anchor="middle">excluir nem repor</text>
+
+          <path class="flow" d="M140 132 V170" marker-end="url(#arrC)"></path>
+          <text class="elab" x="150" y="156">não</text>
+
+          <rect class="box" x="50" y="172" width="180" height="40" rx="9"></rect>
+          <text x="140" y="196.5" text-anchor="middle">Será reposta?</text>
+
+          <path class="flow" d="M230 192 H298" marker-end="url(#arrC)"></path>
+          <text class="elab" x="256" y="184" text-anchor="middle">não</text>
+
+          <rect class="box" x="300" y="168" width="230" height="48" rx="9"></rect>
+          <text x="415" y="188" text-anchor="middle">Exclui a aula</text>
+          <text class="sub" x="415" y="204" text-anchor="middle">e o Conteúdo, se estava Realizada</text>
+
+          <path class="flow" d="M140 212 V250" marker-end="url(#arrC)"></path>
+          <text class="elab" x="150" y="236">sim</text>
+
+          <rect class="hot" x="20" y="252" width="300" height="60" rx="9"></rect>
+          <text x="170" y="272" text-anchor="middle">Cria a aula de reposição — Agendada,</text>
+          <text x="170" y="287" text-anchor="middle">marcada como reposição, fora do</text>
+          <text x="170" y="302" text-anchor="middle">motor de cobrança mensal</text>
+
+          <path class="flow" d="M320 282 H358" marker-end="url(#arrC)"></path>
+
+          <rect class="box" x="360" y="252" width="310" height="60" rx="9"></rect>
+          <text x="515" y="272" text-anchor="middle">Cria cobrança manual referente à aula</text>
+          <text x="515" y="287" text-anchor="middle">original e exclui a original</text>
+          <text class="sub" x="515" y="302" text-anchor="middle">com o Conteúdo, se estava Realizada</text>
+        </svg>
+      </div>
+      <figcaption>A limpeza de agenda em massa (“limpar período”) é mais conservadora: preserva qualquer aula com pagamento vinculado, pago ou não.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="idx">6</span>Geração de cobranças (motor)</h2>
+    <p class="lead">O botão “Gerar cobranças” do mês recalcula as parcelas a partir das aulas cobradas e refaz os vínculos aula ↔ pagamento. Valor da parcela = valor por aula do aluno × quantidade de aulas.</p>
+    <div class="duo">
+      <div class="card livre">
+        <h3>Entram no cálculo</h3>
+        <ul>
+          <li>Aulas <strong>Realizada</strong> do mês</li>
+          <li>Aulas <strong>Falta do Aluno</strong> do mês</li>
+          <li>Somente alunos com <strong>período contratual</strong> definido cobrindo o mês</li>
+        </ul>
+      </div>
+      <div class="card trava">
+        <h3>Ficam de fora</h3>
+        <ul>
+          <li>Agendada, Cancelada, Falta do Professor</li>
+          <li>Aulas de <strong>reposição</strong> <em>(já cobradas manualmente na aula original excluída)</em></li>
+        </ul>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Tipo de cobrança</th><th>Parcelas geradas no mês</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mensal</strong></td><td>1 parcela, com vencimento no dia de pagamento do aluno</td></tr>
+        <tr><td><strong>Quinzenal</strong></td><td>2 parcelas — dia de pagamento 1 e dia de pagamento 2</td></tr>
+        <tr><td><strong>Semanal</strong></td><td>1 parcela por ocorrência do dia de cobrança na semana; semanas sem aula são puladas</td></tr>
+        <tr><td><strong>Por aula</strong></td><td>1 parcela única, valor = valor/aula × nº de aulas do mês</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="idx">7</span>Pagamento manual com vínculo de aulas</h2>
+    <p class="lead">Além do motor, dá para cobrar aulas avulsas por pagamento manual — inclusive uma aula que voltou a ser Realizada depois de uma reversão.</p>
+    <ul class="plain">
+      <li>Em <strong>Pagamentos → Novo pagamento</strong>, ao selecionar o aluno aparece a lista de aulas <strong>Realizadas sem pagamento vinculado</strong> (reposições ficam de fora).</li>
+      <li>Marcar as aulas preenche automaticamente <strong>quantidade e valor</strong> (nº de aulas × valor/aula), ajustáveis antes de salvar.</li>
+      <li>Ao salvar, o pagamento manual nasce <strong>já vinculado</strong> às aulas selecionadas — elas somem da lista de “sem pagamento”.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="idx">8</span>Matéria da aula</h2>
+    <ul class="plain">
+      <li>O seletor de matéria no detalhe da aula mostra a <strong>união</strong> das matérias vinculadas à aula com as matérias <strong>atuais</strong> do cadastro do aluno — matéria incluída depois da criação da aula também aparece.</li>
+      <li>Escolher uma matéria específica substitui os vínculos da aula por essa matéria; <strong>“Todas da aula”</strong> restaura todas as matérias atuais do aluno.</li>
+      <li>Depois que um <strong>Conteúdo</strong> é vinculado (normalmente ao marcar Realizada), a matéria fica <strong>travada</strong> — na tela e na API — para não dessincronizar aula e conteúdo. Sair de Realizada exclui o Conteúdo e destrava.</li>
+    </ul>
+  </section>
+
+  <footer class="doc">
+    Fontes das regras no código: <code>src/app/api/agenda/[id]/route.ts</code> (status, matéria, exclusão),
+    <code>src/app/api/agenda/[id]/repor/route.ts</code> (reposição),
+    <code>src/app/api/pagamentos/gerar/route.ts</code> (motor de cobrança),
+    <code>src/app/api/agenda/realizadas/route.ts</code> + <code>PagamentosClient.tsx</code> (pagamento manual),
+    <code>AgendaClient.tsx</code> / <code>AgendaMobile.tsx</code> (travas de tela).
+  </footer>
+</div>
+</body></html>

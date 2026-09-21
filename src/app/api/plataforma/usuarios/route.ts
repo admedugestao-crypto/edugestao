@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validarDisponibilidade } from "@/lib/validarDisponibilidade";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { requirePlataforma } from "@/lib/plataforma";
@@ -41,6 +42,10 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const { senha, empresaId, foto, whatsapp, disponibilidade } = body;
+  if (disponibilidade !== undefined) {
+    const erro = validarDisponibilidade(disponibilidade);
+    if (erro) return NextResponse.json({ erro }, { status: 400 });
+  }
   const nome = typeof body.nome === "string" ? body.nome.trim() : "";
   const email = typeof body.email === "string" ? normalizarEmail(body.email) : "";
   const perfil: PerfilValido = PERFIS.includes(body.perfil) ? body.perfil : "PROFESSORA";

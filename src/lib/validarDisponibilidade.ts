@@ -20,3 +20,10 @@ export function validarDisponibilidade(disponibilidade: unknown): string | null 
   return null;
 }
 
+
+export type Faixa = { dia: string; inicio: string; fim: string };
+export function disponibilidadeConflita(anteriores: Faixa[], novas: Faixa[], aulas: { data: Date; horaInicio: string | null; horaFim: string | null }[]): boolean {
+  const removidas = anteriores.filter(a => !novas.some(n => n.dia === a.dia && n.inicio <= a.inicio && n.fim >= a.fim));
+  const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+  return aulas.some(a => removidas.some(f => f.dia === dias[a.data.getUTCDay()] && (!a.horaInicio || !a.horaFim || (a.horaInicio < f.fim && a.horaFim > f.inicio))));
+}
