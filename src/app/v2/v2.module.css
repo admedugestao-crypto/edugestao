@@ -192,3 +192,37 @@
 
 .pedagogicalGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px; }
 @media (max-width:760px) { .pedagogicalGrid { grid-template-columns:1fr; } }
+
+/* Desktop: keep the overview within the window; only card contents scroll. */
+@media screen and (min-width:961px) {
+  .dashboard { height:100dvh; min-height:0; display:grid; grid-template-rows:auto auto auto minmax(0,1fr) minmax(0,.85fr); gap:12px; overflow:hidden; padding:16px 24px; }
+  .dashboard .focusStrip,.dashboard .metrics,.dashboard .contentGrid,.dashboard .pedagogicalGrid { margin-top:0; min-height:0; }
+  .dashboard .scheduleCard,.dashboard .quickCard { min-height:0; display:flex; flex-direction:column; overflow:auto; scrollbar-width:thin; scrollbar-color:#b9c6da transparent; }
+  .dashboard .sectionHeading { flex:none; }
+  .dashboard .timeline { min-height:0; overflow-y:auto; scrollbar-width:thin; }
+  .dashboard .timeline li { flex:none; }
+  .dashboard .emptyState { min-height:0; flex:1; padding:8px; }
+  .dashboard .pedagogicalGrid ul { flex:1 0 64px; min-height:64px; max-height:none; overflow-y:auto; scrollbar-width:thin; }
+  .dashboard .quickCard>a { flex-shrink:0; min-height:44px; padding:6px 0; }
+}
+@media screen and (min-width:721px) and (max-height:850px) {
+  .sidebar { padding:14px 14px 10px; }
+  .brandBlock { padding-bottom:12px; }
+  .companyBlock { margin:10px 0; padding:8px 10px; }
+  .nav { min-height:0; scrollbar-width:thin; scrollbar-color:#526785 transparent; }
+  .navItem { min-height:clamp(26px,4.3dvh,35px); margin:1px 0; font-size:12px; }
+  .navEyebrow { margin-bottom:5px; }
+  .profileBlock { padding-top:8px; }
+}
+@media screen and (min-width:961px) and (max-height:700px) {
+  .dashboard { gap:8px; padding:12px 20px; }
+  .dashboard .pageHeader h1 { font-size:30px; }
+  .dashboard .dateLabel { font-size:10px; margin-bottom:3px; }
+  .dashboard .pageHeader>div>p:last-child { font-size:12px; margin-top:4px; }
+  .dashboard .focusStrip { padding:9px 16px; }
+  .dashboard .metrics article { padding:10px 14px; }
+  .dashboard .metrics strong { font-size:22px; }
+  .dashboard .scheduleCard,.dashboard .quickCard { padding:10px 14px; }
+  .dashboard .sectionHeading { margin-bottom:6px; }
+  .dashboard .sectionHeading h2 { font-size:15px; }
+}
