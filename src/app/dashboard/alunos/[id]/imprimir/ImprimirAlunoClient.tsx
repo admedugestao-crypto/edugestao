@@ -209,7 +209,7 @@ export default function ImprimirAlunoClient({ aluno }: { aluno: AlunoImpressao }
               label="Data de nascimento"
               valor={
                 aluno.dataNascimento
-                  ? new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")
+                  ? new Date(aluno.dataNascimento).toLocaleDateString("pt-BR", { timeZone: "UTC" })
                   : null
               }
             />
