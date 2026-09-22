@@ -28,6 +28,9 @@ export async function middleware(request: NextRequest) {
 
   if (!token) {
     const loginUrl = new URL(isPlataforma ? "/plataforma/login" : "/login", request.url);
+    if (!isPlataforma && (pathname === "/v2" || pathname.startsWith("/v2/"))) {
+      loginUrl.searchParams.set("callbackUrl", pathname + request.nextUrl.search);
+    }
     return NextResponse.redirect(loginUrl);
   }
 

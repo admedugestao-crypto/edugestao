@@ -689,8 +689,8 @@ export default function PagamentosClient({
 
         {pagamentos.length === 0 ? (
           <div className="p-10 text-center text-slate-400 text-sm">
-            A cobrança é gerada automaticamente ao marcar uma aula como Realizada ou Falta do Aluno na agenda,
-            ou você pode clicar em <strong>Novo</strong> para adicionar manualmente.
+            A cobrança é gerada automaticamente ao marcar uma aula como Realizada ou Falta do Aluno na agenda.
+            {(isAdmin || podeNovo) && <> Você também pode clicar em <strong>Novo</strong> para adicionar manualmente.</>}
           </div>
         ) : pagamentosExibidos.length === 0 ? (
           <div className="p-10 text-center text-slate-400 text-sm">

@@ -721,6 +721,11 @@ export default function ConteudosClient({
           return;
         }
         setAulaIdPendente(null);
+        // Atualiza o cartão imediatamente após o PATCH confirmado.
+        setConteudos((prev) => prev.map((c) => c.id === data.id && c.agenda
+          ? { ...c, agenda: { ...c.agenda, status: "REALIZADA" } } : c));
+        setModal(false);
+        setNovo(formVazio());
         // Se gerou cobrança, avisa antes de sair da tela.
         pagamentoInfo.mostrar(patchJson.pagamentoGerado, () => router.push(agendaPath));
         return;

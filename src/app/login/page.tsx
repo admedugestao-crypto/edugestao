@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { isMobileUserAgent } from "@/lib/device";
+import { destinoV2AposLogin } from "@/lib/destinoLogin";
 
 function LoginForm() {
   const router = useRouter();
@@ -34,7 +35,7 @@ function LoginForm() {
     if (res?.error) {
       setErro("E-mail ou senha incorretos.");
     } else {
-      router.push(isMobileUserAgent(navigator.userAgent) ? "/m" : "/dashboard");
+      router.push(destinoV2AposLogin(searchParams.get("callbackUrl")) ?? (isMobileUserAgent(navigator.userAgent) ? "/m" : "/dashboard"));
     }
   }
 

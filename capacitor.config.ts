@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
   appName: 'EduGestão V2 Dev',
   webDir: 'public',
   server: {
-    url: 'https://edugestao-bj4p-git-codex-v2-edugestao-s-projects.vercel.app/v2',
+    url: 'https://edugestao-bj4p-git-dev-edugestao-s-projects.vercel.app/v2',
     androidScheme: 'https',
   },
 };
