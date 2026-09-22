@@ -21,18 +21,8 @@ export default async function ConteudosMobilePage() {
     prisma.aluno.findMany({
       where: { empresaId: scope.empresaId, ...filtroProf },
       include: {
-        // Matérias do aluno para fins de Conteúdo vêm das aulas agendadas
-        // dele (AgendaAula), não do vínculo direto AlunoMateria — é a agenda
-        // que define quais matérias o aluno efetivamente estuda com cada
-        // professora. Uma aula pode ter várias matérias (aula multidisciplinar,
-        // via AgendaAulaMateria) além da matéria "principal" (materiaId).
-        aulas: {
-          select: {
-            materiaId: true,
-            materia: true,
-            materias: { select: { materia: true } },
-          },
-        },
+        // Planejamento sem aula usa as disciplinas do cadastro do aluno.
+        materias: { include: { materia: true } },
         professora: { select: { id: true } },
         unidade: { select: { escola: { select: { metodoEnsino: { select: { id: true, nome: true } } } } } },
       },
@@ -80,14 +70,7 @@ export default async function ConteudosMobilePage() {
         professoraId: a.professoraId ?? null,
         serie: a.serie,
         escolaMetodo: a.unidade.escola.metodoEnsino,
-        materias: Array.from(
-          new Map(
-            a.aulas
-              .flatMap((aula) => [aula.materia, ...aula.materias.map((am) => am.materia)])
-              .filter((m): m is NonNullable<typeof m> => !!m)
-              .map((m) => [m.id, { materiaId: m.id, materia: m }])
-          ).values()
-        ),
+        materias: a.materias,
       }))}
       professoras={professoras.map((p) => ({ id: p.id, nome: p.usuario.nome }))}
       materias={materias}
