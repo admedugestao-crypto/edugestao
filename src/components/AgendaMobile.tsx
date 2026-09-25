@@ -98,7 +98,7 @@ export default function AgendaMobile({
   const [semana,    setSemana]    = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [diaAtivo,  setDiaAtivo]  = useState(new Date());
   const [mesAtivo,  setMesAtivo]  = useState(() => startOfMonth(new Date()));
-  const [vista,     setVista]     = useState<"dia" | "mes">("dia");
+  const [vista,     setVista]     = useState<"semana" | "dia" | "mes">(() => variant === "v2" ? "semana" : "dia");
   const [aulas,     setAulas]     = useState<Aula[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
@@ -551,9 +551,12 @@ export default function AgendaMobile({
       </div>
 
       {variant === "v2" && (
-        <div className="grid grid-cols-2 gap-1 bg-white border-b border-slate-200 px-3 py-2 shrink-0">
+        <div className="grid grid-cols-3 gap-1 bg-white border-b border-slate-200 px-3 py-2 shrink-0">
+          <button onClick={() => setVista("semana")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "semana" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
+            Semana
+          </button>
           <button onClick={() => setVista("dia")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "dia" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
-            Dia e semana
+            Dia
           </button>
           <button onClick={() => setVista("mes")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "mes" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
             Mês
@@ -587,7 +590,7 @@ export default function AgendaMobile({
       </div>
 
       {/* ── Seletor de dia (scroll horizontal) ───────────────────────────── */}
-      <div className={`${vista === "mes" ? "hidden" : "flex"} bg-white border-b border-slate-100 px-2 py-2 gap-1 overflow-x-auto no-scrollbar shrink-0`}>
+      <div className={`${vista === "dia" ? "flex" : "hidden"} bg-white border-b border-slate-100 px-2 py-2 gap-1 overflow-x-auto no-scrollbar shrink-0`}>
         {diasSemana.map((dia, i) => {
           const ativo = isSameDay(dia, diaAtivo);
           const hoje  = isToday(dia);
@@ -638,8 +641,55 @@ export default function AgendaMobile({
         </div>
       )}
 
+      {vista === "semana" && (
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+          {diasSemana.map((dia) => {
+            const aulasDia = aulas
+              .filter((aula) => isSameDay(parseLocal(aula.data), dia))
+              .sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
+            return (
+              <section key={dia.toISOString()} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <button onClick={() => { setDiaAtivo(dia); setVista("dia"); }}
+                  className={`w-full px-4 py-3 text-left font-bold ${isToday(dia) ? "bg-indigo-50 text-indigo-700" : "bg-slate-50 text-slate-700"}`}>
+                  {format(dia, "EEEE, d 'de' MMMM", { locale: ptBR })}
+                  <span className="ml-2 text-xs font-medium text-slate-400">{aulasDia.length} aula(s)</span>
+                </button>
+                {aulasDia.length === 0 ? (
+                  <p className="px-4 py-3 text-xs text-slate-400">Nenhuma aula neste dia.</p>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {aulasDia.map((aula) => {
+                      const cfg = STATUS_CFG[aula.status];
+                      return (
+                        <button key={aula.id} onClick={() => { setDiaAtivo(dia); setVista("dia"); }}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-left">
+                          <span className="w-12 shrink-0 text-xs font-bold text-indigo-600">
+                            {aula.horaInicio ?? "—"}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-slate-800">{aula.aluno.nome}</span>
+                            <span className="block truncate text-xs text-slate-500">
+                              {aula.materias?.length > 0
+                                ? aula.materias.map((item) => item.materia.nome).join(", ")
+                                : (aula.materia?.nome ?? "Sem matéria")}
+                            </span>
+                          </span>
+                          <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-medium ${cfg.bg} ${cfg.cor}`}>
+                            {cfg.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      )}
+
       {/* ── Lista do dia ──────────────────────────────────────────────────── */}
-      <div className={`${vista === "mes" ? "hidden" : "block"} flex-1 overflow-y-auto px-3 py-3 space-y-2`}>
+      <div className={`${vista === "dia" ? "block" : "hidden"} flex-1 overflow-y-auto px-3 py-3 space-y-2`}>
         {timeline.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">
             <p className="text-2xl mb-2">📅</p>
