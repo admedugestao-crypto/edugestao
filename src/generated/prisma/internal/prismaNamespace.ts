@@ -16,10 +16,10 @@
  */
 
 import * as runtime from "@prisma/client/runtime/client"
-import type * as Prisma from "../models"
-import { type PrismaClient } from "./class"
+import type * as Prisma from "../models.ts"
+import { type PrismaClient } from "./class.ts"
 
-export type * from '../models'
+export type * from '../models.ts'
 
 export type DMMF = typeof runtime.DMMF
 
@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Empresa: 'Empresa',
   Usuario: 'Usuario',
+  SessaoAtiva: 'SessaoAtiva',
   Professora: 'Professora',
   Materia: 'Materia',
   ProfessoraMateria: 'ProfessoraMateria',
@@ -424,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "empresa" | "usuario" | "professora" | "materia" | "professoraMateria" | "metodoEnsino" | "tipoAvaliacao" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "conteudoMateria" | "materialBiblioteca" | "materialBibliotecaMateria" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula" | "notificacaoConteudo"
+    modelProps: "empresa" | "usuario" | "sessaoAtiva" | "professora" | "materia" | "professoraMateria" | "metodoEnsino" | "tipoAvaliacao" | "escola" | "unidade" | "calendarioEscolar" | "avaliacao" | "notificacaoProva" | "aluno" | "alunoMateria" | "nota" | "pagamento" | "pagamentoAula" | "conteudo" | "conteudoMateria" | "materialBiblioteca" | "materialBibliotecaMateria" | "agendaAula" | "agendaAulaMateria" | "notificacaoAula" | "notificacaoConteudo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -573,6 +574,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UsuarioCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UsuarioCountAggregateOutputType> | number
+        }
+      }
+    }
+    SessaoAtiva: {
+      payload: Prisma.$SessaoAtivaPayload<ExtArgs>
+      fields: Prisma.SessaoAtivaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SessaoAtivaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SessaoAtivaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>
+        }
+        findFirst: {
+          args: Prisma.SessaoAtivaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SessaoAtivaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>
+        }
+        findMany: {
+          args: Prisma.SessaoAtivaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>[]
+        }
+        create: {
+          args: Prisma.SessaoAtivaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>
+        }
+        createMany: {
+          args: Prisma.SessaoAtivaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SessaoAtivaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>[]
+        }
+        delete: {
+          args: Prisma.SessaoAtivaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>
+        }
+        update: {
+          args: Prisma.SessaoAtivaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>
+        }
+        deleteMany: {
+          args: Prisma.SessaoAtivaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SessaoAtivaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SessaoAtivaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>[]
+        }
+        upsert: {
+          args: Prisma.SessaoAtivaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SessaoAtivaPayload>
+        }
+        aggregate: {
+          args: Prisma.SessaoAtivaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSessaoAtiva>
+        }
+        groupBy: {
+          args: Prisma.SessaoAtivaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SessaoAtivaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SessaoAtivaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SessaoAtivaCountAggregateOutputType> | number
         }
       }
     }
@@ -2322,9 +2397,18 @@ export const EmpresaScalarFieldEnum = {
   nome: 'nome',
   slug: 'slug',
   logoUrl: 'logoUrl',
+  cep: 'cep',
+  logradouro: 'logradouro',
+  numero: 'numero',
+  complemento: 'complemento',
+  bairro: 'bairro',
+  cidade: 'cidade',
+  estado: 'estado',
+  codigoIbge: 'codigoIbge',
   ativo: 'ativo',
   whatsappPausado: 'whatsappPausado',
   emailPausado: 'emailPausado',
+  prazoAlertaProvaDias: 'prazoAlertaProvaDias',
   criadoEm: 'criadoEm',
   fonnteToken: 'fonnteToken',
   evolutionApiUrl: 'evolutionApiUrl',
@@ -2359,6 +2443,19 @@ export const UsuarioScalarFieldEnum = {
 } as const
 
 export type UsuarioScalarFieldEnum = (typeof UsuarioScalarFieldEnum)[keyof typeof UsuarioScalarFieldEnum]
+
+
+export const SessaoAtivaScalarFieldEnum = {
+  id: 'id',
+  usuarioId: 'usuarioId',
+  empresaId: 'empresaId',
+  rota: 'rota',
+  dispositivo: 'dispositivo',
+  criadoEm: 'criadoEm',
+  ultimaAtividade: 'ultimaAtividade'
+} as const
+
+export type SessaoAtivaScalarFieldEnum = (typeof SessaoAtivaScalarFieldEnum)[keyof typeof SessaoAtivaScalarFieldEnum]
 
 
 export const ProfessoraScalarFieldEnum = {
@@ -2572,6 +2669,7 @@ export const PagamentoScalarFieldEnum = {
   emailEnviadoEm: 'emailEnviadoEm',
   origemManual: 'origemManual',
   origemReposicao: 'origemReposicao',
+  tipoCobrancaGerada: 'tipoCobrancaGerada',
   criadoEm: 'criadoEm',
   atualizadoEm: 'atualizadoEm'
 } as const
@@ -2759,6 +2857,20 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -2797,20 +2909,6 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -2995,6 +3093,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   empresa?: Prisma.EmpresaOmit
   usuario?: Prisma.UsuarioOmit
+  sessaoAtiva?: Prisma.SessaoAtivaOmit
   professora?: Prisma.ProfessoraOmit
   materia?: Prisma.MateriaOmit
   professoraMateria?: Prisma.ProfessoraMateriaOmit

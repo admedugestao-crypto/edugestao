@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { aulaElegivelParaCobrancaAutomatica } from "@/lib/aulaElegivelCobranca";
 
 export function diasNoMes(mes: number, ano: number) {
   return new Date(ano, mes, 0).getDate();
@@ -68,9 +69,13 @@ export type ResultadoGeracao =
 export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string): Promise<ResultadoGeracao> {
   const aula = await prisma.agendaAula.findFirst({
     where: { id: agendaAulaId, empresaId },
-    select: { id: true, alunoId: true, data: true, status: true },
+    select: { id: true, alunoId: true, data: true, status: true, reposicao: true },
   });
-  if (!aula || (aula.status !== "REALIZADA" && aula.status !== "FALTA_ALUNO")) return { semCobranca: true };
+  // A cobrança da aula original já foi criada pelo fluxo de reposição. A nova
+  // aula substituta não deve criar uma segunda cobrança ao ser realizada.
+  if (!aula || !aulaElegivelParaCobrancaAutomatica(aula.status, aula.reposicao)) {
+    return { semCobranca: true };
+  }
 
   const aluno = await prisma.aluno.findUnique({
     where: { id: aula.alunoId },
@@ -146,7 +151,7 @@ export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string
 
     const atualizado = await prisma.pagamento.update({
       where: { id: vinculo.pagamentoId },
-      data: { dataVencimento, valorCobrado: valorCobranca, quantidadeAulas: 1 },
+      data: { dataVencimento, valorCobrado: valorCobranca, quantidadeAulas: 1, tipoCobrancaGerada: aluno.tipoCobranca ?? "MENSAL" },
     });
     return {
       semCobranca: false,
@@ -176,6 +181,7 @@ export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string
       quantidadeAulas: 1,
       pago: false,
       origemManual: false,
+      tipoCobrancaGerada: aluno.tipoCobranca ?? "MENSAL",
     },
   });
   await prisma.pagamentoAula.create({ data: { pagamentoId: criado.id, agendaAulaId } });

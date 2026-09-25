@@ -17,8 +17,8 @@
 
 import * as runtime from "@prisma/client/runtime/index-browser"
 
-export type * from '../models'
-export type * from './prismaNamespace'
+export type * from '../models.ts'
+export type * from './prismaNamespace.ts'
 
 export const Decimal = runtime.Decimal
 
@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Empresa: 'Empresa',
   Usuario: 'Usuario',
+  SessaoAtiva: 'SessaoAtiva',
   Professora: 'Professora',
   Materia: 'Materia',
   ProfessoraMateria: 'ProfessoraMateria',
@@ -99,9 +100,18 @@ export const EmpresaScalarFieldEnum = {
   nome: 'nome',
   slug: 'slug',
   logoUrl: 'logoUrl',
+  cep: 'cep',
+  logradouro: 'logradouro',
+  numero: 'numero',
+  complemento: 'complemento',
+  bairro: 'bairro',
+  cidade: 'cidade',
+  estado: 'estado',
+  codigoIbge: 'codigoIbge',
   ativo: 'ativo',
   whatsappPausado: 'whatsappPausado',
   emailPausado: 'emailPausado',
+  prazoAlertaProvaDias: 'prazoAlertaProvaDias',
   criadoEm: 'criadoEm',
   fonnteToken: 'fonnteToken',
   evolutionApiUrl: 'evolutionApiUrl',
@@ -136,6 +146,19 @@ export const UsuarioScalarFieldEnum = {
 } as const
 
 export type UsuarioScalarFieldEnum = (typeof UsuarioScalarFieldEnum)[keyof typeof UsuarioScalarFieldEnum]
+
+
+export const SessaoAtivaScalarFieldEnum = {
+  id: 'id',
+  usuarioId: 'usuarioId',
+  empresaId: 'empresaId',
+  rota: 'rota',
+  dispositivo: 'dispositivo',
+  criadoEm: 'criadoEm',
+  ultimaAtividade: 'ultimaAtividade'
+} as const
+
+export type SessaoAtivaScalarFieldEnum = (typeof SessaoAtivaScalarFieldEnum)[keyof typeof SessaoAtivaScalarFieldEnum]
 
 
 export const ProfessoraScalarFieldEnum = {
@@ -349,6 +372,7 @@ export const PagamentoScalarFieldEnum = {
   emailEnviadoEm: 'emailEnviadoEm',
   origemManual: 'origemManual',
   origemReposicao: 'origemReposicao',
+  tipoCobrancaGerada: 'tipoCobrancaGerada',
   criadoEm: 'criadoEm',
   atualizadoEm: 'atualizadoEm'
 } as const

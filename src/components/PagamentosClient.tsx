@@ -21,6 +21,11 @@ function geracaoPagamento(item: { origemManual: boolean; origemReposicao: boolea
   if (item.origemManual)    return { label: "Manual",     title: "Digitado manualmente",              cor: "text-slate-600", bg: "bg-slate-100" };
   return                           { label: "Automático", title: "Gerado automaticamente ao marcar a aula como Realizada ou Falta do Aluno", cor: "text-blue-700",  bg: "bg-blue-100" };
 }
+function tipoCobrancaPagamento(item: Pick<PagamentoItem, "origemManual" | "tipoCobrancaGerada">) {
+  if (item.origemManual) return "Cobr. Manual";
+  if (!item.tipoCobrancaGerada) return "Não registrado";
+  return TIPO_LABEL[item.tipoCobrancaGerada] ?? item.tipoCobrancaGerada;
+}
 const STATUS_AULA_LABEL: Record<string, { label: string; cor: string; bg: string }> = {
   AGENDADA:        { label: "Agendada",          cor: "text-slate-600",  bg: "bg-slate-100" },
   REALIZADA:       { label: "Realizada",         cor: "text-emerald-700", bg: "bg-emerald-100" },
@@ -44,6 +49,7 @@ type PagamentoItem = {
   observacao:      string | null;
   origemManual:    boolean;
   origemReposicao: boolean;
+  tipoCobrancaGerada: string | null;
   emailTipo:       string | null;
   emailEnviadoEm:  string | null;
   aluno: {
@@ -755,9 +761,9 @@ export default function PagamentosClient({
                       {/* Tipo */}
                       <td className="px-4 py-3">
                         <span className="text-xs text-slate-500">
-                          {TIPO_LABEL[item.aluno.tipoCobranca] ?? item.aluno.tipoCobranca}
+                          {tipoCobrancaPagamento(item)}
                         </span>
-                        {item.aluno.tipoCobranca === "POR_AULA" && (
+                        {item.tipoCobrancaGerada === "POR_AULA" && !item.origemManual && (
                           <button
                             onClick={() => { setErroAulas(null); setAulasModal({
                               id:               item.id,
@@ -1292,9 +1298,6 @@ export default function PagamentosClient({
         const itens = pagamentos.filter((p) => reciboIds.includes(p.id) && p.pago);
         const total = itens.reduce((s, p) => s + p.valorCobrado, 0);
         const hoje  = new Date().toLocaleDateString("pt-BR");
-        const TIPO_LABEL_R: Record<string,string> = {
-          MENSAL: "Mensal", QUINZENAL: "Quinzenal", SEMANAL: "Semanal", POR_AULA: "Por aula",
-        };
         return (
           <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col">
@@ -1362,7 +1365,7 @@ export default function PagamentosClient({
                       <RField label="Escola / Turma" value={`${item.aluno.unidade.escola.nome} · ${item.aluno.unidade.nome}`} />
                       {item.aluno.professora && <RField label="Professor(a)" value={item.aluno.professora} />}
                       <RField label="Competência"    value={`${MESES[item.mes - 1]} / ${item.ano}`} />
-                      <RField label="Tipo cobrança"  value={TIPO_LABEL_R[item.aluno.tipoCobranca] ?? item.aluno.tipoCobranca} />
+                      <RField label="Tipo cobrança"  value={tipoCobrancaPagamento(item)} />
                       {item.quantidadeAulas != null && (
                         <RField label="Qtd. de aulas" value={String(item.quantidadeAulas)} />
                       )}

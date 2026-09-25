@@ -472,6 +472,7 @@ model Pagamento {
   emailEnviadoEm  DateTime? // data/hora do último envio
   origemManual    Boolean   @default(false) // true = criado manualmente pelo admin
   origemReposicao Boolean   @default(false) // true = criado ao excluir uma aula marcada como "será reposta"
+  tipoCobrancaGerada String? // modalidade do aluno no momento da geração automática; null em lançamentos manuais/legados
   criadoEm        DateTime  @default(now())
   atualizadoEm    DateTime  @updatedAt
 

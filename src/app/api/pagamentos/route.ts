@@ -84,6 +84,7 @@ export async function GET(req: NextRequest) {
     observacao:      p.observacao ?? null,
     origemManual:    p.origemManual,
     origemReposicao: p.origemReposicao,
+    tipoCobrancaGerada: p.tipoCobrancaGerada ?? null,
     emailTipo:       p.emailTipo ?? null,
     emailEnviadoEm:  p.emailEnviadoEm?.toISOString() ?? null,
     aluno: {

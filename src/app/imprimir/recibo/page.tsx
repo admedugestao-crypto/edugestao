@@ -64,7 +64,11 @@ export default async function ReciboPage({
     unidade:       p.aluno.unidade.nome,
     professora:    p.aluno.professora?.usuario?.nome ?? null,
     competencia:   `${MESES[p.mes - 1]} / ${p.ano}`,
-    tipo:          TIPO_LABEL[p.aluno.tipoCobranca ?? ""] ?? (p.aluno.tipoCobranca ?? ""),
+    tipo:          p.origemManual
+      ? "Cobr. Manual"
+      : p.tipoCobrancaGerada
+        ? TIPO_LABEL[p.tipoCobrancaGerada] ?? p.tipoCobrancaGerada
+        : "Não registrado",
     parcela:       p.parcela,
     qtdAulas:      p.quantidadeAulas,
     valorCobrado:  moeda(Number(p.valorCobrado)),
