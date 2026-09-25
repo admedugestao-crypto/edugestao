@@ -142,13 +142,16 @@ export default function AgendaClient({
   isProfessor?: boolean;
 }) {
   const router = useRouter();
-  const [vista, setVista]         = useState<"semana" | "dia" | "mes">("mes");
+  const [vista, setVista]         = useState<"semana" | "dia" | "mes">("semana");
   const [semanaRef, setSemanaRef] = useState(() => semanaInicio(new Date()));
   const [diaRef, setDiaRef]       = useState(new Date());
   const [mesRef, setMesRef]       = useState(() => startOfMonth(new Date()));
   const [aulas, setAulas]         = useState<Aula[]>([]);
   const [feriados, setFeriados]   = useState<Feriado[]>([]);
   const [carregando, setCarregando] = useState(false);
+  const [chaveConsultaCarregada, setChaveConsultaCarregada] = useState<string | null>(null);
+  const [erroCarregamento, setErroCarregamento] = useState<string | null>(null);
+  const requisicaoAgendaRef = useRef(0);
 
   // Modal nova aula
   const [modalAberto, setModalAberto]         = useState(false);
@@ -229,8 +232,16 @@ export default function AgendaClient({
     : alunos;
 
   // ── Carrega aulas ──────────────────────────────────────────────────────────
+  const chaveConsultaAtual = [
+    vista,
+    vista === "semana" ? semanaRef.getTime() : vista === "mes" ? mesRef.getTime() : diaRef.getTime(),
+    !isProfessor ? filtroProfId : "",
+  ].join(":");
+
   const carregar = useCallback(async () => {
+    const requisicaoAtual = ++requisicaoAgendaRef.current;
     setCarregando(true);
+    setErroCarregamento(null);
     try {
       let inicio: Date, fim: Date;
       if (vista === "semana") {
@@ -254,16 +265,28 @@ export default function AgendaClient({
             .then((resposta) => resposta.ok ? resposta.json() : { feriados: [] })
             .catch(() => ({ feriados: [] }))),
       ]);
+      if (!res.ok) throw new Error("Falha ao carregar a agenda.");
       const data = await res.json();
-      setAulas(Array.isArray(data) ? data : []);
-      setFeriados(respostasFeriados.flatMap((resposta) =>
-        Array.isArray(resposta.feriados) ? resposta.feriados : []));
+      if (requisicaoAtual === requisicaoAgendaRef.current) {
+        setAulas(Array.isArray(data) ? data : []);
+        setFeriados(respostasFeriados.flatMap((resposta) =>
+          Array.isArray(resposta.feriados) ? resposta.feriados : []));
+        setChaveConsultaCarregada(chaveConsultaAtual);
+      }
+    } catch {
+      if (requisicaoAtual === requisicaoAgendaRef.current) {
+        setErroCarregamento("Não foi possível carregar as aulas. Tente atualizar a agenda.");
+        setChaveConsultaCarregada(chaveConsultaAtual);
+      }
     } finally {
-      setCarregando(false);
+      if (requisicaoAtual === requisicaoAgendaRef.current) setCarregando(false);
     }
-  }, [vista, semanaRef, diaRef, mesRef, isProfessor, filtroProfId]);
+  }, [vista, semanaRef, diaRef, mesRef, isProfessor, filtroProfId, chaveConsultaAtual]);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void carregar(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [carregar]);
 
   // ── Navegação ──────────────────────────────────────────────────────────────
   function navAnterior() {
@@ -1188,8 +1211,10 @@ export default function AgendaClient({
             </span>
           </div>
           {aulasHoje.length === 0 ? (
-            <div className="min-h-0 flex-1 overflow-y-auto p-12 text-center text-slate-400 text-sm">
-              Nenhuma aula agendada para este dia.
+            <div className="min-h-0 flex-1 overflow-y-auto p-12 text-center text-slate-400 text-sm" aria-live="polite">
+              {chaveConsultaCarregada !== chaveConsultaAtual || carregando
+                ? "Carregando aulas…"
+                : erroCarregamento ?? "Nenhuma aula agendada para este dia."}
             </div>
           ) : (
             <div className="min-h-0 flex-1 overflow-y-auto divide-y divide-slate-100">
@@ -1238,7 +1263,7 @@ export default function AgendaClient({
                         </span>
                       )}
                       {aula.observacao && (
-                        <p className="text-xs text-slate-500 mt-1 italic">"{aula.observacao}"</p>
+                        <p className="text-xs text-slate-500 mt-1 italic">&ldquo;{aula.observacao}&rdquo;</p>
                       )}
                     </div>
                     {/* Status + editar */}
