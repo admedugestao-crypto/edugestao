@@ -28,3 +28,10 @@
 Não foram alterados schema, migrações, variáveis ou cron. Arquivos Prisma gerados anteriormente não fazem parte desta entrega. Sem envio de e-mails/WhatsApp reais, sem teste destrutivo em banco real. Fluxos autenticados por perfil, persistência real, integrações externas e aplicativos permanecem na etapa 4. O teste de feriados usa base simulada, não homologa cobertura municipal externa.
 
 Publicação dev e conferência do alias registradas na conclusão da tarefa. Nenhuma promoção à produção autorizada ou executada.
+
+## Publicação confirmada
+
+Commit 06a3c35a74b88e111fe2857c79290376ef3e20ef enviado a origin/dev. Vercel dpl_9fEJmgmheQMAxGbYFwCshCV8DwDj em Ready (Preview).
+URL imutável: https://edugestao-bj4p-rkx5ewh25-edugestao-s-projects.vercel.app/v2
+Alias dev atribuído explicitamente a esse deployment pela CLI, com confirmação de sucesso. Ambos os endereços /v2 redirecionam para /login sem sessão e retornam o mesmo CSS. POST sem sessão em /api/notas retornou 405 (barreira/redirecionamento de middleware); não é validação funcional autenticada da API. Nenhum dado gravado.
+Este adendo registra a verificação após o commit e permanece local.

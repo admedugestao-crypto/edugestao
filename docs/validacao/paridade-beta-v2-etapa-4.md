@@ -1,10 +1,10 @@
 # Etapa 4 — homologação em andamento
 
-Atualizado em 22/09/2026. Ambiente: KCF no Preview dev. Base publicada dos testes: 06a3c35 (dpl_9fEJmgmheQMAxGbYFwCshCV8DwDj).
+Atualizado em 24/09/2026. Ambiente: KCF no Preview dev. Base publicada dos testes: 06a3c35 (dpl_9fEJmgmheQMAxGbYFwCshCV8DwDj).
 
 ## Escopo e autorização
 
-O usuário confirmou banco separado no dev e autorizou utilizar KCF. Sessão operacional: Administrador/Professor. O usuário não sabe se existem contas dos demais perfis; a matriz de autorização permanece pendente. Foram criados somente registros fictícios identificados por TESTE ETAPA4. Nenhum cadastro preexistente foi alterado, nenhum e-mail/WhatsApp enviado e produção não foi publicada.
+O usuário confirmou banco separado no dev e autorizou utilizar KCF. Sessão operacional: Administrador/Professor. O perfil Auxiliar foi dispensado pelo usuário e não faz parte do aceite. Foram criados registros fictícios identificados por TESTE ETAPA4/HML. Nenhum e-mail/WhatsApp foi enviado e produção não foi publicada.
 
 ## Validações realizadas pela interface publicada
 
@@ -95,3 +95,114 @@ Esta seção atualiza as pendências históricas acima. O usuário autorizou tes
 - Exclusão permanente controlada e teste nativo em dispositivo ainda não concluídos.
 
 Etapa 4 permanece parcial. Produção não foi alterada. Os registros de teste permanecem identificados no dev.
+
+## Reteste do Preview c4d9d5e — 22/09/2026
+
+Deployment dpl_7YYY1Xtp1WbmMMdJCY9QLP6t766d Ready; URL https://edugestao-bj4p-9y3qp9ai9-edugestao-s-projects.vercel.app. Alias git-dev explicitamente associado. Produção permanece inalterada.
+
+- Nova aula fictícia Carlos 21/09, 10h–11h, realizada com novo conteúdo TESTE ETAPA4 — status imediato após salvar. Antes de qualquer recarga, cartão exibiu Ministrado e vínculo Realizada, formulário fechado e aviso de cobrança R$ 150,00 vencendo em 30/09. Correção de atualização imediata APROVADA.
+- Financeiro Professor após reteste: três parcelas, R$ 450,00 pendentes (duas automáticas e uma Rep. Aula). Sem ações de baixa, edição ou criação manual. Nenhum e-mail enviado.
+- GET sem sessão /v2/conteudos?aluno=teste respondeu HTTP 307 para /login?callbackUrl=%2Fv2%2Fconteudos%3Faluno%3Dteste. Redirecionamento inicial APROVADO; autenticação completa depende de entrada do usuário.
+- Gerar agenda como Daniel: aulas recorrentes de Carlos presentes em 05, 19 e 26/10; 12/10 preservado como feriado sem aula. Em dezembro, aulas em 07 e 14/12; 21 e 28/12 vazios, respeitando término contratual em 14/12. Segunda geração informou 12 ignoradas (existentes ou datas indisponíveis), sem novas aulas. Geração, feriado nacional, limite final e repetição APROVADOS nesse cenário.
+- Nova aula comum de 30 minutos rejeitada. Sábado 26/09 22h–23h mostrou aviso de professor sem disponibilidade; inclusão cancelada. Observação menor: aviso anterior de duração permaneceu junto à confirmação de indisponibilidade mesmo após corrigir para uma hora. Nenhuma aula criada nesse cenário.
+- Usuário autorizou expressamente excluir TESTE ETAPA4 — material da biblioteca. Exclusão pela interface confirmada após recarga. Biblioteca ainda contém TESTE ETAPA4 20260922 Material e seu arquivo. Exclusão controlada APROVADA.
+
+Pendências atualizadas: login completo com nova sessão; modalidades financeiras e quitados pela interface administrativa; outras empresas/Auxiliar com sessões controladas; execução nativa em aparelho/emulador; reposição realizada sem duplicação (a reposição atual é futura e o sistema corretamente bloqueia realização). Notificações excluídas por solicitação. A mensagem residual de duração no formulário de agenda é uma pendência visual menor registrada. Testes locais não substituem essas verificações publicadas.
+
+## Homologação financeira adicional — cobrança semanal no DEV (24/09/2026)
+
+No Preview associado ao alias `git-dev`, sessão KCF como Karin de Castro Figueiredo, foi validado pela interface o fluxo de uma aula semanal para o aluno fictício TESTE ETAPA4 20260921 Aluno (ID `cmubw4u63000204jjqim6cv6m`). O cadastro estava configurado como semanal, vencimento às segundas-feiras, R$ 13,00, contrato de 21 a 30/09/2026.
+
+- Criada aula fictícia de Matemática em 24/09/2026, 08h–09h, com observação HML. Após o aviso de horário passado para a data atual, foi confirmada a inclusão conforme autorização do usuário.
+- Conteúdo fictício `HML V2 — aula semanal 24/09` registrado como Ministrado; a aula passou a Realizada e a interface confirmou cobrança automática de R$ 13,00, vencimento em 28/09/2026.
+- No Financeiro V2 de setembro, a nova cobrança aparece como Automática, Semanal, R$ 13,00, vencimento 28/09, A vencer. Total esperado: R$ 485,00; recebido: R$ 10,00; pendente: R$ 475,00; 6 parcelas.
+- As cobranças de teste anteriores foram preservadas: R$ 12,00 A vencer (25/09) e R$ 10,00 Pago (baixa em 22/09). O registro pago permaneceu inalterado após a geração da nova cobrança.
+- Registros de Carlos e contatos reais não foram alterados. Nenhum e-mail/WhatsApp foi enviado. Produção permanece inalterada.
+
+Resultado: cobrança semanal automática e preservação da parcela quitada APROVADAS neste cenário publicado. Ainda faltam testes de interface para as demais modalidades financeiras; testes locais do motor não substituem essa cobertura. Os registros HML permanecem no DEV para rastreabilidade.
+
+## Homologação pela interface das modalidades Quinzenal e Por aula — 24/09/2026
+
+Com autorização do usuário, foi alterada somente a configuração de cobrança do aluno fictício TESTE ETAPA4 20260921 Aluno no DEV. Após os dois casos, a configuração do cadastro foi restaurada para Semanal, segunda-feira, R$ 13,00.
+
+- Quinzenal: configuração de vencimentos nos dias 10 e 25, valor R$ 13,00. Aula fictícia de Matemática em 23/09/2026, 08h–09h, marcada Realizada com conteúdo HML. A interface confirmou uma cobrança automática de R$ 13,00 com vencimento em 25/09/2026.
+- Por aula: valor de R$ 13,00 por aula. Aula fictícia de Matemática em 23/09/2026, 10h–11h, marcada Realizada com conteúdo HML. A interface confirmou uma cobrança automática de R$ 13,00 com vencimento em 30/09/2026.
+- Configuração restaurada e conferida na ficha: Semanal, segunda-feira, R$ 13,00. As cobranças antigas permaneceram: R$ 12,00 A vencer (25/09) e R$ 10,00 Pago (30/09, baixa em 22/09). As três cobranças HML recém-geradas também permaneceram pendentes: Semanal R$ 13,00 (28/09), Quinzenal R$ 13,00 (25/09), Por aula R$ 13,00 (30/09). Nenhuma parcela paga foi alterada.
+- Financeiro após os testes: 8 cobranças no mês, total esperado R$ 511,00, recebido R$ 10,00, pendente R$ 501,00. O total inclui os registros de homologação anteriores de Carlos, que não foram alterados nesta rodada.
+- Observação da interface: depois de restaurar o perfil Semanal, a coluna “Tipo” das cobranças antigas e das três novas exibe “Semanal”. Os avisos de geração durante cada caso confirmaram os vencimentos calculados, mas a lista aparenta apresentar a modalidade atual do aluno, sem preservar a modalidade usada quando cada cobrança foi criada. Registrar como ponto de produto a decidir se o histórico deve guardar/exibir a modalidade de origem.
+- Observação de agenda durante o processo: as aulas HML de 23/09 aparecem na grade mensal e semanal, mas a vista diária selecionada em 23/09 chegou a mostrar zero aulas. A ocorrência precisa de reteste específico; não foi necessária para verificar os avisos de geração financeira.
+
+Resultado: geração automática MENSAL (reteste anterior), SEMANAL, QUINZENAL e POR_AULA validada pela interface em cenários controlados no DEV. Preservação da cobrança paga confirmada. Nenhum contato real foi modificado ou notificado; produção permanece inalterada.
+
+Na conferência final com o filtro no aluno HML, o Financeiro mostrou 5 parcelas, total esperado R$ 61,00, recebido R$ 10,00, pendente R$ 51,00 e nenhum atraso. A página Financeiro DEV ficou aberta com esse filtro aplicado.
+
+Reteste somente de leitura no Financeiro V2 em 24/09, como Karin/KCF: a tabela mostra 8 cobranças; as cobranças HML geradas em modo Semanal, Quinzenal e Por aula aparecem todas com `Tipo = Semanal` após a restauração da configuração do aluno. A cobrança `Rep. Aula` de Carlos aparece com `Tipo = Mensal` e `Geração = Rep. Aula`. A discrepância registrada antes persiste no Preview. Não havia cobrança manual comum disponível para confirmar visualmente o rótulo `Cobr. Manual`; esse caso continua pendente. Nenhuma ação financeira foi executada nesta conferência.
+
+## Reteste da vista diária da agenda em 23/09 (24/09/2026)
+
+Na sessão KCF do Preview DEV, a grade mensal e a vista semanal exibem as duas aulas HML do aluno `TESTE ETAPA4 20260921 Aluno` em 23/09/2026, às 08h e 10h, ambas Realizadas. Na navegação para a vista diária, a primeira leitura após mudar de 24/09 para 23/09 mostrou temporariamente “0 aula(s)”. Depois de aguardar o conteúdo específico, a vista diária exibiu as duas aulas, com conteúdo, matéria, horários e status Realizada corretos. Após recarregar a página e repetir, ocorreu o mesmo padrão: estado vazio imediato seguido por duas aulas carregadas.
+
+Resultado: os dados existem na vista diária, mas há uma condição visual transitória em que “Nenhuma aula agendada” aparece antes de a consulta terminar. A correção local para distinguir carregamento de zero resultados ainda não está no Preview. Retestar após a publicação ao final do processo.
+
+Reprodução adicional em nova aba autenticada no mesmo Preview (24/09): Agenda abriu em Mês; após selecionar Semana, a grade exibiu as aulas de 23/09; ao selecionar Dia e voltar para 23/09, a primeira leitura voltou a mostrar zero. Na leitura seguinte, a tela exibiu as duas aulas HML Realizadas, às 08h e 10h, com conteúdos. A condição de carregamento transitório foi reproduzida novamente sem alteração de dados.
+
+## Preferência de entrada da agenda — semana (24/09/2026)
+
+Definido que a Agenda deve abrir na semana atual. Implementado no desktop V2 e no mobile V2: desktop inicia em Semana; mobile inicia numa nova visão-resumo dos sete dias, com Dia e Mês disponíveis como vistas alternativas. O perfil mobile legado mantém a abertura diária.
+
+Verificação local: TypeScript passou; ESLint do componente mobile passou. A tentativa adicional de build foi interrompida pelo Windows ao tentar remover o item somente-leitura/reparse point `.next/static/71a6Y1LptVOFyHcIg4PzD` (EPERM). O build anterior, antes deste ajuste de tela, havia passado; repetir build e validar visualmente no Preview ficam para a etapa final, sem publicação nesta rodada.
+
+Reteste de referência no Preview DEV em 24/09: após recarregar `/v2/agenda`, a vista selecionada inicialmente foi Mês, não Semana. O comportamento publicado ainda não atende ao padrão solicitado; a implementação local permanece para validação após a publicação reservada ao final.
+
+## Reposição — prevenção de cobrança duplicada (24/09/2026)
+
+Revisão do fluxo encontrou a causa: `/api/agenda/[id]/repor` cria a cobrança manual da aula original e marca a aula substituta com `reposicao=true`, mas a geração automática imediata ao marcar Realizada não consultava esse indicador. O motor agora exclui reposições da cobrança automática.
+
+Verificação local da regra: 3 casos passaram — reposição Realizada não é elegível; aula comum Realizada e Falta do Aluno continuam elegíveis; aula Agendada permanece sem cobrança. TypeScript e ESLint dos arquivos da regra passaram.
+
+O teste de ponta a ponta no registro HML permanece pendente para a validação final do Preview. A reposição existente é de Carlos, em 28/09/2026, 08h–08h30; segue futura nesta data e não foi alterada. A automação do Edge interrompeu a inspeção, e a publicação está reservada para o fim. Nenhuma aula foi marcada como Ministrada nem e-mail foi enviado; produção não foi alterada.
+
+## Retorno à V2 após novo login — 24/09/2026
+
+Teste manual acompanhado pelo usuário no Preview DEV: após sair, acessar a URL completa `https://edugestao-bj4p-git-dev-edugestao-s-projects.vercel.app/v2/pagamentos` e autenticar novamente, a tela Financeiro V2 carregou na rota `/v2/pagamentos`. Captura enviada pelo usuário confirma a página autenticada, sem redirecionamento para Dashboard. Resultado: retorno à rota V2 APROVADO. A automação do Edge permaneceu indisponível; a validação foi visual/manual. Nenhuma alteração publicada.
+
+## Isolamento entre empresas — pendente
+
+O usuário dispensou o teste do perfil AUXILIAR; ele não faz parte do aceite desta etapa. Os testes anteriores de Professor e Administrador cobrem somente a empresa KCF. A sessão HML foi criada e testada abaixo; permanece pendente completar a direção inversa e testar mutações entre empresas.
+
+Em 24/09/2026, com autorização do usuário, criada pela Plataforma no DEV a empresa fictícia `HML Isolamento V2 20260924`, slug `hml-isolamento-v2-20260924`, e seu primeiro administrador `HML Isolamento DEV` (`hml.isolamento.v2.20260924@example.invalid`). A lista de Empresas confirmou a empresa ativa; a lista de Usuários confirmou o administrador ativo e vinculado ao tenant. O login dedicado foi concluído e a sessão atual está autenticada nesse tenant. Nenhum endereço, telefone ou contato real foi usado e nenhum e-mail enviado.
+
+- Criadas no tenant HML a escola fictícia `HML Isolamento Escola 20260924` e a unidade `Unidade HML Isolamento`.
+- A lista de alunos da sessão HML retornou zero registros. A consulta direta pelo ID do aluno fictício KCF `cmubw4u63000204jjqim6cv6m` retornou HTTP 404 (`Não encontrado`). Resultado: o HML não consegue ler esse registro de outra empresa.
+- Não foi persistido aluno de teste HML: o formulário exige professor vinculado antes de salvar e o rascunho foi cancelado. A leitura inversa pela lista de escolas KCF foi testada depois e não revelou a escola HML. Como não há aluno HML persistido nem rota GET individual para escola, a consulta individual inversa segue indisponível; mutações entre empresas continuam pendentes.
+- Nenhuma empresa ou cadastro preexistente foi alterado; a escola e a unidade HML permanecem como dados fictícios de referência no DEV.
+
+Na retomada, a sessão KCF foi confirmada como Karin de Castro Figueiredo, perfil Administrador/Professor. A leitura autenticada de `/api/escolas` no Preview retornou somente quatro escolas vinculadas à empresa KCF e não incluiu a escola HML `cmug84vrf000004l6v6svtq4h`. Resultado: leitura pela listagem KCF → HML não expõe a escola de outra empresa. Não foi possível testar consulta individual porque a API de escola não oferece GET por ID, nem executar mutações cruzadas pela interface. Nenhum dado foi alterado. Revisão estática dos handlers locais encontrou checagem de `empresaId` antes de mutações por ID em aluno (PUT/DELETE), escola (PUT/DELETE), agenda (PUT/DELETE) e pagamento (PATCH/DELETE). A leitura da listagem é evidência de runtime; a revisão dos handlers não é evidência de mutação no Preview. Permanecem pendentes as tentativas reais de alteração cruzada.
+
+## Retomada da homologação — cobrança manual e recuperação da baixa (24/09/2026)
+
+Na tentativa de homologar o rótulo da cobrança manual, o formulário Novo foi submetido usando a mesma chave aluno/mês/ano/parcela de uma cobrança automática já paga do aluno fictício HML. A API fez upsert nessa chave e alterou o registro existente em vez de criar uma nova cobrança. A interface exibiu saldo incompatível durante a tentativa. O registro de teste foi restaurado para R$ 10,00, Pago, sem observação; a data de baixa original 22/09/2026 também foi restaurada e confirmada visualmente na lista. Os agregados retornaram a R$ 511,00 esperado, R$ 10,00 recebido e R$ 501,00 pendente, em 8 cobranças.
+
+Resultado inicial: a tentativa de reutilizar parcela 1 colidiu com a cobrança automática, que foi integralmente restaurada. Em seguida, criada uma cobrança manual separada na parcela 9 do mesmo aluno fictício: R$ 13,00, vencimento 30/09, observação HML. A interface lista `Geração = Manual`, mas `Tipo = Semanal`; o requisito esperado é `Tipo = Cobr. Manual`. Portanto, o fluxo cria e identifica a origem manual, porém falha no rótulo de tipo. A parcela dedicada permanece no DEV para rastreabilidade; os totais de setembro agora são R$ 524,00 esperado, R$ 10,00 recebido e R$ 514,00 pendente, em 9 cobranças. Nenhum contato foi notificado e produção não foi alterada.
+
+## Tipo de cobrança por parcela — implementação local (25/09/2026)
+
+Adicionado ao modelo `Pagamento` o campo opcional `tipoCobrancaGerada`, com migração aditiva. A geração automática grava a modalidade do aluno no momento da criação e atualiza a cópia quando recalcula uma cobrança automática ainda não paga; geração de reposição também guarda a modalidade vigente. Financeiro V2 e recibos passam a ler esse campo. Cobranças manuais comuns continuam usando o rótulo `Cobr. Manual`.
+
+Cobranças anteriores à migração não têm histórico confiável dessa modalidade. A interface exibirá `Não registrado` em vez de inferir a configuração atual do aluno. Reteste da migração e das novas gerações no Preview DEV pendente, reservado para a etapa final. Nenhuma migração foi aplicada a banco remoto e não houve publicação.
+
+## Reposição realizada — regressão do fluxo local (25/09/2026)
+
+Executados os handlers reais POST `/api/agenda/[id]/repor` e PATCH `/api/agenda/[id]`, juntamente com o motor real de cobrança, usando persistência simulada em memória. Teste em `tests/reposicao-fluxo.test.cjs`.
+
+- Aula original fictícia em Falta do Professor foi substituída por uma reposição de 30 minutos.
+- A criação da reposição gerou uma única cobrança de R$ 13,00, com origemReposicao=true.
+- Registrado conteúdo planejado para a reposição; PATCH Realizada converteu o conteúdo para ministrado e confirmou status REALIZADA.
+- Antes da realização: 1 cobrança / R$ 13,00. Depois: 1 cobrança / R$ 13,00, com o registro integralmente inalterado.
+- Repetição do PATCH Realizada: novamente 1 cobrança / R$ 13,00; sem pagamentoGerado, aviso de erro ou vínculo financeiro adicional.
+- Suíte financeira e teste de fluxo: 10 testes aprovados. O carregador dos testes foi corrigido para importar o helper real de elegibilidade, em vez de simular todos os imports como Prisma.
+- TypeScript e build Next webpack concluídos. Ajustada allowImportingTsExtensions para os testes TypeScript existentes, mantendo noEmit.
+
+Resultado: prevenção de duplicidade APROVADA NO CÓDIGO LOCAL, com persistência simulada. Não representa teste autenticado no Preview. A correção permanece local, sem publicação nesta rodada.
+
+Impedimentos para homologação remota: Edge bloqueou novamente a automação por interface de outra extensão; a exportação das variáveis Preview da branch dev retornou DATABASE_URL vazia. Portanto, não houve conexão ao banco remoto nem execução da transação real inicialmente planejada. Nenhuma aula, conteúdo ou cobrança remota foi alterada, e nenhuma notificação foi enviada. Permanece pendente realizar e comparar a reposição no Preview após publicação da correção e restabelecimento do acesso.

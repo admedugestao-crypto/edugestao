@@ -40,3 +40,12 @@ Implementação registrada no commit 8ebd797, branch local dev. O push para http
 O envio proposto incorpora a base V2 e seus ajustes na branch remota dev (75 arquivos em relação ao dev anterior), mantendo os arquivos operacionais já existentes em dev. Não altera master nem a branch remota codex/v2-financeiro-preview. O build de Preview e a verificação do ambiente publicado ficam pendentes dessa autorização.
 
 Vercel CLI não possuía credenciais; o fluxo de login iniciado por whoami foi cancelado. A publicação planejada usa a integração Git/Vercel existente. A validação remota autenticada poderá exigir acesso ao Preview.
+
+## Publicação autorizada e concluída — 21/09/2026
+
+Após autorização explícita do usuário, commits 8ebd797 e c262c1e enviados para origin/dev. Vercel concluiu o deployment 7zAhEbBo6BgGRYJiQg6jrQWfWs6C com success, às 20:06:22 UTC.
+
+Preview: https://edugestao-bj4p-msziaqqm8-edugestao-s-projects.vercel.app
+Alias dev: https://edugestao-bj4p-git-dev-edugestao-s-projects.vercel.app/v2
+
+Verificação HTTP: /login responde 200; /v2, /v2/calendario e /v2/tabelas/minhas-disciplinas redirecionam para /login sem sessão. Isso comprova disponibilidade e barreira de autenticação, não execução dos fluxos internos. Validação autenticada permanece pendente. Produção/master e branch V2 anterior não foram alteradas. Este adendo foi salvo localmente após o deployment e não faz parte dos commits já publicados.
