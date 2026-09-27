@@ -127,32 +127,30 @@ export async function POST(req: NextRequest) {
   const alunoOk = await prisma.aluno.findFirst({ where: { id: alunoId, empresaId: scope.empresaId }, select: { id: true } });
   if (!alunoOk) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
 
-  if (pago === true) {
-    const existente = await prisma.pagamento.findUnique({ where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } }, select: { id: true } });
-    if (existente && await prisma.pagamentoAula.count({ where: { pagamentoId: existente.id, agendaAula: { status: "AGENDADA" } } }) > 0)
-      return NextResponse.json({ erro: "Lance o resultado das aulas vinculadas antes de confirmar o pagamento." }, { status: 422 });
+  // A chave única também protege contra criações concorrentes.
+  // Novo nunca atualiza uma cobrança existente; alterações usam a rota por ID.
+  try {
+    const pagamento = await prisma.pagamento.create({
+      data: {
+        empresaId: scope.empresaId,
+        alunoId, mes, ano, parcela,
+        dataVencimento:  new Date(dataVencimento),
+        valorCobrado,
+        quantidadeAulas: quantidadeAulas ?? null,
+        pago,
+        dataPagamento:   pago ? new Date() : null,
+        observacao:      observacao ?? null,
+        origemManual:    true,
+      },
+    });
+    return NextResponse.json({ ...pagamento, valorCobrado: Number(pagamento.valorCobrado) });
+  } catch (error) {
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
+      return NextResponse.json(
+        { erro: "Já existe uma cobrança para este aluno, competência e parcela. Escolha outra parcela ou edite a cobrança existente." },
+        { status: 409 },
+      );
+    }
+    throw error;
   }
-  const pagamento = await prisma.pagamento.upsert({
-    where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } },
-    update: {
-      pago,
-      dataPagamento:   pago === undefined ? undefined : pago ? new Date() : null,
-      quantidadeAulas: quantidadeAulas ?? undefined,
-      observacao:      observacao      ?? undefined,
-      valorCobrado:    valorCobrado    ?? undefined,
-    },
-    create: {
-      empresaId: scope.empresaId,
-      alunoId, mes, ano, parcela,
-      dataVencimento:  new Date(dataVencimento),
-      valorCobrado,
-      quantidadeAulas: quantidadeAulas ?? null,
-      pago,
-      dataPagamento:   pago ? new Date() : null,
-      observacao:      observacao ?? null,
-      origemManual:    true,
-    },
-  });
-
-  return NextResponse.json({ ...pagamento, valorCobrado: Number(pagamento.valorCobrado) });
 }
