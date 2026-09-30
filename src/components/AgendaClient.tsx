@@ -514,6 +514,8 @@ export default function AgendaClient({
   }
 
   async function salvarNovaAula(forcar = false, forcarDisp = false) {
+    setErroModal(null);
+    setAvisoAgendamento(null);
     if (!isProfessor && !professoraIdModal) {
       setErroModal("Selecione o(a) professor(a) antes de salvar.");
       return;
@@ -1365,12 +1367,12 @@ export default function AgendaClient({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-600">Início *</label>
-                <input type="time" required value={novaAula.horaInicio} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
+                <input type="time" required value={novaAula.horaInicio} onChange={(e) => { setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-600">Fim *</label>
-                <input type="time" required value={novaAula.horaFim} onChange={(e) => setNovaAula((p) => ({ ...p, horaFim: e.target.value }))}
+                <input type="time" required value={novaAula.horaFim} onChange={(e) => { setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaFim: e.target.value })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
             </div>

@@ -220,6 +220,8 @@ export default function AgendaMobile({
 
   // ── Salvar nova aula ────────────────────────────────────────────────────────
   async function salvar(forcarDisp = false) {
+    setErroModal(null);
+    setAvisoDisp(null);
     if (!isProfessor && !profModal) { setErroModal("Selecione o(a) professor(a)."); return; }
     if (!novaAula.alunoId || !novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) {
       setErroModal("Preencha aluno, data e horário."); return;
@@ -812,12 +814,12 @@ export default function AgendaMobile({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Início *</label>
-                <input type="time" value={novaAula.horaInicio} onChange={(e) => setNovaAula((p) => ({ ...p, horaInicio: e.target.value }))}
+                <input type="time" value={novaAula.horaInicio} onChange={(e) => { setErroModal(null); setAvisoDisp(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
                   className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Fim *</label>
-                <input type="time" value={novaAula.horaFim} onChange={(e) => setNovaAula((p) => ({ ...p, horaFim: e.target.value }))}
+                <input type="time" value={novaAula.horaFim} onChange={(e) => { setErroModal(null); setAvisoDisp(null); setNovaAula((p) => ({ ...p, horaFim: e.target.value })); }}
                   className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
               </div>
             </div>
