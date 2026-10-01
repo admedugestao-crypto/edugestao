@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 import { podeAcessarProfessora } from "@/lib/permissions";
+import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
@@ -41,13 +42,22 @@ export async function PATCH(
     }
 
     // Vazio = "todas as matérias" do aluno; não-vazio = exatamente essa lista.
-    let ids: string[] = Array.isArray(materiaIds) ? materiaIds : [];
+    let ids = normalizarIds(materiaIds);
     if (ids.length === 0) {
       const alulaCheck = await prisma.agendaAula.findUnique({
         where: { id },
         select: { aluno: { select: { materias: { select: { materiaId: true } } } } },
       });
       ids = alulaCheck?.aluno.materias.map((m) => m.materiaId) ?? [];
+    }
+    const materiasEncontradas = ids.length > 0
+      ? await prisma.materia.findMany({
+          where: { id: { in: ids }, empresaId: scope.empresaId },
+          select: { id: true },
+        })
+      : [];
+    if (!todosIdsEncontrados(ids, materiasEncontradas.map((materia) => materia.id))) {
+      return NextResponse.json({ erro: "Uma ou mais matérias não foram encontradas." }, { status: 404 });
     }
     await prisma.agendaAulaMateria.deleteMany({ where: { agendaAulaId: id } });
     if (ids.length > 0) {
