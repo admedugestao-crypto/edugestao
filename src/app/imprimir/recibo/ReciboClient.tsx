@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Printer } from "lucide-react";
+import { isNativeApp, printDocument } from "@/lib/nativePrint";
 
 type Item = {
   id:            string;
@@ -27,31 +28,52 @@ export default function ReciboClient({
   total:   string;
   emissao: string;
 }) {
+  const [imprimindo, setImprimindo] = useState(false);
+  const [erroImpressao, setErroImpressao] = useState<string | null>(null);
+
   useEffect(() => {
-    window.print();
+    if (!isNativeApp()) window.print();
   }, []);
+
+  async function imprimir() {
+    setErroImpressao(null);
+    setImprimindo(true);
+    try {
+      await printDocument();
+    } catch (error) {
+      setErroImpressao(error instanceof Error ? error.message : "Não foi possível abrir a impressão. Tente novamente.");
+    } finally {
+      setImprimindo(false);
+    }
+  }
 
   return (
     <>
       {/* Botão imprimir — oculto na impressão */}
-      <div className="print:hidden max-w-3xl mx-auto flex justify-end px-8 pt-4">
+      <div className="print:hidden max-w-3xl mx-auto flex justify-end px-4 sm:px-8 pt-4">
         <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-lg transition-colors"
+          onClick={imprimir}
+          disabled={imprimindo}
+          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-lg transition-colors"
         >
           <Printer size={15} />
-          Imprimir
+          {imprimindo ? "Abrindo impressão…" : "Imprimir"}
         </button>
       </div>
+      {erroImpressao && (
+        <p role="alert" className="print:hidden max-w-3xl mx-auto px-4 sm:px-8 pt-3 text-sm text-red-700">
+          {erroImpressao}
+        </p>
+      )}
 
-      <div className="max-w-3xl mx-auto p-8 text-slate-800 font-sans">
+      <div className="max-w-3xl mx-auto p-4 sm:p-8 print:p-8 text-slate-800 font-sans">
         {/* Cabeçalho */}
-        <div className="flex items-start justify-between mb-6 pb-4 border-b-2 border-indigo-600">
+        <div className="flex flex-col sm:flex-row print:flex-row items-start justify-between gap-3 mb-6 pb-4 border-b-2 border-indigo-600">
           <div>
             <h1 className="text-2xl font-bold text-indigo-700">EduGestão</h1>
             <p className="text-xs text-slate-500 mt-0.5">Gestão Educacional</p>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right print:text-right">
             <p className="text-lg font-bold text-slate-700">Recibo de Pagamento</p>
             <p className="text-xs text-slate-400 mt-0.5">Emitido em {emissao}</p>
           </div>
@@ -60,11 +82,11 @@ export default function ReciboClient({
         {/* Itens */}
         <div className="space-y-4 mb-6">
           {itens.map((item, idx) => (
-            <div key={item.id} className="border border-slate-200 rounded-xl p-4">
+            <div key={item.id} className="border border-slate-200 rounded-xl p-4 print:break-inside-avoid">
               {itens.length > 1 && (
                 <p className="text-xs font-semibold text-indigo-600 mb-2">#{idx + 1}</p>
               )}
-              <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 print:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
                 <Row label="Aluno"          value={item.aluno} />
                 <Row label="Escola / Turma" value={`${item.escola} · ${item.unidade}`} />
                 {item.professora && <Row label="Professor(a)" value={item.professora} />}
@@ -84,7 +106,7 @@ export default function ReciboClient({
                 />
                 <Row label="Valor" value={item.valorCobrado} bold />
                 {item.observacao && (
-                  <div className="col-span-2 mt-1">
+                  <div className="sm:col-span-2 print:col-span-2 mt-1 break-words">
                     <span className="text-xs font-medium text-slate-500">Observação: </span>
                     <span className="text-xs text-slate-600">{item.observacao}</span>
                   </div>
@@ -136,10 +158,10 @@ function Row({
   highlight?: "green" | "red";
 }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex min-w-0 gap-2">
       <span className="text-xs font-medium text-slate-500 shrink-0 w-32">{label}:</span>
       <span
-        className={`text-xs ${bold ? "font-bold text-slate-800" : "text-slate-700"} ${
+        className={`min-w-0 flex-1 break-words text-xs ${bold ? "font-bold text-slate-800" : "text-slate-700"} ${
           highlight === "green" ? "text-emerald-700 font-medium" :
           highlight === "red"   ? "text-amber-700 font-medium"   : ""
         }`}

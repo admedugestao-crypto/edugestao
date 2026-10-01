@@ -1360,7 +1360,7 @@ export default function PagamentosClient({
                     {itens.length > 1 && (
                       <p className="text-xs font-semibold text-emerald-600 mb-2">#{idx + 1}</p>
                     )}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
                       <RField label="Aluno"          value={item.aluno.nome} />
                       <RField label="Escola / Turma" value={`${item.aluno.unidade.escola.nome} · ${item.aluno.unidade.nome}`} />
                       {item.aluno.professora && <RField label="Professor(a)" value={item.aluno.professora} />}
@@ -1373,7 +1373,7 @@ export default function PagamentosClient({
                       <RField label="Pago em"        value={fmtData(item.dataPagamento)} highlight="green" />
                       <RField label="Valor"          value={moeda(item.valorCobrado)} bold />
                       {item.observacao && (
-                        <div className="col-span-2 mt-0.5">
+                        <div className="sm:col-span-2 mt-0.5 break-words">
                           <span className="text-xs font-medium text-slate-500">Obs.: </span>
                           <span className="text-xs text-slate-600">{item.observacao}</span>
                         </div>
@@ -1463,9 +1463,9 @@ function RField({ label, value, bold, highlight }: {
   label: string; value: string; bold?: boolean; highlight?: "green";
 }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex min-w-0 gap-2">
       <span className="text-xs font-medium text-slate-500 shrink-0 w-28">{label}:</span>
-      <span className={`text-xs ${bold ? "font-bold text-slate-800" : "text-slate-700"} ${highlight === "green" ? "text-emerald-700 font-medium" : ""}`}>
+      <span className={`min-w-0 flex-1 break-words text-xs ${bold ? "font-bold text-slate-800" : "text-slate-700"} ${highlight === "green" ? "text-emerald-700 font-medium" : ""}`}>
         {value}
       </span>
     </div>

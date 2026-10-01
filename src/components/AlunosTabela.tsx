@@ -190,7 +190,7 @@ export default function AlunosTabela({
                 <td className="py-3 px-3">
                   <div className="flex items-center gap-3">
                     {a.fotoUrl ? (
-                      <Image src={a.fotoUrl} alt={a.nome} width={32} height={32} className="rounded-full object-cover w-8 h-8" />
+                      <Image src={a.fotoUrl} alt={a.nome} width={32} height={32} unoptimized className="rounded-full object-cover w-8 h-8" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
                         {a.nome.charAt(0).toUpperCase()}
