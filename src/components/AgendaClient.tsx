@@ -2,7 +2,8 @@
 
 import DateInput from "@/components/DateInput";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 import { useRouter } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Plus, RefreshCw, X,
@@ -129,7 +130,20 @@ function subtrairOcupados(
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function AgendaClient({
+const subscribeMontagem = () => () => {};
+const snapshotCliente = () => true;
+const snapshotServidor = () => false;
+
+export default function AgendaClient(props: Parameters<typeof AgendaClientContent>[0]) {
+  const montado = useSyncExternalStore(subscribeMontagem, snapshotCliente, snapshotServidor);
+
+  // O calendário depende do dia e do fuso locais, inclusive na virada do dia.
+  // Servidor e primeira renderização do cliente precisam produzir o mesmo HTML.
+  if (!montado) return <p role="status" className="text-sm text-slate-500">Carregando agenda...</p>;
+  return <AgendaClientContent {...props} />;
+}
+
+function AgendaClientContent({
   alunos, materias, professoras = [], isProfessor = true,
   disponibilidades = [], professoraIdSessao = "", conteudosPath = "/dashboard/conteudos",
 }: {
@@ -142,6 +156,12 @@ export default function AgendaClient({
   isProfessor?: boolean;
 }) {
   const router = useRouter();
+  const [impressoEm, setImpressoEm] = useState(() => new Date());
+  useEffect(() => {
+    const atualizarImpressao = () => flushSync(() => setImpressoEm(new Date()));
+    window.addEventListener("beforeprint", atualizarImpressao);
+    return () => window.removeEventListener("beforeprint", atualizarImpressao);
+  }, []);
   const [vista, setVista]         = useState<"semana" | "dia" | "mes">("semana");
   const [semanaRef, setSemanaRef] = useState(() => semanaInicio(new Date()));
   const [diaRef, setDiaRef]       = useState(new Date());
@@ -837,7 +857,7 @@ export default function AgendaClient({
           </p>
         </div>
         <p className="text-slate-400">
-          Impresso em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+          Impresso em {format(impressoEm, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
         </p>
       </div>
 
