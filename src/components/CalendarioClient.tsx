@@ -219,18 +219,22 @@ function AvaliacaoRow({
         {av.unidade.escola.nome} · {av.unidade.nome} · {av.serie}
       </p>
       <span className="text-xs text-slate-400 shrink-0">Máx: {av.notaMax}</span>
-      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex shrink-0 gap-1">
         <button
+          type="button"
           onClick={() => onEdit(av)}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+          className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
           title="Editar"
+          aria-label={`Editar ${av.nome}`}
         >
           <Pencil size={14} />
         </button>
         <button
+          type="button"
           onClick={() => onDeleteClick(av)}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+          className="hidden sm:inline-flex p-1.5 rounded-lg text-slate-400 opacity-0 transition-opacity hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
           title="Excluir"
+          aria-label={`Excluir ${av.nome}`}
         >
           <Trash2 size={14} />
         </button>
