@@ -410,6 +410,7 @@ function CamposForm({
   isProfessor: boolean;
   filtroProfId: string;
   setFiltroProfId: (id: string) => void;
+  somentePlanejado?: boolean;
   onCampoChave?: () => void;
 }) {
   // Professora: a lista de alunos já vem restrita à dela pelo servidor, não
