@@ -1,6 +1,7 @@
 "use client";
 
 import DateInput from "@/components/DateInput";
+import DescricaoPorVozMobile from "@/components/DescricaoPorVozMobile";
 
 import { useRef, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
@@ -399,7 +400,6 @@ function CamposForm({
   isProfessor,
   filtroProfId,
   setFiltroProfId,
-  somentePlanejado,
   onCampoChave,
 }: {
   form: FormC;
@@ -410,7 +410,6 @@ function CamposForm({
   isProfessor: boolean;
   filtroProfId: string;
   setFiltroProfId: (id: string) => void;
-  somentePlanejado?: boolean;
   onCampoChave?: () => void;
 }) {
   // Professora: a lista de alunos já vem restrita à dela pelo servidor, não
@@ -519,16 +518,10 @@ function CamposForm({
         />
       </div>
 
-      {/* Descrição */}
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Descrição</label>
-        <textarea
-          value={form.descricao}
-          onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-          rows={2}
-          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-        />
-      </div>
+      <DescricaoPorVozMobile
+        value={form.descricao}
+        onChange={(descricao) => setForm({ ...form, descricao })}
+      />
 
       {/* Documento anexo */}
       <UploadArquivo
@@ -610,7 +603,13 @@ export default function ConteudosClient({
   const [novo, setNovo] = useState<FormC>(formVazio());
   const [salvando, setSalvando] = useState(false);
   // Filtro de professora (admin)
-  const [filtroProfId, setFiltroProfId] = useState<string>("");
+  const [filtroProfId, setFiltroProfId] = useState<string>(() => {
+    const aulaId = searchParams.get("aulaId");
+    const alunoId = searchParams.get("alunoId");
+    return aulaId && alunoId
+      ? alunos.find((aluno) => aluno.id === alunoId)?.professoraId ?? ""
+      : "";
+  });
   // aulaId vindo da agenda (para marcar como Realizada após salvar)
   const [aulaIdPendente, setAulaIdPendente] = useState<string | null>(null);
   const pagamentoInfo = usePagamentoGeradoInfo();
@@ -629,11 +628,6 @@ export default function ConteudosClient({
     return true;
   });
 
-  // Alunos filtrados pelo professor selecionado (admin)
-  const alunosFiltrados = filtroProfId
-    ? alunos.filter((a) => a.professoraId === filtroProfId)
-    : alunos;
-
   // Abre form pré-preenchido quando vindo da agenda
   useEffect(() => {
     const aulaId     = searchParams.get("aulaId");
@@ -641,11 +635,8 @@ export default function ConteudosClient({
     const materiaIds = (searchParams.get("materiaIds") ?? "").split(",").filter(Boolean);
     const data       = searchParams.get("data")       ?? new Date().toISOString().split("T")[0];
     const descricao  = searchParams.get("descricao")  ?? "";
-    if (aulaId) {
-      // Pré-seleciona o professor do aluno (admin)
-      const aluno = alunos.find((a) => a.id === alunoId);
-      if (aluno?.professoraId) setFiltroProfId(aluno.professoraId);
-
+    const timer = window.setTimeout(() => {
+      if (!aulaId) return;
       // Se já existe um conteúdo vinculado a esta aula, edita o existente em
       // vez de abrir um formulário em branco (evita duplicar o registro).
       const existente = conteudos.find((c) => c.agenda?.id === aulaId);
@@ -668,7 +659,9 @@ export default function ConteudosClient({
         setModal(true);
       }
       window.history.replaceState(null, "", conteudosPath);
-    }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
