@@ -89,17 +89,19 @@ export async function POST(req: NextRequest) {
   // +1 aula candidata) escolhendo qual aula vincular.
   const aulaIdEscolhido: string | null = body.aulaIdEscolhido || null;
 
+  if (materiaIds.length === 0) {
+    return NextResponse.json({ erro: "Selecione ao menos uma disciplina." }, { status: 400 });
+  }
+
   const [alunoOk, materiasOk, aulaOk] = await Promise.all([
     prisma.aluno.findFirst({
       where: { id: body.alunoId, empresaId: scope.empresaId },
       select: { id: true },
     }),
-    materiaIds.length > 0
-      ? prisma.materia.findMany({
-          where: { id: { in: materiaIds }, empresaId: scope.empresaId },
-          select: { id: true },
-        })
-      : Promise.resolve([]),
+    prisma.materia.findMany({
+      where: { id: { in: materiaIds }, empresaId: scope.empresaId },
+      select: { id: true },
+    }),
     aulaId
       ? prisma.agendaAula.findFirst({
           where: { id: aulaId, empresaId: scope.empresaId, alunoId: body.alunoId },
@@ -168,9 +170,7 @@ export async function POST(req: NextRequest) {
         arquivoUrl: body.arquivoUrl || null,
         data:       dataAula,
         planejado,
-        materias: materiaIds.length > 0
-          ? { create: materiaIds.map((materiaId) => ({ materiaId })) }
-          : undefined,
+        materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
       },
       include: {
         aluno: {
@@ -220,8 +220,13 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ...conteudo, pagamentoGerado, avisoPagamento }, { status: 201 });
-  } catch (err: any) {
-    if (err?.code === "P2002" && err?.meta?.target?.includes("aulaId")) {
+  } catch (err: unknown) {
+    const prismaError = err as { code?: string; meta?: { target?: unknown } };
+    const alvo = prismaError.meta?.target;
+    const alvoPossuiAulaId = Array.isArray(alvo)
+      ? alvo.includes("aulaId")
+      : typeof alvo === "string" && alvo.includes("aulaId");
+    if (prismaError.code === "P2002" && alvoPossuiAulaId) {
       return NextResponse.json({ erro: "Já existe um conteúdo registrado para esta aula." }, { status: 409 });
     }
     throw err;

@@ -480,7 +480,7 @@ function CamposForm({
 
       {/* Disciplina */}
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina</label>
+        <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
         {form.alunoId ? (
           <SeletorMaterias
             materiasDisponiveis={opcoesMateria}
@@ -489,6 +489,9 @@ function CamposForm({
           />
         ) : (
           <p className="text-xs text-slate-400">Selecione o aluno primeiro.</p>
+        )}
+        {form.alunoId && form.materiaIds.length === 0 && (
+          <p className="mt-1 text-xs text-amber-700">Selecione ao menos uma disciplina.</p>
         )}
       </div>
 
@@ -676,6 +679,10 @@ export default function ConteudosClient({
   const [candidatasEdit, setCandidatasEdit] = useState<Candidata[] | null>(null);
 
   async function criarConteudo(forcar = false, aulaIdEscolhido?: string) {
+    if (novo.materiaIds.length === 0) {
+      setErroNovo("Selecione ao menos uma disciplina.");
+      return;
+    }
     setSalvando(true);
     setErroNovo("");
     setCandidatasNovo(null);
@@ -740,6 +747,10 @@ export default function ConteudosClient({
 
   async function salvarConteudo(aulaIdEscolhido?: string) {
     if (!editConteudo) return;
+    if (editConteudo.materiaIds.length === 0) {
+      setErroEdit("Selecione ao menos uma disciplina.");
+      return;
+    }
     setSalvando(true);
     setErroEdit("");
     setCandidatasEdit(null);
@@ -871,9 +882,10 @@ export default function ConteudosClient({
     });
   }
 
-  const podeSalvarNovo = !!novo.alunoId && !!novo.topico && !!novo.data;
+  const podeSalvarNovo = !!novo.alunoId && novo.materiaIds.length > 0 && !!novo.topico && !!novo.data;
   const podeSalvarEdit =
     !!editConteudo?.alunoId &&
+    (editConteudo?.materiaIds.length ?? 0) > 0 &&
     !!editConteudo?.topico &&
     !!editConteudo?.data;
 

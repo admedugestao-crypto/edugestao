@@ -59,17 +59,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Aluno inválido." }, { status: 400 });
   }
   const materiaIds = normalizarIds(body.materiaIds);
+  if (materiaIds.length === 0) {
+    return NextResponse.json({ erro: "Selecione ao menos uma disciplina." }, { status: 400 });
+  }
   const [aluno, materiasEncontradas] = await Promise.all([
     prisma.aluno.findFirst({
       where: { id: body.alunoId, empresaId: scope.empresaId },
       select: { id: true, professoraId: true },
     }),
-    materiaIds.length > 0
-      ? prisma.materia.findMany({
-          where: { id: { in: materiaIds }, empresaId: scope.empresaId },
-          select: { id: true },
-        })
-      : Promise.resolve([]),
+    prisma.materia.findMany({
+      where: { id: { in: materiaIds }, empresaId: scope.empresaId },
+      select: { id: true },
+    }),
   ]);
   if (!aluno || !podeAcessarProfessora(scope, aluno.professoraId)) {
     return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
@@ -106,9 +107,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       arquivoUrl: body.arquivoUrl !== undefined ? body.arquivoUrl || null : undefined,
       data:       dataAula,
       planejado,
-      materias: materiaIds.length > 0
-        ? { create: materiaIds.map((materiaId) => ({ materiaId })) }
-        : undefined,
+      materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
     },
     include: includeCompleto,
   });
