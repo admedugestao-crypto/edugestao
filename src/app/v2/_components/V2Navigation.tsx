@@ -80,7 +80,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
         <button className={styles.iconButton} onClick={() => setAberto(true)} aria-label="Abrir menu">
           <Menu aria-hidden="true" size={21} />
         </button>
-        <span className={styles.mobileBrand}>EduGestão <b>V2</b></span>
+        <Image src="/logo-edugestao-v2.png" alt="EduGestão V2" width={108} height={45} priority className={styles.mobileBrandLogo} />
         <span className={styles.avatarSmall}>{iniciais(usuario.nome)}</span>
       </header>
 
@@ -88,7 +88,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
 
       <aside className={`${styles.sidebar} ${aberto ? styles.sidebarOpen : ""}`}>
         <div className={styles.brandBlock}>
-          <div className={styles.brandMark} aria-hidden="true"><span>E</span></div>
+          <Image src="/logo-edugestao-v2.png" alt="EduGestão V2" width={108} height={45} priority className={styles.brandLogo} />
           <div>
             <p className={styles.brandName}>EduGestão</p>
             <p className={styles.versionLabel}>Nova experiência · V2</p>
