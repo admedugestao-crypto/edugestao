@@ -179,7 +179,6 @@ function AgendaClientContent({
 
   // Modal nova aula
   const [modalAberto, setModalAberto]         = useState(false);
-  const [dataModal, setDataModal]             = useState("");
   const [professoraIdModal, setProfessoraIdModal] = useState("");
   const [novaAula, setNovaAula]               = useState({
     alunoId: "", materiaIds: [] as string[], data: "", horaInicio: "", horaFim: "", observacao: "",
@@ -439,12 +438,12 @@ function AgendaClientContent({
 
   // ── Nova aula ──────────────────────────────────────────────────────────────
   function abrirModal(data?: string, horaInicio?: string, horaFim?: string) {
-    setDataModal(data ?? "");
+    const dataDaAula = data || format(new Date(), "yyyy-MM-dd");
     setProfessoraIdModal("");
     setErroModal(null);
     setAvisoAgendamento(null);
     setReposicaoOrigem(null);
-    setNovaAula({ alunoId: "", materiaIds: [], data: data ?? "", horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
+    setNovaAula({ alunoId: "", materiaIds: [], data: dataDaAula, horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
     setModalAberto(true);
   }
 
@@ -452,7 +451,6 @@ function AgendaClientContent({
   function abrirReposicao(aula: Aula) {
     setConfirmExcluir(null);
     setAulaDetalhe(null);
-    setDataModal("");
     setProfessoraIdModal(aula.professoraId);
     setErroModal(null);
     setAvisoAgendamento(null);
@@ -982,7 +980,7 @@ function AgendaClientContent({
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
             <Trash2 size={13}/> Excluir período
           </button>
-          <button onClick={() => abrirModal(vista === "dia" ? diaRef.toISOString().split("T")[0] : "")}
+          <button onClick={() => abrirModal(vista === "dia" ? format(diaRef, "yyyy-MM-dd") : "")}
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
             <Plus size={13}/> Nova aula
           </button>
