@@ -7,6 +7,15 @@ import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
+function duracaoEmMinutos(inicio: unknown, fim: unknown): number | null {
+  if (typeof inicio !== "string" || typeof fim !== "string") return null;
+  const horarioValido = /^([01]\d|2[0-3]):[0-5]\d$/;
+  if (!horarioValido.test(inicio) || !horarioValido.test(fim)) return null;
+  const [horaInicio, minutoInicio] = inicio.split(":").map(Number);
+  const [horaFim, minutoFim] = fim.split(":").map(Number);
+  return (horaFim * 60 + minutoFim) - (horaInicio * 60 + minutoInicio);
+}
+
 // GET /api/agenda/[id] — detalhes de uma aula dentro do escopo da sessão
 export async function GET(
   _req: NextRequest,
@@ -106,6 +115,14 @@ export async function PATCH(
 
   const aula = await prisma.agendaAula.findUnique({ where: { id } });
   if (!aula) return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
+
+  if (horaInicio !== undefined || horaFim !== undefined) {
+    const inicio = horaInicio ?? aula.horaInicio;
+    const fim = horaFim ?? aula.horaFim;
+    if ((duracaoEmMinutos(inicio, fim) ?? 0) < 60) {
+      return NextResponse.json({ erro: "A duração mínima da aula é de 1 hora." }, { status: 400 });
+    }
+  }
 
   // A primeira tentativa de voltar uma aula quitada para Agendada é somente
   // uma consulta: nada muda antes da confirmação explícita do usuário.

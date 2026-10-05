@@ -112,6 +112,10 @@ function toMin(hora: string) {
 function fromMin(min: number) {
   return `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 }
+function fimUmaHoraDepois(horaInicio: string) {
+  const inicio = toMin(horaInicio);
+  return Number.isFinite(inicio) && inicio <= (22 * 60) + 59 ? fromMin(inicio + 60) : "";
+}
 // Subtrai intervalos ocupados de uma lista de janelas livres
 function subtrairOcupados(
   janelas: { inicio: number; fim: number }[],
@@ -463,8 +467,7 @@ function AgendaClientContent({
   /** Verifica disponibilidade do professor — sempre rodada, mesmo ao forçar outros avisos. */
   function verificarDisponibilidade(): { msg: string } | null {
     if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) return null; // duração inválida, erro separado cuida disso
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
 
     const profId = isProfessor ? professoraIdSessao : professoraIdModal;
     if (!profId) return null;
@@ -511,10 +514,8 @@ function AgendaClientContent({
 
     if (!novaAula.horaInicio || !novaAula.horaFim) return null;
 
-    // Duração mínima: 1 hora normalmente, 30 minutos ao repor uma aula excluída
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima)
-      return { tipo: "erro", msg: reposicaoOrigem ? "A duração mínima da aula de reposição é de 30 minutos." : "A duração mínima da aula é de 1 hora." };
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60)
+      return { tipo: "erro", msg: "A duração mínima da aula é de 1 hora." };
 
     // Verificar conflito com aulas já existentes
     const aulasNaData = aulas.filter(
@@ -1387,7 +1388,7 @@ function AgendaClientContent({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-600">Início *</label>
-                <input type="time" required value={novaAula.horaInicio} onChange={(e) => { setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
+                <input type="time" required max="22:59" value={novaAula.horaInicio} onChange={(e) => { const horaInicio = e.target.value; setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio, horaFim: fimUmaHoraDepois(horaInicio) })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
               <div>

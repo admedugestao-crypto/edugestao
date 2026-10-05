@@ -68,6 +68,10 @@ function toMin(h: string) { const [hh, mm] = h.split(":").map(Number); return hh
 function fromMin(min: number) {
   return `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 }
+function fimUmaHoraDepois(horaInicio: string) {
+  const inicio = toMin(horaInicio);
+  return Number.isFinite(inicio) && inicio <= (22 * 60) + 59 ? fromMin(inicio + 60) : "";
+}
 function subtrair(janelas: { inicio: number; fim: number }[], ocupados: { inicio: number; fim: number }[]) {
   let livres = [...janelas];
   for (const oc of ocupados) {
@@ -212,8 +216,7 @@ export default function AgendaMobile({
   // ── Disponibilidade do professor ─────────────────────────────────────────────
   function verificarDisponibilidade(): string | null {
     if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) return null; // duração inválida, erro separado cuida disso
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
 
     const profId = isProfessor ? professoraIdSessao : profModal;
     if (!profId) return null;
@@ -249,9 +252,8 @@ export default function AgendaMobile({
     if (!novaAula.alunoId || !novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) {
       setErroModal("Preencha aluno, data e horário."); return;
     }
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) {
-      setErroModal(reposicaoOrigem ? "Duração mínima de 30 minutos." : "Duração mínima de 1 hora."); return;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) {
+      setErroModal("Duração mínima de 1 hora."); return;
     }
     if (!forcarDisp) {
       const aviso = verificarDisponibilidade();
@@ -855,7 +857,7 @@ export default function AgendaMobile({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Início *</label>
-                <input type="time" value={novaAula.horaInicio} onChange={(e) => { setErroModal(null); setAvisoDisp(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
+                <input type="time" max="22:59" value={novaAula.horaInicio} onChange={(e) => { const horaInicio = e.target.value; setErroModal(null); setAvisoDisp(null); setNovaAula((p) => ({ ...p, horaInicio, horaFim: fimUmaHoraDepois(horaInicio) })); }}
                   className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
               </div>
               <div>
