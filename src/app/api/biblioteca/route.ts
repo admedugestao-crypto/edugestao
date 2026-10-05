@@ -5,6 +5,18 @@ import { normalizarIds } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
+const LIMITE_TEXTO_BUSCA = 500_000;
+
+function textoBuscaSeguro(valor: unknown) {
+  return typeof valor === "string" ? valor.replace(/\s+/g, " ").trim().slice(0, LIMITE_TEXTO_BUSCA) : "";
+}
+
+function ocultarTextoBusca<T extends { textoBusca?: string | null }>(material: T) {
+  const materialPublico = { ...material };
+  delete materialPublico.textoBusca;
+  return materialPublico;
+}
+
 export async function GET(req: NextRequest) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
@@ -13,6 +25,7 @@ export async function GET(req: NextRequest) {
   const metodoId = searchParams.get("metodoId");
   const serie = searchParams.get("serie");
   const materiaId = searchParams.get("materiaId");
+  const busca = searchParams.get("busca")?.trim();
 
   const materiais = await prisma.materialBiblioteca.findMany({
     where: {
@@ -20,11 +33,18 @@ export async function GET(req: NextRequest) {
       ...(metodoId ? { metodoId } : {}),
       ...(serie ? { serie } : {}),
       ...(materiaId ? { materias: { some: { materiaId } } } : {}),
+      ...(busca ? {
+        OR: [
+          { titulo: { contains: busca, mode: "insensitive" } },
+          { descricao: { contains: busca, mode: "insensitive" } },
+          { textoBusca: { contains: busca, mode: "insensitive" } },
+        ],
+      } : {}),
     },
     include: { materia: true, metodoEnsino: true, materias: { select: { materia: true } } },
     orderBy: { criadoEm: "desc" },
   });
-  return NextResponse.json(materiais);
+  return NextResponse.json(materiais.map(ocultarTextoBusca));
 }
 
 export async function POST(req: NextRequest) {
@@ -61,9 +81,10 @@ export async function POST(req: NextRequest) {
       materiaId: materiaIds[0],
       arquivoUrl: body.arquivoUrl,
       arquivoNome: body.arquivoNome || null,
+      textoBusca: textoBuscaSeguro(body.textoBusca) || null,
       materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
     },
     include: { materia: true, metodoEnsino: true, materias: { select: { materia: true } } },
   });
-  return NextResponse.json(material, { status: 201 });
+  return NextResponse.json(ocultarTextoBusca(material), { status: 201 });
 }

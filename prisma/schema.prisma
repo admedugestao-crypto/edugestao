@@ -553,6 +553,7 @@ model MaterialBiblioteca {
   materiaId   String?
   arquivoUrl  String
   arquivoNome String?
+  textoBusca  String?  @map("texto_busca")
   criadoEm    DateTime @default(now())
 
   empresa      Empresa                     @relation(fields: [empresaId], references: [id])

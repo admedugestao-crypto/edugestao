@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, FileText, Download, Pencil, Trash2, Upload, Search } from "lucide-react";
 import { SERIES } from "@/lib/series";
 import { TIPOS_WORD, unificarArquivos } from "@/lib/unificarArquivos";
@@ -23,7 +23,18 @@ type Material = {
   arquivoNome: string | null;
 };
 
-const formVazio = {
+type FormMaterial = {
+  titulo: string;
+  descricao: string;
+  metodoId: string;
+  serie: string;
+  materiaIds: string[];
+  arquivoUrl: string;
+  arquivoNome: string;
+  textoBusca?: string;
+};
+
+const formVazio: FormMaterial = {
   titulo: "",
   descricao: "",
   metodoId: "",
@@ -31,6 +42,7 @@ const formVazio = {
   materiaIds: [] as string[],
   arquivoUrl: "",
   arquivoNome: "",
+  textoBusca: "",
 };
 
 export default function BibliotecaClient({
@@ -52,27 +64,39 @@ export default function BibliotecaClient({
 
   const [modalNovo, setModalNovo] = useState(false);
   const [novo, setNovo] = useState(formVazio);
-  const [editando, setEditando] = useState<(typeof formVazio & { id: string }) | null>(null);
+  const [editando, setEditando] = useState<(FormMaterial & { id: string }) | null>(null);
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
   const [unificando, setUnificando] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; titulo: string } | null>(null);
 
-  const materiaisFiltrados = materiais.filter((m) => {
-    if (filtroMetodo && m.metodoId !== filtroMetodo) return false;
-    if (filtroSerie && m.serie !== filtroSerie) return false;
-    if (filtroMateriaId && !m.materias.some((x) => x.materia.id === filtroMateriaId)) return false;
-    if (busca) {
-      const termo = busca.trim().toLowerCase();
-      const noTitulo = m.titulo.toLowerCase().includes(termo);
-      const naDescricao = (m.descricao ?? "").toLowerCase().includes(termo);
-      if (!noTitulo && !naDescricao) return false;
-    }
-    return true;
-  });
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      const params = new URLSearchParams();
+      if (busca.trim()) params.set("busca", busca.trim());
+      if (filtroMetodo) params.set("metodoId", filtroMetodo);
+      if (filtroSerie) params.set("serie", filtroSerie);
+      if (filtroMateriaId) params.set("materiaId", filtroMateriaId);
 
-  async function enviarArquivo(file: File, aplicar: (url: string, nome: string) => void) {
+      try {
+        const res = await fetch(`/api/biblioteca?${params.toString()}`, { signal: controller.signal });
+        if (res.ok) setMateriais(await res.json());
+      } catch (erro) {
+        if (!(erro instanceof DOMException && erro.name === "AbortError")) {
+          setErro("Não foi possível atualizar a busca.");
+        }
+      }
+    }, busca.trim() ? 250 : 0);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [busca, filtroMetodo, filtroSerie, filtroMateriaId]);
+
+  async function enviarArquivo(file: File, aplicar: (url: string, nome: string, textoBusca: string) => void) {
     setEnviandoArquivo(true);
     setErro("");
     try {
@@ -82,9 +106,9 @@ export default function BibliotecaClient({
       const res = await fetch("/api/upload", { method: "POST", body: formData });
 
       const textoResposta = await res.text();
-      let data: { url: string; nome: string; erro?: string } | null = null;
+      let data: { url: string; nome: string; textoExtraido?: string; erro?: string } | null = null;
       try {
-        data = JSON.parse(textoResposta) as { url: string; nome: string; erro?: string };
+        data = JSON.parse(textoResposta) as { url: string; nome: string; textoExtraido?: string; erro?: string };
       } catch { /* resposta nao-JSON tratada abaixo */ }
 
       if (!res.ok || !data) {
@@ -95,7 +119,7 @@ export default function BibliotecaClient({
         }
         return;
       }
-      aplicar(data.url, data.nome);
+      aplicar(data.url, data.nome, data.textoExtraido ?? "");
     } finally {
       setEnviandoArquivo(false);
     }
@@ -103,7 +127,7 @@ export default function BibliotecaClient({
 
   // Chamado pelo onChange dos dois campos de arquivo. Se mais de um arquivo
   // for escolhido, unifica tudo num PDF só antes de enviar.
-  async function selecionarArquivos(fileList: FileList | null, aplicar: (url: string, nome: string) => void) {
+  async function selecionarArquivos(fileList: FileList | null, aplicar: (url: string, nome: string, textoBusca: string) => void) {
     const files = Array.from(fileList ?? []);
     if (files.length === 0) return;
 
@@ -129,7 +153,7 @@ export default function BibliotecaClient({
     await enviarArquivo(files[0], aplicar);
   }
 
-  function camposFaltando(m: typeof formVazio): string[] {
+  function camposFaltando(m: FormMaterial): string[] {
     const faltando: string[] = [];
     if (!m.titulo) faltando.push("Título");
     if (!m.descricao) faltando.push("Descrição");
@@ -140,7 +164,7 @@ export default function BibliotecaClient({
     return faltando;
   }
 
-  function materialCompleto(m: typeof formVazio) {
+  function materialCompleto(m: FormMaterial) {
     return camposFaltando(m).length === 0;
   }
 
@@ -258,13 +282,13 @@ export default function BibliotecaClient({
       </div>
 
       {/* Lista */}
-      {materiaisFiltrados.length === 0 ? (
+      {materiais.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
           Nenhum material cadastrado.
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {materiaisFiltrados.map((m) => (
+          {materiais.map((m) => (
             <div key={m.id} className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col gap-2">
               <div className="flex items-start gap-2">
                 <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
@@ -299,6 +323,7 @@ export default function BibliotecaClient({
                       materiaIds: m.materias.map((x) => x.materia.id),
                       arquivoUrl: m.arquivoUrl,
                       arquivoNome: m.arquivoNome ?? "",
+                      textoBusca: undefined,
                     });
                   }}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
@@ -398,7 +423,7 @@ export default function BibliotecaClient({
                     className="hidden"
                     disabled={enviandoArquivo || unificando}
                     onChange={(e) => {
-                      selecionarArquivos(e.target.files, (url, nome) => setNovo((p) => ({ ...p, arquivoUrl: url, arquivoNome: nome })));
+                      selecionarArquivos(e.target.files, (url, nome, textoBusca) => setNovo((p) => ({ ...p, arquivoUrl: url, arquivoNome: nome, textoBusca })));
                       e.target.value = "";
                     }}
                   />
@@ -503,7 +528,7 @@ export default function BibliotecaClient({
                     className="hidden"
                     disabled={enviandoArquivo || unificando}
                     onChange={(e) => {
-                      selecionarArquivos(e.target.files, (url, nome) => setEditando((p) => p && ({ ...p, arquivoUrl: url, arquivoNome: nome })));
+                      selecionarArquivos(e.target.files, (url, nome, textoBusca) => setEditando((p) => p && ({ ...p, arquivoUrl: url, arquivoNome: nome, textoBusca })));
                       e.target.value = "";
                     }}
                   />

@@ -2721,6 +2721,7 @@ export const MaterialBibliotecaScalarFieldEnum = {
   materiaId: 'materiaId',
   arquivoUrl: 'arquivoUrl',
   arquivoNome: 'arquivoNome',
+  textoBusca: 'textoBusca',
   criadoEm: 'criadoEm'
 } as const
 

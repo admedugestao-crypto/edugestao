@@ -5,6 +5,18 @@ import { normalizarIds } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
+const LIMITE_TEXTO_BUSCA = 500_000;
+
+function textoBuscaSeguro(valor: unknown) {
+  return typeof valor === "string" ? valor.replace(/\s+/g, " ").trim().slice(0, LIMITE_TEXTO_BUSCA) : "";
+}
+
+function ocultarTextoBusca<T extends { textoBusca?: string | null }>(material: T) {
+  const materialPublico = { ...material };
+  delete materialPublico.textoBusca;
+  return materialPublico;
+}
+
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const scope = await getSessionScope();
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
@@ -47,12 +59,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         serie: body.serie,
         materiaId: materiaIds[0],
         ...(body.arquivoUrl ? { arquivoUrl: body.arquivoUrl, arquivoNome: body.arquivoNome || null } : {}),
+        ...(body.textoBusca !== undefined ? { textoBusca: textoBuscaSeguro(body.textoBusca) || null } : {}),
         materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
       },
       include: { materia: true, metodoEnsino: true, materias: { select: { materia: true } } },
     });
   });
-  return NextResponse.json(material);
+  return NextResponse.json(ocultarTextoBusca(material));
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

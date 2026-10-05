@@ -35,6 +35,7 @@ export type MaterialBibliotecaMinAggregateOutputType = {
   materiaId: string | null
   arquivoUrl: string | null
   arquivoNome: string | null
+  textoBusca: string | null
   criadoEm: Date | null
 }
 
@@ -49,6 +50,7 @@ export type MaterialBibliotecaMaxAggregateOutputType = {
   materiaId: string | null
   arquivoUrl: string | null
   arquivoNome: string | null
+  textoBusca: string | null
   criadoEm: Date | null
 }
 
@@ -63,6 +65,7 @@ export type MaterialBibliotecaCountAggregateOutputType = {
   materiaId: number
   arquivoUrl: number
   arquivoNome: number
+  textoBusca: number
   criadoEm: number
   _all: number
 }
@@ -79,6 +82,7 @@ export type MaterialBibliotecaMinAggregateInputType = {
   materiaId?: true
   arquivoUrl?: true
   arquivoNome?: true
+  textoBusca?: true
   criadoEm?: true
 }
 
@@ -93,6 +97,7 @@ export type MaterialBibliotecaMaxAggregateInputType = {
   materiaId?: true
   arquivoUrl?: true
   arquivoNome?: true
+  textoBusca?: true
   criadoEm?: true
 }
 
@@ -107,6 +112,7 @@ export type MaterialBibliotecaCountAggregateInputType = {
   materiaId?: true
   arquivoUrl?: true
   arquivoNome?: true
+  textoBusca?: true
   criadoEm?: true
   _all?: true
 }
@@ -194,6 +200,7 @@ export type MaterialBibliotecaGroupByOutputType = {
   materiaId: string | null
   arquivoUrl: string
   arquivoNome: string | null
+  textoBusca: string | null
   criadoEm: Date
   _count: MaterialBibliotecaCountAggregateOutputType | null
   _min: MaterialBibliotecaMinAggregateOutputType | null
@@ -229,6 +236,7 @@ export type MaterialBibliotecaWhereInput = {
   materiaId?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
   arquivoUrl?: Prisma.StringFilter<"MaterialBiblioteca"> | string
   arquivoNome?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
+  textoBusca?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"MaterialBiblioteca"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
@@ -247,6 +255,7 @@ export type MaterialBibliotecaOrderByWithRelationInput = {
   materiaId?: Prisma.SortOrderInput | Prisma.SortOrder
   arquivoUrl?: Prisma.SortOrder
   arquivoNome?: Prisma.SortOrderInput | Prisma.SortOrder
+  textoBusca?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   empresa?: Prisma.EmpresaOrderByWithRelationInput
   materia?: Prisma.MateriaOrderByWithRelationInput
@@ -268,6 +277,7 @@ export type MaterialBibliotecaWhereUniqueInput = Prisma.AtLeast<{
   materiaId?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
   arquivoUrl?: Prisma.StringFilter<"MaterialBiblioteca"> | string
   arquivoNome?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
+  textoBusca?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"MaterialBiblioteca"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaScalarRelationFilter, Prisma.EmpresaWhereInput>
   materia?: Prisma.XOR<Prisma.MateriaNullableScalarRelationFilter, Prisma.MateriaWhereInput> | null
@@ -286,6 +296,7 @@ export type MaterialBibliotecaOrderByWithAggregationInput = {
   materiaId?: Prisma.SortOrderInput | Prisma.SortOrder
   arquivoUrl?: Prisma.SortOrder
   arquivoNome?: Prisma.SortOrderInput | Prisma.SortOrder
+  textoBusca?: Prisma.SortOrderInput | Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   _count?: Prisma.MaterialBibliotecaCountOrderByAggregateInput
   _max?: Prisma.MaterialBibliotecaMaxOrderByAggregateInput
@@ -306,6 +317,7 @@ export type MaterialBibliotecaScalarWhereWithAggregatesInput = {
   materiaId?: Prisma.StringNullableWithAggregatesFilter<"MaterialBiblioteca"> | string | null
   arquivoUrl?: Prisma.StringWithAggregatesFilter<"MaterialBiblioteca"> | string
   arquivoNome?: Prisma.StringNullableWithAggregatesFilter<"MaterialBiblioteca"> | string | null
+  textoBusca?: Prisma.StringNullableWithAggregatesFilter<"MaterialBiblioteca"> | string | null
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"MaterialBiblioteca"> | Date | string
 }
 
@@ -317,6 +329,7 @@ export type MaterialBibliotecaCreateInput = {
   serie?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
   materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
@@ -335,6 +348,7 @@ export type MaterialBibliotecaUncheckedCreateInput = {
   materiaId?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
@@ -347,6 +361,7 @@ export type MaterialBibliotecaUpdateInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
@@ -365,6 +380,7 @@ export type MaterialBibliotecaUncheckedUpdateInput = {
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
@@ -380,6 +396,7 @@ export type MaterialBibliotecaCreateManyInput = {
   materiaId?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
 }
 
@@ -391,6 +408,7 @@ export type MaterialBibliotecaUpdateManyMutationInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -405,6 +423,7 @@ export type MaterialBibliotecaUncheckedUpdateManyInput = {
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -429,6 +448,7 @@ export type MaterialBibliotecaCountOrderByAggregateInput = {
   materiaId?: Prisma.SortOrder
   arquivoUrl?: Prisma.SortOrder
   arquivoNome?: Prisma.SortOrder
+  textoBusca?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -443,6 +463,7 @@ export type MaterialBibliotecaMaxOrderByAggregateInput = {
   materiaId?: Prisma.SortOrder
   arquivoUrl?: Prisma.SortOrder
   arquivoNome?: Prisma.SortOrder
+  textoBusca?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -457,6 +478,7 @@ export type MaterialBibliotecaMinOrderByAggregateInput = {
   materiaId?: Prisma.SortOrder
   arquivoUrl?: Prisma.SortOrder
   arquivoNome?: Prisma.SortOrder
+  textoBusca?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
 }
 
@@ -613,6 +635,7 @@ export type MaterialBibliotecaCreateWithoutEmpresaInput = {
   serie?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
   metodoEnsino?: Prisma.MetodoEnsinoCreateNestedOneWithoutMateriaisBibliotecaInput
@@ -629,6 +652,7 @@ export type MaterialBibliotecaUncheckedCreateWithoutEmpresaInput = {
   materiaId?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
@@ -673,6 +697,7 @@ export type MaterialBibliotecaScalarWhereInput = {
   materiaId?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
   arquivoUrl?: Prisma.StringFilter<"MaterialBiblioteca"> | string
   arquivoNome?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
+  textoBusca?: Prisma.StringNullableFilter<"MaterialBiblioteca"> | string | null
   criadoEm?: Prisma.DateTimeFilter<"MaterialBiblioteca"> | Date | string
 }
 
@@ -684,6 +709,7 @@ export type MaterialBibliotecaCreateWithoutMateriaInput = {
   serie?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
   metodoEnsino?: Prisma.MetodoEnsinoCreateNestedOneWithoutMateriaisBibliotecaInput
@@ -700,6 +726,7 @@ export type MaterialBibliotecaUncheckedCreateWithoutMateriaInput = {
   serie?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
@@ -738,6 +765,7 @@ export type MaterialBibliotecaCreateWithoutMetodoEnsinoInput = {
   serie?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
   materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
@@ -754,6 +782,7 @@ export type MaterialBibliotecaUncheckedCreateWithoutMetodoEnsinoInput = {
   materiaId?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedCreateNestedManyWithoutMaterialInput
 }
@@ -792,6 +821,7 @@ export type MaterialBibliotecaCreateWithoutMateriasInput = {
   serie?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
   empresa: Prisma.EmpresaCreateNestedOneWithoutMateriaisBibliotecaInput
   materia?: Prisma.MateriaCreateNestedOneWithoutMateriaisBibliotecaInput
@@ -809,6 +839,7 @@ export type MaterialBibliotecaUncheckedCreateWithoutMateriasInput = {
   materiaId?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
 }
 
@@ -836,6 +867,7 @@ export type MaterialBibliotecaUpdateWithoutMateriasInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
@@ -853,6 +885,7 @@ export type MaterialBibliotecaUncheckedUpdateWithoutMateriasInput = {
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -866,6 +899,7 @@ export type MaterialBibliotecaCreateManyEmpresaInput = {
   materiaId?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
 }
 
@@ -877,6 +911,7 @@ export type MaterialBibliotecaUpdateWithoutEmpresaInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
   metodoEnsino?: Prisma.MetodoEnsinoUpdateOneWithoutMateriaisBibliotecaNestedInput
@@ -893,6 +928,7 @@ export type MaterialBibliotecaUncheckedUpdateWithoutEmpresaInput = {
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
@@ -907,6 +943,7 @@ export type MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaInput = {
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -920,6 +957,7 @@ export type MaterialBibliotecaCreateManyMateriaInput = {
   serie?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
 }
 
@@ -931,6 +969,7 @@ export type MaterialBibliotecaUpdateWithoutMateriaInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
   metodoEnsino?: Prisma.MetodoEnsinoUpdateOneWithoutMateriaisBibliotecaNestedInput
@@ -947,6 +986,7 @@ export type MaterialBibliotecaUncheckedUpdateWithoutMateriaInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
@@ -961,6 +1001,7 @@ export type MaterialBibliotecaUncheckedUpdateManyWithoutMateriaInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -974,6 +1015,7 @@ export type MaterialBibliotecaCreateManyMetodoEnsinoInput = {
   materiaId?: string | null
   arquivoUrl: string
   arquivoNome?: string | null
+  textoBusca?: string | null
   criadoEm?: Date | string
 }
 
@@ -985,6 +1027,7 @@ export type MaterialBibliotecaUpdateWithoutMetodoEnsinoInput = {
   serie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneRequiredWithoutMateriaisBibliotecaNestedInput
   materia?: Prisma.MateriaUpdateOneWithoutMateriaisBibliotecaNestedInput
@@ -1001,6 +1044,7 @@ export type MaterialBibliotecaUncheckedUpdateWithoutMetodoEnsinoInput = {
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materias?: Prisma.MaterialBibliotecaMateriaUncheckedUpdateManyWithoutMaterialNestedInput
 }
@@ -1015,6 +1059,7 @@ export type MaterialBibliotecaUncheckedUpdateManyWithoutMetodoEnsinoInput = {
   materiaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   arquivoNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textoBusca?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1060,6 +1105,7 @@ export type MaterialBibliotecaSelect<ExtArgs extends runtime.Types.Extensions.In
   materiaId?: boolean
   arquivoUrl?: boolean
   arquivoNome?: boolean
+  textoBusca?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MaterialBiblioteca$materiaArgs<ExtArgs>
@@ -1079,6 +1125,7 @@ export type MaterialBibliotecaSelectCreateManyAndReturn<ExtArgs extends runtime.
   materiaId?: boolean
   arquivoUrl?: boolean
   arquivoNome?: boolean
+  textoBusca?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MaterialBiblioteca$materiaArgs<ExtArgs>
@@ -1096,6 +1143,7 @@ export type MaterialBibliotecaSelectUpdateManyAndReturn<ExtArgs extends runtime.
   materiaId?: boolean
   arquivoUrl?: boolean
   arquivoNome?: boolean
+  textoBusca?: boolean
   criadoEm?: boolean
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MaterialBiblioteca$materiaArgs<ExtArgs>
@@ -1113,10 +1161,11 @@ export type MaterialBibliotecaSelectScalar = {
   materiaId?: boolean
   arquivoUrl?: boolean
   arquivoNome?: boolean
+  textoBusca?: boolean
   criadoEm?: boolean
 }
 
-export type MaterialBibliotecaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "titulo" | "descricao" | "metodoTexto" | "metodoId" | "serie" | "materiaId" | "arquivoUrl" | "arquivoNome" | "criadoEm", ExtArgs["result"]["materialBiblioteca"]>
+export type MaterialBibliotecaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "empresaId" | "titulo" | "descricao" | "metodoTexto" | "metodoId" | "serie" | "materiaId" | "arquivoUrl" | "arquivoNome" | "textoBusca" | "criadoEm", ExtArgs["result"]["materialBiblioteca"]>
 export type MaterialBibliotecaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.EmpresaDefaultArgs<ExtArgs>
   materia?: boolean | Prisma.MaterialBiblioteca$materiaArgs<ExtArgs>
@@ -1154,6 +1203,7 @@ export type $MaterialBibliotecaPayload<ExtArgs extends runtime.Types.Extensions.
     materiaId: string | null
     arquivoUrl: string
     arquivoNome: string | null
+    textoBusca: string | null
     criadoEm: Date
   }, ExtArgs["result"]["materialBiblioteca"]>
   composites: {}
@@ -1592,6 +1642,7 @@ export interface MaterialBibliotecaFieldRefs {
   readonly materiaId: Prisma.FieldRef<"MaterialBiblioteca", 'String'>
   readonly arquivoUrl: Prisma.FieldRef<"MaterialBiblioteca", 'String'>
   readonly arquivoNome: Prisma.FieldRef<"MaterialBiblioteca", 'String'>
+  readonly textoBusca: Prisma.FieldRef<"MaterialBiblioteca", 'String'>
   readonly criadoEm: Prisma.FieldRef<"MaterialBiblioteca", 'DateTime'>
 }
     

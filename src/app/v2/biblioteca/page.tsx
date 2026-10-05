@@ -36,7 +36,11 @@ export default async function V2BibliotecaPage() {
       </header>
 
       <section className={styles.librarySurface} aria-label="Acervo da biblioteca">
-        <BibliotecaClient materiaisIniciais={materiais} materias={materias} metodos={metodos} variant="v2" />
+        <BibliotecaClient materiaisIniciais={materiais.map((material) => {
+          const { textoBusca, ...materialPublico } = material;
+          void textoBusca;
+          return materialPublico;
+        })} materias={materias} metodos={metodos} variant="v2" />
       </section>
     </div>
   );
