@@ -48,6 +48,13 @@ const items = [
   { href: "/v2/notificacoes", label: "Notificações", icon: Bell, adminOnly: true, v2: true },
 ];
 
+const mobileShortcutHrefs = [
+  "/v2/agenda",
+  "/v2/conteudos",
+  "/v2/biblioteca",
+  "/v2/pagamentos",
+] as const;
+
 function iniciais(nome: string) {
   return nome.split(" ").filter(Boolean).slice(0, 2).map((parte) => parte[0]).join("").toUpperCase();
 }
@@ -61,6 +68,9 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
   const isAdmin = usuario.perfil === "SUPERADMIN" || usuario.perfil === "SUPERADMIN_PROFESSORA";
 
   const links = items.filter((item) => !item.adminOnly || isAdmin);
+  const mobileShortcuts = mobileShortcutHrefs
+    .map((href) => links.find((item) => item.href === href))
+    .filter((item): item is (typeof links)[number] => Boolean(item));
 
   return (
     <>
@@ -121,7 +131,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
       </aside>
 
       <nav className={styles.mobileNav} aria-label="Atalhos principais">
-        {links.slice(0, 5).map(({ href, label, icon: Icon, v2 }) => (
+        {mobileShortcuts.map(({ href, label, icon: Icon, v2 }) => (
           <Link key={href} href={href} className={v2 && (pathname === href || (href !== "/v2" && pathname.startsWith(`${href}/`))) ? styles.mobileNavActive : ""}>
             <Icon aria-hidden="true" size={20} /><span>{label}</span>
           </Link>
