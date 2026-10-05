@@ -49,6 +49,7 @@ const items = [
 ];
 
 const mobileShortcutHrefs = [
+  "/v2",
   "/v2/agenda",
   "/v2/conteudos",
   "/v2/biblioteca",
