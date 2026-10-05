@@ -7,6 +7,38 @@ import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
+// GET /api/agenda/[id] — detalhes de uma aula dentro do escopo da sessão
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+
+  const { id } = await params;
+  const aula = await prisma.agendaAula.findUnique({
+    where: { id },
+    include: {
+      aluno: {
+        select: {
+          id: true, nome: true, serie: true, turma: true,
+          materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
+        },
+      },
+      materia: { select: { id: true, nome: true, cor: true } },
+      materias: { select: { materia: { select: { id: true, nome: true, cor: true } } } },
+      professora: { select: { usuario: { select: { nome: true } } } },
+      conteudo: { select: { planejado: true, topico: true, descricao: true, arquivoUrl: true } },
+    },
+  });
+
+  if (!aula || aula.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aula.professoraId)) {
+    return NextResponse.json({ erro: "Aula não encontrada" }, { status: 404 });
+  }
+
+  return NextResponse.json({ ...aula, conteudo: aula.conteudo ?? null });
+}
+
 // PATCH /api/agenda/[id] — atualizar status, horário, observação
 export async function PATCH(
   req: NextRequest,

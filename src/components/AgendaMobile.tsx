@@ -85,13 +85,14 @@ function subtrair(janelas: { inicio: number; fim: number }[], ocupados: { inicio
 export default function AgendaMobile({
   isProfessor, isAdmin, nomeUsuario,
   professoraIdSessao, professoras, disponibilidades, alunos,
-  variant = "legacy",
+  variant = "legacy", aulaInicialId,
 }: {
   isProfessor: boolean; isAdmin: boolean; nomeUsuario: string;
   professoraIdSessao: string;
   professoras: ProfOpt[]; disponibilidades: DispProf[];
   alunos: AlunoOpt[];
   variant?: "legacy" | "v2";
+  aulaInicialId?: string;
 }) {
   const router = useRouter();
 
@@ -133,6 +134,28 @@ export default function AgendaMobile({
   const [enviandoArquivo, setEnviandoArquivo]       = useState(false);
   const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroConteudo, setErroConteudo]             = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!aulaInicialId) return;
+    let ativo = true;
+
+    void fetch(`/api/agenda/${aulaInicialId}`)
+      .then(async (res) => res.ok ? res.json() as Promise<Aula> : null)
+      .then((aula) => {
+        if (!ativo || !aula) return;
+        const data = parseLocal(aula.data);
+        setSemana(startOfWeek(data, { weekStartsOn: 1 }));
+        setDiaAtivo(data);
+        setMesAtivo(startOfMonth(data));
+        setVista("dia");
+        setDetalhe(aula);
+        setObsEdit(aula.observacao ?? "");
+        setMateriaDetalheIds(aula.materias.map((item) => item.materia.id));
+      })
+      .catch(() => undefined);
+
+    return () => { ativo = false; };
+  }, [aulaInicialId]);
 
   const diasSemana = Array.from({ length: 7 }, (_, i) => addDays(semana, i));
 

@@ -11,10 +11,11 @@ import styles from "../v2.module.css";
 
 export const dynamic = "force-dynamic";
 
-export default async function V2AgendaPage() {
+export default async function V2AgendaPage({ searchParams }: { searchParams: Promise<{ aulaId?: string }> }) {
   const scope = await getSessionScope();
   if (!scope) redirect("/login");
   const session = await auth();
+  const { aulaId } = await searchParams;
   const mobile = isMobileUserAgent((await headers()).get("user-agent"));
   const professoraId = scope.professoraId;
   const isProfessor = !scope.isAdmin && Boolean(professoraId);
@@ -58,6 +59,7 @@ export default async function V2AgendaPage() {
             slots: (professora.disponibilidade as { dia: string; inicio: string; fim: string }[]) ?? [],
           }))}
           alunos={alunos.map((aluno) => ({ ...aluno, materias: aluno.materias.map((item) => item.materia) }))}
+          aulaInicialId={aulaId}
         />
       </div>
     );

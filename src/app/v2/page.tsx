@@ -76,16 +76,18 @@ export default async function V2Dashboard() {
 
       <div className={styles.contentGrid}>
         <section className={styles.scheduleCard}>
-          <div className={styles.sectionHeading}><div><span>Próximos encontros</span><h2>A agenda continua daqui</h2></div><Link href="/v2/agenda">Agenda completa</Link></div>
+          <div className={styles.sectionHeading}><div><span>Próximos encontros</span><h2>A agenda continua daqui</h2></div></div>
           {proximasAulas.length === 0 ? (
             <div className={styles.emptyState}><CalendarCheck2 aria-hidden="true" /><strong>Nenhuma aula próxima</strong><p>Use este tempo para preparar conteúdos ou organizar uma nova aula.</p></div>
           ) : (
             <ol className={styles.timeline}>
               {proximasAulas.map((aula, index) => (
                 <li key={aula.id}>
+                  <Link href={`/v2/agenda?aulaId=${aula.id}`} className={styles.timelineLink} aria-label={`Ver detalhes da aula de ${aula.aluno.nome}`}>
                   <span className={styles.timelineMarker}>{index + 1}</span>
                   <div><strong>{aula.aluno.nome}</strong><p>{aula.data.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })} · {formatarHora(aula.horaInicio)}</p></div>
                   <span className={styles.status}>Programada</span>
+                  </Link>
                 </li>
               ))}
             </ol>
