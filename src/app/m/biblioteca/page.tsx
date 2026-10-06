@@ -11,7 +11,7 @@ export default async function BibliotecaMobilePage() {
   if (!scope) redirect("/login");
 
   const session     = await auth();
-  const nomeUsuario = (session?.user as any)?.name as string ?? "";
+  const nomeUsuario = session?.user?.name ?? "";
 
   const [materiais, materias, metodos] = await Promise.all([
     prisma.materialBiblioteca.findMany({
@@ -26,7 +26,11 @@ export default async function BibliotecaMobilePage() {
   return (
     <BibliotecaMobile
       nomeUsuario={nomeUsuario}
-      materiaisIniciais={materiais}
+      materiaisIniciais={materiais.map((material) => {
+        const { textoBusca, ...materialPublico } = material;
+        void textoBusca;
+        return materialPublico;
+      })}
       materias={materias}
       metodos={metodos}
     />

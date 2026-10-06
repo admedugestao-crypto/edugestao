@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { getSessionScope } from "@/lib/tenant";
+import { normalizarIds } from "@/lib/entityIds";
 import { notFound } from "next/navigation";
 import ReciboClient from "./ReciboClient";
 
@@ -27,17 +28,24 @@ export default async function ReciboPage({
 }: {
   searchParams: Promise<{ ids?: string }>;
 }) {
-  const session = await auth();
-  if (!session) notFound();
+  const scope = await getSessionScope();
+  if (!scope) notFound();
 
   const { ids } = await searchParams;
   if (!ids) notFound();
 
-  const idList = ids.split(",").filter(Boolean);
+  const idList = normalizarIds(ids.split(","));
   if (idList.length === 0) notFound();
 
   const pagamentos = await prisma.pagamento.findMany({
-    where: { id: { in: idList } },
+    where: {
+      id: { in: idList },
+      empresaId: scope.empresaId,
+      aluno: {
+        empresaId: scope.empresaId,
+        ...(!scope.isAdmin ? { professoraId: scope.professoraId ?? "__sem_professora__" } : {}),
+      },
+    },
     include: {
       aluno: {
         include: {
@@ -49,7 +57,7 @@ export default async function ReciboPage({
     orderBy: [{ aluno: { nome: "asc" } }, { mes: "asc" }, { parcela: "asc" }],
   });
 
-  if (pagamentos.length === 0) notFound();
+  if (pagamentos.length !== idList.length) notFound();
 
   const pagamentosFiltrados = pagamentos.filter((p) => p.pago);
   if (pagamentosFiltrados.length === 0) notFound();
@@ -64,7 +72,11 @@ export default async function ReciboPage({
     unidade:       p.aluno.unidade.nome,
     professora:    p.aluno.professora?.usuario?.nome ?? null,
     competencia:   `${MESES[p.mes - 1]} / ${p.ano}`,
-    tipo:          TIPO_LABEL[p.aluno.tipoCobranca ?? ""] ?? (p.aluno.tipoCobranca ?? ""),
+    tipo:          p.origemManual
+      ? "Cobr. Manual"
+      : p.tipoCobrancaGerada
+        ? TIPO_LABEL[p.tipoCobrancaGerada] ?? p.tipoCobrancaGerada
+        : "Não registrado",
     parcela:       p.parcela,
     qtdAulas:      p.quantidadeAulas,
     valorCobrado:  moeda(Number(p.valorCobrado)),

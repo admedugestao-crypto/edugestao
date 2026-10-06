@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model Usuario
@@ -256,6 +256,7 @@ export type UsuarioWhereInput = {
   atualizadoEm?: Prisma.DateTimeFilter<"Usuario"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaNullableScalarRelationFilter, Prisma.EmpresaWhereInput> | null
   professora?: Prisma.XOR<Prisma.ProfessoraNullableScalarRelationFilter, Prisma.ProfessoraWhereInput> | null
+  sessoesAtivas?: Prisma.SessaoAtivaListRelationFilter
 }
 
 export type UsuarioOrderByWithRelationInput = {
@@ -275,6 +276,7 @@ export type UsuarioOrderByWithRelationInput = {
   atualizadoEm?: Prisma.SortOrder
   empresa?: Prisma.EmpresaOrderByWithRelationInput
   professora?: Prisma.ProfessoraOrderByWithRelationInput
+  sessoesAtivas?: Prisma.SessaoAtivaOrderByRelationAggregateInput
 }
 
 export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
@@ -298,6 +300,7 @@ export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
   atualizadoEm?: Prisma.DateTimeFilter<"Usuario"> | Date | string
   empresa?: Prisma.XOR<Prisma.EmpresaNullableScalarRelationFilter, Prisma.EmpresaWhereInput> | null
   professora?: Prisma.XOR<Prisma.ProfessoraNullableScalarRelationFilter, Prisma.ProfessoraWhereInput> | null
+  sessoesAtivas?: Prisma.SessaoAtivaListRelationFilter
 }, "id" | "resetToken" | "empresaId_email">
 
 export type UsuarioOrderByWithAggregationInput = {
@@ -356,6 +359,7 @@ export type UsuarioCreateInput = {
   atualizadoEm?: Date | string
   empresa?: Prisma.EmpresaCreateNestedOneWithoutUsuariosInput
   professora?: Prisma.ProfessoraCreateNestedOneWithoutUsuarioInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUncheckedCreateInput = {
@@ -374,6 +378,7 @@ export type UsuarioUncheckedCreateInput = {
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   professora?: Prisma.ProfessoraUncheckedCreateNestedOneWithoutUsuarioInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUpdateInput = {
@@ -392,6 +397,7 @@ export type UsuarioUpdateInput = {
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneWithoutUsuariosNestedInput
   professora?: Prisma.ProfessoraUpdateOneWithoutUsuarioNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateInput = {
@@ -410,6 +416,7 @@ export type UsuarioUncheckedUpdateInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   professora?: Prisma.ProfessoraUncheckedUpdateOneWithoutUsuarioNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioCreateManyInput = {
@@ -583,6 +590,20 @@ export type EnumPerfilFieldUpdateOperationsInput = {
   set?: $Enums.Perfil
 }
 
+export type UsuarioCreateNestedOneWithoutSessoesAtivasInput = {
+  create?: Prisma.XOR<Prisma.UsuarioCreateWithoutSessoesAtivasInput, Prisma.UsuarioUncheckedCreateWithoutSessoesAtivasInput>
+  connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutSessoesAtivasInput
+  connect?: Prisma.UsuarioWhereUniqueInput
+}
+
+export type UsuarioUpdateOneRequiredWithoutSessoesAtivasNestedInput = {
+  create?: Prisma.XOR<Prisma.UsuarioCreateWithoutSessoesAtivasInput, Prisma.UsuarioUncheckedCreateWithoutSessoesAtivasInput>
+  connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutSessoesAtivasInput
+  upsert?: Prisma.UsuarioUpsertWithoutSessoesAtivasInput
+  connect?: Prisma.UsuarioWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsuarioUpdateToOneWithWhereWithoutSessoesAtivasInput, Prisma.UsuarioUpdateWithoutSessoesAtivasInput>, Prisma.UsuarioUncheckedUpdateWithoutSessoesAtivasInput>
+}
+
 export type UsuarioCreateNestedOneWithoutProfessoraInput = {
   create?: Prisma.XOR<Prisma.UsuarioCreateWithoutProfessoraInput, Prisma.UsuarioUncheckedCreateWithoutProfessoraInput>
   connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutProfessoraInput
@@ -612,6 +633,7 @@ export type UsuarioCreateWithoutEmpresaInput = {
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   professora?: Prisma.ProfessoraCreateNestedOneWithoutUsuarioInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUncheckedCreateWithoutEmpresaInput = {
@@ -629,6 +651,7 @@ export type UsuarioUncheckedCreateWithoutEmpresaInput = {
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   professora?: Prisma.ProfessoraUncheckedCreateNestedOneWithoutUsuarioInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioCreateOrConnectWithoutEmpresaInput = {
@@ -677,6 +700,94 @@ export type UsuarioScalarWhereInput = {
   atualizadoEm?: Prisma.DateTimeFilter<"Usuario"> | Date | string
 }
 
+export type UsuarioCreateWithoutSessoesAtivasInput = {
+  id?: string
+  nome: string
+  email: string
+  senhaHash: string
+  senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
+  perfil?: $Enums.Perfil
+  ativo?: boolean
+  foto?: string | null
+  whatsapp?: string | null
+  criadoEm?: Date | string
+  atualizadoEm?: Date | string
+  empresa?: Prisma.EmpresaCreateNestedOneWithoutUsuariosInput
+  professora?: Prisma.ProfessoraCreateNestedOneWithoutUsuarioInput
+}
+
+export type UsuarioUncheckedCreateWithoutSessoesAtivasInput = {
+  id?: string
+  empresaId?: string | null
+  nome: string
+  email: string
+  senhaHash: string
+  senhaTemporaria?: boolean
+  resetToken?: string | null
+  resetTokenExpira?: Date | string | null
+  perfil?: $Enums.Perfil
+  ativo?: boolean
+  foto?: string | null
+  whatsapp?: string | null
+  criadoEm?: Date | string
+  atualizadoEm?: Date | string
+  professora?: Prisma.ProfessoraUncheckedCreateNestedOneWithoutUsuarioInput
+}
+
+export type UsuarioCreateOrConnectWithoutSessoesAtivasInput = {
+  where: Prisma.UsuarioWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsuarioCreateWithoutSessoesAtivasInput, Prisma.UsuarioUncheckedCreateWithoutSessoesAtivasInput>
+}
+
+export type UsuarioUpsertWithoutSessoesAtivasInput = {
+  update: Prisma.XOR<Prisma.UsuarioUpdateWithoutSessoesAtivasInput, Prisma.UsuarioUncheckedUpdateWithoutSessoesAtivasInput>
+  create: Prisma.XOR<Prisma.UsuarioCreateWithoutSessoesAtivasInput, Prisma.UsuarioUncheckedCreateWithoutSessoesAtivasInput>
+  where?: Prisma.UsuarioWhereInput
+}
+
+export type UsuarioUpdateToOneWithWhereWithoutSessoesAtivasInput = {
+  where?: Prisma.UsuarioWhereInput
+  data: Prisma.XOR<Prisma.UsuarioUpdateWithoutSessoesAtivasInput, Prisma.UsuarioUncheckedUpdateWithoutSessoesAtivasInput>
+}
+
+export type UsuarioUpdateWithoutSessoesAtivasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
+  senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  empresa?: Prisma.EmpresaUpdateOneWithoutUsuariosNestedInput
+  professora?: Prisma.ProfessoraUpdateOneWithoutUsuarioNestedInput
+}
+
+export type UsuarioUncheckedUpdateWithoutSessoesAtivasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  empresaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  senhaHash?: Prisma.StringFieldUpdateOperationsInput | string
+  senhaTemporaria?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpira?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  perfil?: Prisma.EnumPerfilFieldUpdateOperationsInput | $Enums.Perfil
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  foto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  professora?: Prisma.ProfessoraUncheckedUpdateOneWithoutUsuarioNestedInput
+}
+
 export type UsuarioCreateWithoutProfessoraInput = {
   id?: string
   nome: string
@@ -692,6 +803,7 @@ export type UsuarioCreateWithoutProfessoraInput = {
   criadoEm?: Date | string
   atualizadoEm?: Date | string
   empresa?: Prisma.EmpresaCreateNestedOneWithoutUsuariosInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUncheckedCreateWithoutProfessoraInput = {
@@ -709,6 +821,7 @@ export type UsuarioUncheckedCreateWithoutProfessoraInput = {
   whatsapp?: string | null
   criadoEm?: Date | string
   atualizadoEm?: Date | string
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioCreateOrConnectWithoutProfessoraInput = {
@@ -742,6 +855,7 @@ export type UsuarioUpdateWithoutProfessoraInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   empresa?: Prisma.EmpresaUpdateOneWithoutUsuariosNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateWithoutProfessoraInput = {
@@ -759,6 +873,7 @@ export type UsuarioUncheckedUpdateWithoutProfessoraInput = {
   whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioCreateManyEmpresaInput = {
@@ -792,6 +907,7 @@ export type UsuarioUpdateWithoutEmpresaInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   professora?: Prisma.ProfessoraUpdateOneWithoutUsuarioNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateWithoutEmpresaInput = {
@@ -809,6 +925,7 @@ export type UsuarioUncheckedUpdateWithoutEmpresaInput = {
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atualizadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   professora?: Prisma.ProfessoraUncheckedUpdateOneWithoutUsuarioNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateManyWithoutEmpresaInput = {
@@ -828,6 +945,35 @@ export type UsuarioUncheckedUpdateManyWithoutEmpresaInput = {
 }
 
 
+/**
+ * Count Type UsuarioCountOutputType
+ */
+
+export type UsuarioCountOutputType = {
+  sessoesAtivas: number
+}
+
+export type UsuarioCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  sessoesAtivas?: boolean | UsuarioCountOutputTypeCountSessoesAtivasArgs
+}
+
+/**
+ * UsuarioCountOutputType without action
+ */
+export type UsuarioCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UsuarioCountOutputType
+   */
+  select?: Prisma.UsuarioCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UsuarioCountOutputType without action
+ */
+export type UsuarioCountOutputTypeCountSessoesAtivasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SessaoAtivaWhereInput
+}
+
 
 export type UsuarioSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -846,6 +992,8 @@ export type UsuarioSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   atualizadoEm?: boolean
   empresa?: boolean | Prisma.Usuario$empresaArgs<ExtArgs>
   professora?: boolean | Prisma.Usuario$professoraArgs<ExtArgs>
+  sessoesAtivas?: boolean | Prisma.Usuario$sessoesAtivasArgs<ExtArgs>
+  _count?: boolean | Prisma.UsuarioCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["usuario"]>
 
 export type UsuarioSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -905,6 +1053,8 @@ export type UsuarioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type UsuarioInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.Usuario$empresaArgs<ExtArgs>
   professora?: boolean | Prisma.Usuario$professoraArgs<ExtArgs>
+  sessoesAtivas?: boolean | Prisma.Usuario$sessoesAtivasArgs<ExtArgs>
+  _count?: boolean | Prisma.UsuarioCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UsuarioIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   empresa?: boolean | Prisma.Usuario$empresaArgs<ExtArgs>
@@ -918,6 +1068,7 @@ export type $UsuarioPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     empresa: Prisma.$EmpresaPayload<ExtArgs> | null
     professora: Prisma.$ProfessoraPayload<ExtArgs> | null
+    sessoesAtivas: Prisma.$SessaoAtivaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1330,6 +1481,7 @@ export interface Prisma__UsuarioClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   empresa<T extends Prisma.Usuario$empresaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$empresaArgs<ExtArgs>>): Prisma.Prisma__EmpresaClient<runtime.Types.Result.GetResult<Prisma.$EmpresaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   professora<T extends Prisma.Usuario$professoraArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$professoraArgs<ExtArgs>>): Prisma.Prisma__ProfessoraClient<runtime.Types.Result.GetResult<Prisma.$ProfessoraPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sessoesAtivas<T extends Prisma.Usuario$sessoesAtivasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$sessoesAtivasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessaoAtivaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1809,6 +1961,30 @@ export type Usuario$professoraArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.ProfessoraInclude<ExtArgs> | null
   where?: Prisma.ProfessoraWhereInput
+}
+
+/**
+ * Usuario.sessoesAtivas
+ */
+export type Usuario$sessoesAtivasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SessaoAtiva
+   */
+  select?: Prisma.SessaoAtivaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SessaoAtiva
+   */
+  omit?: Prisma.SessaoAtivaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SessaoAtivaInclude<ExtArgs> | null
+  where?: Prisma.SessaoAtivaWhereInput
+  orderBy?: Prisma.SessaoAtivaOrderByWithRelationInput | Prisma.SessaoAtivaOrderByWithRelationInput[]
+  cursor?: Prisma.SessaoAtivaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SessaoAtivaScalarFieldEnum | Prisma.SessaoAtivaScalarFieldEnum[]
 }
 
 /**

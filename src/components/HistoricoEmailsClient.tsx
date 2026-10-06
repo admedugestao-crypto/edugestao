@@ -44,9 +44,10 @@ function BadgeDias({ dias }: { dias: number }) {
 }
 
 export default function HistoricoEmailsClient({
-  historico,
+  variant = "classic", historico,
   emailAtivo,
 }: {
+  variant?: "classic" | "v2";
   historico: RegistroEmail[];
   emailAtivo: boolean;
 }) {
@@ -93,7 +94,7 @@ export default function HistoricoEmailsClient({
   }
 
   return (
-    <div className="space-y-5">
+    <div data-v2-email-history={variant === "v2" || undefined} className="space-y-5">
 
       {/* Aviso SMTP inativo */}
       {!emailAtivo && (

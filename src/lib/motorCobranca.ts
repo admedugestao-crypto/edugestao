@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { aulaElegivelParaCobrancaAutomatica } from "@/lib/aulaElegivelCobranca";
 
 export function diasNoMes(mes: number, ano: number) {
   return new Date(ano, mes, 0).getDate();
@@ -32,22 +33,20 @@ export function calcularVencimentoAula(info: ConfigVencimento, dataAula: Date, m
   const diaVenc1 = info.diaPagamento ?? diasNoMes(mes, ano);
 
   if (info.tipoCobranca === "SEMANAL" && info.diaSemanaCobranca !== null) {
-    const ocorrencias = ocorrenciasDiaSemana(info.diaSemanaCobranca, mes, ano);
-    if (ocorrencias.length === 0) return new Date(ano, mes - 1, diasNoMes(mes, ano));
-    const aulaDate = new Date(dataAula);
-    aulaDate.setUTCHours(0, 0, 0, 0);
-    const idx = ocorrencias.findIndex((oc) => oc >= aulaDate);
-    return idx === -1 ? ocorrencias[ocorrencias.length - 1] : ocorrencias[idx];
+    const vencimento = new Date(Date.UTC(dataAula.getUTCFullYear(), dataAula.getUTCMonth(), dataAula.getUTCDate()));
+    const dias = (info.diaSemanaCobranca - vencimento.getUTCDay() + 7) % 7;
+    vencimento.setUTCDate(vencimento.getUTCDate() + dias);
+    return vencimento;
   }
 
   if (info.tipoCobranca === "QUINZENAL" && info.diaPagamento2) {
     return new Date(dataAula).getUTCDate() <= 15
-      ? new Date(ano, mes - 1, diaVenc1)
-      : new Date(ano, mes - 1, info.diaPagamento2);
+      ? new Date(Date.UTC(ano, mes - 1, Math.min(diaVenc1, diasNoMes(mes, ano))))
+      : new Date(Date.UTC(ano, mes - 1, Math.min(info.diaPagamento2, diasNoMes(mes, ano))));
   }
 
   // MENSAL / POR_AULA / demais casos
-  return new Date(ano, mes - 1, diaVenc1);
+  return new Date(Date.UTC(ano, mes - 1, Math.min(diaVenc1, diasNoMes(mes, ano))));
 }
 
 export type ParcelaGerada = {
@@ -70,9 +69,13 @@ export type ResultadoGeracao =
 export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string): Promise<ResultadoGeracao> {
   const aula = await prisma.agendaAula.findFirst({
     where: { id: agendaAulaId, empresaId },
-    select: { id: true, alunoId: true, data: true, status: true },
+    select: { id: true, alunoId: true, data: true, status: true, reposicao: true },
   });
-  if (!aula || (aula.status !== "REALIZADA" && aula.status !== "FALTA_ALUNO")) return { semCobranca: true };
+  // A cobrança da aula original já foi criada pelo fluxo de reposição. A nova
+  // aula substituta não deve criar uma segunda cobrança ao ser realizada.
+  if (!aula || !aulaElegivelParaCobrancaAutomatica(aula.status, aula.reposicao)) {
+    return { semCobranca: true };
+  }
 
   const aluno = await prisma.aluno.findUnique({
     where: { id: aula.alunoId },
@@ -90,19 +93,19 @@ export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string
 
   const mes = aula.data.getUTCMonth() + 1;
   const ano = aula.data.getUTCFullYear();
-  const primeiroDiaMes = new Date(Date.UTC(ano, mes - 1, 1));
-  const ultimoDiaMes = new Date(Date.UTC(ano, mes, 0));
+  const diaAula = new Date(aula.data); diaAula.setUTCHours(0, 0, 0, 0);
 
   if (dataFimContrato) {
     const fimContrato = new Date(dataFimContrato); fimContrato.setUTCHours(0, 0, 0, 0);
-    if (fimContrato < primeiroDiaMes) return { semCobranca: true };
+    if (fimContrato < diaAula) return { semCobranca: true };
   }
   if (dataInicioContrato) {
     const inicioContrato = new Date(dataInicioContrato); inicioContrato.setUTCHours(0, 0, 0, 0);
-    if (inicioContrato > ultimoDiaMes) return { semCobranca: true };
+    if (inicioContrato > diaAula) return { semCobranca: true };
   }
 
   const valorCobranca = aluno.valorCobranca != null ? Number(aluno.valorCobranca) : 0;
+  if (!Number.isFinite(valorCobranca) || valorCobranca < 0) return { semCobranca: true };
   const dataVencimento = calcularVencimentoAula(
     { ...aluno, tipoCobranca: aluno.tipoCobranca ?? "MENSAL" },
     aula.data, mes, ano,
@@ -148,7 +151,7 @@ export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string
 
     const atualizado = await prisma.pagamento.update({
       where: { id: vinculo.pagamentoId },
-      data: { dataVencimento, valorCobrado: valorCobranca, quantidadeAulas: 1 },
+      data: { dataVencimento, valorCobrado: valorCobranca, quantidadeAulas: 1, tipoCobrancaGerada: aluno.tipoCobranca ?? "MENSAL" },
     });
     return {
       semCobranca: false,
@@ -178,6 +181,7 @@ export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string
       quantidadeAulas: 1,
       pago: false,
       origemManual: false,
+      tipoCobrancaGerada: aluno.tipoCobranca ?? "MENSAL",
     },
   });
   await prisma.pagamentoAula.create({ data: { pagamentoId: criado.id, agendaAulaId } });

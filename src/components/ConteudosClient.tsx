@@ -1,5 +1,8 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+import DescricaoPorVozMobile from "@/components/DescricaoPorVozMobile";
+
 import { useRef, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -397,7 +400,6 @@ function CamposForm({
   isProfessor,
   filtroProfId,
   setFiltroProfId,
-  somentePlanejado,
   onCampoChave,
 }: {
   form: FormC;
@@ -478,7 +480,7 @@ function CamposForm({
 
       {/* Disciplina */}
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina</label>
+        <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
         {form.alunoId ? (
           <SeletorMaterias
             materiasDisponiveis={opcoesMateria}
@@ -488,13 +490,16 @@ function CamposForm({
         ) : (
           <p className="text-xs text-slate-400">Selecione o aluno primeiro.</p>
         )}
+        {form.alunoId && form.materiaIds.length === 0 && (
+          <p className="mt-1 text-xs text-amber-700">Selecione ao menos uma disciplina.</p>
+        )}
       </div>
 
       {/* Data */}
       <div>
         <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
-        <input
-          type="date"
+        <DateInput
+          required type="date"
           value={form.data}
           onChange={(e) => {
             const hoje = new Date().toISOString().split("T")[0];
@@ -517,16 +522,10 @@ function CamposForm({
         />
       </div>
 
-      {/* Descrição */}
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Descrição</label>
-        <textarea
-          value={form.descricao}
-          onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-          rows={2}
-          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-        />
-      </div>
+      <DescricaoPorVozMobile
+        value={form.descricao}
+        onChange={(descricao) => setForm({ ...form, descricao })}
+      />
 
       {/* Documento anexo */}
       <UploadArquivo
@@ -584,12 +583,13 @@ function mapConteudo(raw: RawConteudo): Conteudo {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function ConteudosClient({
-  alunos,
+  variant = "classic", alunos,
   professoras = [],
   materias = [],
   conteudosIniciais,
   isProfessor,
 }: {
+  variant?: "classic" | "v2";
   alunos: Aluno[];
   professoras?: Professora[];
   materias?: Materia[];
@@ -598,13 +598,22 @@ export default function ConteudosClient({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const conteudosPath = variant === "v2" ? "/v2/conteudos" : "/dashboard/conteudos";
+  const agendaPath = variant === "v2" ? "/v2/agenda" : "/dashboard/agenda";
+  const [buscaLista, setBuscaLista] = useState("");
 
   const [conteudos, setConteudos] = useState(conteudosIniciais);
   const [modal, setModal] = useState(false);
   const [novo, setNovo] = useState<FormC>(formVazio());
   const [salvando, setSalvando] = useState(false);
   // Filtro de professora (admin)
-  const [filtroProfId, setFiltroProfId] = useState<string>("");
+  const [filtroProfId, setFiltroProfId] = useState<string>(() => {
+    const aulaId = searchParams.get("aulaId");
+    const alunoId = searchParams.get("alunoId");
+    return aulaId && alunoId
+      ? alunos.find((aluno) => aluno.id === alunoId)?.professoraId ?? ""
+      : "";
+  });
   // aulaId vindo da agenda (para marcar como Realizada após salvar)
   const [aulaIdPendente, setAulaIdPendente] = useState<string | null>(null);
   const pagamentoInfo = usePagamentoGeradoInfo();
@@ -616,16 +625,12 @@ export default function ConteudosClient({
   const alunosOrdenados = [...alunos].sort((a, b) => a.nome.localeCompare(b.nome));
 
   const conteudosFiltrados = conteudos.filter((c) => {
+    if (buscaLista && !`${c.topico} ${c.aluno.nome}`.toLocaleLowerCase("pt-BR").includes(buscaLista.toLocaleLowerCase("pt-BR"))) return false;
     if (filtroListaAlunoId && c.alunoId !== filtroListaAlunoId) return false;
     if (filtroListaStatus === "planejado" && !c.planejado) return false;
     if (filtroListaStatus === "ministrado" && c.planejado) return false;
     return true;
   });
-
-  // Alunos filtrados pelo professor selecionado (admin)
-  const alunosFiltrados = filtroProfId
-    ? alunos.filter((a) => a.professoraId === filtroProfId)
-    : alunos;
 
   // Abre form pré-preenchido quando vindo da agenda
   useEffect(() => {
@@ -634,11 +639,8 @@ export default function ConteudosClient({
     const materiaIds = (searchParams.get("materiaIds") ?? "").split(",").filter(Boolean);
     const data       = searchParams.get("data")       ?? new Date().toISOString().split("T")[0];
     const descricao  = searchParams.get("descricao")  ?? "";
-    if (aulaId) {
-      // Pré-seleciona o professor do aluno (admin)
-      const aluno = alunos.find((a) => a.id === alunoId);
-      if (aluno?.professoraId) setFiltroProfId(aluno.professoraId);
-
+    const timer = window.setTimeout(() => {
+      if (!aulaId) return;
       // Se já existe um conteúdo vinculado a esta aula, edita o existente em
       // vez de abrir um formulário em branco (evita duplicar o registro).
       const existente = conteudos.find((c) => c.agenda?.id === aulaId);
@@ -660,8 +662,10 @@ export default function ConteudosClient({
         setNovo({ ...formVazio(), alunoId, materiaIds, data, descricao, planejado: false });
         setModal(true);
       }
-      window.history.replaceState(null, "", "/dashboard/conteudos");
-    }
+      window.history.replaceState(null, "", conteudosPath);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -675,6 +679,10 @@ export default function ConteudosClient({
   const [candidatasEdit, setCandidatasEdit] = useState<Candidata[] | null>(null);
 
   async function criarConteudo(forcar = false, aulaIdEscolhido?: string) {
+    if (novo.materiaIds.length === 0) {
+      setErroNovo("Selecione ao menos uma disciplina.");
+      return;
+    }
     setSalvando(true);
     setErroNovo("");
     setCandidatasNovo(null);
@@ -714,8 +722,13 @@ export default function ConteudosClient({
           return;
         }
         setAulaIdPendente(null);
+        // Atualiza o cartão imediatamente após o PATCH confirmado.
+        setConteudos((prev) => prev.map((c) => c.id === data.id && c.agenda
+          ? { ...c, agenda: { ...c.agenda, status: "REALIZADA" } } : c));
+        setModal(false);
+        setNovo(formVazio());
         // Se gerou cobrança, avisa antes de sair da tela.
-        pagamentoInfo.mostrar(patchJson.pagamentoGerado, () => router.push("/dashboard/agenda"));
+        pagamentoInfo.mostrar(patchJson.pagamentoGerado, () => router.push(agendaPath));
         return;
       }
 
@@ -734,6 +747,10 @@ export default function ConteudosClient({
 
   async function salvarConteudo(aulaIdEscolhido?: string) {
     if (!editConteudo) return;
+    if (editConteudo.materiaIds.length === 0) {
+      setErroEdit("Selecione ao menos uma disciplina.");
+      return;
+    }
     setSalvando(true);
     setErroEdit("");
     setCandidatasEdit(null);
@@ -865,14 +882,15 @@ export default function ConteudosClient({
     });
   }
 
-  const podeSalvarNovo = !!novo.alunoId && !!novo.topico && !!novo.data;
+  const podeSalvarNovo = !!novo.alunoId && novo.materiaIds.length > 0 && !!novo.topico && !!novo.data;
   const podeSalvarEdit =
     !!editConteudo?.alunoId &&
+    (editConteudo?.materiaIds.length ?? 0) > 0 &&
     !!editConteudo?.topico &&
     !!editConteudo?.data;
 
   return (
-    <div className="space-y-4">
+    <div data-v2-content={variant === "v2" || undefined} className="space-y-4">
       <button
         onClick={() => { setNovo(formVazio()); setErroNovo(""); setAvisoDuplicado(null); setCandidatasNovo(null); setModal(true); }}
         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
@@ -883,7 +901,9 @@ export default function ConteudosClient({
 
       {conteudos.length > 0 && (
         <div className="bg-white rounded-xl border border-slate-200 p-3 flex flex-col sm:flex-row gap-3">
+          {variant === "v2" && <input aria-label="Buscar tópico ou aluno" placeholder="Buscar tópico ou aluno" value={buscaLista} onChange={(e) => setBuscaLista(e.target.value)} className="min-w-0 flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm" />}
           <select
+            aria-label="Filtrar por aluno"
             value={filtroListaAlunoId}
             onChange={(e) => setFiltroListaAlunoId(e.target.value)}
             className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -897,6 +917,7 @@ export default function ConteudosClient({
             {(["todos", "planejado", "ministrado"] as const).map((v) => (
               <button
                 key={v}
+                aria-pressed={filtroListaStatus === v}
                 onClick={() => setFiltroListaStatus(v)}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   filtroListaStatus === v ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"
@@ -909,7 +930,7 @@ export default function ConteudosClient({
         </div>
       )}
 
-      <div className="space-y-2">
+      <div data-content-list className="space-y-2">
         {conteudos.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
             Nenhum conteúdo registrado ainda.

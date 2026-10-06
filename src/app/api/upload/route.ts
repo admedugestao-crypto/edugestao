@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionScope } from "@/lib/tenant";
 import { put } from "@vercel/blob";
 import { randomUUID } from "crypto";
+import { extrairTextoArquivo } from "@/lib/extrairTextoArquivo";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const TIPOS_PERMITIDOS = [
   "application/pdf",
@@ -32,7 +34,10 @@ export async function POST(req: NextRequest) {
   const ext = file.name.split(".").pop() ?? "bin";
   const nomeArquivo = `conteudos/${scope.empresaId}/${randomUUID()}.${ext}`;
 
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const textoExtraido = await extrairTextoArquivo(bytes, file.type, file.name);
+
   const blob = await put(nomeArquivo, file, { access: "public" });
 
-  return NextResponse.json({ url: blob.url, nome: file.name });
+  return NextResponse.json({ url: blob.url, nome: file.name, textoExtraido });
 }

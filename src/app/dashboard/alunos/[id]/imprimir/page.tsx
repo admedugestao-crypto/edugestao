@@ -1,3 +1,4 @@
+import { podeAcessarProfessora } from "@/lib/permissions";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
@@ -24,7 +25,7 @@ export default async function ImprimirAlunoPage({
     },
   });
 
-  if (!aluno || aluno.empresaId !== scope.empresaId) {
+  if (!aluno || aluno.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aluno.professoraId)) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-slate-500 text-sm">Aluno não encontrado.</p>

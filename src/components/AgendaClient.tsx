@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import DateInput from "@/components/DateInput";
+
+import { useState, useEffect, useCallback, useRef, useMemo, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 import { useRouter } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Plus, RefreshCw, X,
@@ -109,6 +112,10 @@ function toMin(hora: string) {
 function fromMin(min: number) {
   return `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 }
+function fimUmaHoraDepois(horaInicio: string) {
+  const inicio = toMin(horaInicio);
+  return Number.isFinite(inicio) && inicio <= (22 * 60) + 59 ? fromMin(inicio + 60) : "";
+}
 // Subtrai intervalos ocupados de uma lista de janelas livres
 function subtrairOcupados(
   janelas: { inicio: number; fim: number }[],
@@ -127,10 +134,24 @@ function subtrairOcupados(
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function AgendaClient({
+const subscribeMontagem = () => () => {};
+const snapshotCliente = () => true;
+const snapshotServidor = () => false;
+
+export default function AgendaClient(props: Parameters<typeof AgendaClientContent>[0]) {
+  const montado = useSyncExternalStore(subscribeMontagem, snapshotCliente, snapshotServidor);
+
+  // O calendário depende do dia e do fuso locais, inclusive na virada do dia.
+  // Servidor e primeira renderização do cliente precisam produzir o mesmo HTML.
+  if (!montado) return <p role="status" className="text-sm text-slate-500">Carregando agenda...</p>;
+  return <AgendaClientContent {...props} />;
+}
+
+function AgendaClientContent({
   alunos, materias, professoras = [], isProfessor = true,
-  disponibilidades = [], professoraIdSessao = "",
+  disponibilidades = [], professoraIdSessao = "", conteudosPath = "/dashboard/conteudos",
 }: {
+  conteudosPath?: string;
   alunos: AlunoOpt[];
   materias: Materia[];
   professoras?: ProfessoraOpt[];
@@ -139,17 +160,25 @@ export default function AgendaClient({
   isProfessor?: boolean;
 }) {
   const router = useRouter();
-  const [vista, setVista]         = useState<"semana" | "dia" | "mes">("mes");
+  const [impressoEm, setImpressoEm] = useState(() => new Date());
+  useEffect(() => {
+    const atualizarImpressao = () => flushSync(() => setImpressoEm(new Date()));
+    window.addEventListener("beforeprint", atualizarImpressao);
+    return () => window.removeEventListener("beforeprint", atualizarImpressao);
+  }, []);
+  const [vista, setVista]         = useState<"semana" | "dia" | "mes">("semana");
   const [semanaRef, setSemanaRef] = useState(() => semanaInicio(new Date()));
   const [diaRef, setDiaRef]       = useState(new Date());
   const [mesRef, setMesRef]       = useState(() => startOfMonth(new Date()));
   const [aulas, setAulas]         = useState<Aula[]>([]);
   const [feriados, setFeriados]   = useState<Feriado[]>([]);
   const [carregando, setCarregando] = useState(false);
+  const [chaveConsultaCarregada, setChaveConsultaCarregada] = useState<string | null>(null);
+  const [erroCarregamento, setErroCarregamento] = useState<string | null>(null);
+  const requisicaoAgendaRef = useRef(0);
 
   // Modal nova aula
   const [modalAberto, setModalAberto]         = useState(false);
-  const [dataModal, setDataModal]             = useState("");
   const [professoraIdModal, setProfessoraIdModal] = useState("");
   const [novaAula, setNovaAula]               = useState({
     alunoId: "", materiaIds: [] as string[], data: "", horaInicio: "", horaFim: "", observacao: "",
@@ -226,8 +255,16 @@ export default function AgendaClient({
     : alunos;
 
   // ── Carrega aulas ──────────────────────────────────────────────────────────
+  const chaveConsultaAtual = [
+    vista,
+    vista === "semana" ? semanaRef.getTime() : vista === "mes" ? mesRef.getTime() : diaRef.getTime(),
+    !isProfessor ? filtroProfId : "",
+  ].join(":");
+
   const carregar = useCallback(async () => {
+    const requisicaoAtual = ++requisicaoAgendaRef.current;
     setCarregando(true);
+    setErroCarregamento(null);
     try {
       let inicio: Date, fim: Date;
       if (vista === "semana") {
@@ -251,16 +288,28 @@ export default function AgendaClient({
             .then((resposta) => resposta.ok ? resposta.json() : { feriados: [] })
             .catch(() => ({ feriados: [] }))),
       ]);
+      if (!res.ok) throw new Error("Falha ao carregar a agenda.");
       const data = await res.json();
-      setAulas(Array.isArray(data) ? data : []);
-      setFeriados(respostasFeriados.flatMap((resposta) =>
-        Array.isArray(resposta.feriados) ? resposta.feriados : []));
+      if (requisicaoAtual === requisicaoAgendaRef.current) {
+        setAulas(Array.isArray(data) ? data : []);
+        setFeriados(respostasFeriados.flatMap((resposta) =>
+          Array.isArray(resposta.feriados) ? resposta.feriados : []));
+        setChaveConsultaCarregada(chaveConsultaAtual);
+      }
+    } catch {
+      if (requisicaoAtual === requisicaoAgendaRef.current) {
+        setErroCarregamento("Não foi possível carregar as aulas. Tente atualizar a agenda.");
+        setChaveConsultaCarregada(chaveConsultaAtual);
+      }
     } finally {
-      setCarregando(false);
+      if (requisicaoAtual === requisicaoAgendaRef.current) setCarregando(false);
     }
-  }, [vista, semanaRef, diaRef, mesRef, isProfessor, filtroProfId]);
+  }, [vista, semanaRef, diaRef, mesRef, isProfessor, filtroProfId, chaveConsultaAtual]);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void carregar(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [carregar]);
 
   // ── Navegação ──────────────────────────────────────────────────────────────
   function navAnterior() {
@@ -318,7 +367,7 @@ export default function AgendaClient({
       } else {
         const partes: string[] = [];
         if (data.criadas   > 0) partes.push(`${data.criadas} aula(s) gerada(s) até 31/12`);
-        if (data.ignoradas > 0) partes.push(`${data.ignoradas} já existiam`);
+        if (data.ignoradas > 0) partes.push(`${data.ignoradas} ignorada(s) (existentes ou datas indisponíveis)`);
         if (nConflitos     > 0) partes.push(`${nConflitos} conflito(s) de horário`);
         if (nSemAgenda     > 0) partes.push(`${nSemAgenda} aluno(s) sem agenda no cadastro`);
         if (nForaDisp      > 0) partes.push(`${nForaDisp} aula(s) fora da disponibilidade`);
@@ -389,12 +438,12 @@ export default function AgendaClient({
 
   // ── Nova aula ──────────────────────────────────────────────────────────────
   function abrirModal(data?: string, horaInicio?: string, horaFim?: string) {
-    setDataModal(data ?? "");
+    const dataDaAula = data || format(new Date(), "yyyy-MM-dd");
     setProfessoraIdModal("");
     setErroModal(null);
     setAvisoAgendamento(null);
     setReposicaoOrigem(null);
-    setNovaAula({ alunoId: "", materiaIds: [], data: data ?? "", horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
+    setNovaAula({ alunoId: "", materiaIds: [], data: dataDaAula, horaInicio: horaInicio ?? "", horaFim: horaFim ?? "", observacao: "" });
     setModalAberto(true);
   }
 
@@ -402,7 +451,6 @@ export default function AgendaClient({
   function abrirReposicao(aula: Aula) {
     setConfirmExcluir(null);
     setAulaDetalhe(null);
-    setDataModal("");
     setProfessoraIdModal(aula.professoraId);
     setErroModal(null);
     setAvisoAgendamento(null);
@@ -417,8 +465,7 @@ export default function AgendaClient({
   /** Verifica disponibilidade do professor — sempre rodada, mesmo ao forçar outros avisos. */
   function verificarDisponibilidade(): { msg: string } | null {
     if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) return null; // duração inválida, erro separado cuida disso
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
 
     const profId = isProfessor ? professoraIdSessao : professoraIdModal;
     if (!profId) return null;
@@ -465,10 +512,8 @@ export default function AgendaClient({
 
     if (!novaAula.horaInicio || !novaAula.horaFim) return null;
 
-    // Duração mínima: 1 hora normalmente, 30 minutos ao repor uma aula excluída
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima)
-      return { tipo: "erro", msg: reposicaoOrigem ? "A duração mínima da aula de reposição é de 30 minutos." : "A duração mínima da aula é de 1 hora." };
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60)
+      return { tipo: "erro", msg: "A duração mínima da aula é de 1 hora." };
 
     // Verificar conflito com aulas já existentes
     const aulasNaData = aulas.filter(
@@ -488,6 +533,8 @@ export default function AgendaClient({
   }
 
   async function salvarNovaAula(forcar = false, forcarDisp = false) {
+    setErroModal(null);
+    setAvisoAgendamento(null);
     if (!isProfessor && !professoraIdModal) {
       setErroModal("Selecione o(a) professor(a) antes de salvar.");
       return;
@@ -592,7 +639,7 @@ export default function AgendaClient({
         materiaIds: materiaIdsParaConteudo.join(","),
         data:       aulaDetalhe.data.split("T")[0],
       });
-      router.push(`/dashboard/conteudos?${params.toString()}`);
+      router.push(`${conteudosPath}?${params.toString()}`);
       return;
     }
     setErroStatus(null);
@@ -809,7 +856,7 @@ export default function AgendaClient({
           </p>
         </div>
         <p className="text-slate-400">
-          Impresso em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+          Impresso em {format(impressoEm, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
         </p>
       </div>
 
@@ -933,7 +980,7 @@ export default function AgendaClient({
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
             <Trash2 size={13}/> Excluir período
           </button>
-          <button onClick={() => abrirModal(vista === "dia" ? diaRef.toISOString().split("T")[0] : "")}
+          <button onClick={() => abrirModal(vista === "dia" ? format(diaRef, "yyyy-MM-dd") : "")}
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
             <Plus size={13}/> Nova aula
           </button>
@@ -1185,8 +1232,10 @@ export default function AgendaClient({
             </span>
           </div>
           {aulasHoje.length === 0 ? (
-            <div className="min-h-0 flex-1 overflow-y-auto p-12 text-center text-slate-400 text-sm">
-              Nenhuma aula agendada para este dia.
+            <div className="min-h-0 flex-1 overflow-y-auto p-12 text-center text-slate-400 text-sm" aria-live="polite">
+              {chaveConsultaCarregada !== chaveConsultaAtual || carregando
+                ? "Carregando aulas…"
+                : erroCarregamento ?? "Nenhuma aula agendada para este dia."}
             </div>
           ) : (
             <div className="min-h-0 flex-1 overflow-y-auto divide-y divide-slate-100">
@@ -1235,7 +1284,7 @@ export default function AgendaClient({
                         </span>
                       )}
                       {aula.observacao && (
-                        <p className="text-xs text-slate-500 mt-1 italic">"{aula.observacao}"</p>
+                        <p className="text-xs text-slate-500 mt-1 italic">&ldquo;{aula.observacao}&rdquo;</p>
                       )}
                     </div>
                     {/* Status + editar */}
@@ -1331,18 +1380,18 @@ export default function AgendaClient({
             </div>
             <div>
               <label className="text-xs font-medium text-slate-600">Data *</label>
-              <input type="date" value={novaAula.data} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, data: e.target.value })); }}
+              <DateInput required type="date" value={novaAula.data} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, data: e.target.value })); }}
                 className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-600">Início *</label>
-                <input type="time" required value={novaAula.horaInicio} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio: e.target.value })); }}
+                <input type="time" required max="22:59" value={novaAula.horaInicio} onChange={(e) => { const horaInicio = e.target.value; setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio, horaFim: fimUmaHoraDepois(horaInicio) })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-600">Fim *</label>
-                <input type="time" required value={novaAula.horaFim} onChange={(e) => setNovaAula((p) => ({ ...p, horaFim: e.target.value }))}
+                <input type="time" required value={novaAula.horaFim} onChange={(e) => { setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaFim: e.target.value })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
             </div>
@@ -1502,12 +1551,12 @@ export default function AgendaClient({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-600">Data início</label>
-                <input type="date" value={limparInicio} onChange={(e) => setLimparInicio(e.target.value)}
+                <DateInput required type="date" value={limparInicio} onChange={(e) => setLimparInicio(e.target.value)}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"/>
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-600">Data fim</label>
-                <input type="date" value={limparFim} onChange={(e) => setLimparFim(e.target.value)}
+                <DateInput required type="date" value={limparFim} onChange={(e) => setLimparFim(e.target.value)}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"/>
               </div>
             </div>
@@ -2108,7 +2157,7 @@ function TelaConflitos({
           {foraDisponibilidade.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-2">
-                🕐 Fora da disponibilidade — {foraDisponibilidade.length} aula(s) gerada(s) fora do horário do professor
+                🕐 Fora da disponibilidade — {foraDisponibilidade.length} aula(s) não gerada(s) por indisponibilidade do professor
               </p>
               <table className="w-full text-sm border-collapse">
                 <thead>
@@ -2157,8 +2206,8 @@ function TelaConflitos({
 function Modal({ titulo, onClose, children, z = "z-50" }: { titulo: string; onClose: () => void; children: React.ReactNode; z?: string }) {
   return (
     <div className={`fixed inset-0 ${z} flex items-center justify-center bg-black/30 backdrop-blur-sm p-4`}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
           <h3 className="font-semibold text-slate-800">{titulo}</h3>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
             <X size={16}/>

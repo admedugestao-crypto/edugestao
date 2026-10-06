@@ -1,3 +1,4 @@
+import { podeAcessarProfessora } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { notFound, redirect } from "next/navigation";
@@ -46,7 +47,7 @@ export default async function VisualizarAlunoPage({
     },
   });
 
-  if (!aluno || aluno.empresaId !== scope.empresaId) notFound();
+  if (!aluno || aluno.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aluno.professoraId)) notFound();
 
   const statusLabel: Record<string, string> = {
     ATIVO: "Ativo",
@@ -116,7 +117,8 @@ export default async function VisualizarAlunoPage({
         <div className="flex items-center gap-4">
           {aluno.fotoUrl ? (
             <Image
-              src={aluno.fotoUrl}
+              unoptimized
+                    src={aluno.fotoUrl}
               alt={aluno.nome}
               width={72}
               height={72}

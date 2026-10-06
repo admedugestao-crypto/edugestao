@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validarDisponibilidade } from "@/lib/validarDisponibilidade";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { requirePlataforma } from "@/lib/plataforma";
@@ -22,10 +23,13 @@ export async function GET() {
       id: true, nome: true, email: true, ativo: true, criadoEm: true, perfil: true,
       foto: true, whatsapp: true,
       empresa: { select: { id: true, nome: true, slug: true } },
+      professora: { select: { disponibilidade: true } },
     },
     orderBy: [{ empresa: { nome: "asc" } }, { perfil: "asc" }, { nome: "asc" }],
   });
-  return NextResponse.json(usuarios);
+  return NextResponse.json(
+    usuarios.map(({ professora, ...u }) => ({ ...u, disponibilidade: professora?.disponibilidade ?? [] }))
+  );
 }
 
 // Cria um novo usuário de qualquer perfil. PLATAFORMA nunca tem empresa;
@@ -37,7 +41,11 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { senha, empresaId, foto, whatsapp } = body;
+  const { senha, empresaId, foto, whatsapp, disponibilidade } = body;
+  if (disponibilidade !== undefined) {
+    const erro = validarDisponibilidade(disponibilidade);
+    if (erro) return NextResponse.json({ erro }, { status: 400 });
+  }
   const nome = typeof body.nome === "string" ? body.nome.trim() : "";
   const email = typeof body.email === "string" ? normalizarEmail(body.email) : "";
   const perfil: PerfilValido = PERFIS.includes(body.perfil) ? body.perfil : "PROFESSORA";
@@ -98,7 +106,7 @@ export async function POST(req: NextRequest) {
         foto: foto || null,
         whatsapp: whatsapp || null,
         ...(PERFIS_COM_DISPONIBILIDADE.includes(perfil)
-          ? { professora: { create: { empresaId: vinculoEmpresaId!, disponibilidade: [] } } }
+          ? { professora: { create: { empresaId: vinculoEmpresaId!, disponibilidade: disponibilidade ?? [] } } }
           : {}),
       },
       select: { id: true, nome: true, email: true, ativo: true, criadoEm: true },

@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const body = await req.json();
+  if (typeof body.nome !== "string" || !body.nome.trim() || (body.primeiraUnidade && (typeof body.primeiraUnidade.nome !== "string" || !body.primeiraUnidade.nome.trim())))
+    return NextResponse.json({ erro: "Informe o nome da escola e da unidade." }, { status: 400 });
   const datas = {
     periodoLetivo1Inicio: body.periodoLetivo1Inicio ? parseDataLocal(body.periodoLetivo1Inicio) : null,
     periodoLetivo1Fim: body.periodoLetivo1Fim ? parseDataLocal(body.periodoLetivo1Fim) : null,
@@ -46,6 +48,7 @@ export async function POST(req: NextRequest) {
       metodoId: body.metodoId || null,
       periodoAvaliacao: body.periodoAvaliacao || null,
       ...datas,
+      ...(body.primeiraUnidade ? { unidades: { create: { empresaId: scope.empresaId, nome: body.primeiraUnidade.nome.trim(), cidade: body.primeiraUnidade.cidade || null, estado: body.primeiraUnidade.estado || null, turno: body.primeiraUnidade.turno || null } } } : {}),
     },
     include: { unidades: true, metodoEnsino: true },
   });

@@ -15,6 +15,14 @@ function utcDiaNum(y: number, m0: number, d: number): Date {
 function fmtBr(iso: string) {
   return iso.split("-").reverse().join("/");
 }
+function duracaoEmMinutos(inicio: unknown, fim: unknown): number | null {
+  if (typeof inicio !== "string" || typeof fim !== "string") return null;
+  const horarioValido = /^([01]\d|2[0-3]):[0-5]\d$/;
+  if (!horarioValido.test(inicio) || !horarioValido.test(fim)) return null;
+  const [horaInicio, minutoInicio] = inicio.split(":").map(Number);
+  const [horaFim, minutoFim] = fim.split(":").map(Number);
+  return (horaFim * 60 + minutoFim) - (horaInicio * 60 + minutoInicio);
+}
 
 // POST /api/agenda/[id]/repor
 // Body: { alunoId?, professoraId?, materiaIds?, data, horaInicio, horaFim, observacao? }
@@ -65,13 +73,8 @@ export async function POST(
   if (!data || !horaInicio || !horaFim)
     return NextResponse.json({ erro: "Data, início e fim são obrigatórios" }, { status: 400 });
 
-  // Duração mínima de 30 minutos — o fluxo de reposição permite meia hora (o de
-  // criação normal de aula exige 1h, validado no client em AgendaClient/AgendaMobile).
-  const [hi, mi] = (horaInicio as string).split(":").map(Number);
-  const [hf, mf] = (horaFim as string).split(":").map(Number);
-  const duracaoMin = (hf * 60 + mf) - (hi * 60 + mi);
-  if (duracaoMin < 30) {
-    return NextResponse.json({ erro: "A duração mínima da aula de reposição é de 30 minutos." }, { status: 400 });
+  if ((duracaoEmMinutos(horaInicio, horaFim) ?? 0) < 60) {
+    return NextResponse.json({ erro: "A duração mínima da aula é de 1 hora." }, { status: 400 });
   }
 
   const [alunoOk, professoraOk] = await Promise.all([

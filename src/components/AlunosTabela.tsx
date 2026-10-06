@@ -125,11 +125,13 @@ export default function AlunosTabela({
   isAdmin = false,
   mes,
   ano,
+  basePath = "/dashboard/alunos",
 }: {
   alunos: Aluno[];
   isAdmin?: boolean;
   mes?: number;
   ano?: number;
+  basePath?: string;
 }) {
   const [alunos, setAlunos] = useState(alunosIniciais);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; nome: string } | null>(null);
@@ -188,7 +190,7 @@ export default function AlunosTabela({
                 <td className="py-3 px-3">
                   <div className="flex items-center gap-3">
                     {a.fotoUrl ? (
-                      <Image src={a.fotoUrl} alt={a.nome} width={32} height={32} className="rounded-full object-cover w-8 h-8" />
+                      <Image src={a.fotoUrl} alt={a.nome} width={32} height={32} unoptimized className="rounded-full object-cover w-8 h-8" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
                         {a.nome.charAt(0).toUpperCase()}
@@ -253,15 +255,15 @@ export default function AlunosTabela({
                 {/* Ações */}
                 <td className="py-3 px-3">
                   <div className="flex gap-1 justify-end">
-                    <Link href={`/dashboard/alunos/${a.id}`}
+                    <Link href={`${basePath}/${a.id}`}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="Ver aluno">
                       <Eye size={15} />
                     </Link>
-                    <Link href={`/dashboard/alunos/${a.id}/editar`}
+                    <Link href={`${basePath}/${a.id}/editar`}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" title="Editar aluno">
                       <Pencil size={15} />
                     </Link>
-                    <Link href={`/dashboard/pagamentos?aluno=${a.id}`}
+                    <Link href={`${basePath === "/v2/alunos" ? "/v2/pagamentos" : "/dashboard/pagamentos"}?aluno=${a.id}`}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Pagamentos do aluno">
                       <DollarSign size={15} />
                     </Link>

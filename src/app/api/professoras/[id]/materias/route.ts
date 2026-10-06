@@ -9,7 +9,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id: professoraId } = await params;
+  if (!scope.isAdmin && scope.professoraId !== professoraId) return NextResponse.json({ erro: "Sem permissão para alterar este professor." }, { status: 403 });
   const { materiaId } = await req.json();
+  if (typeof materiaId !== "string" || !materiaId) return NextResponse.json({ erro: "Disciplina inválida." }, { status: 400 });
 
   const [professoraOk, materiaOk] = await Promise.all([
     prisma.professora.findFirst({ where: { id: professoraId, empresaId: scope.empresaId }, select: { id: true } }),
@@ -32,7 +34,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
 
   const { id: professoraId } = await params;
+  if (!scope.isAdmin && scope.professoraId !== professoraId) return NextResponse.json({ erro: "Sem permissão para alterar este professor." }, { status: 403 });
   const { materiaId } = await req.json();
+  if (typeof materiaId !== "string" || !materiaId) return NextResponse.json({ erro: "Disciplina inválida." }, { status: 400 });
 
   const professoraOk = await prisma.professora.findFirst({
     where: { id: professoraId, empresaId: scope.empresaId },
@@ -40,8 +44,15 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   });
   if (!professoraOk) return NextResponse.json({ erro: "Professora não encontrada." }, { status: 404 });
 
-  await prisma.professoraMateria.delete({
-    where: { professoraId_materiaId: { professoraId, materiaId } },
+  const alunosVinculados = await prisma.aluno.count({
+    where: { empresaId: scope.empresaId, professoraId, materias: { some: { materiaId } } },
+  });
+  if (alunosVinculados > 0) {
+    return NextResponse.json({ erro: `Não é possível remover esta disciplina do professor: ela está vinculada a ${alunosVinculados} aluno(s) dele. Atualize os vínculos desses alunos antes de remover a disciplina.` }, { status: 409 });
+  }
+
+  await prisma.professoraMateria.deleteMany({
+    where: { professoraId, materiaId },
   });
   return NextResponse.json({ ok: true });
 }

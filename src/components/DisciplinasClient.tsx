@@ -14,10 +14,12 @@ export default function DisciplinasClient({
   todasMaterias,
   minhasIdsIniciais,
   professoraId,
+  variant = "default",
 }: {
   todasMaterias: Materia[];
   minhasIdsIniciais: string[];
   professoraId: string;
+  variant?: "default" | "v2";
 }) {
   const [materias, setMaterias] = useState(todasMaterias);
   const [minhasIds, setMinhasIds] = useState(new Set(minhasIdsIniciais));
@@ -40,7 +42,8 @@ export default function DisciplinasClient({
     });
     setMinhasIds((prev) => {
       const next = new Set(prev);
-      ativa ? next.delete(id) : next.add(id);
+      if (ativa) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
@@ -78,7 +81,7 @@ export default function DisciplinasClient({
       setMaterias((prev) => prev.map((m) => (m.id === data.id ? data : m)));
       setEditMateria(null);
       setErroEdit("");
-    } catch (e) {
+    } catch {
       setErroEdit("Erro de conexão ao salvar.");
     } finally {
       setSalvando(false);
@@ -103,18 +106,18 @@ export default function DisciplinasClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-v2-subjects={variant === "v2" ? "true" : undefined}>
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
-          Clique no nome para ativar / desativar
+          {variant === "v2" ? "Disciplinas cadastradas" : "Selecione as disciplinas que você leciona"}
         </p>
         <div className="flex flex-wrap gap-2">
           {materias.map((m) => {
-            const ativa = minhasIds.has(m.id);
+            const ativa = variant !== "v2" && minhasIds.has(m.id);
             return (
               <div key={m.id} className="flex items-center gap-0.5">
                 <button
-                  onClick={() => toggleMateria(m.id)}
+                  onClick={() => variant === "v2" ? (setErroEdit(""), setEditMateria({ ...m })) : toggleMateria(m.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-l-full text-sm font-medium border transition-all ${
                     ativa
                       ? "text-white border-transparent"
@@ -166,19 +169,20 @@ export default function DisciplinasClient({
         </div>
       </div>
 
-      <div className="bg-indigo-50 rounded-xl border border-indigo-100 p-4">
+      {variant !== "v2" && <div className="bg-indigo-50 rounded-xl border border-indigo-100 p-4">
         <p className="text-sm font-medium text-indigo-800">
-          {minhasIds.size} disciplina{minhasIds.size !== 1 ? "s" : ""} ativa{minhasIds.size !== 1 ? "s" : ""}
+          {minhasIds.size} disciplina{minhasIds.size !== 1 ? "s" : ""} vinculada{minhasIds.size !== 1 ? "s" : ""} ao seu perfil
         </p>
         <p className="text-xs text-indigo-600 mt-0.5">
-          Essas disciplinas aparecerão ao cadastrar novos alunos.
+          Clique no nome para incluir ou remover a disciplina do seu perfil de professor.
         </p>
       </div>
 
+      }
       {/* ── Modal Nova Disciplina ─────────────────────────────────────────── */}
       {modal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-subject-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-subject-dialog={variant === "v2" ? "true" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova disciplina</h2>
             <div className="space-y-4">
               <div>
@@ -236,8 +240,8 @@ export default function DisciplinasClient({
 
       {/* ── Modal Editar Disciplina ───────────────────────────────────────── */}
       {editMateria && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-subject-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-subject-dialog={variant === "v2" ? "true" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar disciplina</h2>
             <div className="space-y-4">
               <div>
@@ -297,8 +301,8 @@ export default function DisciplinasClient({
 
       {/* ── Modal Confirmar Exclusão ──────────────────────────────────────── */}
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-subject-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-subject-dialog={variant === "v2" ? "true" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
             <p className="text-sm text-slate-600">
               Tem certeza que deseja excluir a disciplina{" "}

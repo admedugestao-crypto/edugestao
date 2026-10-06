@@ -29,7 +29,11 @@ export default async function BibliotecaPage() {
           {materiais.length}
         </span>
       </div>
-      <BibliotecaClient materiaisIniciais={materiais} materias={materias} metodos={metodos} />
+      <BibliotecaClient materiaisIniciais={materiais.map((material) => {
+        const { textoBusca, ...materialPublico } = material;
+        void textoBusca;
+        return materialPublico;
+      })} materias={materias} metodos={metodos} />
     </div>
   );
 }

@@ -136,6 +136,7 @@ export default function ImprimirAlunoClient({ aluno }: { aluno: AlunoImpressao }
               <div className="shrink-0">
                 {aluno.fotoUrl ? (
                   <Image
+                    unoptimized
                     src={aluno.fotoUrl}
                     alt={aluno.nome}
                     width={96}
@@ -208,7 +209,7 @@ export default function ImprimirAlunoClient({ aluno }: { aluno: AlunoImpressao }
               label="Data de nascimento"
               valor={
                 aluno.dataNascimento
-                  ? new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")
+                  ? new Date(aluno.dataNascimento).toLocaleDateString("pt-BR", { timeZone: "UTC" })
                   : null
               }
             />

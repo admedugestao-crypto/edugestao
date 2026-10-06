@@ -1,8 +1,10 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { format, addDays, startOfWeek, isSameDay, isToday } from "date-fns";
+import { format, addDays, addMonths, endOfMonth, endOfWeek, isSameDay, isSameMonth, isToday, startOfMonth, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, RefreshCw, LogOut, Clock,
          CheckCircle2, XCircle, UserX, UserCheck, X, Paperclip, Loader2, BookOpen, Trash2 } from "lucide-react";
@@ -45,6 +47,7 @@ type ConteudoForm = {
   planejadoOriginal: boolean;
 };
 type ConteudoModalState = { aulaId: string; existente: boolean; form: ConteudoForm };
+type ConteudoApi = ConteudoForm & { materias: { materia: { id: string } }[]; planejado: boolean };
 
 const DIAS_PT   = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 const DIAS_FULL = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
@@ -65,6 +68,10 @@ function toMin(h: string) { const [hh, mm] = h.split(":").map(Number); return hh
 function fromMin(min: number) {
   return `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 }
+function fimUmaHoraDepois(horaInicio: string) {
+  const inicio = toMin(horaInicio);
+  return Number.isFinite(inicio) && inicio <= (22 * 60) + 59 ? fromMin(inicio + 60) : "";
+}
 function subtrair(janelas: { inicio: number; fim: number }[], ocupados: { inicio: number; fim: number }[]) {
   let livres = [...janelas];
   for (const oc of ocupados) {
@@ -82,16 +89,21 @@ function subtrair(janelas: { inicio: number; fim: number }[], ocupados: { inicio
 export default function AgendaMobile({
   isProfessor, isAdmin, nomeUsuario,
   professoraIdSessao, professoras, disponibilidades, alunos,
+  variant = "legacy", aulaInicialId,
 }: {
   isProfessor: boolean; isAdmin: boolean; nomeUsuario: string;
   professoraIdSessao: string;
   professoras: ProfOpt[]; disponibilidades: DispProf[];
   alunos: AlunoOpt[];
+  variant?: "legacy" | "v2";
+  aulaInicialId?: string;
 }) {
   const router = useRouter();
 
   const [semana,    setSemana]    = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [diaAtivo,  setDiaAtivo]  = useState(new Date());
+  const [mesAtivo,  setMesAtivo]  = useState(() => startOfMonth(new Date()));
+  const [vista,     setVista]     = useState<"semana" | "dia" | "mes">("dia");
   const [aulas,     setAulas]     = useState<Aula[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
@@ -127,14 +139,36 @@ export default function AgendaMobile({
   const pagamentoInfo = usePagamentoGeradoInfo();
   const [erroConteudo, setErroConteudo]             = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!aulaInicialId) return;
+    let ativo = true;
+
+    void fetch(`/api/agenda/${aulaInicialId}`)
+      .then(async (res) => res.ok ? res.json() as Promise<Aula> : null)
+      .then((aula) => {
+        if (!ativo || !aula) return;
+        const data = parseLocal(aula.data);
+        setSemana(startOfWeek(data, { weekStartsOn: 1 }));
+        setDiaAtivo(data);
+        setMesAtivo(startOfMonth(data));
+        setVista("dia");
+        setDetalhe(aula);
+        setObsEdit(aula.observacao ?? "");
+        setMateriaDetalheIds(aula.materias.map((item) => item.materia.id));
+      })
+      .catch(() => undefined);
+
+    return () => { ativo = false; };
+  }, [aulaInicialId]);
+
   const diasSemana = Array.from({ length: 7 }, (_, i) => addDays(semana, i));
 
   // ── Carregar aulas ──────────────────────────────────────────────────────────
   const carregar = useCallback(async () => {
     setLoading(true);
     try {
-      const ini = semana;
-      const fim = addDays(semana, 6);
+      const ini = vista === "mes" ? startOfWeek(startOfMonth(mesAtivo), { weekStartsOn: 1 }) : semana;
+      const fim = vista === "mes" ? endOfWeek(endOfMonth(mesAtivo), { weekStartsOn: 1 }) : addDays(semana, 6);
       const fmt = (d: Date) => d.toISOString().split("T")[0];
       let url = `/api/agenda?inicio=${fmt(ini)}&fim=${fmt(fim)}`;
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
@@ -144,8 +178,10 @@ export default function AgendaMobile({
     } finally {
       setLoading(false);
     }
-  }, [semana, isProfessor, filtroProfId]);
+  }, [semana, mesAtivo, vista, isProfessor, filtroProfId]);
 
+  // A agenda remota precisa acompanhar imediatamente a semana e o professor selecionados.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { carregar(); }, [carregar]);
 
   // ── Timeline do dia ────────────────────────────────────────────────────────
@@ -180,8 +216,7 @@ export default function AgendaMobile({
   // ── Disponibilidade do professor ─────────────────────────────────────────────
   function verificarDisponibilidade(): string | null {
     if (!novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) return null;
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) return null; // duração inválida, erro separado cuida disso
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) return null; // duração inválida, erro separado cuida disso
 
     const profId = isProfessor ? professoraIdSessao : profModal;
     if (!profId) return null;
@@ -211,13 +246,14 @@ export default function AgendaMobile({
 
   // ── Salvar nova aula ────────────────────────────────────────────────────────
   async function salvar(forcarDisp = false) {
+    setErroModal(null);
+    setAvisoDisp(null);
     if (!isProfessor && !profModal) { setErroModal("Selecione o(a) professor(a)."); return; }
     if (!novaAula.alunoId || !novaAula.data || !novaAula.horaInicio || !novaAula.horaFim) {
       setErroModal("Preencha aluno, data e horário."); return;
     }
-    const duracaoMinima = reposicaoOrigem ? 30 : 60;
-    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < duracaoMinima) {
-      setErroModal(reposicaoOrigem ? "Duração mínima de 30 minutos." : "Duração mínima de 1 hora."); return;
+    if (toMin(novaAula.horaFim) - toMin(novaAula.horaInicio) < 60) {
+      setErroModal("Duração mínima de 1 hora."); return;
     }
     if (!forcarDisp) {
       const aviso = verificarDisponibilidade();
@@ -362,7 +398,7 @@ export default function AgendaMobile({
     try {
       const dataStr = aula.data.split("T")[0];
       const res = await fetch(`/api/conteudos?aulaId=${aula.id}`);
-      const existente = res.ok ? await res.json() : null;
+      const existente = res.ok ? await res.json() as ConteudoApi : null;
 
       setConteudoModal({
         aulaId: aula.id,
@@ -370,7 +406,7 @@ export default function AgendaMobile({
         form: existente ? {
           id: existente.id,
           alunoId: existente.alunoId,
-          materiaIds: existente.materias.map((m: any) => m.materia.id),
+          materiaIds: existente.materias.map((m) => m.materia.id),
           topico: existente.topico,
           descricao: existente.descricao ?? "",
           arquivoUrl: existente.arquivoUrl ?? "",
@@ -498,9 +534,15 @@ export default function AgendaMobile({
 
   const timeline = timelineDia(diaAtivo);
   const dsAtivo  = `${diaAtivo.getFullYear()}-${String(diaAtivo.getMonth()+1).padStart(2,"0")}-${String(diaAtivo.getDate()).padStart(2,"0")}`;
+  const inicioGrade = startOfWeek(startOfMonth(mesAtivo), { weekStartsOn: 1 });
+  const fimGrade = endOfWeek(endOfMonth(mesAtivo), { weekStartsOn: 1 });
+  const diasDoMes = Array.from(
+    { length: Math.round((fimGrade.getTime() - inicioGrade.getTime()) / 86_400_000) + 1 },
+    (_, indice) => addDays(inicioGrade, indice),
+  );
 
   return (
-    <div className="flex flex-col h-dvh bg-slate-100 select-none overflow-hidden">
+    <div className={`flex flex-col select-none overflow-hidden ${variant === "v2" ? "h-[calc(100dvh-126px)] bg-[#f6f8fc]" : "h-dvh bg-slate-100"}`}>
 
       {/* ── Feedback reposição ───────────────────────────────────────────── */}
       {msgReposicao && (
@@ -510,10 +552,10 @@ export default function AgendaMobile({
       )}
 
       {/* ── Cabeçalho ────────────────────────────────────────────────────── */}
-      <div className="bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0">
+      <div className={variant === "v2" ? "bg-[#10203d] text-white px-4 py-4 flex items-center justify-between shrink-0" : "bg-indigo-600 text-white px-4 pt-safe pb-3 flex items-center justify-between shrink-0"}>
         <div>
-          <p className="text-xs opacity-75">EduGestão</p>
-          <p className="text-sm font-bold leading-tight truncate max-w-[160px]">{nomeUsuario}</p>
+          <p className={variant === "v2" ? "text-[10px] uppercase tracking-[0.16em] text-[#62d5ad] font-bold" : "text-xs opacity-75"}>{variant === "v2" ? "Planejamento do tempo" : "EduGestão"}</p>
+          <p className={variant === "v2" ? "text-xl font-bold leading-tight mt-1" : "text-sm font-bold leading-tight truncate max-w-[160px]"}>{variant === "v2" ? "Agenda" : nomeUsuario}</p>
         </div>
         <div className="flex items-center gap-3">
           {loading && <RefreshCw size={15} className="animate-spin opacity-75"/>}
@@ -529,11 +571,25 @@ export default function AgendaMobile({
             className="opacity-90 hover:opacity-100">
             <Plus size={20}/>
           </button>
-          <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
+          {variant === "legacy" && <button onClick={() => router.push("/api/auth/signout")} className="opacity-75 hover:opacity-100">
             <LogOut size={18}/>
-          </button>
+          </button>}
         </div>
       </div>
+
+      {variant === "v2" && (
+        <div className="grid grid-cols-3 gap-1 bg-white border-b border-slate-200 px-3 py-2 shrink-0">
+          <button onClick={() => setVista("dia")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "dia" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
+            Diária
+          </button>
+          <button onClick={() => setVista("semana")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "semana" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
+            Semanal
+          </button>
+          <button onClick={() => setVista("mes")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "mes" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
+            Mensal
+          </button>
+        </div>
+      )}
 
       {/* ── Filtro professor (admin) ──────────────────────────────────────── */}
       {isAdmin && professoras.length > 0 && (
@@ -546,22 +602,40 @@ export default function AgendaMobile({
       )}
 
       {/* ── Navegação de semana ───────────────────────────────────────────── */}
-      <div className="bg-white border-b border-slate-100 px-4 py-2 flex items-center justify-between shrink-0">
-        <button onClick={() => setSemana((s) => addDays(s, -7))}
+      <div className={`${vista === "mes" ? "hidden" : "flex"} bg-white border-b border-slate-100 px-4 py-2 items-center justify-between shrink-0`}>
+        <button onClick={() => {
+          if (vista === "dia") {
+            const anterior = addDays(diaAtivo, -1);
+            setDiaAtivo(anterior);
+            setSemana(startOfWeek(anterior, { weekStartsOn: 1 }));
+            return;
+          }
+          setSemana((s) => addDays(s, -7));
+        }}
           className="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
           <ChevronLeft size={20} className="text-slate-600"/>
         </button>
         <span className="text-sm font-semibold text-slate-700">
-          {format(semana, "dd/MM", { locale: ptBR })} – {format(addDays(semana, 6), "dd/MM/yyyy", { locale: ptBR })}
+          {vista === "dia"
+            ? format(diaAtivo, "EEEE, dd/MM/yyyy", { locale: ptBR })
+            : `${format(semana, "dd/MM", { locale: ptBR })} – ${format(addDays(semana, 6), "dd/MM/yyyy", { locale: ptBR })}`}
         </span>
-        <button onClick={() => setSemana((s) => addDays(s, 7))}
+        <button onClick={() => {
+          if (vista === "dia") {
+            const proximo = addDays(diaAtivo, 1);
+            setDiaAtivo(proximo);
+            setSemana(startOfWeek(proximo, { weekStartsOn: 1 }));
+            return;
+          }
+          setSemana((s) => addDays(s, 7));
+        }}
           className="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
           <ChevronRight size={20} className="text-slate-600"/>
         </button>
       </div>
 
       {/* ── Seletor de dia (scroll horizontal) ───────────────────────────── */}
-      <div className="bg-white border-b border-slate-100 px-2 py-2 flex gap-1 overflow-x-auto no-scrollbar shrink-0">
+      <div className={`${vista === "dia" ? "flex" : "hidden"} bg-white border-b border-slate-100 px-2 py-2 gap-1 overflow-x-auto no-scrollbar shrink-0`}>
         {diasSemana.map((dia, i) => {
           const ativo = isSameDay(dia, diaAtivo);
           const hoje  = isToday(dia);
@@ -583,8 +657,84 @@ export default function AgendaMobile({
         })}
       </div>
 
+      {vista === "mes" && (
+        <div className="flex-1 overflow-y-auto bg-white px-3 py-3">
+          <div className="flex items-center justify-between mb-3">
+            <button onClick={() => setMesAtivo((mes) => addMonths(mes, -1))} className="p-2 rounded-full bg-slate-50 text-slate-600" aria-label="Mês anterior"><ChevronLeft size={19}/></button>
+            <strong className="text-sm text-slate-800 capitalize">{format(mesAtivo, "MMMM 'de' yyyy", { locale: ptBR })}</strong>
+            <button onClick={() => setMesAtivo((mes) => addMonths(mes, 1))} className="p-2 rounded-full bg-slate-50 text-slate-600" aria-label="Próximo mês"><ChevronRight size={19}/></button>
+          </div>
+          <div className="grid grid-cols-7 mb-1 text-center text-[9px] font-bold uppercase tracking-wide text-slate-400">
+            {['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map((dia) => <span key={dia} className="py-1">{dia}</span>)}
+          </div>
+          <div className="grid grid-cols-7 overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 gap-px">
+            {diasDoMes.map((dia) => {
+              const aulasDia = aulas.filter((aula) => isSameDay(parseLocal(aula.data), dia) && aula.status !== "CANCELADA");
+              return (
+                <button key={dia.toISOString()} onClick={() => { setDiaAtivo(dia); setSemana(startOfWeek(dia, { weekStartsOn: 1 })); setVista("dia"); }}
+                  className={`min-h-16 p-1.5 text-left bg-white ${!isSameMonth(dia, mesAtivo) ? "opacity-35" : ""} ${isToday(dia) ? "ring-2 ring-inset ring-[#315be8]" : ""}`}>
+                  <span className={`text-[11px] font-bold ${isToday(dia) ? "text-[#315be8]" : "text-slate-700"}`}>{format(dia, "dd")}</span>
+                  <span className="mt-1 flex flex-wrap gap-0.5">
+                    {aulasDia.slice(0, 3).map((aula) => <i key={aula.id} className="h-1.5 w-1.5 rounded-full bg-[#315be8]" />)}
+                    {aulasDia.length > 3 ? <small className="text-[7px] text-slate-500">+{aulasDia.length - 3}</small> : null}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-center text-[10px] text-slate-400">Toque em um dia para abrir sua agenda.</p>
+        </div>
+      )}
+
+      {vista === "semana" && (
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+          {diasSemana.map((dia) => {
+            const aulasDia = aulas
+              .filter((aula) => isSameDay(parseLocal(aula.data), dia))
+              .sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
+            return (
+              <section key={dia.toISOString()} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <button onClick={() => { setDiaAtivo(dia); setVista("dia"); }}
+                  className={`w-full px-4 py-3 text-left font-bold ${isToday(dia) ? "bg-indigo-50 text-indigo-700" : "bg-slate-50 text-slate-700"}`}>
+                  {format(dia, "EEEE, d 'de' MMMM", { locale: ptBR })}
+                  <span className="ml-2 text-xs font-medium text-slate-400">{aulasDia.length} aula(s)</span>
+                </button>
+                {aulasDia.length === 0 ? (
+                  <p className="px-4 py-3 text-xs text-slate-400">Nenhuma aula neste dia.</p>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {aulasDia.map((aula) => {
+                      const cfg = STATUS_CFG[aula.status];
+                      return (
+                        <button key={aula.id} onClick={() => { setDiaAtivo(dia); setVista("dia"); }}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-left">
+                          <span className="w-12 shrink-0 text-xs font-bold text-indigo-600">
+                            {aula.horaInicio ?? "—"}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-slate-800">{aula.aluno.nome}</span>
+                            <span className="block truncate text-xs text-slate-500">
+                              {aula.materias?.length > 0
+                                ? aula.materias.map((item) => item.materia.nome).join(", ")
+                                : (aula.materia?.nome ?? "Sem matéria")}
+                            </span>
+                          </span>
+                          <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-medium ${cfg.bg} ${cfg.cor}`}>
+                            {cfg.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      )}
+
       {/* ── Lista do dia ──────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+      <div className={`${vista === "dia" ? "block" : "hidden"} flex-1 overflow-y-auto px-3 py-3 space-y-2`}>
         {timeline.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">
             <p className="text-2xl mb-2">📅</p>
@@ -659,7 +809,7 @@ export default function AgendaMobile({
       {/* ── Modal nova aula ──────────────────────────────────────────────── */}
       {modalAberto && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setModalAberto(false)}>
-          <div className="bg-white rounded-t-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-t-3xl px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-800">{reposicaoOrigem ? "Repor Aula" : "Nova Aula"}</h2>
               <button onClick={() => setModalAberto(false)}><X size={20} className="text-slate-400"/></button>
@@ -700,19 +850,19 @@ export default function AgendaMobile({
 
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">Data *</label>
-              <input type="date" value={novaAula.data} onChange={(e) => setNovaAula((p) => ({ ...p, data: e.target.value }))}
+              <DateInput required type="date" value={novaAula.data} onChange={(e) => setNovaAula((p) => ({ ...p, data: e.target.value }))}
                 className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Início *</label>
-                <input type="time" value={novaAula.horaInicio} onChange={(e) => setNovaAula((p) => ({ ...p, horaInicio: e.target.value }))}
+                <input type="time" max="22:59" value={novaAula.horaInicio} onChange={(e) => { const horaInicio = e.target.value; setErroModal(null); setAvisoDisp(null); setNovaAula((p) => ({ ...p, horaInicio, horaFim: fimUmaHoraDepois(horaInicio) })); }}
                   className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1">Fim *</label>
-                <input type="time" value={novaAula.horaFim} onChange={(e) => setNovaAula((p) => ({ ...p, horaFim: e.target.value }))}
+                <input type="time" value={novaAula.horaFim} onChange={(e) => { setErroModal(null); setAvisoDisp(null); setNovaAula((p) => ({ ...p, horaFim: e.target.value })); }}
                   className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm"/>
               </div>
             </div>
@@ -761,8 +911,8 @@ export default function AgendaMobile({
       {/* ── Modal detalhe da aula ─────────────────────────────────────────── */}
       {detalhe && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setDetalhe(null)}>
-          <div className="bg-white rounded-t-3xl p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-start justify-between">
+          <div className="bg-white rounded-t-3xl px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-2.5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-base font-bold text-slate-800">{detalhe.aluno.nome}</h2>
                 <p className="text-sm text-slate-500">
@@ -794,7 +944,7 @@ export default function AgendaMobile({
               const materiaTravada = !!detalhe.conteudo;
               return (
                 <div>
-                  <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
+                  <label className="text-[11px] font-medium text-slate-500 block mb-1">Matéria</label>
                   <SeletorMaterias
                     materiasDisponiveis={materiasOpcoes}
                     selecionadas={materiaDetalheIds}
@@ -809,19 +959,19 @@ export default function AgendaMobile({
             })()}
 
             <div>
-              <p className="text-xs font-medium text-slate-500 mb-2">Status</p>
+              <p className="text-[11px] font-medium text-slate-500 mb-1">Status</p>
               {(() => {
                 const dataAula = parseLocal(detalhe.data);
                 const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
                 const isFutura = dataAula > hoje;
                 return (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {(Object.keys(STATUS_CFG) as StatusAula[]).map((s) => {
                       const bloqueado = isFutura && s !== "CANCELADA";
                       return (
                         <button key={s} disabled={bloqueado || carregandoConteudo}
                           onClick={() => s === "REALIZADA" ? abrirConteudoParaRealizada(detalhe) : atualizarStatus(detalhe.id, s)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${
+                          className={`inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                             bloqueado ? "opacity-30 cursor-not-allowed bg-white border-slate-200 text-slate-400"
                             : detalhe.status === s
                               ? `${STATUS_CFG[s].bg} ${STATUS_CFG[s].cor} border-current`
@@ -877,10 +1027,10 @@ export default function AgendaMobile({
 
             {/* Observação */}
             <div>
-              <label className="text-xs font-medium text-slate-500 block mb-1">Observação / conteúdo da aula</label>
+              <label className="text-[11px] font-medium text-slate-500 block mb-1">Observação / conteúdo da aula</label>
               <textarea value={obsEdit} onChange={(e) => setObsEdit(e.target.value)} rows={2}
                 placeholder="O que foi trabalhado na aula..."
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm leading-5 resize-none"/>
               {(() => {
                 const materiaTravada = !!detalhe.conteudo;
                 const idsComprometidos = detalhe.materias.map((m) => m.materia.id);
@@ -891,7 +1041,7 @@ export default function AgendaMobile({
                 const obsAlterada = obsEdit !== (detalhe.observacao ?? "");
                 const semAlteracao = !materiaAlterada && !obsAlterada;
                 return (
-                  <div className="mt-1.5">
+                  <div className="mt-1">
                     <button onClick={salvarDetalhes} disabled={salvandoObs || semAlteracao}
                       className="px-3 py-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg disabled:opacity-40">
                       {salvandoObs ? "Salvando..." : "Salvar"}
@@ -930,11 +1080,11 @@ export default function AgendaMobile({
             ) : (
               <div className="flex gap-2">
                 <button onClick={() => setConfirmExcluirAula(true)}
-                  className="shrink-0 flex items-center justify-center gap-1.5 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm font-medium">
+                  className="shrink-0 flex items-center justify-center gap-1.5 border border-red-200 text-red-600 rounded-xl px-4 py-2.5 text-sm font-medium">
                   <Trash2 size={15}/>
                 </button>
                 <button onClick={() => setDetalhe(null)}
-                  className="flex-1 border border-slate-200 rounded-xl py-3 text-sm text-slate-600">
+                  className="flex-1 border border-slate-200 rounded-xl py-2.5 text-sm text-slate-600">
                   Cancelar
                 </button>
               </div>
@@ -946,7 +1096,7 @@ export default function AgendaMobile({
       {/* ── Modal conteúdo (ao marcar Realizada) ───────────────────────────── */}
       {conteudoModal && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/40" onClick={() => setConteudoModal(null)}>
-          <div className="bg-white rounded-t-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-t-3xl px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-800">
                 {conteudoModal.existente ? "Editar Conteúdo" : "Registrar Conteúdo"}
@@ -1024,7 +1174,7 @@ export default function AgendaMobile({
         <PagamentoGeradoModal pagamento={pagamentoInfo.pagamento} onFechar={pagamentoInfo.fechar} />
       )}
 
-      <BottomNavMobile/>
+      {variant === "legacy" ? <BottomNavMobile/> : null}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState } from "react";
 import { Plus, ChevronDown, ChevronRight, MapPin, Building2, Pencil, Trash2, CalendarRange } from "lucide-react";
 
@@ -68,9 +70,11 @@ type ConfirmDelete = { tipo: "escola"; id: string; nome: string } | { tipo: "uni
 export default function EscolasClient({
   escolasIniciais,
   metodos,
+  variant = "default",
 }: {
   escolasIniciais: Escola[];
   metodos: MetodoEnsino[];
+  variant?: "default" | "v2";
 }) {
   const [escolas, setEscolas] = useState(escolasIniciais);
   const [expandida, setExpandida] = useState<string | null>(null);
@@ -92,7 +96,9 @@ export default function EscolasClient({
   const [novaUnidade, setNovaUnidade] = useState({ nome: "", cidade: "", estado: "", turno: "" });
 
   // modais editar
+  const [erroSalvarEscola, setErroSalvarEscola] = useState("");
   const [editEscola, setEditEscola] = useState<{
+    unidades: Unidade[];
     id: string;
     nome: string;
     rede: string;
@@ -116,11 +122,13 @@ export default function EscolasClient({
 
   // ── Criar escola (+ primeira unidade) ──────────────────────────────────────
   async function criarEscola() {
-    setSalvando(true);
+    setSalvando(true); setErroSalvarEscola("");
+    try {
     const res = await fetch("/api/escolas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        primeiraUnidade,
         nome: novaEscola.nome,
         rede: novaEscola.rede,
         metodoId: novaEscola.metodoId || null,
@@ -131,23 +139,14 @@ export default function EscolasClient({
         periodoLetivo2Fim: novaEscola.periodoLetivo2Fim || null,
       }),
     });
-    const escola: Escola = await res.json();
-
-    if (primeiraUnidade.nome) {
-      const resU = await fetch(`/api/escolas/${escola.id}/unidades`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(primeiraUnidade),
-      });
-      const unidade = await resU.json();
-      escola.unidades = [unidade];
-    }
+    const escola = await res.json();
+    if (!res.ok) { setErroSalvarEscola(escola.erro || "Não foi possível criar a escola."); return; }
 
     setEscolas((prev) => [...prev, escola]);
     setModalEscola(false);
     setNovaEscola({ nome: "", rede: "", metodoId: "", periodoAvaliacao: "", periodoLetivo1Inicio: "", periodoLetivo1Fim: "", periodoLetivo2Inicio: "", periodoLetivo2Fim: "" });
     setPrimeiraUnidade({ nome: "", cidade: "", estado: "", turno: "" });
-    setSalvando(false);
+    } catch { setErroSalvarEscola("Falha de conexão. Confira os dados e tente novamente."); } finally { setSalvando(false); }
   }
 
   // ── Criar unidade extra ────────────────────────────────────────────────────
@@ -171,11 +170,14 @@ export default function EscolasClient({
   async function salvarEscola() {
     if (!editEscola) return;
     setSalvando(true);
+    setErroSalvarEscola("");
+    try {
     const res = await fetch(`/api/escolas/${editEscola.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         nome: editEscola.nome,
+        unidades: editEscola.unidades,
         rede: editEscola.rede,
         metodoId: editEscola.metodoId || null,
         periodoAvaliacao: editEscola.periodoAvaliacao,
@@ -186,9 +188,11 @@ export default function EscolasClient({
       }),
     });
     const atualizada = await res.json();
+    if (!res.ok) throw new Error(atualizada.erro || "Não foi possível salvar a escola.");
     setEscolas((prev) => prev.map((e) => (e.id === atualizada.id ? { ...e, ...atualizada } : e)));
     setEditEscola(null);
-    setSalvando(false);
+    } catch (error) { setErroSalvarEscola(error instanceof Error ? error.message : "Falha ao salvar a escola."); }
+    finally { setSalvando(false); }
   }
 
   // ── Editar unidade ─────────────────────────────────────────────────────────
@@ -255,7 +259,7 @@ export default function EscolasClient({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-v2-schools={variant === "v2" ? "true" : undefined}>
       <button
         onClick={() => setModalEscola(true)}
         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
@@ -305,6 +309,7 @@ export default function EscolasClient({
               onClick={() =>
                 setEditEscola({
                   id: escola.id,
+                  unidades: escola.unidades.map(u => ({ ...u })),
                   nome: escola.nome,
                   rede: escola.rede ?? "",
                   metodoId: escola.metodoId ?? "",
@@ -382,8 +387,8 @@ export default function EscolasClient({
 
       {/* ── Modal Nova Escola ───────────────────────────────────────────────── */}
       {modalEscola && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Escola</h2>
             <div className="space-y-3">
               <div>
@@ -429,7 +434,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo1Inicio}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo1Inicio: e.target.value })}
@@ -438,7 +443,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo1Fim}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo1Fim: e.target.value })}
@@ -449,7 +454,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo2Inicio}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo2Inicio: e.target.value })}
@@ -458,7 +463,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={novaEscola.periodoLetivo2Fim}
                     onChange={(e) => setNovaEscola({ ...novaEscola, periodoLetivo2Fim: e.target.value })}
@@ -466,6 +471,7 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
+              {erroSalvarEscola && <p role="alert" className="text-sm text-red-600">{erroSalvarEscola}</p>}
               {erroPeriodoNova && (
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoNova}</p>
               )}
@@ -537,8 +543,8 @@ export default function EscolasClient({
 
       {/* ── Modal Nova Unidade ──────────────────────────────────────────────── */}
       {modalUnidade && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "compact" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Unidade</h2>
             <div className="space-y-3">
               <div>
@@ -601,8 +607,8 @@ export default function EscolasClient({
 
       {/* ── Modal Editar Escola ─────────────────────────────────────────────── */}
       {editEscola && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Escola</h2>
             <div className="space-y-3">
               <div>
@@ -646,7 +652,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo1Inicio}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo1Inicio: e.target.value })}
@@ -655,7 +661,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo1Fim}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo1Fim: e.target.value })}
@@ -666,7 +672,7 @@ export default function EscolasClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo2Inicio}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo2Inicio: e.target.value })}
@@ -675,7 +681,7 @@ export default function EscolasClient({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — fim</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={editEscola.periodoLetivo2Fim}
                     onChange={(e) => setEditEscola({ ...editEscola, periodoLetivo2Fim: e.target.value })}
@@ -683,6 +689,15 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
+              <section className="col-span-full border-t border-slate-100 pt-3">
+                <h3 className="text-xs font-semibold text-slate-500 uppercase mb-3">Unidades da escola</h3>
+                {editEscola.unidades.map((unidade, indice) => <fieldset key={unidade.id} className="grid grid-cols-2 gap-3 mb-4" disabled={salvando}>
+                  <legend className="text-sm font-semibold mb-2">{unidade.nome}</legend>
+                  {([['nome', 'Nome da unidade *'], ['cidade', 'Cidade'], ['estado', 'Estado'], ['turno', 'Turno']] as const).map(([campo, label]) => <label key={campo} className="block text-xs font-medium text-slate-600">{label}<input aria-label={label} value={unidade[campo] ?? ''} maxLength={campo === 'estado' ? 2 : undefined} onChange={e => setEditEscola({ ...editEscola, unidades: editEscola.unidades.map((u, i) => i === indice ? { ...u, [campo]: e.target.value } : u) })} className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"/></label>)}
+                </fieldset>)}
+                {editEscola.unidades.length === 0 && <p className="text-sm text-slate-500">Nenhuma unidade cadastrada. Use Adicionar unidade na lista de escolas.</p>}
+              </section>
+              {erroSalvarEscola && <p role="alert" className="col-span-full text-sm text-red-600">{erroSalvarEscola}</p>}
               {erroPeriodoEdit && (
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoEdit}</p>
               )}
@@ -690,7 +705,7 @@ export default function EscolasClient({
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarEscola}
-                disabled={!editEscola.nome || !!erroPeriodoEdit || salvando}
+                disabled={!editEscola.nome || editEscola.unidades.some(u => !u.nome.trim()) || !!erroPeriodoEdit || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Salvar"}
@@ -708,8 +723,8 @@ export default function EscolasClient({
 
       {/* ── Modal Editar Unidade ────────────────────────────────────────────── */}
       {editUnidade && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "compact" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Unidade</h2>
             <div className="space-y-3">
               <div>
@@ -771,8 +786,8 @@ export default function EscolasClient({
 
       {/* ── Modal Confirmar Exclusão ────────────────────────────────────────── */}
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" data-v2-school-dialog={variant === "v2" ? "confirm" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
             <p className="text-sm text-slate-600 mb-1">
               Tem certeza que deseja excluir{" "}

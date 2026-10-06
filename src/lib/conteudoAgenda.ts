@@ -91,6 +91,9 @@ export async function validarAgenda(
   aulaId?:   string | null,
   materiaIds?: string[],
 ): Promise<{ ok: true } | { ok: false; erro: string; candidatas?: AulaCandidata[] }> {
+  // Um planejamento independente não exige aula na agenda.
+  if (planejado && !aulaId) return { ok: true };
+
   const { aula, ambigua, candidatas } = await buscarAulaVinculada({ empresaId, aulaId, alunoId, data, materiaIds });
 
   if (!aula) {

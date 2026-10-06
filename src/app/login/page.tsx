@@ -2,10 +2,12 @@
 
 import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { isMobileUserAgent } from "@/lib/device";
+import { destinoV2AposLogin } from "@/lib/destinoLogin";
 
 function LoginForm() {
   const router = useRouter();
@@ -34,16 +36,14 @@ function LoginForm() {
     if (res?.error) {
       setErro("E-mail ou senha incorretos.");
     } else {
-      router.push(isMobileUserAgent(navigator.userAgent) ? "/m" : "/dashboard");
+      router.push(destinoV2AposLogin(searchParams.get("callbackUrl")) ?? (isMobileUserAgent(navigator.userAgent) ? "/m" : "/dashboard"));
     }
   }
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-600 text-white text-2xl font-bold mb-3">
-          E
-        </div>
+        <Image src="/logo-edugestao-v2.png" alt="EduGestão V2" width={150} height={62} priority className="inline-block h-[62px] w-[150px] rounded-lg object-contain bg-white mb-3" />
         <h1 className="text-2xl font-bold text-slate-800">EduGestão</h1>
         <p className="text-slate-500 text-sm mt-1">Gestão de alunos</p>
       </div>

@@ -1,4 +1,6 @@
+import { erroPagamento } from "@/lib/validarPagamento";
 import { NextRequest, NextResponse } from "next/server";
+import type { PagamentoWhereInput } from "@/generated/prisma/models/Pagamento";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { podeGerenciarFinanceiro } from "@/lib/permissions";
@@ -16,12 +18,19 @@ export async function GET(req: NextRequest) {
   const ano         = parseInt(searchParams.get("ano")   ?? "0");
   const alunoFiltro = searchParams.get("aluno");
 
-  if (!mes || !ano) return NextResponse.json({ erro: "mes e ano obrigatórios" }, { status: 400 });
+  if (!alunoFiltro && (!mes || !ano)) {
+    return NextResponse.json({ erro: "mes e ano obrigatórios" }, { status: 400 });
+  }
 
-  const where: any = { empresaId: scope.empresaId, mes, ano };
-  if (alunoFiltro) where.alunoId = alunoFiltro;
+  const where: PagamentoWhereInput = { empresaId: scope.empresaId };
+  if (alunoFiltro) {
+    where.alunoId = alunoFiltro;
+  } else {
+    where.mes = mes;
+    where.ano = ano;
+  }
   // Admin vê pagamentos de todos os professores; professora vê só os próprios alunos
-  if (!scope.isAdmin && scope.professoraId) where.aluno = { ...(where.aluno ?? {}), professoraId: scope.professoraId };
+  if (!scope.isAdmin) where.aluno = { professoraId: scope.professoraId ?? "__sem_professora__" };
 
   const pagamentos = await prisma.pagamento.findMany({
     where,
@@ -54,7 +63,7 @@ export async function GET(req: NextRequest) {
       },
     },
     orderBy: [
-      { dataVencimento: "asc" },
+      { dataVencimento: alunoFiltro ? "desc" : "asc" },
       { aluno: { nome: "asc" } },
       { parcela: "asc" },
     ],
@@ -75,6 +84,7 @@ export async function GET(req: NextRequest) {
     observacao:      p.observacao ?? null,
     origemManual:    p.origemManual,
     origemReposicao: p.origemReposicao,
+    tipoCobrancaGerada: p.tipoCobrancaGerada ?? null,
     emailTipo:       p.emailTipo ?? null,
     emailEnviadoEm:  p.emailEnviadoEm?.toISOString() ?? null,
     aluno: {
@@ -110,32 +120,37 @@ export async function POST(req: NextRequest) {
   if (!podeGerenciarFinanceiro(scope)) return NextResponse.json({ erro: "Apenas administradores podem criar cobranças." }, { status: 403 });
 
   const body = await req.json();
+  const erro = erroPagamento(body, true);
+  if (erro) return NextResponse.json({ erro }, { status: 400 });
   const { alunoId, mes, ano, parcela = 1, pago, valorCobrado, dataVencimento, quantidadeAulas, observacao } = body;
 
   const alunoOk = await prisma.aluno.findFirst({ where: { id: alunoId, empresaId: scope.empresaId }, select: { id: true } });
   if (!alunoOk) return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
 
-  const pagamento = await prisma.pagamento.upsert({
-    where: { alunoId_mes_ano_parcela: { alunoId, mes, ano, parcela } },
-    update: {
-      pago,
-      dataPagamento:   pago ? new Date() : null,
-      quantidadeAulas: quantidadeAulas ?? undefined,
-      observacao:      observacao      ?? undefined,
-      valorCobrado:    valorCobrado    ?? undefined,
-    },
-    create: {
-      empresaId: scope.empresaId,
-      alunoId, mes, ano, parcela,
-      dataVencimento:  new Date(dataVencimento),
-      valorCobrado,
-      quantidadeAulas: quantidadeAulas ?? null,
-      pago,
-      dataPagamento:   pago ? new Date() : null,
-      observacao:      observacao ?? null,
-      origemManual:    true,
-    },
-  });
-
-  return NextResponse.json({ ...pagamento, valorCobrado: Number(pagamento.valorCobrado) });
+  // A chave única também protege contra criações concorrentes.
+  // Novo nunca atualiza uma cobrança existente; alterações usam a rota por ID.
+  try {
+    const pagamento = await prisma.pagamento.create({
+      data: {
+        empresaId: scope.empresaId,
+        alunoId, mes, ano, parcela,
+        dataVencimento:  new Date(dataVencimento),
+        valorCobrado,
+        quantidadeAulas: quantidadeAulas ?? null,
+        pago,
+        dataPagamento:   pago ? new Date() : null,
+        observacao:      observacao ?? null,
+        origemManual:    true,
+      },
+    });
+    return NextResponse.json({ ...pagamento, valorCobrado: Number(pagamento.valorCobrado) });
+  } catch (error) {
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
+      return NextResponse.json(
+        { erro: "Já existe uma cobrança para este aluno, competência e parcela. Escolha outra parcela ou edite a cobrança existente." },
+        { status: 409 },
+      );
+    }
+    throw error;
+  }
 }

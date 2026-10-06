@@ -1,5 +1,8 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+import { dataExiste } from "@/lib/validarData";
+
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -30,6 +33,7 @@ export default function AlunoForm({
   perfil,
   isAdmin,
   dispProfessora = null,
+  variant = "beta",
 }: {
   escolas: Escola[];
   materias: Materia[];
@@ -38,9 +42,11 @@ export default function AlunoForm({
   perfil?: string;
   isAdmin?: boolean;
   dispProfessora?: Horario[] | null;
+  variant?: "beta" | "v2";
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [etapa, setEtapa] = useState(0);
   // `isAdmin` cobre SUPERADMIN e SUPERADMIN_PROFESSORA (perfil híbrido) —
   // ambos escolhem o(a) professor(a) responsável manualmente, em vez de
   // usar a própria disponibilidade automaticamente.
@@ -230,6 +236,15 @@ export default function AlunoForm({
   function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 2 * 1024 * 1024) {
+        e.target.value = "";
+        if (fotoPreview?.startsWith("blob:")) URL.revokeObjectURL(fotoPreview);
+        setFotoPreview(alunoInicial?.fotoUrl ?? null);
+        setErro("Selecione uma foto JPG, PNG ou WebP de até 2 MB.");
+        return;
+      }
+      setErro("");
+      if (fotoPreview?.startsWith("blob:")) URL.revokeObjectURL(fotoPreview);
       setFotoPreview(URL.createObjectURL(file));
     }
   }
@@ -250,11 +265,25 @@ export default function AlunoForm({
       setExcluindo(false);
       return;
     }
-    window.location.href = "/dashboard/alunos";
+    window.location.href = variant === "v2" ? "/v2/alunos" : "/dashboard/alunos";
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const formulario = e.currentTarget;
+    if (variant === "v2") {
+      const campos = Array.from(formulario.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea"));
+      const invalido = campos.find((campo) => !campo.disabled && (
+        !campo.checkValidity() || (campo instanceof HTMLInputElement && campo.type === "date" && campo.value !== "" && !dataExiste(campo.value))
+      ));
+      if (invalido) {
+        const painel = invalido.closest<HTMLElement>("[data-etapa]");
+        if (painel) setEtapa(Number(painel.dataset.etapa));
+        setErro(invalido.validationMessage || "Revise o campo indicado antes de salvar.");
+        requestAnimationFrame(() => { invalido.focus(); invalido.reportValidity(); });
+        return;
+      }
+    }
     setSalvando(true);
     setErro("");
 
@@ -327,7 +356,7 @@ export default function AlunoForm({
       }
 
       // Navegação completa para garantir dados frescos (sem cache do router)
-      window.location.href = "/dashboard/alunos";
+      window.location.href = variant === "v2" ? "/v2/alunos" : "/dashboard/alunos";
     } catch (err) {
       setErro("Falha de comunicação com o servidor.");
       setSalvando(false);
@@ -335,9 +364,20 @@ export default function AlunoForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate={variant === "v2"} className={variant === "v2" ? "flex h-full min-h-0 flex-col" : "space-y-6"}>
+      {variant === "v2" && (
+        <div className="mb-3 grid shrink-0 grid-cols-5 gap-1 rounded-xl bg-slate-100 p-1" aria-label="Etapas do cadastro">
+          {["Identificação", "Endereço", "Escola", "Agenda", "Cobrança"].map((nome, indice) => (
+            <button key={nome} type="button" onClick={() => setEtapa(indice)}
+              className={`rounded-lg px-2 py-2 text-xs font-semibold transition-colors ${etapa === indice ? "bg-white text-indigo-700 shadow-sm" : "text-slate-500"}`}>
+              <span className="hidden sm:inline">{indice + 1}. </span>{nome}
+            </button>
+          ))}
+        </div>
+      )}
+      <div data-v2-form-content className={variant === "v2" ? "min-h-0 flex-1 overflow-y-auto pr-1" : "contents"}>
       {/* Foto */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="0" className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
           <Camera size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Foto do aluno</h2>
@@ -349,6 +389,7 @@ export default function AlunoForm({
           >
             {fotoPreview ? (
               <Image
+                unoptimized
                 src={fotoPreview}
                 alt="foto"
                 width={80}
@@ -367,13 +408,13 @@ export default function AlunoForm({
             >
               {fotoPreview ? "Trocar foto" : "Adicionar foto"}
             </button>
-            <p className="text-xs text-slate-500 mt-1">JPG ou PNG, máx. 2MB</p>
+            <p className="text-xs text-slate-500 mt-1">JPG, PNG ou WebP, máx. 2 MB</p>
           </div>
           <input
             ref={fileRef}
             type="file"
             name="foto"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             onChange={handleFoto}
             className="hidden"
           />
@@ -381,7 +422,7 @@ export default function AlunoForm({
       </div>
 
       {/* Dados pessoais */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="0" className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <User size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Dados pessoais</h2>
@@ -403,7 +444,7 @@ export default function AlunoForm({
             <label className="block text-xs font-medium text-slate-600 mb-1">
               Data de nascimento *
             </label>
-            <input
+            <DateInput
               name="dataNascimento"
               type="date"
               required
@@ -459,7 +500,7 @@ export default function AlunoForm({
       </div>
 
       {/* Endereço */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="1" className={`${variant === "v2" && etapa !== 1 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <MapPin size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Endereço residencial</h2>
@@ -546,7 +587,7 @@ export default function AlunoForm({
       </div>
 
       {/* Escola */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="2" className={`${variant === "v2" && etapa !== 2 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
           <School size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Escola</h2>
@@ -685,7 +726,7 @@ export default function AlunoForm({
       </div>
 
       {/* Disciplinas */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="2" className={`${variant === "v2" && etapa !== 2 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <div className="flex items-center gap-2 mb-4">
           <BookOpen size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Disciplinas atendidas *</h2>
@@ -714,7 +755,7 @@ export default function AlunoForm({
       </div>
 
       {/* Agenda */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="3" className={`${variant === "v2" && etapa !== 3 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <CalendarDays size={17} className="text-indigo-600" />
@@ -760,7 +801,7 @@ export default function AlunoForm({
       </div>
 
       {/* Cobrança */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="4" className={`${variant === "v2" && etapa !== 4 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
           <DollarSign size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Cobrança *</h2>
@@ -887,7 +928,7 @@ export default function AlunoForm({
       </div>
 
       {/* Período contratual */}
-      <div className={`bg-white rounded-xl border p-5 ${erroPeriodo ? "border-red-300" : "border-slate-200"}`}>
+      <div data-etapa="3" className={`${variant === "v2" && etapa !== 3 ? "hidden" : ""} bg-white rounded-xl border p-5 ${variant === "v2" ? "mt-3" : ""} ${erroPeriodo ? "border-red-300" : "border-slate-200"}`}>
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Período contratual *</h2>
@@ -895,7 +936,7 @@ export default function AlunoForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Data de início *</label>
-            <input
+            <DateInput
               type="date"
               name="dataInicioContrato"
               value={dataInicio}
@@ -908,7 +949,7 @@ export default function AlunoForm({
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Data de término *</label>
-            <input
+            <DateInput
               type="date"
               name="dataFimContrato"
               value={dataFim}
@@ -932,7 +973,7 @@ export default function AlunoForm({
       </div>
 
       {/* Observações */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div data-etapa="4" className={`${variant === "v2" && etapa !== 4 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5 ${variant === "v2" ? "mt-3" : ""}`}>
         <label className="block text-xs font-medium text-slate-600 mb-2">
           Observações
         </label>
@@ -945,13 +986,24 @@ export default function AlunoForm({
         />
       </div>
 
+      </div>
       {erro && (
         <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">
           {erro}
         </p>
       )}
 
-      <div className="flex items-center gap-3 flex-wrap">
+      {variant === "v2" && (
+        <div data-v2-actions className="mt-3 flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-white px-1 pt-3">
+          {alunoInicial && <button type="button" onClick={() => { setErroExcluir(""); setConfirmExcluir(true); }} className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700">Excluir aluno</button>}
+          <button type="button" onClick={() => router.push("/v2/alunos")} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600">
+            Cancelar
+          </button>
+          {etapa < 4 && <button type="button" onClick={() => setEtapa((valor) => valor + 1)} className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white">Continuar</button>}
+          {etapa === 4 && <button type="submit" disabled={salvando} className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60">{salvando ? "Salvando..." : alunoInicial ? "Salvar alterações" : "Cadastrar aluno"}</button>}
+        </div>
+      )}
+      <div className={`${variant === "v2" ? "hidden" : ""} flex items-center gap-3 flex-wrap`}>
         <button
           type="submit"
           disabled={salvando}

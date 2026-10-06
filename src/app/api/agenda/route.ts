@@ -15,6 +15,14 @@ function utcDia(str: string): Date {
 function utcDiaNum(y: number, m0: number, d: number): Date {
   return new Date(Date.UTC(y, m0, d)); // mês 0-indexado
 }
+function duracaoEmMinutos(inicio: unknown, fim: unknown): number | null {
+  if (typeof inicio !== "string" || typeof fim !== "string") return null;
+  const horarioValido = /^([01]\d|2[0-3]):[0-5]\d$/;
+  if (!horarioValido.test(inicio) || !horarioValido.test(fim)) return null;
+  const [horaInicio, minutoInicio] = inicio.split(":").map(Number);
+  const [horaFim, minutoFim] = fim.split(":").map(Number);
+  return (horaFim * 60 + minutoFim) - (horaInicio * 60 + minutoInicio);
+}
 
 // GET /api/agenda?inicio=YYYY-MM-DD&fim=YYYY-MM-DD
 export async function GET(req: NextRequest) {
@@ -149,6 +157,9 @@ export async function POST(req: NextRequest) {
 
   if (!horaInicio || !horaFim)
     return NextResponse.json({ erro: "Início e fim são obrigatórios" }, { status: 400 });
+
+  if ((duracaoEmMinutos(horaInicio, horaFim) ?? 0) < 60)
+    return NextResponse.json({ erro: "A duração mínima da aula é de 1 hora." }, { status: 400 });
 
   // Confere que aluno e (quando escolhida pelo admin) professora pertencem à
   // mesma empresa da sessão — evita vincular uma aula a um registro de outra

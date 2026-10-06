@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validarDisponibilidade } from "@/lib/validarDisponibilidade";
+import { verificarDisponibilidadeOcupada, ERRO_DISPONIBILIDADE_OCUPADA } from "@/lib/disponibilidadeOcupada";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { requirePlataforma } from "@/lib/plataforma";
@@ -95,6 +97,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   // colide consigo mesmo), então é checada manualmente sempre que o e-mail
   // final ou o vínculo com empresa mudam.
   const empresaIdFinal = "empresaId" in data ? data.empresaId : existente.empresaId;
+  if (body.disponibilidade !== undefined) {
+    const erro = validarDisponibilidade(body.disponibilidade);
+    if (erro) return NextResponse.json({ erro }, { status: 400 });
+    if (!empresaIdFinal) return NextResponse.json({ erro: "Disponibilidade exige uma empresa vinculada." }, { status: 400 });
+    if (existente.professora && await verificarDisponibilidadeOcupada(existente.professora.id, existente.professora.empresaId, existente.professora.disponibilidade, body.disponibilidade)) {
+      return NextResponse.json({ erro: ERRO_DISPONIBILIDADE_OCUPADA }, { status: 409 });
+    }
+  }
   const emailFinal = data.email ?? existente.email;
   if (!empresaIdFinal && (data.email !== undefined || "empresaId" in data)) {
     const outroPlataforma = await prisma.usuario.findFirst({

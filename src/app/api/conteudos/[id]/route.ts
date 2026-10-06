@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { validarAgenda } from "@/lib/conteudoAgenda";
 import { podeAcessarProfessora } from "@/lib/permissions";
+import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
 
 export const dynamic = "force-dynamic";
 
@@ -54,11 +55,42 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
 
-  const materiaIds: string[] = Array.isArray(body.materiaIds) ? body.materiaIds : [];
+  if (typeof body.alunoId !== "string" || !body.alunoId.trim()) {
+    return NextResponse.json({ erro: "Aluno inválido." }, { status: 400 });
+  }
+  const materiaIds = normalizarIds(body.materiaIds);
+  if (materiaIds.length === 0) {
+    return NextResponse.json({ erro: "Selecione ao menos uma disciplina." }, { status: 400 });
+  }
+  const [aluno, materiasEncontradas] = await Promise.all([
+    prisma.aluno.findFirst({
+      where: { id: body.alunoId, empresaId: scope.empresaId },
+      select: { id: true, professoraId: true },
+    }),
+    prisma.materia.findMany({
+      where: { id: { in: materiaIds }, empresaId: scope.empresaId },
+      select: { id: true },
+    }),
+  ]);
+  if (!aluno || !podeAcessarProfessora(scope, aluno.professoraId)) {
+    return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
+  }
+  if (!todosIdsEncontrados(materiaIds, materiasEncontradas.map((materia) => materia.id))) {
+    return NextResponse.json({ erro: "Uma ou mais matérias não foram encontradas." }, { status: 404 });
+  }
 
   // aulaIdEscolhido: quando o usuário resolveu manualmente uma ambiguidade
   // (aluno com +1 aula candidata) escolhendo qual aula vincular.
   const aulaIdParaValidar = existente.aulaId || body.aulaIdEscolhido || null;
+  if (aulaIdParaValidar) {
+    const aula = await prisma.agendaAula.findFirst({
+      where: { id: aulaIdParaValidar, empresaId: scope.empresaId, alunoId: aluno.id },
+      select: { id: true },
+    });
+    if (!aula) {
+      return NextResponse.json({ erro: "Aula não encontrada para este aluno." }, { status: 404 });
+    }
+  }
   const validacao = await validarAgenda(scope.empresaId, body.alunoId, dataAula, planejado, aulaIdParaValidar, materiaIds);
   if (!validacao.ok) {
     return NextResponse.json({ erro: validacao.erro, candidatas: validacao.candidatas }, { status: 422 });
@@ -75,9 +107,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       arquivoUrl: body.arquivoUrl !== undefined ? body.arquivoUrl || null : undefined,
       data:       dataAula,
       planejado,
-      materias: materiaIds.length > 0
-        ? { create: materiaIds.map((materiaId) => ({ materiaId })) }
-        : undefined,
+      materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
     },
     include: includeCompleto,
   });

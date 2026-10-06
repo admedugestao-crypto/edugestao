@@ -1,5 +1,7 @@
 "use client";
 
+import DateInput from "@/components/DateInput";
+
 import { useState, useCallback, useMemo } from "react";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Clock, AlertCircle,
@@ -18,6 +20,11 @@ function geracaoPagamento(item: { origemManual: boolean; origemReposicao: boolea
   if (item.origemReposicao) return { label: "Rep. Aula",  title: "Gerado ao repor uma aula excluída", cor: "text-purple-700", bg: "bg-purple-100" };
   if (item.origemManual)    return { label: "Manual",     title: "Digitado manualmente",              cor: "text-slate-600", bg: "bg-slate-100" };
   return                           { label: "Automático", title: "Gerado automaticamente ao marcar a aula como Realizada ou Falta do Aluno", cor: "text-blue-700",  bg: "bg-blue-100" };
+}
+function tipoCobrancaPagamento(item: Pick<PagamentoItem, "origemManual" | "tipoCobrancaGerada">) {
+  if (item.origemManual) return "Cobr. Manual";
+  if (!item.tipoCobrancaGerada) return "Não registrado";
+  return TIPO_LABEL[item.tipoCobrancaGerada] ?? item.tipoCobrancaGerada;
 }
 const STATUS_AULA_LABEL: Record<string, { label: string; cor: string; bg: string }> = {
   AGENDADA:        { label: "Agendada",          cor: "text-slate-600",  bg: "bg-slate-100" },
@@ -42,6 +49,7 @@ type PagamentoItem = {
   observacao:      string | null;
   origemManual:    boolean;
   origemReposicao: boolean;
+  tipoCobrancaGerada: string | null;
   emailTipo:       string | null;
   emailEnviadoEm:  string | null;
   aluno: {
@@ -91,7 +99,7 @@ function status(item: PagamentoItem): "pago" | "atrasado" | "avencer" {
   if (item.pago) return "pago";
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const [y, m, d] = item.dataVencimento.split("T")[0].split("-").map(Number);
-  const venc = new Date(y, m - 1, d + 1); // D+1: atrasado só a partir do dia seguinte ao vencimento
+  const venc = new Date(y, m - 1, d); // Atrasado a partir do dia seguinte ao vencimento
   return venc < hoje ? "atrasado" : "avencer";
 }
 
@@ -121,14 +129,16 @@ function dataVencimentoPadrao(mes: number, ano: number) {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 export default function PagamentosClient({
-  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro,
+  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome, variant = "classic",
 }: {
+  variant?: "classic" | "v2";
   pagamentosIniciais: PagamentoItem[];
   mesInicial:         number;
   anoInicial:         number;
   isAdmin:            boolean;
   podeNovo?:          boolean;
   alunoFiltro?:       string | null;
+  alunoFiltroNome?:   string | null;
 }) {
   const [mes,        setMes]        = useState(mesInicial);
   const [ano,        setAno]        = useState(anoInicial);
@@ -218,9 +228,11 @@ export default function PagamentosClient({
     }
   }
 
-  // ── Busca registros para um mês ─────────────────────────────────────────
+  // ── Busca registros do mês ou o histórico completo do aluno ─────────────
   const buscarPagamentos = useCallback(async (m: number, a: number) => {
-    const url = `/api/pagamentos?mes=${m}&ano=${a}${alunoFiltro ? `&aluno=${alunoFiltro}` : ""}`;
+    const url = alunoFiltro
+      ? `/api/pagamentos?aluno=${encodeURIComponent(alunoFiltro)}`
+      : `/api/pagamentos?mes=${m}&ano=${a}`;
     const res  = await fetch(url);
     return res.json() as Promise<PagamentoItem[]>;
   }, [alunoFiltro]);
@@ -464,7 +476,7 @@ export default function PagamentosClient({
   }
 
   // ── Filtro por aluno + status (Recebido/Pendente/Atrasados) ────────────────
-  const [filtroAlunoId, setFiltroAlunoId] = useState("");
+  const [filtroAlunoId, setFiltroAlunoId] = useState(alunoFiltro ?? "");
   const [filtroStatus, setFiltroStatus] = useState<"pago" | "pendente" | "atrasado" | null>(null);
 
   const alunosDoMes = useMemo(() => {
@@ -499,19 +511,19 @@ export default function PagamentosClient({
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6">
+    <div data-v2-finance={variant === "v2" || undefined} className="space-y-6">
 
       {/* Banner filtro por aluno */}
-      {alunoFiltro && pagamentosIniciais.length > 0 && (
+      {alunoFiltro && (
         <div className="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2">
             <DollarSign size={16} className="text-indigo-600" />
             <p className="text-sm font-medium text-indigo-800">
-              Exibindo pagamentos de: <strong>{pagamentosIniciais[0].aluno.nome}</strong>
+              Histórico financeiro completo de: <strong>{alunoFiltroNome ?? pagamentosIniciais[0]?.aluno.nome ?? "Aluno selecionado"}</strong>
             </p>
           </div>
           <Link
-            href="/dashboard/pagamentos"
+            href={variant === "v2" ? "/v2/pagamentos" : "/dashboard/pagamentos"}
             className="flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
           >
             <ArrowLeft size={13} />
@@ -521,8 +533,8 @@ export default function PagamentosClient({
       )}
 
       {/* Navegação de mês + filtro por aluno */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-4">
-        <button onClick={() => navMes(-1)} disabled={carregando}
+      {!alunoFiltro && <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-4">
+        <button aria-label="Mês anterior" onClick={() => navMes(-1)} disabled={carregando}
           className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 shrink-0">
           <ChevronLeft size={18} className="text-slate-600" />
         </button>
@@ -532,7 +544,7 @@ export default function PagamentosClient({
             {pagamentosDoAluno.length} parcela(s){filtroAlunoId ? ` de ${pagamentos.length}` : ""}
           </p>
         </div>
-        <button onClick={() => navMes(1)} disabled={carregando}
+        <button aria-label="Próximo mês" onClick={() => navMes(1)} disabled={carregando}
           className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 shrink-0">
           <ChevronRight size={18} className="text-slate-600" />
         </button>
@@ -547,7 +559,7 @@ export default function PagamentosClient({
             <option key={a.id} value={a.id}>{a.nome}</option>
           ))}
         </select>
-      </div>
+      </div>}
 
       {/* Cards resumo — clique em Recebido/Pendente/Atrasados filtra a tabela */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -608,12 +620,14 @@ export default function PagamentosClient({
       )}
 
       {/* Tabela */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div data-finance-table className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {/* Cabeçalho da tabela */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50">
           <p className="text-xs font-medium text-slate-500">
             {pagamentos.length === 0
-              ? "Nenhuma cobrança gerada para este mês"
+              ? alunoFiltro
+                ? "Nenhuma cobrança registrada para este aluno"
+                : "Nenhuma cobrança gerada para este mês"
               : pagamentosExibidos.length === 0
               ? "Nenhuma cobrança para esse filtro"
               : `${pagamentosExibidos.length} cobrança(s)`}
@@ -681,8 +695,8 @@ export default function PagamentosClient({
 
         {pagamentos.length === 0 ? (
           <div className="p-10 text-center text-slate-400 text-sm">
-            A cobrança é gerada automaticamente ao marcar uma aula como Realizada ou Falta do Aluno na agenda,
-            ou você pode clicar em <strong>Novo</strong> para adicionar manualmente.
+            A cobrança é gerada automaticamente ao marcar uma aula como Realizada ou Falta do Aluno na agenda.
+            {(isAdmin || podeNovo) && <> Você também pode clicar em <strong>Novo</strong> para adicionar manualmente.</>}
           </div>
         ) : pagamentosExibidos.length === 0 ? (
           <div className="p-10 text-center text-slate-400 text-sm">
@@ -747,9 +761,9 @@ export default function PagamentosClient({
                       {/* Tipo */}
                       <td className="px-4 py-3">
                         <span className="text-xs text-slate-500">
-                          {TIPO_LABEL[item.aluno.tipoCobranca] ?? item.aluno.tipoCobranca}
+                          {tipoCobrancaPagamento(item)}
                         </span>
-                        {item.aluno.tipoCobranca === "POR_AULA" && (
+                        {item.tipoCobrancaGerada === "POR_AULA" && !item.origemManual && (
                           <button
                             onClick={() => { setErroAulas(null); setAulasModal({
                               id:               item.id,
@@ -912,7 +926,7 @@ export default function PagamentosClient({
 
       {/* ── Modal Criar / Editar ─────────────────────────────────────────────── */}
       {formPag && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -988,7 +1002,7 @@ export default function PagamentosClient({
                 </div>
                 <div className="col-span-1">
                   <label className="block text-xs font-medium text-slate-600 mb-1">Vencimento <span className="text-red-500">*</span></label>
-                  <input type="date" value={formPag.dataVencimento}
+                  <DateInput required type="date" value={formPag.dataVencimento}
                     onChange={(e) => setFormPag((f) => f ? { ...f, dataVencimento: e.target.value } : f)}
                     className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
@@ -1015,7 +1029,7 @@ export default function PagamentosClient({
                   <span className="text-sm font-medium text-slate-700">Pago</span>
                 </label>
                 {formPag.pago && (
-                  <input type="date" value={formPag.dataPagamento}
+                  <DateInput type="date" value={formPag.dataPagamento}
                     onChange={(e) => setFormPag((f) => f ? { ...f, dataPagamento: e.target.value } : f)}
                     className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 )}
@@ -1100,7 +1114,7 @@ export default function PagamentosClient({
 
       {/* ── Modal Confirmar Exclusão ─────────────────────────────────────────── */}
       {excluirId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
@@ -1162,7 +1176,7 @@ export default function PagamentosClient({
 
       {/* ── Modal Erro Baixa ─────────────────────────────────────────────────── */}
       {erroBaixa && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
@@ -1209,7 +1223,7 @@ export default function PagamentosClient({
         ];
 
         return (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
               <div className="flex items-center gap-2 mb-1">
                 <Send size={16} className="text-indigo-600" />
@@ -1251,7 +1265,7 @@ export default function PagamentosClient({
 
       {/* ── Modal Observação ─────────────────────────────────────────────────── */}
       {obsModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
             <h2 className="text-base font-bold text-slate-800 mb-3">Observação do pagamento</h2>
             <textarea
@@ -1284,11 +1298,8 @@ export default function PagamentosClient({
         const itens = pagamentos.filter((p) => reciboIds.includes(p.id) && p.pago);
         const total = itens.reduce((s, p) => s + p.valorCobrado, 0);
         const hoje  = new Date().toLocaleDateString("pt-BR");
-        const TIPO_LABEL_R: Record<string,string> = {
-          MENSAL: "Mensal", QUINZENAL: "Quinzenal", SEMANAL: "Semanal", POR_AULA: "Por aula",
-        };
         return (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
@@ -1349,12 +1360,12 @@ export default function PagamentosClient({
                     {itens.length > 1 && (
                       <p className="text-xs font-semibold text-emerald-600 mb-2">#{idx + 1}</p>
                     )}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
                       <RField label="Aluno"          value={item.aluno.nome} />
                       <RField label="Escola / Turma" value={`${item.aluno.unidade.escola.nome} · ${item.aluno.unidade.nome}`} />
                       {item.aluno.professora && <RField label="Professor(a)" value={item.aluno.professora} />}
                       <RField label="Competência"    value={`${MESES[item.mes - 1]} / ${item.ano}`} />
-                      <RField label="Tipo cobrança"  value={TIPO_LABEL_R[item.aluno.tipoCobranca] ?? item.aluno.tipoCobranca} />
+                      <RField label="Tipo cobrança"  value={tipoCobrancaPagamento(item)} />
                       {item.quantidadeAulas != null && (
                         <RField label="Qtd. de aulas" value={String(item.quantidadeAulas)} />
                       )}
@@ -1362,7 +1373,7 @@ export default function PagamentosClient({
                       <RField label="Pago em"        value={fmtData(item.dataPagamento)} highlight="green" />
                       <RField label="Valor"          value={moeda(item.valorCobrado)} bold />
                       {item.observacao && (
-                        <div className="col-span-2 mt-0.5">
+                        <div className="sm:col-span-2 mt-0.5 break-words">
                           <span className="text-xs font-medium text-slate-500">Obs.: </span>
                           <span className="text-xs text-slate-600">{item.observacao}</span>
                         </div>
@@ -1406,7 +1417,7 @@ export default function PagamentosClient({
       {aulasModal && (() => {
         const qtd = parseInt(aulasModal.qtd) || 0;
         return (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
               <h2 className="text-base font-bold text-slate-800 mb-1">
                 Aulas dadas — {aulasModal.alunoNome}
@@ -1452,9 +1463,9 @@ function RField({ label, value, bold, highlight }: {
   label: string; value: string; bold?: boolean; highlight?: "green";
 }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex min-w-0 gap-2">
       <span className="text-xs font-medium text-slate-500 shrink-0 w-28">{label}:</span>
-      <span className={`text-xs ${bold ? "font-bold text-slate-800" : "text-slate-700"} ${highlight === "green" ? "text-emerald-700 font-medium" : ""}`}>
+      <span className={`min-w-0 flex-1 break-words text-xs ${bold ? "font-bold text-slate-800" : "text-slate-700"} ${highlight === "green" ? "text-emerald-700 font-medium" : ""}`}>
         {value}
       </span>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus, Pencil, Trash2, Paperclip, X, Loader2, LogOut,
@@ -36,10 +36,11 @@ type Form = {
   materiaIds: string[];
   arquivoUrl: string;
   arquivoNome: string;
+  textoBusca?: string;
 };
 
 const formVazio: Form = {
-  titulo: "", descricao: "", metodoId: "", serie: "", materiaIds: [], arquivoUrl: "", arquivoNome: "",
+  titulo: "", descricao: "", metodoId: "", serie: "", materiaIds: [], arquivoUrl: "", arquivoNome: "", textoBusca: "",
 };
 
 export default function BibliotecaMobile({
@@ -68,17 +69,29 @@ export default function BibliotecaMobile({
   const [erro, setErro] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; titulo: string } | null>(null);
 
-  const materiaisFiltrados = materiais.filter((m) => {
-    if (filtroSerie && m.serie !== filtroSerie) return false;
-    if (filtroMateriaId && !m.materias.some((x) => x.materia.id === filtroMateriaId)) return false;
-    if (busca) {
-      const termo = busca.trim().toLowerCase();
-      const noTitulo = m.titulo.toLowerCase().includes(termo);
-      const naDescricao = (m.descricao ?? "").toLowerCase().includes(termo);
-      if (!noTitulo && !naDescricao) return false;
-    }
-    return true;
-  });
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      const params = new URLSearchParams();
+      if (busca.trim()) params.set("busca", busca.trim());
+      if (filtroSerie) params.set("serie", filtroSerie);
+      if (filtroMateriaId) params.set("materiaId", filtroMateriaId);
+
+      try {
+        const res = await fetch(`/api/biblioteca?${params.toString()}`, { signal: controller.signal });
+        if (res.ok) setMateriais(await res.json());
+      } catch (erro) {
+        if (!(erro instanceof DOMException && erro.name === "AbortError")) {
+          setErro("Não foi possível atualizar a busca.");
+        }
+      }
+    }, busca.trim() ? 250 : 0);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [busca, filtroSerie, filtroMateriaId]);
 
   async function onUpload(file: File) {
     setEnviandoArquivo(true);
@@ -89,7 +102,7 @@ export default function BibliotecaMobile({
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) { setErro(data.erro ?? "Erro ao enviar arquivo."); return; }
-      setForm((p) => ({ ...p, arquivoUrl: data.url, arquivoNome: data.nome }));
+      setForm((p) => ({ ...p, arquivoUrl: data.url, arquivoNome: data.nome, textoBusca: data.textoExtraido ?? "" }));
     } finally {
       setEnviandoArquivo(false);
     }
@@ -141,6 +154,7 @@ export default function BibliotecaMobile({
       materiaIds: m.materias.map((x) => x.materia.id),
       arquivoUrl: m.arquivoUrl,
       arquivoNome: m.arquivoNome ?? "",
+      textoBusca: undefined,
     });
     setModalAberto(true);
   }
@@ -188,10 +202,12 @@ export default function BibliotecaMobile({
     if (!confirmDelete) return;
     setSalvando(true);
     try {
-      await fetch(`/api/biblioteca/${confirmDelete.id}`, { method: "DELETE" });
+      setErro("");
+      const res = await fetch(`/api/biblioteca/${confirmDelete.id}`, { method: "DELETE" });
+      if (!res.ok) { const data = await res.json().catch(() => ({})); setErro(data.erro || "Não foi possível excluir o material."); return; }
       setMateriais((prev) => prev.filter((m) => m.id !== confirmDelete.id));
       setConfirmDelete(null);
-    } finally {
+    } catch { setErro("Falha de conexão. O material não foi excluído."); } finally {
       setSalvando(false);
     }
   }
@@ -241,10 +257,10 @@ export default function BibliotecaMobile({
 
       {/* ── Lista ────────────────────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-        {materiaisFiltrados.length === 0 ? (
+        {materiais.length === 0 ? (
           <div className="text-center text-slate-400 text-sm mt-16">Nenhum material encontrado.</div>
         ) : (
-          materiaisFiltrados.map((m) => (
+          materiais.map((m) => (
             <div key={m.id} className="bg-white rounded-xl border border-slate-200 p-3">
               <div className="flex items-start gap-2">
                 <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
@@ -387,6 +403,7 @@ export default function BibliotecaMobile({
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm">
             <h2 className="font-bold text-slate-800 mb-2">Confirmar exclusão</h2>
+            {erro && <p role="alert" className="text-sm text-red-600">{erro}</p>}
             <p className="text-sm text-slate-600">Excluir <strong>{confirmDelete.titulo}</strong>?</p>
             <div className="flex gap-3 mt-4">
               <button onClick={excluir} disabled={salvando}

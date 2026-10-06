@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model Empresa
@@ -20,8 +20,18 @@ export type EmpresaModel = runtime.Types.Result.DefaultSelection<Prisma.$Empresa
 
 export type AggregateEmpresa = {
   _count: EmpresaCountAggregateOutputType | null
+  _avg: EmpresaAvgAggregateOutputType | null
+  _sum: EmpresaSumAggregateOutputType | null
   _min: EmpresaMinAggregateOutputType | null
   _max: EmpresaMaxAggregateOutputType | null
+}
+
+export type EmpresaAvgAggregateOutputType = {
+  prazoAlertaProvaDias: number | null
+}
+
+export type EmpresaSumAggregateOutputType = {
+  prazoAlertaProvaDias: number | null
 }
 
 export type EmpresaMinAggregateOutputType = {
@@ -29,9 +39,18 @@ export type EmpresaMinAggregateOutputType = {
   nome: string | null
   slug: string | null
   logoUrl: string | null
+  cep: string | null
+  logradouro: string | null
+  numero: string | null
+  complemento: string | null
+  bairro: string | null
+  cidade: string | null
+  estado: string | null
+  codigoIbge: string | null
   ativo: boolean | null
   whatsappPausado: boolean | null
   emailPausado: boolean | null
+  prazoAlertaProvaDias: number | null
   criadoEm: Date | null
   fonnteToken: string | null
   evolutionApiUrl: string | null
@@ -50,9 +69,18 @@ export type EmpresaMaxAggregateOutputType = {
   nome: string | null
   slug: string | null
   logoUrl: string | null
+  cep: string | null
+  logradouro: string | null
+  numero: string | null
+  complemento: string | null
+  bairro: string | null
+  cidade: string | null
+  estado: string | null
+  codigoIbge: string | null
   ativo: boolean | null
   whatsappPausado: boolean | null
   emailPausado: boolean | null
+  prazoAlertaProvaDias: number | null
   criadoEm: Date | null
   fonnteToken: string | null
   evolutionApiUrl: string | null
@@ -71,9 +99,18 @@ export type EmpresaCountAggregateOutputType = {
   nome: number
   slug: number
   logoUrl: number
+  cep: number
+  logradouro: number
+  numero: number
+  complemento: number
+  bairro: number
+  cidade: number
+  estado: number
+  codigoIbge: number
   ativo: number
   whatsappPausado: number
   emailPausado: number
+  prazoAlertaProvaDias: number
   criadoEm: number
   fonnteToken: number
   evolutionApiUrl: number
@@ -89,14 +126,31 @@ export type EmpresaCountAggregateOutputType = {
 }
 
 
+export type EmpresaAvgAggregateInputType = {
+  prazoAlertaProvaDias?: true
+}
+
+export type EmpresaSumAggregateInputType = {
+  prazoAlertaProvaDias?: true
+}
+
 export type EmpresaMinAggregateInputType = {
   id?: true
   nome?: true
   slug?: true
   logoUrl?: true
+  cep?: true
+  logradouro?: true
+  numero?: true
+  complemento?: true
+  bairro?: true
+  cidade?: true
+  estado?: true
+  codigoIbge?: true
   ativo?: true
   whatsappPausado?: true
   emailPausado?: true
+  prazoAlertaProvaDias?: true
   criadoEm?: true
   fonnteToken?: true
   evolutionApiUrl?: true
@@ -115,9 +169,18 @@ export type EmpresaMaxAggregateInputType = {
   nome?: true
   slug?: true
   logoUrl?: true
+  cep?: true
+  logradouro?: true
+  numero?: true
+  complemento?: true
+  bairro?: true
+  cidade?: true
+  estado?: true
+  codigoIbge?: true
   ativo?: true
   whatsappPausado?: true
   emailPausado?: true
+  prazoAlertaProvaDias?: true
   criadoEm?: true
   fonnteToken?: true
   evolutionApiUrl?: true
@@ -136,9 +199,18 @@ export type EmpresaCountAggregateInputType = {
   nome?: true
   slug?: true
   logoUrl?: true
+  cep?: true
+  logradouro?: true
+  numero?: true
+  complemento?: true
+  bairro?: true
+  cidade?: true
+  estado?: true
+  codigoIbge?: true
   ativo?: true
   whatsappPausado?: true
   emailPausado?: true
+  prazoAlertaProvaDias?: true
   criadoEm?: true
   fonnteToken?: true
   evolutionApiUrl?: true
@@ -191,6 +263,18 @@ export type EmpresaAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: EmpresaAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: EmpresaSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: EmpresaMinAggregateInputType
@@ -221,6 +305,8 @@ export type EmpresaGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: EmpresaCountAggregateInputType | true
+  _avg?: EmpresaAvgAggregateInputType
+  _sum?: EmpresaSumAggregateInputType
   _min?: EmpresaMinAggregateInputType
   _max?: EmpresaMaxAggregateInputType
 }
@@ -230,9 +316,18 @@ export type EmpresaGroupByOutputType = {
   nome: string
   slug: string
   logoUrl: string | null
+  cep: string | null
+  logradouro: string | null
+  numero: string | null
+  complemento: string | null
+  bairro: string | null
+  cidade: string | null
+  estado: string | null
+  codigoIbge: string | null
   ativo: boolean
   whatsappPausado: boolean
   emailPausado: boolean
+  prazoAlertaProvaDias: number
   criadoEm: Date
   fonnteToken: string | null
   evolutionApiUrl: string | null
@@ -245,6 +340,8 @@ export type EmpresaGroupByOutputType = {
   emailPass: string | null
   emailFrom: string | null
   _count: EmpresaCountAggregateOutputType | null
+  _avg: EmpresaAvgAggregateOutputType | null
+  _sum: EmpresaSumAggregateOutputType | null
   _min: EmpresaMinAggregateOutputType | null
   _max: EmpresaMaxAggregateOutputType | null
 }
@@ -272,9 +369,18 @@ export type EmpresaWhereInput = {
   nome?: Prisma.StringFilter<"Empresa"> | string
   slug?: Prisma.StringFilter<"Empresa"> | string
   logoUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  cep?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  logradouro?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  numero?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  complemento?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  bairro?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  cidade?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  estado?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  codigoIbge?: Prisma.StringNullableFilter<"Empresa"> | string | null
   ativo?: Prisma.BoolFilter<"Empresa"> | boolean
   whatsappPausado?: Prisma.BoolFilter<"Empresa"> | boolean
   emailPausado?: Prisma.BoolFilter<"Empresa"> | boolean
+  prazoAlertaProvaDias?: Prisma.IntFilter<"Empresa"> | number
   criadoEm?: Prisma.DateTimeFilter<"Empresa"> | Date | string
   fonnteToken?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
@@ -304,6 +410,7 @@ export type EmpresaWhereInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaListRelationFilter
   metodosEnsino?: Prisma.MetodoEnsinoListRelationFilter
   tiposAvaliacao?: Prisma.TipoAvaliacaoListRelationFilter
+  sessoesAtivas?: Prisma.SessaoAtivaListRelationFilter
 }
 
 export type EmpresaOrderByWithRelationInput = {
@@ -311,9 +418,18 @@ export type EmpresaOrderByWithRelationInput = {
   nome?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  cep?: Prisma.SortOrderInput | Prisma.SortOrder
+  logradouro?: Prisma.SortOrderInput | Prisma.SortOrder
+  numero?: Prisma.SortOrderInput | Prisma.SortOrder
+  complemento?: Prisma.SortOrderInput | Prisma.SortOrder
+  bairro?: Prisma.SortOrderInput | Prisma.SortOrder
+  cidade?: Prisma.SortOrderInput | Prisma.SortOrder
+  estado?: Prisma.SortOrderInput | Prisma.SortOrder
+  codigoIbge?: Prisma.SortOrderInput | Prisma.SortOrder
   ativo?: Prisma.SortOrder
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
+  prazoAlertaProvaDias?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   fonnteToken?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -343,6 +459,7 @@ export type EmpresaOrderByWithRelationInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaOrderByRelationAggregateInput
   metodosEnsino?: Prisma.MetodoEnsinoOrderByRelationAggregateInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoOrderByRelationAggregateInput
+  sessoesAtivas?: Prisma.SessaoAtivaOrderByRelationAggregateInput
 }
 
 export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
@@ -353,9 +470,18 @@ export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EmpresaWhereInput | Prisma.EmpresaWhereInput[]
   nome?: Prisma.StringFilter<"Empresa"> | string
   logoUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  cep?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  logradouro?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  numero?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  complemento?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  bairro?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  cidade?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  estado?: Prisma.StringNullableFilter<"Empresa"> | string | null
+  codigoIbge?: Prisma.StringNullableFilter<"Empresa"> | string | null
   ativo?: Prisma.BoolFilter<"Empresa"> | boolean
   whatsappPausado?: Prisma.BoolFilter<"Empresa"> | boolean
   emailPausado?: Prisma.BoolFilter<"Empresa"> | boolean
+  prazoAlertaProvaDias?: Prisma.IntFilter<"Empresa"> | number
   criadoEm?: Prisma.DateTimeFilter<"Empresa"> | Date | string
   fonnteToken?: Prisma.StringNullableFilter<"Empresa"> | string | null
   evolutionApiUrl?: Prisma.StringNullableFilter<"Empresa"> | string | null
@@ -385,6 +511,7 @@ export type EmpresaWhereUniqueInput = Prisma.AtLeast<{
   materiaisBiblioteca?: Prisma.MaterialBibliotecaListRelationFilter
   metodosEnsino?: Prisma.MetodoEnsinoListRelationFilter
   tiposAvaliacao?: Prisma.TipoAvaliacaoListRelationFilter
+  sessoesAtivas?: Prisma.SessaoAtivaListRelationFilter
 }, "id" | "slug">
 
 export type EmpresaOrderByWithAggregationInput = {
@@ -392,9 +519,18 @@ export type EmpresaOrderByWithAggregationInput = {
   nome?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  cep?: Prisma.SortOrderInput | Prisma.SortOrder
+  logradouro?: Prisma.SortOrderInput | Prisma.SortOrder
+  numero?: Prisma.SortOrderInput | Prisma.SortOrder
+  complemento?: Prisma.SortOrderInput | Prisma.SortOrder
+  bairro?: Prisma.SortOrderInput | Prisma.SortOrder
+  cidade?: Prisma.SortOrderInput | Prisma.SortOrder
+  estado?: Prisma.SortOrderInput | Prisma.SortOrder
+  codigoIbge?: Prisma.SortOrderInput | Prisma.SortOrder
   ativo?: Prisma.SortOrder
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
+  prazoAlertaProvaDias?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   fonnteToken?: Prisma.SortOrderInput | Prisma.SortOrder
   evolutionApiUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -407,8 +543,10 @@ export type EmpresaOrderByWithAggregationInput = {
   emailPass?: Prisma.SortOrderInput | Prisma.SortOrder
   emailFrom?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EmpresaCountOrderByAggregateInput
+  _avg?: Prisma.EmpresaAvgOrderByAggregateInput
   _max?: Prisma.EmpresaMaxOrderByAggregateInput
   _min?: Prisma.EmpresaMinOrderByAggregateInput
+  _sum?: Prisma.EmpresaSumOrderByAggregateInput
 }
 
 export type EmpresaScalarWhereWithAggregatesInput = {
@@ -419,9 +557,18 @@ export type EmpresaScalarWhereWithAggregatesInput = {
   nome?: Prisma.StringWithAggregatesFilter<"Empresa"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Empresa"> | string
   logoUrl?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  cep?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  logradouro?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  numero?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  complemento?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  bairro?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  cidade?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  estado?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
+  codigoIbge?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   ativo?: Prisma.BoolWithAggregatesFilter<"Empresa"> | boolean
   whatsappPausado?: Prisma.BoolWithAggregatesFilter<"Empresa"> | boolean
   emailPausado?: Prisma.BoolWithAggregatesFilter<"Empresa"> | boolean
+  prazoAlertaProvaDias?: Prisma.IntWithAggregatesFilter<"Empresa"> | number
   criadoEm?: Prisma.DateTimeWithAggregatesFilter<"Empresa"> | Date | string
   fonnteToken?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
   evolutionApiUrl?: Prisma.StringNullableWithAggregatesFilter<"Empresa"> | string | null
@@ -440,9 +587,18 @@ export type EmpresaCreateInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -472,6 +628,7 @@ export type EmpresaCreateInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateInput = {
@@ -479,9 +636,18 @@ export type EmpresaUncheckedCreateInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -511,6 +677,7 @@ export type EmpresaUncheckedCreateInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUpdateInput = {
@@ -518,9 +685,18 @@ export type EmpresaUpdateInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -550,6 +726,7 @@ export type EmpresaUpdateInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateInput = {
@@ -557,9 +734,18 @@ export type EmpresaUncheckedUpdateInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -589,6 +775,7 @@ export type EmpresaUncheckedUpdateInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateManyInput = {
@@ -596,9 +783,18 @@ export type EmpresaCreateManyInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -617,9 +813,18 @@ export type EmpresaUpdateManyMutationInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -638,9 +843,18 @@ export type EmpresaUncheckedUpdateManyInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -659,9 +873,18 @@ export type EmpresaCountOrderByAggregateInput = {
   nome?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  cep?: Prisma.SortOrder
+  logradouro?: Prisma.SortOrder
+  numero?: Prisma.SortOrder
+  complemento?: Prisma.SortOrder
+  bairro?: Prisma.SortOrder
+  cidade?: Prisma.SortOrder
+  estado?: Prisma.SortOrder
+  codigoIbge?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
+  prazoAlertaProvaDias?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   fonnteToken?: Prisma.SortOrder
   evolutionApiUrl?: Prisma.SortOrder
@@ -675,14 +898,27 @@ export type EmpresaCountOrderByAggregateInput = {
   emailFrom?: Prisma.SortOrder
 }
 
+export type EmpresaAvgOrderByAggregateInput = {
+  prazoAlertaProvaDias?: Prisma.SortOrder
+}
+
 export type EmpresaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  cep?: Prisma.SortOrder
+  logradouro?: Prisma.SortOrder
+  numero?: Prisma.SortOrder
+  complemento?: Prisma.SortOrder
+  bairro?: Prisma.SortOrder
+  cidade?: Prisma.SortOrder
+  estado?: Prisma.SortOrder
+  codigoIbge?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
+  prazoAlertaProvaDias?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   fonnteToken?: Prisma.SortOrder
   evolutionApiUrl?: Prisma.SortOrder
@@ -701,9 +937,18 @@ export type EmpresaMinOrderByAggregateInput = {
   nome?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  cep?: Prisma.SortOrder
+  logradouro?: Prisma.SortOrder
+  numero?: Prisma.SortOrder
+  complemento?: Prisma.SortOrder
+  bairro?: Prisma.SortOrder
+  cidade?: Prisma.SortOrder
+  estado?: Prisma.SortOrder
+  codigoIbge?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   whatsappPausado?: Prisma.SortOrder
   emailPausado?: Prisma.SortOrder
+  prazoAlertaProvaDias?: Prisma.SortOrder
   criadoEm?: Prisma.SortOrder
   fonnteToken?: Prisma.SortOrder
   evolutionApiUrl?: Prisma.SortOrder
@@ -715,6 +960,10 @@ export type EmpresaMinOrderByAggregateInput = {
   emailUser?: Prisma.SortOrder
   emailPass?: Prisma.SortOrder
   emailFrom?: Prisma.SortOrder
+}
+
+export type EmpresaSumOrderByAggregateInput = {
+  prazoAlertaProvaDias?: Prisma.SortOrder
 }
 
 export type EmpresaNullableScalarRelationFilter = {
@@ -739,6 +988,14 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -757,6 +1014,20 @@ export type EmpresaUpdateOneWithoutUsuariosNestedInput = {
   delete?: Prisma.EmpresaWhereInput | boolean
   connect?: Prisma.EmpresaWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.EmpresaUpdateToOneWithWhereWithoutUsuariosInput, Prisma.EmpresaUpdateWithoutUsuariosInput>, Prisma.EmpresaUncheckedUpdateWithoutUsuariosInput>
+}
+
+export type EmpresaCreateNestedOneWithoutSessoesAtivasInput = {
+  create?: Prisma.XOR<Prisma.EmpresaCreateWithoutSessoesAtivasInput, Prisma.EmpresaUncheckedCreateWithoutSessoesAtivasInput>
+  connectOrCreate?: Prisma.EmpresaCreateOrConnectWithoutSessoesAtivasInput
+  connect?: Prisma.EmpresaWhereUniqueInput
+}
+
+export type EmpresaUpdateOneRequiredWithoutSessoesAtivasNestedInput = {
+  create?: Prisma.XOR<Prisma.EmpresaCreateWithoutSessoesAtivasInput, Prisma.EmpresaUncheckedCreateWithoutSessoesAtivasInput>
+  connectOrCreate?: Prisma.EmpresaCreateOrConnectWithoutSessoesAtivasInput
+  upsert?: Prisma.EmpresaUpsertWithoutSessoesAtivasInput
+  connect?: Prisma.EmpresaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmpresaUpdateToOneWithWhereWithoutSessoesAtivasInput, Prisma.EmpresaUpdateWithoutSessoesAtivasInput>, Prisma.EmpresaUncheckedUpdateWithoutSessoesAtivasInput>
 }
 
 export type EmpresaCreateNestedOneWithoutProfessorasInput = {
@@ -1002,9 +1273,18 @@ export type EmpresaCreateWithoutUsuariosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1033,6 +1313,7 @@ export type EmpresaCreateWithoutUsuariosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutUsuariosInput = {
@@ -1040,9 +1321,18 @@ export type EmpresaUncheckedCreateWithoutUsuariosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1071,6 +1361,7 @@ export type EmpresaUncheckedCreateWithoutUsuariosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutUsuariosInput = {
@@ -1094,9 +1385,18 @@ export type EmpresaUpdateWithoutUsuariosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1125,6 +1425,7 @@ export type EmpresaUpdateWithoutUsuariosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
@@ -1132,9 +1433,18 @@ export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1146,6 +1456,215 @@ export type EmpresaUncheckedUpdateWithoutUsuariosInput = {
   emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
+  materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
+  escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
+  unidades?: Prisma.UnidadeUncheckedUpdateManyWithoutEmpresaNestedInput
+  alunos?: Prisma.AlunoUncheckedUpdateManyWithoutEmpresaNestedInput
+  aulas?: Prisma.AgendaAulaUncheckedUpdateManyWithoutEmpresaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  pagamentos?: Prisma.PagamentoUncheckedUpdateManyWithoutEmpresaNestedInput
+  conteudos?: Prisma.ConteudoUncheckedUpdateManyWithoutEmpresaNestedInput
+  notas?: Prisma.NotaUncheckedUpdateManyWithoutEmpresaNestedInput
+  notificacoesProva?: Prisma.NotificacaoProvaUncheckedUpdateManyWithoutEmpresaNestedInput
+  notificacoesAula?: Prisma.NotificacaoAulaUncheckedUpdateManyWithoutEmpresaNestedInput
+  notificacoesConteudo?: Prisma.NotificacaoConteudoUncheckedUpdateManyWithoutEmpresaNestedInput
+  calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
+  metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
+  tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
+}
+
+export type EmpresaCreateWithoutSessoesAtivasInput = {
+  id?: string
+  nome: string
+  slug: string
+  logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
+  ativo?: boolean
+  whatsappPausado?: boolean
+  emailPausado?: boolean
+  prazoAlertaProvaDias?: number
+  criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
+  usuarios?: Prisma.UsuarioCreateNestedManyWithoutEmpresaInput
+  professoras?: Prisma.ProfessoraCreateNestedManyWithoutEmpresaInput
+  materias?: Prisma.MateriaCreateNestedManyWithoutEmpresaInput
+  escolas?: Prisma.EscolaCreateNestedManyWithoutEmpresaInput
+  unidades?: Prisma.UnidadeCreateNestedManyWithoutEmpresaInput
+  alunos?: Prisma.AlunoCreateNestedManyWithoutEmpresaInput
+  aulas?: Prisma.AgendaAulaCreateNestedManyWithoutEmpresaInput
+  avaliacoes?: Prisma.AvaliacaoCreateNestedManyWithoutEmpresaInput
+  pagamentos?: Prisma.PagamentoCreateNestedManyWithoutEmpresaInput
+  conteudos?: Prisma.ConteudoCreateNestedManyWithoutEmpresaInput
+  notas?: Prisma.NotaCreateNestedManyWithoutEmpresaInput
+  notificacoesProva?: Prisma.NotificacaoProvaCreateNestedManyWithoutEmpresaInput
+  notificacoesAula?: Prisma.NotificacaoAulaCreateNestedManyWithoutEmpresaInput
+  notificacoesConteudo?: Prisma.NotificacaoConteudoCreateNestedManyWithoutEmpresaInput
+  calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
+  metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
+  tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+}
+
+export type EmpresaUncheckedCreateWithoutSessoesAtivasInput = {
+  id?: string
+  nome: string
+  slug: string
+  logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
+  ativo?: boolean
+  whatsappPausado?: boolean
+  emailPausado?: boolean
+  prazoAlertaProvaDias?: number
+  criadoEm?: Date | string
+  fonnteToken?: string | null
+  evolutionApiUrl?: string | null
+  evolutionApiKey?: string | null
+  evolutionApiInstance?: string | null
+  fonnteAlertaEnviado?: boolean
+  emailHost?: string | null
+  emailPort?: string | null
+  emailUser?: string | null
+  emailPass?: string | null
+  emailFrom?: string | null
+  usuarios?: Prisma.UsuarioUncheckedCreateNestedManyWithoutEmpresaInput
+  professoras?: Prisma.ProfessoraUncheckedCreateNestedManyWithoutEmpresaInput
+  materias?: Prisma.MateriaUncheckedCreateNestedManyWithoutEmpresaInput
+  escolas?: Prisma.EscolaUncheckedCreateNestedManyWithoutEmpresaInput
+  unidades?: Prisma.UnidadeUncheckedCreateNestedManyWithoutEmpresaInput
+  alunos?: Prisma.AlunoUncheckedCreateNestedManyWithoutEmpresaInput
+  aulas?: Prisma.AgendaAulaUncheckedCreateNestedManyWithoutEmpresaInput
+  avaliacoes?: Prisma.AvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  pagamentos?: Prisma.PagamentoUncheckedCreateNestedManyWithoutEmpresaInput
+  conteudos?: Prisma.ConteudoUncheckedCreateNestedManyWithoutEmpresaInput
+  notas?: Prisma.NotaUncheckedCreateNestedManyWithoutEmpresaInput
+  notificacoesProva?: Prisma.NotificacaoProvaUncheckedCreateNestedManyWithoutEmpresaInput
+  notificacoesAula?: Prisma.NotificacaoAulaUncheckedCreateNestedManyWithoutEmpresaInput
+  notificacoesConteudo?: Prisma.NotificacaoConteudoUncheckedCreateNestedManyWithoutEmpresaInput
+  calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
+  metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
+  tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+}
+
+export type EmpresaCreateOrConnectWithoutSessoesAtivasInput = {
+  where: Prisma.EmpresaWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmpresaCreateWithoutSessoesAtivasInput, Prisma.EmpresaUncheckedCreateWithoutSessoesAtivasInput>
+}
+
+export type EmpresaUpsertWithoutSessoesAtivasInput = {
+  update: Prisma.XOR<Prisma.EmpresaUpdateWithoutSessoesAtivasInput, Prisma.EmpresaUncheckedUpdateWithoutSessoesAtivasInput>
+  create: Prisma.XOR<Prisma.EmpresaCreateWithoutSessoesAtivasInput, Prisma.EmpresaUncheckedCreateWithoutSessoesAtivasInput>
+  where?: Prisma.EmpresaWhereInput
+}
+
+export type EmpresaUpdateToOneWithWhereWithoutSessoesAtivasInput = {
+  where?: Prisma.EmpresaWhereInput
+  data: Prisma.XOR<Prisma.EmpresaUpdateWithoutSessoesAtivasInput, Prisma.EmpresaUncheckedUpdateWithoutSessoesAtivasInput>
+}
+
+export type EmpresaUpdateWithoutSessoesAtivasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usuarios?: Prisma.UsuarioUpdateManyWithoutEmpresaNestedInput
+  professoras?: Prisma.ProfessoraUpdateManyWithoutEmpresaNestedInput
+  materias?: Prisma.MateriaUpdateManyWithoutEmpresaNestedInput
+  escolas?: Prisma.EscolaUpdateManyWithoutEmpresaNestedInput
+  unidades?: Prisma.UnidadeUpdateManyWithoutEmpresaNestedInput
+  alunos?: Prisma.AlunoUpdateManyWithoutEmpresaNestedInput
+  aulas?: Prisma.AgendaAulaUpdateManyWithoutEmpresaNestedInput
+  avaliacoes?: Prisma.AvaliacaoUpdateManyWithoutEmpresaNestedInput
+  pagamentos?: Prisma.PagamentoUpdateManyWithoutEmpresaNestedInput
+  conteudos?: Prisma.ConteudoUpdateManyWithoutEmpresaNestedInput
+  notas?: Prisma.NotaUpdateManyWithoutEmpresaNestedInput
+  notificacoesProva?: Prisma.NotificacaoProvaUpdateManyWithoutEmpresaNestedInput
+  notificacoesAula?: Prisma.NotificacaoAulaUpdateManyWithoutEmpresaNestedInput
+  notificacoesConteudo?: Prisma.NotificacaoConteudoUpdateManyWithoutEmpresaNestedInput
+  calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
+  materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
+  metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
+  tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+}
+
+export type EmpresaUncheckedUpdateWithoutSessoesAtivasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
+  criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evolutionApiInstance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fonnteAlertaEnviado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailHost?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailPass?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usuarios?: Prisma.UsuarioUncheckedUpdateManyWithoutEmpresaNestedInput
   professoras?: Prisma.ProfessoraUncheckedUpdateManyWithoutEmpresaNestedInput
   materias?: Prisma.MateriaUncheckedUpdateManyWithoutEmpresaNestedInput
   escolas?: Prisma.EscolaUncheckedUpdateManyWithoutEmpresaNestedInput
@@ -1170,9 +1689,18 @@ export type EmpresaCreateWithoutProfessorasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1201,6 +1729,7 @@ export type EmpresaCreateWithoutProfessorasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutProfessorasInput = {
@@ -1208,9 +1737,18 @@ export type EmpresaUncheckedCreateWithoutProfessorasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1239,6 +1777,7 @@ export type EmpresaUncheckedCreateWithoutProfessorasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutProfessorasInput = {
@@ -1262,9 +1801,18 @@ export type EmpresaUpdateWithoutProfessorasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1293,6 +1841,7 @@ export type EmpresaUpdateWithoutProfessorasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
@@ -1300,9 +1849,18 @@ export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1331,6 +1889,7 @@ export type EmpresaUncheckedUpdateWithoutProfessorasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutMateriasInput = {
@@ -1338,9 +1897,18 @@ export type EmpresaCreateWithoutMateriasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1369,6 +1937,7 @@ export type EmpresaCreateWithoutMateriasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutMateriasInput = {
@@ -1376,9 +1945,18 @@ export type EmpresaUncheckedCreateWithoutMateriasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1407,6 +1985,7 @@ export type EmpresaUncheckedCreateWithoutMateriasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutMateriasInput = {
@@ -1430,9 +2009,18 @@ export type EmpresaUpdateWithoutMateriasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1461,6 +2049,7 @@ export type EmpresaUpdateWithoutMateriasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutMateriasInput = {
@@ -1468,9 +2057,18 @@ export type EmpresaUncheckedUpdateWithoutMateriasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1499,6 +2097,7 @@ export type EmpresaUncheckedUpdateWithoutMateriasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutMetodosEnsinoInput = {
@@ -1506,9 +2105,18 @@ export type EmpresaCreateWithoutMetodosEnsinoInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1537,6 +2145,7 @@ export type EmpresaCreateWithoutMetodosEnsinoInput = {
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutMetodosEnsinoInput = {
@@ -1544,9 +2153,18 @@ export type EmpresaUncheckedCreateWithoutMetodosEnsinoInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1575,6 +2193,7 @@ export type EmpresaUncheckedCreateWithoutMetodosEnsinoInput = {
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutMetodosEnsinoInput = {
@@ -1598,9 +2217,18 @@ export type EmpresaUpdateWithoutMetodosEnsinoInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1629,6 +2257,7 @@ export type EmpresaUpdateWithoutMetodosEnsinoInput = {
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutMetodosEnsinoInput = {
@@ -1636,9 +2265,18 @@ export type EmpresaUncheckedUpdateWithoutMetodosEnsinoInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1667,6 +2305,7 @@ export type EmpresaUncheckedUpdateWithoutMetodosEnsinoInput = {
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutTiposAvaliacaoInput = {
@@ -1674,9 +2313,18 @@ export type EmpresaCreateWithoutTiposAvaliacaoInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1705,6 +2353,7 @@ export type EmpresaCreateWithoutTiposAvaliacaoInput = {
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutTiposAvaliacaoInput = {
@@ -1712,9 +2361,18 @@ export type EmpresaUncheckedCreateWithoutTiposAvaliacaoInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1743,6 +2401,7 @@ export type EmpresaUncheckedCreateWithoutTiposAvaliacaoInput = {
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutTiposAvaliacaoInput = {
@@ -1766,9 +2425,18 @@ export type EmpresaUpdateWithoutTiposAvaliacaoInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1797,6 +2465,7 @@ export type EmpresaUpdateWithoutTiposAvaliacaoInput = {
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutTiposAvaliacaoInput = {
@@ -1804,9 +2473,18 @@ export type EmpresaUncheckedUpdateWithoutTiposAvaliacaoInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1835,6 +2513,7 @@ export type EmpresaUncheckedUpdateWithoutTiposAvaliacaoInput = {
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutEscolasInput = {
@@ -1842,9 +2521,18 @@ export type EmpresaCreateWithoutEscolasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1873,6 +2561,7 @@ export type EmpresaCreateWithoutEscolasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutEscolasInput = {
@@ -1880,9 +2569,18 @@ export type EmpresaUncheckedCreateWithoutEscolasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -1911,6 +2609,7 @@ export type EmpresaUncheckedCreateWithoutEscolasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutEscolasInput = {
@@ -1934,9 +2633,18 @@ export type EmpresaUpdateWithoutEscolasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1965,6 +2673,7 @@ export type EmpresaUpdateWithoutEscolasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutEscolasInput = {
@@ -1972,9 +2681,18 @@ export type EmpresaUncheckedUpdateWithoutEscolasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2003,6 +2721,7 @@ export type EmpresaUncheckedUpdateWithoutEscolasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutUnidadesInput = {
@@ -2010,9 +2729,18 @@ export type EmpresaCreateWithoutUnidadesInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2041,6 +2769,7 @@ export type EmpresaCreateWithoutUnidadesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutUnidadesInput = {
@@ -2048,9 +2777,18 @@ export type EmpresaUncheckedCreateWithoutUnidadesInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2079,6 +2817,7 @@ export type EmpresaUncheckedCreateWithoutUnidadesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutUnidadesInput = {
@@ -2102,9 +2841,18 @@ export type EmpresaUpdateWithoutUnidadesInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2133,6 +2881,7 @@ export type EmpresaUpdateWithoutUnidadesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
@@ -2140,9 +2889,18 @@ export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2171,6 +2929,7 @@ export type EmpresaUncheckedUpdateWithoutUnidadesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutCalendariosInput = {
@@ -2178,9 +2937,18 @@ export type EmpresaCreateWithoutCalendariosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2209,6 +2977,7 @@ export type EmpresaCreateWithoutCalendariosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutCalendariosInput = {
@@ -2216,9 +2985,18 @@ export type EmpresaUncheckedCreateWithoutCalendariosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2247,6 +3025,7 @@ export type EmpresaUncheckedCreateWithoutCalendariosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutCalendariosInput = {
@@ -2270,9 +3049,18 @@ export type EmpresaUpdateWithoutCalendariosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2301,6 +3089,7 @@ export type EmpresaUpdateWithoutCalendariosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
@@ -2308,9 +3097,18 @@ export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2339,6 +3137,7 @@ export type EmpresaUncheckedUpdateWithoutCalendariosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutAvaliacoesInput = {
@@ -2346,9 +3145,18 @@ export type EmpresaCreateWithoutAvaliacoesInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2377,6 +3185,7 @@ export type EmpresaCreateWithoutAvaliacoesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
@@ -2384,9 +3193,18 @@ export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2415,6 +3233,7 @@ export type EmpresaUncheckedCreateWithoutAvaliacoesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutAvaliacoesInput = {
@@ -2438,9 +3257,18 @@ export type EmpresaUpdateWithoutAvaliacoesInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2469,6 +3297,7 @@ export type EmpresaUpdateWithoutAvaliacoesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
@@ -2476,9 +3305,18 @@ export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2507,6 +3345,7 @@ export type EmpresaUncheckedUpdateWithoutAvaliacoesInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutNotificacoesProvaInput = {
@@ -2514,9 +3353,18 @@ export type EmpresaCreateWithoutNotificacoesProvaInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2545,6 +3393,7 @@ export type EmpresaCreateWithoutNotificacoesProvaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
@@ -2552,9 +3401,18 @@ export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2583,6 +3441,7 @@ export type EmpresaUncheckedCreateWithoutNotificacoesProvaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutNotificacoesProvaInput = {
@@ -2606,9 +3465,18 @@ export type EmpresaUpdateWithoutNotificacoesProvaInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2637,6 +3505,7 @@ export type EmpresaUpdateWithoutNotificacoesProvaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
@@ -2644,9 +3513,18 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2675,6 +3553,7 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesProvaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutAlunosInput = {
@@ -2682,9 +3561,18 @@ export type EmpresaCreateWithoutAlunosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2713,6 +3601,7 @@ export type EmpresaCreateWithoutAlunosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutAlunosInput = {
@@ -2720,9 +3609,18 @@ export type EmpresaUncheckedCreateWithoutAlunosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2751,6 +3649,7 @@ export type EmpresaUncheckedCreateWithoutAlunosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutAlunosInput = {
@@ -2774,9 +3673,18 @@ export type EmpresaUpdateWithoutAlunosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2805,6 +3713,7 @@ export type EmpresaUpdateWithoutAlunosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutAlunosInput = {
@@ -2812,9 +3721,18 @@ export type EmpresaUncheckedUpdateWithoutAlunosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2843,6 +3761,7 @@ export type EmpresaUncheckedUpdateWithoutAlunosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutNotasInput = {
@@ -2850,9 +3769,18 @@ export type EmpresaCreateWithoutNotasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2881,6 +3809,7 @@ export type EmpresaCreateWithoutNotasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutNotasInput = {
@@ -2888,9 +3817,18 @@ export type EmpresaUncheckedCreateWithoutNotasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -2919,6 +3857,7 @@ export type EmpresaUncheckedCreateWithoutNotasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutNotasInput = {
@@ -2942,9 +3881,18 @@ export type EmpresaUpdateWithoutNotasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2973,6 +3921,7 @@ export type EmpresaUpdateWithoutNotasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutNotasInput = {
@@ -2980,9 +3929,18 @@ export type EmpresaUncheckedUpdateWithoutNotasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3011,6 +3969,7 @@ export type EmpresaUncheckedUpdateWithoutNotasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutPagamentosInput = {
@@ -3018,9 +3977,18 @@ export type EmpresaCreateWithoutPagamentosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3049,6 +4017,7 @@ export type EmpresaCreateWithoutPagamentosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutPagamentosInput = {
@@ -3056,9 +4025,18 @@ export type EmpresaUncheckedCreateWithoutPagamentosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3087,6 +4065,7 @@ export type EmpresaUncheckedCreateWithoutPagamentosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutPagamentosInput = {
@@ -3110,9 +4089,18 @@ export type EmpresaUpdateWithoutPagamentosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3141,6 +4129,7 @@ export type EmpresaUpdateWithoutPagamentosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
@@ -3148,9 +4137,18 @@ export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3179,6 +4177,7 @@ export type EmpresaUncheckedUpdateWithoutPagamentosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutConteudosInput = {
@@ -3186,9 +4185,18 @@ export type EmpresaCreateWithoutConteudosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3217,6 +4225,7 @@ export type EmpresaCreateWithoutConteudosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutConteudosInput = {
@@ -3224,9 +4233,18 @@ export type EmpresaUncheckedCreateWithoutConteudosInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3255,6 +4273,7 @@ export type EmpresaUncheckedCreateWithoutConteudosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutConteudosInput = {
@@ -3278,9 +4297,18 @@ export type EmpresaUpdateWithoutConteudosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3309,6 +4337,7 @@ export type EmpresaUpdateWithoutConteudosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutConteudosInput = {
@@ -3316,9 +4345,18 @@ export type EmpresaUncheckedUpdateWithoutConteudosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3347,6 +4385,7 @@ export type EmpresaUncheckedUpdateWithoutConteudosInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutMateriaisBibliotecaInput = {
@@ -3354,9 +4393,18 @@ export type EmpresaCreateWithoutMateriaisBibliotecaInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3385,6 +4433,7 @@ export type EmpresaCreateWithoutMateriaisBibliotecaInput = {
   calendarios?: Prisma.CalendarioEscolarCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput = {
@@ -3392,9 +4441,18 @@ export type EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3423,6 +4481,7 @@ export type EmpresaUncheckedCreateWithoutMateriaisBibliotecaInput = {
   calendarios?: Prisma.CalendarioEscolarUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutMateriaisBibliotecaInput = {
@@ -3446,9 +4505,18 @@ export type EmpresaUpdateWithoutMateriaisBibliotecaInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3477,6 +4545,7 @@ export type EmpresaUpdateWithoutMateriaisBibliotecaInput = {
   calendarios?: Prisma.CalendarioEscolarUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
@@ -3484,9 +4553,18 @@ export type EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3515,6 +4593,7 @@ export type EmpresaUncheckedUpdateWithoutMateriaisBibliotecaInput = {
   calendarios?: Prisma.CalendarioEscolarUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutAulasInput = {
@@ -3522,9 +4601,18 @@ export type EmpresaCreateWithoutAulasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3553,6 +4641,7 @@ export type EmpresaCreateWithoutAulasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutAulasInput = {
@@ -3560,9 +4649,18 @@ export type EmpresaUncheckedCreateWithoutAulasInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3591,6 +4689,7 @@ export type EmpresaUncheckedCreateWithoutAulasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutAulasInput = {
@@ -3614,9 +4713,18 @@ export type EmpresaUpdateWithoutAulasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3645,6 +4753,7 @@ export type EmpresaUpdateWithoutAulasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutAulasInput = {
@@ -3652,9 +4761,18 @@ export type EmpresaUncheckedUpdateWithoutAulasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3683,6 +4801,7 @@ export type EmpresaUncheckedUpdateWithoutAulasInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutNotificacoesAulaInput = {
@@ -3690,9 +4809,18 @@ export type EmpresaCreateWithoutNotificacoesAulaInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3721,6 +4849,7 @@ export type EmpresaCreateWithoutNotificacoesAulaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
@@ -3728,9 +4857,18 @@ export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3759,6 +4897,7 @@ export type EmpresaUncheckedCreateWithoutNotificacoesAulaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutNotificacoesAulaInput = {
@@ -3782,9 +4921,18 @@ export type EmpresaUpdateWithoutNotificacoesAulaInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3813,6 +4961,7 @@ export type EmpresaUpdateWithoutNotificacoesAulaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
@@ -3820,9 +4969,18 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3851,6 +5009,7 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesAulaInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaCreateWithoutNotificacoesConteudoInput = {
@@ -3858,9 +5017,18 @@ export type EmpresaCreateWithoutNotificacoesConteudoInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3889,6 +5057,7 @@ export type EmpresaCreateWithoutNotificacoesConteudoInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaUncheckedCreateWithoutNotificacoesConteudoInput = {
@@ -3896,9 +5065,18 @@ export type EmpresaUncheckedCreateWithoutNotificacoesConteudoInput = {
   nome: string
   slug: string
   logoUrl?: string | null
+  cep?: string | null
+  logradouro?: string | null
+  numero?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  codigoIbge?: string | null
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: number
   criadoEm?: Date | string
   fonnteToken?: string | null
   evolutionApiUrl?: string | null
@@ -3927,6 +5105,7 @@ export type EmpresaUncheckedCreateWithoutNotificacoesConteudoInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedCreateNestedManyWithoutEmpresaInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedCreateNestedManyWithoutEmpresaInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedCreateNestedManyWithoutEmpresaInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedCreateNestedManyWithoutEmpresaInput
 }
 
 export type EmpresaCreateOrConnectWithoutNotificacoesConteudoInput = {
@@ -3950,9 +5129,18 @@ export type EmpresaUpdateWithoutNotificacoesConteudoInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3981,6 +5169,7 @@ export type EmpresaUpdateWithoutNotificacoesConteudoInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUpdateManyWithoutEmpresaNestedInput
 }
 
 export type EmpresaUncheckedUpdateWithoutNotificacoesConteudoInput = {
@@ -3988,9 +5177,18 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesConteudoInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logradouro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numero?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  complemento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bairro?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cidade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codigoIbge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   whatsappPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailPausado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  prazoAlertaProvaDias?: Prisma.IntFieldUpdateOperationsInput | number
   criadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fonnteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evolutionApiUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4019,6 +5217,7 @@ export type EmpresaUncheckedUpdateWithoutNotificacoesConteudoInput = {
   materiaisBiblioteca?: Prisma.MaterialBibliotecaUncheckedUpdateManyWithoutEmpresaNestedInput
   metodosEnsino?: Prisma.MetodoEnsinoUncheckedUpdateManyWithoutEmpresaNestedInput
   tiposAvaliacao?: Prisma.TipoAvaliacaoUncheckedUpdateManyWithoutEmpresaNestedInput
+  sessoesAtivas?: Prisma.SessaoAtivaUncheckedUpdateManyWithoutEmpresaNestedInput
 }
 
 
@@ -4045,6 +5244,7 @@ export type EmpresaCountOutputType = {
   materiaisBiblioteca: number
   metodosEnsino: number
   tiposAvaliacao: number
+  sessoesAtivas: number
 }
 
 export type EmpresaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4066,6 +5266,7 @@ export type EmpresaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   materiaisBiblioteca?: boolean | EmpresaCountOutputTypeCountMateriaisBibliotecaArgs
   metodosEnsino?: boolean | EmpresaCountOutputTypeCountMetodosEnsinoArgs
   tiposAvaliacao?: boolean | EmpresaCountOutputTypeCountTiposAvaliacaoArgs
+  sessoesAtivas?: boolean | EmpresaCountOutputTypeCountSessoesAtivasArgs
 }
 
 /**
@@ -4204,15 +5405,31 @@ export type EmpresaCountOutputTypeCountTiposAvaliacaoArgs<ExtArgs extends runtim
   where?: Prisma.TipoAvaliacaoWhereInput
 }
 
+/**
+ * EmpresaCountOutputType without action
+ */
+export type EmpresaCountOutputTypeCountSessoesAtivasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SessaoAtivaWhereInput
+}
+
 
 export type EmpresaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   nome?: boolean
   slug?: boolean
   logoUrl?: boolean
+  cep?: boolean
+  logradouro?: boolean
+  numero?: boolean
+  complemento?: boolean
+  bairro?: boolean
+  cidade?: boolean
+  estado?: boolean
+  codigoIbge?: boolean
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: boolean
   criadoEm?: boolean
   fonnteToken?: boolean
   evolutionApiUrl?: boolean
@@ -4242,6 +5459,7 @@ export type EmpresaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   materiaisBiblioteca?: boolean | Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs>
   metodosEnsino?: boolean | Prisma.Empresa$metodosEnsinoArgs<ExtArgs>
   tiposAvaliacao?: boolean | Prisma.Empresa$tiposAvaliacaoArgs<ExtArgs>
+  sessoesAtivas?: boolean | Prisma.Empresa$sessoesAtivasArgs<ExtArgs>
   _count?: boolean | Prisma.EmpresaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["empresa"]>
 
@@ -4250,9 +5468,18 @@ export type EmpresaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   nome?: boolean
   slug?: boolean
   logoUrl?: boolean
+  cep?: boolean
+  logradouro?: boolean
+  numero?: boolean
+  complemento?: boolean
+  bairro?: boolean
+  cidade?: boolean
+  estado?: boolean
+  codigoIbge?: boolean
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: boolean
   criadoEm?: boolean
   fonnteToken?: boolean
   evolutionApiUrl?: boolean
@@ -4271,9 +5498,18 @@ export type EmpresaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   nome?: boolean
   slug?: boolean
   logoUrl?: boolean
+  cep?: boolean
+  logradouro?: boolean
+  numero?: boolean
+  complemento?: boolean
+  bairro?: boolean
+  cidade?: boolean
+  estado?: boolean
+  codigoIbge?: boolean
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: boolean
   criadoEm?: boolean
   fonnteToken?: boolean
   evolutionApiUrl?: boolean
@@ -4292,9 +5528,18 @@ export type EmpresaSelectScalar = {
   nome?: boolean
   slug?: boolean
   logoUrl?: boolean
+  cep?: boolean
+  logradouro?: boolean
+  numero?: boolean
+  complemento?: boolean
+  bairro?: boolean
+  cidade?: boolean
+  estado?: boolean
+  codigoIbge?: boolean
   ativo?: boolean
   whatsappPausado?: boolean
   emailPausado?: boolean
+  prazoAlertaProvaDias?: boolean
   criadoEm?: boolean
   fonnteToken?: boolean
   evolutionApiUrl?: boolean
@@ -4308,7 +5553,7 @@ export type EmpresaSelectScalar = {
   emailFrom?: boolean
 }
 
-export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "ativo" | "whatsappPausado" | "emailPausado" | "criadoEm" | "fonnteToken" | "evolutionApiUrl" | "evolutionApiKey" | "evolutionApiInstance" | "fonnteAlertaEnviado" | "emailHost" | "emailPort" | "emailUser" | "emailPass" | "emailFrom", ExtArgs["result"]["empresa"]>
+export type EmpresaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "slug" | "logoUrl" | "cep" | "logradouro" | "numero" | "complemento" | "bairro" | "cidade" | "estado" | "codigoIbge" | "ativo" | "whatsappPausado" | "emailPausado" | "prazoAlertaProvaDias" | "criadoEm" | "fonnteToken" | "evolutionApiUrl" | "evolutionApiKey" | "evolutionApiInstance" | "fonnteAlertaEnviado" | "emailHost" | "emailPort" | "emailUser" | "emailPass" | "emailFrom", ExtArgs["result"]["empresa"]>
 export type EmpresaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | Prisma.Empresa$usuariosArgs<ExtArgs>
   professoras?: boolean | Prisma.Empresa$professorasArgs<ExtArgs>
@@ -4328,6 +5573,7 @@ export type EmpresaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   materiaisBiblioteca?: boolean | Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs>
   metodosEnsino?: boolean | Prisma.Empresa$metodosEnsinoArgs<ExtArgs>
   tiposAvaliacao?: boolean | Prisma.Empresa$tiposAvaliacaoArgs<ExtArgs>
+  sessoesAtivas?: boolean | Prisma.Empresa$sessoesAtivasArgs<ExtArgs>
   _count?: boolean | Prisma.EmpresaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EmpresaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -4354,15 +5600,25 @@ export type $EmpresaPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     materiaisBiblioteca: Prisma.$MaterialBibliotecaPayload<ExtArgs>[]
     metodosEnsino: Prisma.$MetodoEnsinoPayload<ExtArgs>[]
     tiposAvaliacao: Prisma.$TipoAvaliacaoPayload<ExtArgs>[]
+    sessoesAtivas: Prisma.$SessaoAtivaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     nome: string
     slug: string
     logoUrl: string | null
+    cep: string | null
+    logradouro: string | null
+    numero: string | null
+    complemento: string | null
+    bairro: string | null
+    cidade: string | null
+    estado: string | null
+    codigoIbge: string | null
     ativo: boolean
     whatsappPausado: boolean
     emailPausado: boolean
+    prazoAlertaProvaDias: number
     criadoEm: Date
     fonnteToken: string | null
     evolutionApiUrl: string | null
@@ -4786,6 +6042,7 @@ export interface Prisma__EmpresaClient<T, Null = never, ExtArgs extends runtime.
   materiaisBiblioteca<T extends Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$materiaisBibliotecaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaterialBibliotecaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   metodosEnsino<T extends Prisma.Empresa$metodosEnsinoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$metodosEnsinoArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MetodoEnsinoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tiposAvaliacao<T extends Prisma.Empresa$tiposAvaliacaoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$tiposAvaliacaoArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TipoAvaliacaoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sessoesAtivas<T extends Prisma.Empresa$sessoesAtivasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empresa$sessoesAtivasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessaoAtivaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4819,9 +6076,18 @@ export interface EmpresaFieldRefs {
   readonly nome: Prisma.FieldRef<"Empresa", 'String'>
   readonly slug: Prisma.FieldRef<"Empresa", 'String'>
   readonly logoUrl: Prisma.FieldRef<"Empresa", 'String'>
+  readonly cep: Prisma.FieldRef<"Empresa", 'String'>
+  readonly logradouro: Prisma.FieldRef<"Empresa", 'String'>
+  readonly numero: Prisma.FieldRef<"Empresa", 'String'>
+  readonly complemento: Prisma.FieldRef<"Empresa", 'String'>
+  readonly bairro: Prisma.FieldRef<"Empresa", 'String'>
+  readonly cidade: Prisma.FieldRef<"Empresa", 'String'>
+  readonly estado: Prisma.FieldRef<"Empresa", 'String'>
+  readonly codigoIbge: Prisma.FieldRef<"Empresa", 'String'>
   readonly ativo: Prisma.FieldRef<"Empresa", 'Boolean'>
   readonly whatsappPausado: Prisma.FieldRef<"Empresa", 'Boolean'>
   readonly emailPausado: Prisma.FieldRef<"Empresa", 'Boolean'>
+  readonly prazoAlertaProvaDias: Prisma.FieldRef<"Empresa", 'Int'>
   readonly criadoEm: Prisma.FieldRef<"Empresa", 'DateTime'>
   readonly fonnteToken: Prisma.FieldRef<"Empresa", 'String'>
   readonly evolutionApiUrl: Prisma.FieldRef<"Empresa", 'String'>
@@ -5655,6 +6921,30 @@ export type Empresa$tiposAvaliacaoArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.TipoAvaliacaoScalarFieldEnum | Prisma.TipoAvaliacaoScalarFieldEnum[]
+}
+
+/**
+ * Empresa.sessoesAtivas
+ */
+export type Empresa$sessoesAtivasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SessaoAtiva
+   */
+  select?: Prisma.SessaoAtivaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SessaoAtiva
+   */
+  omit?: Prisma.SessaoAtivaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SessaoAtivaInclude<ExtArgs> | null
+  where?: Prisma.SessaoAtivaWhereInput
+  orderBy?: Prisma.SessaoAtivaOrderByWithRelationInput | Prisma.SessaoAtivaOrderByWithRelationInput[]
+  cursor?: Prisma.SessaoAtivaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SessaoAtivaScalarFieldEnum | Prisma.SessaoAtivaScalarFieldEnum[]
 }
 
 /**
