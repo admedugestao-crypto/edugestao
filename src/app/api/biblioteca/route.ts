@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { normalizarIds } from "@/lib/entityIds";
+import { normalizarTermoBusca } from "@/lib/extrairTextoArquivo";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,7 @@ export async function GET(req: NextRequest) {
   const serie = searchParams.get("serie");
   const materiaId = searchParams.get("materiaId");
   const busca = searchParams.get("busca")?.trim();
+  const buscaNormalizada = busca ? normalizarTermoBusca(busca) : "";
 
   const materiais = await prisma.materialBiblioteca.findMany({
     where: {
@@ -38,6 +40,9 @@ export async function GET(req: NextRequest) {
           { titulo: { contains: busca, mode: "insensitive" } },
           { descricao: { contains: busca, mode: "insensitive" } },
           { textoBusca: { contains: busca, mode: "insensitive" } },
+          ...(buscaNormalizada && buscaNormalizada !== busca.toLocaleLowerCase("pt-BR")
+            ? [{ textoBusca: { contains: buscaNormalizada, mode: "insensitive" as const } }]
+            : []),
         ],
       } : {}),
     },
