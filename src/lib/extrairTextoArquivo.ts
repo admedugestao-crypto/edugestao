@@ -1,19 +1,10 @@
 import mammoth from "mammoth";
 import { tmpdir } from "os";
-import { PDFParse } from "pdf-parse";
 import sharp from "sharp";
 import { createWorker } from "tesseract.js";
+import { normalizarTermoBusca } from "@/lib/normalizarBusca";
 
 const LIMITE_TEXTO_BUSCA = 500_000;
-
-export function normalizarTermoBusca(texto: string) {
-  return texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLocaleLowerCase("pt-BR")
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
-}
 
 function limparTexto(texto: string) {
   const textoLimpo = texto.replace(/\s+/g, " ").trim().slice(0, LIMITE_TEXTO_BUSCA);
@@ -39,6 +30,7 @@ export async function extrairTextoArquivo(
 
   try {
     if (tipo === "application/pdf" || ext === "pdf") {
+      const { PDFParse } = await import("pdf-parse");
       const parser = new PDFParse({ data: arquivo });
       try {
         const resultado = await parser.getText();

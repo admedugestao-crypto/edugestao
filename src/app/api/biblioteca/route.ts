@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { normalizarIds } from "@/lib/entityIds";
-import { normalizarTermoBusca } from "@/lib/extrairTextoArquivo";
+import { normalizarTermoBusca } from "@/lib/normalizarBusca";
 
 export const dynamic = "force-dynamic";
 
