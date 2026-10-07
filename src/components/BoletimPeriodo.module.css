@@ -41,7 +41,7 @@
 .planilha th, .planilha td { padding: 7px; }
 .planilha input { width: 64px; padding: 5px; }
 @media (max-width: 720px) {
-  .pagina { height: calc(100dvh - 130px); padding: 10px; gap: 8px; }
+  .pagina { height: calc(var(--altura-visivel, 100dvh) - 130px); padding: 10px; gap: 8px; }
   .pagina > header p:last-child { display: none; }
   .pagina > header p:first-child { font-size: 10px; }
   .pagina > div:not(.cartao) { gap: 8px; flex-wrap: nowrap; }
