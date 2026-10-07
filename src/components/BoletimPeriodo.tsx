@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import styles from "./BoletimPeriodo.module.css";
 import { PERIODOS_ESCOLARES } from "@/lib/periodosAvaliacao";
 
 type Aluno = { id: string; nome: string; serie: string; turma: string | null; unidade: { nome: string; escola: { nome: string; periodoAvaliacao: string | null } }; materias: { materia: { id: string; nome: string } }[] };
@@ -59,7 +60,7 @@ export default function BoletimPeriodo({ alunos, anoInicial }: { alunos: Aluno[]
     finally { setSalvando(false); }
   }
 
-  return <section className="space-y-6 text-slate-800">
+  return <section className={styles.pagina}>
     <header><p className="text-sm font-bold uppercase text-blue-600">Acompanhamento escolar</p><h1 className="text-3xl font-bold">Calendário — planilha de notas</h1><p className="mt-2 text-slate-500">Notas por disciplina e período de avaliação da escola.</p></header>
     <div className="flex flex-wrap gap-4 print:hidden">
       <label className="min-w-60 flex-1">Aluno<select className="mt-1 w-full rounded-xl border bg-white p-3" value={alunoId} disabled={salvando} onChange={(e) => { if (podeTrocar()) { prepararTroca(); setCarregando(!!e.target.value); setAlunoId(e.target.value); } }}><option value="">Selecione um aluno</option>{alunos.map((a) => <option key={a.id} value={a.id}>{a.nome} — {a.serie}</option>)}</select></label>
@@ -68,10 +69,10 @@ export default function BoletimPeriodo({ alunos, anoInicial }: { alunos: Aluno[]
     {!alunos.length && <p>Nenhum aluno ativo disponível.</p>}
     {erro && <p role="alert" className="rounded-xl bg-red-50 p-3 text-red-700">{erro}</p>}
     {mensagem && <p role="status" className="text-green-700">{mensagem}</p>}
-    {carregando ? <p role="status">Carregando notas...</p> : aluno && <div className="rounded-2xl border bg-white p-4 md:p-6">
+    {carregando ? <p role="status">Carregando notas...</p> : aluno && <div className={styles.cartao}>
       <h2 className="text-xl font-bold">{aluno.nome}</h2><p>{aluno.unidade.escola.nome} · {aluno.unidade.nome}</p><p className="text-slate-500">{aluno.serie}{aluno.turma ? ` · Turma ${aluno.turma}` : ""} · {ano} · {tipo || "Período não definido"}</p>
       {!periodos.length ? <p className="mt-4">Defina o período de avaliação no cadastro da escola para montar a planilha.</p> : !aluno.materias.length ? <p className="mt-4">Adicione disciplinas no cadastro do aluno para montar a planilha.</p> : <>
-        <div className="mt-5 overflow-x-auto"><table className="w-full border-collapse text-sm"><caption className="sr-only">Notas de {aluno.nome} no ano {ano}</caption><thead><tr className="bg-slate-50"><th scope="col" className="border p-3 text-left">Disciplina</th>{[...periodos, "Recuperação", "Média"].map((p) => <th scope="col" className="border p-3" key={p}>{p}</th>)}</tr></thead><tbody>{aluno.materias.map(({ materia }) => {
+        <div className={styles.planilha}><table className="w-full border-collapse text-sm"><caption className="sr-only">Notas de {aluno.nome} no ano {ano}</caption><thead className={styles.cabecalhoTabela}><tr className="bg-slate-50"><th scope="col" className="border p-3 text-left">Disciplina</th>{[...periodos, "Recuperação", "Média"].map((p) => <th scope="col" className="border p-3" key={p}>{p}</th>)}</tr></thead><tbody>{aluno.materias.map(({ materia }) => {
           const preenchidas = periodos.map((_, i) => valores[`${materia.id}:${i + 1}`]).filter((v) => v?.trim()).map((v) => Number(v.replace(",", "."))).filter((v) => Number.isFinite(v) && v >= 0 && v <= 10);
           const media = preenchidas.length ? (preenchidas.reduce((a, b) => a + b, 0) / preenchidas.length).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "—";
           return <tr key={materia.id}><th scope="row" className="border p-3 text-left">{materia.nome}</th>{[...periodos.map((_, i) => i + 1), 0].map((p) => <td key={p} className="border p-2"><input type="text" inputMode="decimal" className="w-20 rounded-lg border p-2 text-center" aria-label={`${materia.nome} — ${p === 0 ? "Recuperação" : periodos[p - 1]}`} value={valores[`${materia.id}:${p}`] ?? ""} disabled={salvando || !!erro && !alterado} onChange={(e) => { setValores((v) => ({ ...v, [`${materia.id}:${p}`]: e.target.value })); setAlterado(true); setMensagem(""); }} /></td>)}<td className="border p-3 text-center font-bold">{media}</td></tr>;
