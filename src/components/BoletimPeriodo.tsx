@@ -61,7 +61,7 @@ export default function BoletimPeriodo({ alunos, anoInicial }: { alunos: Aluno[]
   }
 
   return <section className={styles.pagina}>
-    <header><p className="text-sm font-bold uppercase text-blue-600">Acompanhamento escolar</p><h1 className="text-3xl font-bold">Calendário — planilha de notas</h1><p className="mt-2 text-slate-500">Notas por disciplina e período de avaliação da escola.</p></header>
+    <header><p className="text-sm font-bold uppercase text-blue-600">Acompanhamento escolar</p><h1 className="text-3xl font-bold">Avaliações — planilha de notas</h1><p className="mt-2 text-slate-500">Notas por disciplina e período de avaliação da escola.</p></header>
     <div className="flex flex-wrap gap-4 print:hidden">
       <label className="min-w-60 flex-1">Aluno<select className="mt-1 w-full rounded-xl border bg-white p-3" value={alunoId} disabled={salvando} onChange={(e) => { if (podeTrocar()) { prepararTroca(); setCarregando(!!e.target.value); setAlunoId(e.target.value); } }}><option value="">Selecione um aluno</option>{alunos.map((a) => <option key={a.id} value={a.id}>{a.nome} — {a.serie}</option>)}</select></label>
       <label>Ano letivo<select className="mt-1 block rounded-xl border bg-white p-3" value={ano} disabled={salvando} onChange={(e) => { if (podeTrocar()) { prepararTroca(); setCarregando(!!alunoId); setAno(Number(e.target.value)); } }}>{Array.from({ length: 12 }, (_, i) => anoInicial - 5 + i).map((a) => <option key={a}>{a}</option>)}</select></label>
