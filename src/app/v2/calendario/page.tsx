@@ -13,5 +13,5 @@ export default async function CalendarioV2Page() {
     select: { id: true, nome: true, serie: true, turma: true, unidade: { select: { nome: true, escola: { select: { nome: true, periodoAvaliacao: true } } } }, materias: { select: { materia: { select: { id: true, nome: true } } } } },
     orderBy: { nome: "asc" },
   });
-  return <div className="p-4 md:p-8"><BoletimPeriodo alunos={alunos} anoInicial={new Date().getFullYear()} /></div>;
+  return <BoletimPeriodo alunos={alunos} anoInicial={new Date().getFullYear()} />;
 }
