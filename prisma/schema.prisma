@@ -72,6 +72,7 @@ model Empresa {
   pagamentos           Pagamento[]
   conteudos            Conteudo[]
   notas                Nota[]
+  notasPeriodo         NotaPeriodo[]
   notificacoesProva    NotificacaoProva[]
   notificacoesAula     NotificacaoAula[]
   notificacoesConteudo NotificacaoConteudo[]
@@ -171,6 +172,7 @@ model Materia {
   alunoMaterias               AlunoMateria[]
   avaliacoes                  Avaliacao[]
   notas                       Nota[]
+  notasPeriodo                NotaPeriodo[]
   conteudos                   Conteudo[]
   aulas                       AgendaAula[]
   aulasMaterias               AgendaAulaMateria[]
@@ -404,6 +406,7 @@ model Aluno {
   unidade    Unidade        @relation(fields: [unidadeId], references: [id])
   materias   AlunoMateria[]
   notas      Nota[]
+  notasPeriodo NotaPeriodo[]
   conteudos  Conteudo[]
   pagamentos Pagamento[]
   aulas      AgendaAula[]
@@ -432,6 +435,23 @@ model AlunoMateria {
 }
 
 // ─── Notas ────────────────────────────────────────────────────────────────────
+
+model NotaPeriodo {
+  id String @id @default(cuid())
+  empresaId String
+  alunoId String
+  materiaId String
+  ano Int
+  tipoPeriodo String
+  periodo Int
+  valor Float
+  empresa Empresa @relation(fields: [empresaId], references: [id])
+  aluno Aluno @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  materia Materia @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+  @@unique([empresaId, alunoId, materiaId, ano, tipoPeriodo, periodo])
+  @@index([empresaId, alunoId, ano])
+  @@map("notas_periodo")
+}
 
 model Nota {
   id          String   @id @default(cuid())
