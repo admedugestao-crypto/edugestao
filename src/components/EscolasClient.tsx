@@ -63,7 +63,7 @@ function validarPeriodoLetivoStr(p: {
   return "";
 }
 
-const PERIODOS_AVALIACAO = ["Bimestral", "Trimestral", "Semestral"] as const;
+const PERIODOS_AVALIACAO = ["Bimestral", "Trimestral", "Quadrimestral", "Semestral"] as const;
 
 type ConfirmDelete = { tipo: "escola"; id: string; nome: string } | { tipo: "unidade"; id: string; escolaId: string; nome: string };
 
