@@ -94,13 +94,11 @@ export default async function V2Dashboard() {
           <h1>Seu dia em <em>perspectiva.</em></h1>
           <p>Olá, {primeiroNome}. Aqui está o que merece sua atenção agora.</p>
         </div>
-        <Link href="/v2/agenda" className={styles.primaryAction}>Organizar agenda <ArrowUpRight aria-hidden="true" size={18} /></Link>
       </header>
 
       <section className={styles.focusStrip} aria-label="Resumo do dia">
         <div className={styles.focusIntro}><Sparkles aria-hidden="true" size={18} /><span>Foco de hoje</span></div>
         <strong>{aulasHoje === 0 ? "Agenda livre para planejar a semana" : `${aulasHoje} ${aulasHoje === 1 ? "aula programada" : "aulas programadas"}`}</strong>
-        <Link href="/v2/agenda">Ver agenda <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </section>
 
       <section className={styles.metrics} aria-label="Indicadores principais">
