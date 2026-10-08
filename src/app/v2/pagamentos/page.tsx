@@ -14,10 +14,13 @@ async function buscarPagamentos(
   professoraId: string | null,
   alunoFiltro: string | null,
   isAdmin: boolean,
+  somentePendentes = false,
 ) {
   const where: PagamentoWhereInput = { empresaId };
   if (alunoFiltro) {
     where.alunoId = alunoFiltro;
+  } else if (somentePendentes) {
+    where.pago = false;
   } else {
     where.mes = mes;
     where.ano = ano;
@@ -107,20 +110,21 @@ function serializarPagamentos(pagamentos: Awaited<ReturnType<typeof buscarPagame
 export default async function V2PagamentosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ aluno?: string }>;
+  searchParams: Promise<{ aluno?: string; abertos?: string }>;
 }) {
   const scope        = await getSessionScope();
   if (!scope) redirect("/login");
   const professoraId = scope.professoraId;
   const params       = await searchParams;
   const alunoFiltro  = params.aluno ?? null;
+  const somentePendentes = params.abertos === "1" && !alunoFiltro;
 
   const hoje = new Date();
   const mes  = hoje.getMonth() + 1;
   const ano  = hoje.getFullYear();
 
   const isAdmin    = scope.isAdmin;
-  const pagamentos = await buscarPagamentos(scope.empresaId, mes, ano, professoraId, alunoFiltro, isAdmin);
+  const pagamentos = await buscarPagamentos(scope.empresaId, mes, ano, professoraId, alunoFiltro, isAdmin, somentePendentes);
   const alunoSelecionado = alunoFiltro
     ? await prisma.aluno.findFirst({
         where: {
@@ -147,6 +151,7 @@ export default async function V2PagamentosPage({
         podeNovo={isAdmin}
         alunoFiltro={alunoFiltro}
         alunoFiltroNome={alunoSelecionado?.nome ?? null}
+        somentePendentes={somentePendentes}
       />
     </div>
   );

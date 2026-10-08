@@ -100,7 +100,7 @@ export default async function V2Dashboard() {
       <section className={styles.metrics} aria-label="Indicadores principais">
         <article><span className={styles.metricIcon}><Users aria-hidden="true" size={20} /></span><div><small>Alunos acompanhados</small><strong>{alunosAtivos}</strong><p>ativos neste período</p></div><Link href="/v2/alunos" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
         <article><span className={styles.metricIcon}><CalendarCheck2 aria-hidden="true" size={20} /></span><div><small>Ritmo de hoje</small><strong>{aulasHoje}</strong><p>aulas na agenda</p></div><Link href="/v2/agenda" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
-        <article><span className={styles.metricIcon}><CircleDollarSign aria-hidden="true" size={20} /></span><div><small>Valores em aberto</small><strong>{formatarMoeda(pendente)}</strong><p>acompanhamento financeiro</p></div><Link href="/v2/pagamentos" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
+        <article><span className={styles.metricIcon}><CircleDollarSign aria-hidden="true" size={20} /></span><div><small>Valores em aberto</small><strong>{formatarMoeda(pendente)}</strong><p>acompanhamento financeiro</p></div><Link href="/v2/pagamentos?abertos=1" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
       </section>
 
       <div className={styles.contentGrid}>

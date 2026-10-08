@@ -7,7 +7,7 @@ import { podeGerenciarFinanceiro } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/pagamentos?mes=5&ano=2026
+// GET /api/pagamentos?mes=5&ano=2026 ou ?abertos=1
 // Retorna registros reais de pagamento serializados (sem objetos Prisma brutos)
 export async function GET(req: NextRequest) {
   const scope = await getSessionScope();
@@ -17,14 +17,17 @@ export async function GET(req: NextRequest) {
   const mes         = parseInt(searchParams.get("mes")   ?? "0");
   const ano         = parseInt(searchParams.get("ano")   ?? "0");
   const alunoFiltro = searchParams.get("aluno");
+  const somentePendentes = searchParams.get("abertos") === "1";
 
-  if (!alunoFiltro && (!mes || !ano)) {
+  if (!alunoFiltro && !somentePendentes && (!mes || !ano)) {
     return NextResponse.json({ erro: "mes e ano obrigatórios" }, { status: 400 });
   }
 
   const where: PagamentoWhereInput = { empresaId: scope.empresaId };
   if (alunoFiltro) {
     where.alunoId = alunoFiltro;
+  } else if (somentePendentes) {
+    where.pago = false;
   } else {
     where.mes = mes;
     where.ano = ano;
