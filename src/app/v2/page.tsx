@@ -5,6 +5,8 @@ import { ArrowUpRight, CalendarCheck2, CircleDollarSign, Clock3, Sparkles, UserR
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import styles from "./v2.module.css";
+import { anoLetivoEncerrado, calcularMediaDasNotas, MEDIA_MINIMA_APROVACAO, obterPeriodoAtual } from "@/lib/alertasNotas";
+import { PERIODOS_ESCOLARES } from "@/lib/periodosAvaliacao";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +22,7 @@ export default async function V2Dashboard() {
   const fim = new Date(inicio);
   fim.setDate(fim.getDate() + 1);
 
-  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, totalEscolas, notas, provas] = await Promise.all([
+  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, totalEscolas, notasPeriodo, provas] = await Promise.all([
     prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
     prisma.agendaAula.count({ where: { ...scopeWhere(scope), data: { gte: inicio, lt: fim } } }),
     prisma.pagamento.findMany({
@@ -34,10 +36,18 @@ export default async function V2Dashboard() {
       include: { aluno: { select: { nome: true } } },
     }),
     prisma.escola.count({ where: { empresaId: scope.empresaId } }),
-    prisma.nota.findMany({
-      where: { empresaId: scope.empresaId, ...(!scope.isAdmin ? { aluno: { professoraId: scope.professoraId } } : {}) },
-      include: { aluno: { select: { nome: true } }, materia: true, avaliacao: { select: { nome: true, notaMax: true } } },
-      orderBy: { criadoEm: "desc" },
+    prisma.notaPeriodo.findMany({
+      where: { empresaId: scope.empresaId, aluno: { status: "ATIVO", ...(!scope.isAdmin ? { professoraId: scope.professoraId } : {}) } },
+      include: {
+        aluno: {
+          select: {
+            id: true,
+            nome: true,
+            unidade: { select: { escola: { select: { periodoAvaliacao: true, periodoLetivo1Inicio: true, periodoLetivo1Fim: true, periodoLetivo2Inicio: true, periodoLetivo2Fim: true } } } },
+          },
+        },
+        materia: { select: { id: true, nome: true } },
+      },
     }),
     scope.isAdmin ? Promise.resolve([]) : prisma.avaliacao.findMany({
       where: { empresaId: scope.empresaId, data: { gte: hoje }, ...(scope.professoraId ? { unidade: { alunos: { some: { professoraId: scope.professoraId, status: "ATIVO" } } } } : {}) },
@@ -45,8 +55,32 @@ export default async function V2Dashboard() {
     }),
   ]);
 
-  const notasBaixas = notas.filter(n => n.valor < n.avaliacao.notaMax / 2);
-  const alunosComNotaBaixa = new Set(notasBaixas.map(n => n.alunoId)).size;
+  const anoLetivo = hoje.getFullYear();
+  const notasPorAlunoEMateria = new Map<string, typeof notasPeriodo>();
+  for (const nota of notasPeriodo) {
+    if (nota.ano !== anoLetivo || nota.tipoPeriodo !== nota.aluno.unidade.escola.periodoAvaliacao) continue;
+    const chave = `${nota.alunoId}:${nota.materiaId}`;
+    notasPorAlunoEMateria.set(chave, [...(notasPorAlunoEMateria.get(chave) ?? []), nota]);
+  }
+  const alertasNotasBaixas = [...notasPorAlunoEMateria.values()].flatMap((notasDaMateria) => {
+    const [referencia] = notasDaMateria;
+    const escola = referencia.aluno.unidade.escola;
+    const periodos = escola.periodoAvaliacao ? PERIODOS_ESCOLARES[escola.periodoAvaliacao] : undefined;
+    if (!periodos) return [];
+    const alertas: { chave: string; aluno: string; materia: string; motivo: string; valor: number }[] = [];
+    const periodoAtual = obterPeriodoAtual(escola, hoje);
+    const notaDoPeriodoAtual = periodoAtual ? notasDaMateria.find((nota) => nota.periodo === periodoAtual.numero) : undefined;
+    if (notaDoPeriodoAtual && notaDoPeriodoAtual.valor < MEDIA_MINIMA_APROVACAO) {
+      alertas.push({ chave: `${referencia.id}:periodo`, aluno: referencia.aluno.nome, materia: referencia.materia.nome, motivo: `${periodoAtual?.rotulo}: ${notaDoPeriodoAtual.valor.toFixed(1)}`, valor: notaDoPeriodoAtual.valor });
+    }
+    const notasRegulares = periodos.map((_, indice) => notasDaMateria.find((nota) => nota.periodo === indice + 1)?.valor);
+    const mediaAnual = calcularMediaDasNotas(notasRegulares.filter((nota): nota is number => nota !== undefined));
+    if (anoLetivoEncerrado(escola, hoje) && notasRegulares.every((nota) => nota !== undefined) && mediaAnual !== null && mediaAnual < MEDIA_MINIMA_APROVACAO) {
+      alertas.push({ chave: `${referencia.id}:anual`, aluno: referencia.aluno.nome, materia: referencia.materia.nome, motivo: `Média anual: ${mediaAnual.toFixed(1)}`, valor: mediaAnual });
+    }
+    return alertas;
+  });
+  const alunosComNotaBaixa = new Set(alertasNotasBaixas.map((alerta) => alerta.aluno)).size;
   const pendente = pagamentos.reduce((total, item) => total + Number(item.valorCobrado), 0);
   const primeiroNome = session?.user?.name?.split(" ")[0] ?? "professora";
   const dataLonga = hoje.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
@@ -103,9 +137,9 @@ export default async function V2Dashboard() {
       </div>
       <section className={styles.pedagogicalGrid} aria-label="Acompanhamento pedagógico">
         <article className={styles.scheduleCard}>
-          <div className={styles.sectionHeading}><div><span>{alunosComNotaBaixa} aluno(s) com notas baixas</span><h2>Atenção necessária</h2></div><Link href="/v2/notas">Ver notas</Link></div>
-          <p className="text-xs text-slate-500 mb-3">Notas abaixo de 50% da nota máxima.</p>
-          {!notasBaixas.length ? <p>Nenhum aluno abaixo da média.</p> : <ul className="max-h-52 overflow-y-auto space-y-3">{notasBaixas.map(n => <li key={n.id} className="flex justify-between gap-3 text-sm"><div><strong>{n.aluno.nome}</strong><p>{n.materia.nome} · {n.avaliacao.nome}</p></div><span>{n.valor.toFixed(1)} / {n.avaliacao.notaMax.toFixed(1)}</span></li>)}</ul>}
+          <div className={styles.sectionHeading}><div><span>{alunosComNotaBaixa} aluno(s) com notas baixas</span><h2>Atenção necessária</h2></div><Link href="/v2/avaliacoes">Ver planilha</Link></div>
+          <p className="text-xs text-slate-500 mb-3">Considera a nota do período atual e, após o fim do ano letivo, a média anual abaixo de {MEDIA_MINIMA_APROVACAO.toFixed(1)}.</p>
+          {!alertasNotasBaixas.length ? <p>Nenhum aluno abaixo da média.</p> : <ul className="max-h-52 overflow-y-auto space-y-3">{alertasNotasBaixas.map((alerta) => <li key={alerta.chave} className="flex justify-between gap-3 text-sm"><div><strong>{alerta.aluno}</strong><p>{alerta.materia} · {alerta.motivo}</p></div><span>{alerta.valor.toFixed(1)} / {MEDIA_MINIMA_APROVACAO.toFixed(1)}</span></li>)}</ul>}
         </article>
         <article className={styles.scheduleCard}>
           <div className={styles.sectionHeading}><div><span>Rede de ensino</span><h2>{totalEscolas} escola(s) cadastrada(s)</h2></div><Link href="/v2/escolas">Ver escolas</Link></div>
