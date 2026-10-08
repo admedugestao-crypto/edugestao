@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope, scopeWhere } from "@/lib/tenant";
-import { ArrowUpRight, CalendarCheck2, CircleDollarSign, Clock3, Sparkles, UserRoundCheck, Users } from "lucide-react";
+import { ArrowUpRight, CalendarCheck2, CircleDollarSign, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import styles from "./v2.module.css";
@@ -22,7 +22,7 @@ export default async function V2Dashboard() {
   const fim = new Date(inicio);
   fim.setDate(fim.getDate() + 1);
 
-  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, totalEscolas, notasPeriodo, provas] = await Promise.all([
+  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, notasPeriodo] = await Promise.all([
     prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
     prisma.agendaAula.count({ where: { ...scopeWhere(scope), data: { gte: inicio, lt: fim } } }),
     prisma.pagamento.findMany({
@@ -35,7 +35,6 @@ export default async function V2Dashboard() {
       take: 4,
       include: { aluno: { select: { nome: true } } },
     }),
-    prisma.escola.count({ where: { empresaId: scope.empresaId } }),
     prisma.notaPeriodo.findMany({
       where: { empresaId: scope.empresaId, aluno: { status: "ATIVO", ...(!scope.isAdmin ? { professoraId: scope.professoraId } : {}) } },
       include: {
@@ -48,10 +47,6 @@ export default async function V2Dashboard() {
         },
         materia: { select: { id: true, nome: true } },
       },
-    }),
-    scope.isAdmin ? Promise.resolve([]) : prisma.avaliacao.findMany({
-      where: { empresaId: scope.empresaId, data: { gte: hoje }, ...(scope.professoraId ? { unidade: { alunos: { some: { professoraId: scope.professoraId, status: "ATIVO" } } } } : {}) },
-      include: { unidade: { include: { escola: true } }, materia: true }, orderBy: { data: "asc" }, take: 6,
     }),
   ]);
 
@@ -128,28 +123,12 @@ export default async function V2Dashboard() {
           )}
         </section>
 
-        <aside className={styles.quickCard}>
-          <div className={styles.sectionHeading}><div><span>Acesso rápido</span><h2>Continue de onde parou</h2></div></div>
-          <Link href="/v2/alunos"><UserRoundCheck aria-hidden="true" /><span><strong>Gerenciar alunos</strong><small>Cadastros e acompanhamento</small></span><ArrowUpRight aria-hidden="true" /></Link>
-          <Link href="/v2/conteudos"><BookIcon /><span><strong>Registrar conteúdo</strong><small>Histórico do que foi ensinado</small></span><ArrowUpRight aria-hidden="true" /></Link>
-          <Link href="/v2/pagamentos"><Clock3 aria-hidden="true" /><span><strong>Revisar pendências</strong><small>Pagamentos que precisam de atenção</small></span><ArrowUpRight aria-hidden="true" /></Link>
-        </aside>
-      </div>
-      <section className={styles.pedagogicalGrid} aria-label="Acompanhamento pedagógico">
-        <article className={styles.scheduleCard}>
+        <aside className={styles.scheduleCard}>
           <div className={styles.sectionHeading}><div><span>{alunosComNotaBaixa} aluno(s) com notas baixas</span><h2>Atenção necessária</h2></div><Link href="/v2/avaliacoes">Ver planilha</Link></div>
           <p className="text-xs text-slate-500 mb-3">Considera a nota do período atual e, após o fim do ano letivo, a média anual abaixo de {MEDIA_MINIMA_APROVACAO.toFixed(1)}.</p>
           {!alertasNotasBaixas.length ? <p>Nenhum aluno abaixo da média.</p> : <ul className="max-h-52 overflow-y-auto space-y-3">{alertasNotasBaixas.map((alerta) => <li key={alerta.chave} className="flex justify-between gap-3 text-sm"><div><strong>{alerta.aluno}</strong><p>{alerta.materia} · {alerta.motivo}</p></div><span>{alerta.valor.toFixed(1)} / {MEDIA_MINIMA_APROVACAO.toFixed(1)}</span></li>)}</ul>}
-        </article>
-        <article className={styles.scheduleCard}>
-          <div className={styles.sectionHeading}><div><span>Rede de ensino</span><h2>{totalEscolas} escola(s) cadastrada(s)</h2></div><Link href="/v2/escolas">Ver escolas</Link></div>
-          {!scope.isAdmin && <><h3 className="font-semibold mb-3">Próximas provas</h3>{!provas.length ? <p>Nenhuma prova agendada.</p> : <ul className="max-h-52 overflow-y-auto space-y-3">{provas.map(p => <li key={p.id} className="text-sm"><strong>{p.nome}</strong><p>{p.unidade.escola.nome} · {p.serie} · {p.materia?.nome} · {p.periodo}</p><time>{p.data.toLocaleDateString("pt-BR", { timeZone: "UTC" })}</time></li>)}</ul>}<Link href="/v2/calendario" className="mt-3 inline-block">Ver calendário →</Link></>}
-        </article>
-      </section>
+        </aside>
+      </div>
     </div>
   );
-}
-
-function BookIcon() {
-  return <span className={styles.bookIcon} aria-hidden="true">Aa</span>;
 }
