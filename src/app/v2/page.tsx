@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import styles from "./v2.module.css";
 import { anoLetivoEncerrado, calcularMediaDasNotas, MEDIA_MINIMA_APROVACAO, obterPeriodoAtual } from "@/lib/alertasNotas";
 import { PERIODOS_ESCOLARES } from "@/lib/periodosAvaliacao";
+import FinanceiroDetalhesLink from "@/components/FinanceiroDetalhesLink";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,12 @@ export default async function V2Dashboard() {
     prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
     prisma.agendaAula.count({ where: { ...scopeWhere(scope), data: { gte: inicio, lt: fim } } }),
     prisma.pagamento.findMany({
-      where: { empresaId: scope.empresaId, pago: false, ...(scope.professoraId ? { aluno: { professoraId: scope.professoraId } } : {}) },
+      where: {
+        empresaId: scope.empresaId,
+        pago: false,
+        // Administradores acompanham o total da empresa, mesmo que também sejam professoras.
+        ...(!scope.isAdmin && scope.professoraId ? { aluno: { professoraId: scope.professoraId } } : {}),
+      },
       select: { valorCobrado: true },
     }),
     prisma.agendaAula.findMany({
@@ -100,7 +106,7 @@ export default async function V2Dashboard() {
       <section className={styles.metrics} aria-label="Indicadores principais">
         <article><span className={styles.metricIcon}><Users aria-hidden="true" size={20} /></span><div><small>Alunos acompanhados</small><strong>{alunosAtivos}</strong><p>ativos neste período</p></div><Link href="/v2/alunos" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
         <article><span className={styles.metricIcon}><CalendarCheck2 aria-hidden="true" size={20} /></span><div><small>Ritmo de hoje</small><strong>{aulasHoje}</strong><p>aulas na agenda</p></div><Link href="/v2/agenda" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
-        <article><span className={styles.metricIcon}><CircleDollarSign aria-hidden="true" size={20} /></span><div><small>Valores em aberto</small><strong>{formatarMoeda(pendente)}</strong><p>acompanhamento financeiro</p></div><Link href="/v2/pagamentos?abertos=1" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
+        <article><span className={styles.metricIcon}><CircleDollarSign aria-hidden="true" size={20} /></span><div><small>Valores em aberto</small><strong>{formatarMoeda(pendente)}</strong><p>acompanhamento financeiro</p></div><FinanceiroDetalhesLink className={styles.metricDetail} escolherVisao={scope.isAdmin && Boolean(scope.professoraId)} /></article>
       </section>
 
       <div className={styles.contentGrid}>

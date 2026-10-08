@@ -15,6 +15,7 @@ async function buscarPagamentos(
   alunoFiltro: string | null,
   isAdmin: boolean,
   somentePendentes = false,
+  visaoProfessor = false,
 ) {
   const where: PagamentoWhereInput = { empresaId };
   if (alunoFiltro) {
@@ -25,7 +26,7 @@ async function buscarPagamentos(
     where.mes = mes;
     where.ano = ano;
   }
-  if (!isAdmin && professoraId) where.aluno = { professoraId };
+  if ((visaoProfessor || !isAdmin) && professoraId) where.aluno = { professoraId };
 
   return prisma.pagamento.findMany({
     where,
@@ -110,7 +111,7 @@ function serializarPagamentos(pagamentos: Awaited<ReturnType<typeof buscarPagame
 export default async function V2PagamentosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ aluno?: string; abertos?: string }>;
+  searchParams: Promise<{ aluno?: string; abertos?: string; visao?: string }>;
 }) {
   const scope        = await getSessionScope();
   if (!scope) redirect("/login");
@@ -118,13 +119,14 @@ export default async function V2PagamentosPage({
   const params       = await searchParams;
   const alunoFiltro  = params.aluno ?? null;
   const somentePendentes = params.abertos === "1" && !alunoFiltro;
+  const visaoProfessor = params.visao === "professor" && Boolean(professoraId);
 
   const hoje = new Date();
   const mes  = hoje.getMonth() + 1;
   const ano  = hoje.getFullYear();
 
   const isAdmin    = scope.isAdmin;
-  const pagamentos = await buscarPagamentos(scope.empresaId, mes, ano, professoraId, alunoFiltro, isAdmin, somentePendentes);
+  const pagamentos = await buscarPagamentos(scope.empresaId, mes, ano, professoraId, alunoFiltro, isAdmin, somentePendentes, visaoProfessor);
   const alunoSelecionado = alunoFiltro
     ? await prisma.aluno.findFirst({
         where: {
@@ -152,6 +154,7 @@ export default async function V2PagamentosPage({
         alunoFiltro={alunoFiltro}
         alunoFiltroNome={alunoSelecionado?.nome ?? null}
         somentePendentes={somentePendentes}
+        visaoProfessor={visaoProfessor}
       />
     </div>
   );

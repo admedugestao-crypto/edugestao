@@ -129,7 +129,7 @@ function dataVencimentoPadrao(mes: number, ano: number) {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 export default function PagamentosClient({
-  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome, somentePendentes = false, variant = "classic",
+  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome, somentePendentes = false, visaoProfessor = false, variant = "classic",
 }: {
   variant?: "classic" | "v2";
   pagamentosIniciais: PagamentoItem[];
@@ -140,6 +140,7 @@ export default function PagamentosClient({
   alunoFiltro?:       string | null;
   alunoFiltroNome?:   string | null;
   somentePendentes?:  boolean;
+  visaoProfessor?:    boolean;
 }) {
   const [mes,        setMes]        = useState(mesInicial);
   const [ano,        setAno]        = useState(anoInicial);
@@ -234,11 +235,11 @@ export default function PagamentosClient({
     const url = alunoFiltro
       ? `/api/pagamentos?aluno=${encodeURIComponent(alunoFiltro)}`
       : somentePendentes
-        ? "/api/pagamentos?abertos=1"
+        ? `/api/pagamentos?abertos=1${visaoProfessor ? "&visao=professor" : ""}`
       : `/api/pagamentos?mes=${m}&ano=${a}`;
     const res  = await fetch(url);
     return res.json() as Promise<PagamentoItem[]>;
-  }, [alunoFiltro, somentePendentes]);
+  }, [alunoFiltro, somentePendentes, visaoProfessor]);
 
   // ── Navegação de mês ────────────────────────────────────────────────────
   const navMes = useCallback(async (delta: number) => {
@@ -540,7 +541,7 @@ export default function PagamentosClient({
         <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2">
             <AlertCircle size={16} className="text-amber-600" />
-            <p className="text-sm font-medium text-amber-900">Exibindo todas as cobranças pendentes, independentemente do mês.</p>
+            <p className="text-sm font-medium text-amber-900">Exibindo as cobranças pendentes {visaoProfessor ? "dos seus alunos" : "da empresa"}, independentemente do mês.</p>
           </div>
           <Link href={variant === "v2" ? "/v2/pagamentos" : "/dashboard/pagamentos"} className="flex items-center gap-1.5 text-xs text-amber-800 hover:text-amber-950 font-medium">
             <ArrowLeft size={13} />
