@@ -129,7 +129,7 @@ function dataVencimentoPadrao(mes: number, ano: number) {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 export default function PagamentosClient({
-  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome, variant = "classic",
+  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome, somentePendentes = false, visaoProfessor = false, variant = "classic",
 }: {
   variant?: "classic" | "v2";
   pagamentosIniciais: PagamentoItem[];
@@ -139,6 +139,8 @@ export default function PagamentosClient({
   podeNovo?:          boolean;
   alunoFiltro?:       string | null;
   alunoFiltroNome?:   string | null;
+  somentePendentes?:  boolean;
+  visaoProfessor?:    boolean;
 }) {
   const [mes,        setMes]        = useState(mesInicial);
   const [ano,        setAno]        = useState(anoInicial);
@@ -228,14 +230,16 @@ export default function PagamentosClient({
     }
   }
 
-  // ── Busca registros do mês ou o histórico completo do aluno ─────────────
+  // ── Busca registros do mês, pendências ou histórico completo do aluno ───
   const buscarPagamentos = useCallback(async (m: number, a: number) => {
     const url = alunoFiltro
       ? `/api/pagamentos?aluno=${encodeURIComponent(alunoFiltro)}`
+      : somentePendentes
+        ? `/api/pagamentos?abertos=1${visaoProfessor ? "&visao=professor" : ""}`
       : `/api/pagamentos?mes=${m}&ano=${a}`;
     const res  = await fetch(url);
     return res.json() as Promise<PagamentoItem[]>;
-  }, [alunoFiltro]);
+  }, [alunoFiltro, somentePendentes, visaoProfessor]);
 
   // ── Navegação de mês ────────────────────────────────────────────────────
   const navMes = useCallback(async (delta: number) => {
@@ -261,11 +265,12 @@ export default function PagamentosClient({
     });
     if (res.ok) {
       const pg = await res.json();
-      setPagamentos((prev) => prev.map((p) =>
-        p.id === item.id
+      setPagamentos((prev) => somentePendentes && pg.pago
+        ? prev.filter((p) => p.id !== item.id)
+        : prev.map((p) => p.id === item.id
           ? { ...p, pago: pg.pago, dataPagamento: pg.dataPagamento ?? null }
           : p,
-      ));
+        ));
     } else {
       const data = await res.json();
       if (data.erro) setErroBaixa(data.erro);
@@ -532,8 +537,21 @@ export default function PagamentosClient({
         </div>
       )}
 
+      {somentePendentes && (
+        <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-2">
+            <AlertCircle size={16} className="text-amber-600" />
+            <p className="text-sm font-medium text-amber-900">Exibindo as cobranças pendentes {visaoProfessor ? "dos seus alunos" : "da empresa"}, independentemente do mês.</p>
+          </div>
+          <Link href={variant === "v2" ? "/v2/pagamentos" : "/dashboard/pagamentos"} className="flex items-center gap-1.5 text-xs text-amber-800 hover:text-amber-950 font-medium">
+            <ArrowLeft size={13} />
+            Ver por mês
+          </Link>
+        </div>
+      )}
+
       {/* Navegação de mês + filtro por aluno */}
-      {!alunoFiltro && <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-4">
+      {!alunoFiltro && !somentePendentes && <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-4">
         <button aria-label="Mês anterior" onClick={() => navMes(-1)} disabled={carregando}
           className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 shrink-0">
           <ChevronLeft size={18} className="text-slate-600" />
