@@ -13,9 +13,9 @@ export default function FinanceiroDetalhesLink({ escolherVisao, className }: { e
 
   return (
     <>
-      <button type="button" onClick={() => setAberto(true)} className={className} style={{ border: 0, background: "transparent", padding: 0, font: "inherit", cursor: "pointer" }}>
+      <Link href="/v2/pagamentos?abertos=1" onClick={(event) => { event.preventDefault(); setAberto(true); }} className={className}>
         Detalhes <ArrowUpRight aria-hidden="true" size={14} />
-      </button>
+      </Link>
       {aberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4" role="presentation" onMouseDown={() => setAberto(false)}>
           <section role="dialog" aria-modal="true" aria-labelledby="visao-financeira-titulo" className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl" onMouseDown={(event) => event.stopPropagation()}>
