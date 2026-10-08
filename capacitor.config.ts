@@ -5,11 +5,11 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // de uma WebView nativa. `webDir` fica apontando pra pasta public só porque
 // o Capacitor exige o campo, mas na prática server.url é o que manda.
 const config: CapacitorConfig = {
-  appId: 'br.com.edugestao.v2dev',
-  appName: 'EduGestão V2 Dev',
+  appId: 'br.com.edugestao.app',
+  appName: 'EduGestão',
   webDir: 'public',
   server: {
-    url: 'https://edugestao-bj4p-git-dev-edugestao-s-projects.vercel.app/v2',
+    url: 'https://edugestao-bj4p.vercel.app/v2',
     androidScheme: 'https',
   },
 };
