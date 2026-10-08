@@ -49,6 +49,9 @@
   .pagina select { padding: 7px; }
   .cartao { padding: 10px; }
   .cartao > h2 { font-size: 15px; }
+  .cabecalhoTabela th { padding: 5px 4px !important; font-size: 12px; line-height: 1.15; }
+  .acoes { margin-top: 8px !important; gap: 8px !important; }
+  .acoes button { min-height: 38px; padding: 6px 12px !important; font-size: 14px; }
   .cartao:has(.planilha input:focus) .orientacao { display: none; }
 }
 @media (max-height: 650px) {
