@@ -2,6 +2,7 @@ import { ArrowUpRight, CalendarCheck2, CircleDollarSign, Clock3, Sparkles, UserR
 import Link from "next/link";
 import { V2Navigation } from "../v2/_components/V2Navigation";
 import styles from "../v2/v2.module.css";
+import { obterVersaoApp } from "@/lib/versaoApp";
 
 const aulas = [
   { nome: "Aluna 01", data: "Hoje · 14:00" },
@@ -14,6 +15,7 @@ export default function V2PreviewPage() {
   return (
     <div className={styles.appShell}>
       <V2Navigation
+        versao={obterVersaoApp()}
         ambiente="Desenvolvimento"
         empresaNome="KCF · Aulas Particulares"
         empresaLogoUrl={null}

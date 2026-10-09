@@ -26,6 +26,9 @@
 .logout,.iconButton,.closeButton { border:0; background:none; color:inherit; cursor:pointer; }
 .logout { padding:7px; color:#8fa1be; border-radius:8px; }.logout:hover { background:#ffffff12; color:white; }
 .environment { align-self:flex-start; margin-left:5px; color:#6f82a2; font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
+.appVersion { align-self:flex-start; margin:6px 0 0 5px; color:#b6c3d8; font-size:11px; }
+a.appVersion:hover { color:white; text-decoration:underline; }
+a.appVersion:focus-visible { outline:2px solid white; outline-offset:3px; border-radius:3px; }
 .mobileHeader,.mobileNav,.backdrop { display:none; }
 .mobileBrandLogo { display:none; }
 .dashboard { max-width:1480px; margin:0 auto; padding:42px 48px 56px; }
