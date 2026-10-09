@@ -287,7 +287,7 @@ function AgendaClientContent({
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
       const anos = Array.from(new Set([inicio.getFullYear(), fim.getFullYear()]));
       const [res, ...respostasFeriados] = await Promise.all([
-        fetch(url),
+        fetch(url, { cache: "no-store" }),
         ...anos.map((ano) =>
           fetch(`/api/feriados?ano=${ano}`)
             .then((resposta) => resposta.ok ? resposta.json() : { feriados: [] })
