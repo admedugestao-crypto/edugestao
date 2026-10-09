@@ -151,11 +151,12 @@ export default function AgendaClient(props: Parameters<typeof AgendaClientConten
 function AgendaClientContent({
   alunos, materias, professoras = [], isProfessor = true,
   disponibilidades = [], professoraIdSessao = "", conteudosPath = "/dashboard/conteudos",
-  vistaInicial = "semana", dataInicial, destacarPendencias = false,
+  vistaInicial = "semana", dataInicial, destacarPendencias = false, acessoPendencias = false,
 }: {
   vistaInicial?: "semana" | "dia" | "mes";
   dataInicial?: string;
   destacarPendencias?: boolean;
+  acessoPendencias?: boolean;
   conteudosPath?: string;
   alunos: AlunoOpt[];
   materias: Materia[];
@@ -171,7 +172,7 @@ function AgendaClientContent({
     window.addEventListener("beforeprint", atualizarImpressao);
     return () => window.removeEventListener("beforeprint", atualizarImpressao);
   }, []);
-  const [vista, setVista]         = useState<"semana" | "dia" | "mes">(vistaInicial);
+  const [vista, setVista]         = useState<"semana" | "dia" | "mes" | "pendencias">(() => acessoPendencias ? "pendencias" : vistaInicial);
   const [semanaRef, setSemanaRef] = useState(() => semanaInicio(dataInicial ? parseLocal(dataInicial) : new Date()));
   const [diaRef, setDiaRef]       = useState(() => dataInicial ? parseLocal(dataInicial) : new Date());
   const [mesRef, setMesRef]       = useState(() => startOfMonth(dataInicial ? parseLocal(dataInicial) : new Date()));
@@ -262,7 +263,7 @@ function AgendaClientContent({
   // ── Carrega aulas ──────────────────────────────────────────────────────────
   const chaveConsultaAtual = [
     vista,
-    vista === "semana" ? semanaRef.getTime() : vista === "mes" ? mesRef.getTime() : diaRef.getTime(),
+    vista === "semana" ? semanaRef.getTime() : vista === "mes" ? mesRef.getTime() : vista === "dia" ? diaRef.getTime() : "todas",
     !isProfessor ? filtroProfId : "",
   ].join(":");
 
@@ -284,6 +285,7 @@ function AgendaClientContent({
       }
       const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       let url = `/api/agenda?inicio=${fmt(inicio)}&fim=${fmt(fim)}`;
+      if (acessoPendencias) url += "&pendentes=1";
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
       const anos = Array.from(new Set([inicio.getFullYear(), fim.getFullYear()]));
       const [res, ...respostasFeriados] = await Promise.all([
@@ -309,7 +311,7 @@ function AgendaClientContent({
     } finally {
       if (requisicaoAtual === requisicaoAgendaRef.current) setCarregando(false);
     }
-  }, [vista, semanaRef, diaRef, mesRef, isProfessor, filtroProfId, chaveConsultaAtual]);
+  }, [vista, semanaRef, diaRef, mesRef, isProfessor, filtroProfId, acessoPendencias, chaveConsultaAtual]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => { void carregar(); }, 0);
@@ -320,12 +322,12 @@ function AgendaClientContent({
   function navAnterior() {
     if (vista === "semana") setSemanaRef((s) => addDays(s, -7));
     else if (vista === "mes") setMesRef((m) => addMonths(m, -1));
-    else setDiaRef((d) => addDays(d, -1));
+    else if (vista === "dia") setDiaRef((d) => addDays(d, -1));
   }
   function navProximo() {
     if (vista === "semana") setSemanaRef((s) => addDays(s, 7));
     else if (vista === "mes") setMesRef((m) => addMonths(m, 1));
-    else setDiaRef((d) => addDays(d, 1));
+    else if (vista === "dia") setDiaRef((d) => addDays(d, 1));
   }
   function irHoje() {
     const hoje = new Date();
@@ -943,6 +945,12 @@ function AgendaClientContent({
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${vista === "dia" ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"}`}>
             <List size={13}/> Dia
           </button>
+          {acessoPendencias && (
+            <button onClick={() => setVista("pendencias")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${vista === "pendencias" ? "bg-blue-600 shadow-sm text-white" : "text-blue-700 hover:text-blue-800"}`}>
+              <Clock size={13}/> Pendentes
+            </button>
+          )}
         </div>
 
         {/* Navegação */}
@@ -955,7 +963,9 @@ function AgendaClientContent({
               ? `${format(semanaRef, "dd/MM", { locale: ptBR })} – ${format(addDays(semanaRef, 6), "dd/MM/yyyy", { locale: ptBR })}`
               : vista === "mes"
                 ? capitalizar(format(mesRef, "MMMM 'de' yyyy", { locale: ptBR }))
-                : format(diaRef, "EEEE, dd/MM/yyyy", { locale: ptBR })
+                : vista === "dia"
+                  ? format(diaRef, "EEEE, dd/MM/yyyy", { locale: ptBR })
+                  : "Todas as pendências"
             }
           </span>
           <button onClick={navProximo} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
@@ -1101,6 +1111,58 @@ function AgendaClientContent({
             : "bg-emerald-50 border-emerald-200 text-emerald-800"
         }`}>
           {msgLimpar}
+        </div>
+      )}
+
+      {/* ── Pendências anteriores a hoje ──────────────────────────────────── */}
+      {vista === "pendencias" && (
+        <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-blue-200 bg-white">
+          <div className="shrink-0 border-b border-blue-100 bg-blue-50 px-5 py-4">
+            <h2 className="text-base font-bold text-slate-800">Aulas pendentes</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              {aulasFiltradas.length} aula(s) agendada(s) anterior(es) a hoje. Selecione uma aula para registrar o status.
+            </p>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto divide-y divide-slate-100">
+            {aulasFiltradas.length === 0 ? (
+              <p className="p-10 text-center text-sm text-slate-400">
+                {chaveConsultaCarregada !== chaveConsultaAtual || carregando
+                  ? "Carregando pendências…"
+                  : erroCarregamento ?? "Nenhuma aula pendente encontrada."}
+              </p>
+            ) : aulasFiltradas.map((aula) => (
+              <button
+                key={aula.id}
+                type="button"
+                onClick={() => {
+                  const dia = parseLocal(aula.data);
+                  setDiaRef(dia);
+                  setSemanaRef(semanaInicio(dia));
+                  setAulaDetalhe(aula);
+                  setObsEdit(aula.observacao ?? "");
+                  setMateriaDetalheIds(aula.materias?.map((m) => m.materia.id) ?? (aula.materiaId ? [aula.materiaId] : []));
+                  setErroStatus(null);
+                  setVerConteudo(false);
+                }}
+                className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-blue-50 focus:bg-blue-50 focus:outline-none"
+              >
+                <div className="min-w-32 text-sm font-semibold text-slate-700">
+                  {capitalizar(format(parseLocal(aula.data), "EEEE, dd 'de' MMMM", { locale: ptBR }))}
+                  <p className="mt-0.5 text-xs font-medium text-blue-700">{aula.horaInicio ?? "Sem horário"}{aula.horaFim ? ` – ${aula.horaFim}` : ""}</p>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-slate-800">{aula.aluno.nome}</p>
+                  <p className="truncate text-sm text-slate-500">
+                    {aula.materias.length > 0 ? aula.materias.map((item) => item.materia.nome).join(", ") : aula.materia?.nome ?? "Sem matéria"}
+                    {!isProfessor && ` · ${aula.professora.usuario.nome}`}
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-800">
+                  <Clock size={13}/> Pendente
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

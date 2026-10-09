@@ -108,7 +108,7 @@ export default function AgendaMobile({
   const [semana,    setSemana]    = useState(() => startOfWeek(dataInicial ? parseLocal(dataInicial) : new Date(), { weekStartsOn: 1 }));
   const [diaAtivo,  setDiaAtivo]  = useState(() => dataInicial ? parseLocal(dataInicial) : new Date());
   const [mesAtivo,  setMesAtivo]  = useState(() => startOfMonth(dataInicial ? parseLocal(dataInicial) : new Date()));
-  const [vista,     setVista]     = useState<"semana" | "dia" | "mes">(vistaInicial);
+  const [vista,     setVista]     = useState<"semana" | "dia" | "mes" | "pendencias">(() => acessoPendencias ? "pendencias" : vistaInicial);
   const [aulas,     setAulas]     = useState<Aula[]>([]);
   const [loading,   setLoading]   = useState(false);
   const [filtroProfId, setFiltroProfId] = useState(() => acessoPendencias ? "" : professoras[0]?.id ?? "");
@@ -176,6 +176,7 @@ export default function AgendaMobile({
       const fim = vista === "mes" ? endOfWeek(endOfMonth(mesAtivo), { weekStartsOn: 1 }) : addDays(semana, 6);
       const fmt = (d: Date) => d.toISOString().split("T")[0];
       let url = `/api/agenda?inicio=${fmt(ini)}&fim=${fmt(fim)}`;
+      if (acessoPendencias) url += "&pendentes=1";
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
       const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
@@ -183,7 +184,7 @@ export default function AgendaMobile({
     } finally {
       setLoading(false);
     }
-  }, [semana, mesAtivo, vista, isProfessor, filtroProfId]);
+  }, [semana, mesAtivo, vista, isProfessor, filtroProfId, acessoPendencias]);
 
   // A agenda remota precisa acompanhar imediatamente a semana e o professor selecionados.
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -591,7 +592,10 @@ export default function AgendaMobile({
       </div>
 
       {variant === "v2" && (
-        <div className="grid grid-cols-3 gap-1 bg-white border-b border-slate-200 px-3 py-2 shrink-0">
+        <div className={`grid ${acessoPendencias ? "grid-cols-4" : "grid-cols-3"} gap-1 bg-white border-b border-slate-200 px-3 py-2 shrink-0`}>
+          {acessoPendencias && <button onClick={() => setVista("pendencias")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "pendencias" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
+            Pendentes
+          </button>}
           <button onClick={() => setVista("dia")} className={`rounded-xl py-2 text-xs font-bold transition-colors ${vista === "dia" ? "bg-[#315be8] text-white" : "text-slate-500"}`}>
             Diária
           </button>
@@ -617,7 +621,7 @@ export default function AgendaMobile({
       )}
 
       {/* ── Navegação de semana ───────────────────────────────────────────── */}
-      <div className={`${vista === "mes" ? "hidden" : "flex"} bg-white border-b border-slate-100 px-4 py-2 items-center justify-between shrink-0`}>
+      <div className={`${vista === "mes" || vista === "pendencias" ? "hidden" : "flex"} bg-white border-b border-slate-100 px-4 py-2 items-center justify-between shrink-0`}>
         <button onClick={() => {
           if (vista === "dia") {
             const anterior = addDays(diaAtivo, -1);
@@ -698,6 +702,23 @@ export default function AgendaMobile({
             })}
           </div>
           <p className="mt-3 text-center text-[10px] text-slate-400">Toque em um dia para abrir sua agenda.</p>
+        </div>
+      )}
+
+      {vista === "pendencias" && (
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 bg-slate-50">
+          <div className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-950">
+            <strong>{aulas.length} aula(s) pendente(s)</strong>
+            <p className="mt-1 text-xs text-blue-800">Todas são anteriores a hoje e ainda estão agendadas.</p>
+          </div>
+          {loading ? <p className="py-10 text-center text-sm text-slate-400">Carregando pendências…</p> : aulas.length === 0 ? <p className="py-10 text-center text-sm text-slate-400">Nenhuma aula pendente.</p> : aulas.map((aula) => {
+            const dia = parseLocal(aula.data);
+            return <button key={aula.id} onClick={() => { setDiaAtivo(dia); setSemana(startOfWeek(dia, { weekStartsOn: 1 })); setDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheIds(aula.materias?.map((item) => item.materia.id) ?? []); }} className="w-full rounded-2xl border-l-4 border-blue-600 bg-white px-4 py-3 text-left shadow-sm">
+              <div className="flex items-start justify-between gap-3"><span><strong className="block text-sm text-slate-800">{aula.aluno.nome}</strong><span className="mt-1 block text-xs text-slate-500">{format(dia, "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })} · {aula.horaInicio ?? "Horário a definir"}</span></span><span className="rounded-full bg-blue-100 px-2 py-1 text-[10px] font-semibold text-blue-700">Pendente</span></div>
+              <p className="mt-2 text-xs text-slate-600">{aula.materias?.length ? aula.materias.map((item) => item.materia.nome).join(", ") : aula.materia?.nome ?? "Sem matéria"}</p>
+              {!isProfessor && <p className="mt-1 text-[11px] text-slate-400">Prof. {aula.professora.usuario.nome}</p>}
+            </button>;
+          })}
         </div>
       )}
 
