@@ -772,7 +772,8 @@ export default function AgendaMobile({
                 setConfirmExcluirAula(false);
                 setErroExcluirAula(null);
               }}
-                className="w-full text-left bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden active:scale-[0.98] transition-transform">
+                className="w-full text-left bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden active:scale-[0.98] transition-transform"
+                style={variant === "v2" ? { backgroundColor: coresAgenda(a).bg } : undefined}>
                 <div className="flex items-stretch">
                   <div className="w-1.5 shrink-0" style={{ backgroundColor: cor }}/>
                   <div className="flex-1 px-4 py-3">
