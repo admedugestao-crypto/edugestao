@@ -1251,7 +1251,7 @@ function AgendaClientContent({
                 return (
                   <div key={aula.id}
                     className="flex items-stretch gap-0 hover:brightness-[0.97] transition-all cursor-default"
-                    style={{ backgroundColor: cor + "18" }}>
+                    style={{ backgroundColor: destacarPendencias ? coresAgenda(aula).bg : cor + "18" }}>
                     {/* Barra lateral grossa */}
                     <div className="w-[5px] shrink-0 rounded-l-sm" style={{ backgroundColor: cor }}/>
                     {/* Hora */}

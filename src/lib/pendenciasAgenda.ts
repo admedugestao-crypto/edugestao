@@ -14,7 +14,7 @@ export function aulaPendente(aula: AulaComSituacao, hoje = dataHojeAgenda()) {
 
 const cores = {
   AGENDADA: { bg: "#f1f5f9", border: "#94a3b8", text: "#475569" },
-  REALIZADA: { bg: "#d1fae5", border: "#10b981", text: "#065f46" },
+  REALIZADA: { bg: "#dcfce7", border: "#15803d", text: "#14532d" },
   CANCELADA: { bg: "#fee2e2", border: "#ef4444", text: "#991b1b" },
   FALTA_ALUNO: { bg: "#fef3c7", border: "#f59e0b", text: "#92400e" },
   FALTA_PROFESSOR: { bg: "#ffedd5", border: "#f97316", text: "#9a3412" },
@@ -22,6 +22,6 @@ const cores = {
 
 export function coresAgenda(aula: AulaComSituacao, hoje = dataHojeAgenda()) {
   return aulaPendente(aula, hoje)
-    ? { bg: "#dbeafe", border: "#2563eb", text: "#1d4ed8" }
+    ? { bg: "#93c5fd", border: "#2563eb", text: "#172554" }
     : cores[aula.status];
 }
