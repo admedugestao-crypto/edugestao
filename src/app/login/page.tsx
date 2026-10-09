@@ -42,7 +42,7 @@ function LoginForm() {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
       <div className="text-center mb-8">
-        <Image src="/logo-edugestao-v2.png" alt="EduGestão V2" width={150} height={62} priority className="inline-block h-[62px] w-[150px] rounded-lg object-contain bg-white mb-3" />
+        <Image src="/logo-edugestao-v2.png" alt="EduGestão V2" width={150} height={62} priority unoptimized className="inline-block h-[62px] w-[150px] rounded-lg object-contain bg-white mb-3" />
         <h1 className="text-2xl font-bold text-slate-800">EduGestão</h1>
         <p className="text-slate-500 text-sm mt-1">Gestão de alunos</p>
       </div>
