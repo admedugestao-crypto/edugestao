@@ -5,7 +5,7 @@ import { ArrowUpRight, CalendarCheck2, CircleDollarSign, Sparkles, Users } from 
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import styles from "./v2.module.css";
-import { anoLetivoEncerrado, calcularMediaDasNotas, MEDIA_MINIMA_APROVACAO, obterPeriodoAtual } from "@/lib/alertasNotas";
+import { anoLetivoEncerrado, calcularMediaDasNotas, MEDIA_MINIMA_APROVACAO, obterUltimaNotaDisponivel } from "@/lib/alertasNotas";
 import { PERIODOS_ESCOLARES } from "@/lib/periodosAvaliacao";
 import FinanceiroDetalhesLink from "@/components/FinanceiroDetalhesLink";
 
@@ -69,10 +69,9 @@ export default async function V2Dashboard() {
     const periodos = escola.periodoAvaliacao ? PERIODOS_ESCOLARES[escola.periodoAvaliacao] : undefined;
     if (!periodos) return [];
     const alertas: { chave: string; aluno: string; materia: string; motivo: string; valor: number }[] = [];
-    const periodoAtual = obterPeriodoAtual(escola, hoje);
-    const notaDoPeriodoAtual = periodoAtual ? notasDaMateria.find((nota) => nota.periodo === periodoAtual.numero) : undefined;
-    if (notaDoPeriodoAtual && notaDoPeriodoAtual.valor < MEDIA_MINIMA_APROVACAO) {
-      alertas.push({ chave: `${referencia.id}:periodo`, aluno: referencia.aluno.nome, materia: referencia.materia.nome, motivo: `${periodoAtual?.rotulo}: ${notaDoPeriodoAtual.valor.toFixed(1)}`, valor: notaDoPeriodoAtual.valor });
+    const ultimaNota = obterUltimaNotaDisponivel(escola, hoje, notasDaMateria);
+    if (ultimaNota && ultimaNota.nota.valor < MEDIA_MINIMA_APROVACAO) {
+      alertas.push({ chave: `${referencia.id}:periodo`, aluno: referencia.aluno.nome, materia: referencia.materia.nome, motivo: `${ultimaNota.rotulo}: ${ultimaNota.nota.valor.toFixed(1)}`, valor: ultimaNota.nota.valor });
     }
     const notasRegulares = periodos.map((_, indice) => notasDaMateria.find((nota) => nota.periodo === indice + 1)?.valor);
     const mediaAnual = calcularMediaDasNotas(notasRegulares.filter((nota): nota is number => nota !== undefined));
@@ -129,7 +128,7 @@ export default async function V2Dashboard() {
 
         <aside className={styles.scheduleCard}>
           <div className={styles.sectionHeading}><div><span>{alunosComNotaBaixa} aluno(s) com notas baixas</span><h2>Atenção necessária</h2></div><Link href="/v2/avaliacoes">Ver planilha</Link></div>
-          <p className="text-xs text-slate-500 mb-3">Considera a nota do período atual e, após o fim do ano letivo, a média anual abaixo de {MEDIA_MINIMA_APROVACAO.toFixed(1)}.</p>
+          <p className="text-xs text-slate-500 mb-3">Considera a última nota lançada por matéria até o período atual e, após o fim do ano letivo, a média anual abaixo de {MEDIA_MINIMA_APROVACAO.toFixed(1)}.</p>
           {!alertasNotasBaixas.length ? <p>Nenhum aluno abaixo da média.</p> : <ul className="max-h-52 overflow-y-auto space-y-3">{alertasNotasBaixas.map((alerta) => <li key={alerta.chave} className="flex justify-between gap-3 text-sm"><div><strong>{alerta.aluno}</strong><p>{alerta.materia} · {alerta.motivo}</p></div><span>{alerta.valor.toFixed(1)} / {MEDIA_MINIMA_APROVACAO.toFixed(1)}</span></li>)}</ul>}
         </aside>
       </div>

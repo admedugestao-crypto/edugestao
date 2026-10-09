@@ -78,6 +78,24 @@ export function anoLetivoEncerrado(escola: Pick<EscolaComPeriodos, "periodoLetiv
   return !!escola.periodoLetivo2Fim && inicioDoDia(hoje).getTime() > inicioDoDia(escola.periodoLetivo2Fim).getTime();
 }
 
+/** Mantém a última nota regular no acompanhamento até a próxima ser lançada. */
+export function obterUltimaNotaDisponivel<T extends { periodo: number; valor: number }>(
+  escola: EscolaComPeriodos,
+  hoje: Date,
+  notas: T[],
+): { nota: T; rotulo: string } | null {
+  const periodos = escola.periodoAvaliacao ? PERIODOS_ESCOLARES[escola.periodoAvaliacao] : undefined;
+  if (!periodos?.length) return null;
+  if (escola.periodoLetivo1Inicio && inicioDoDia(hoje) < inicioDoDia(escola.periodoLetivo1Inicio)) return null;
+
+  const limite = obterPeriodoAtual(escola, hoje)?.numero ?? periodos.length;
+  const nota = notas.reduce<T | null>((ultima, atual) => {
+    if (atual.periodo < 1 || atual.periodo > limite || atual.periodo > periodos.length) return ultima;
+    return !ultima || atual.periodo > ultima.periodo ? atual : ultima;
+  }, null);
+  return nota ? { nota, rotulo: periodos[nota.periodo - 1] } : null;
+}
+
 export function calcularMediaDasNotas(valores: number[]) {
   return valores.length ? valores.reduce((total, valor) => total + valor, 0) / valores.length : null;
 }
