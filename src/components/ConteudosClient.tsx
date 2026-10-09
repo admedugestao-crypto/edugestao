@@ -728,7 +728,8 @@ export default function ConteudosClient({
         setModal(false);
         setNovo(formVazio());
         // Se gerou cobrança, avisa antes de sair da tela.
-        pagamentoInfo.mostrar(patchJson.pagamentoGerado, () => router.push(agendaPath));
+        const retorno = variant === "v2" ? `${agendaPath}?vista=mes&data=${novo.data.split("T")[0]}` : agendaPath;
+        pagamentoInfo.mostrar(patchJson.pagamentoGerado, () => router.push(retorno));
         return;
       }
 
@@ -825,7 +826,8 @@ export default function ConteudosClient({
         const dFresh = await resFresh.json();
         setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? mapConteudo(dFresh) : c));
         setEditConteudo(null);
-        pagamentoInfo.mostrar(dMin.pagamentoGerado);
+        const retorno = variant === "v2" ? `${agendaPath}?vista=mes&data=${editConteudo.data.split("T")[0]}` : agendaPath;
+        pagamentoInfo.mostrar(dMin.pagamentoGerado, aulaIdPendente ? () => router.push(retorno) : undefined);
         return;
       }
 
@@ -841,6 +843,11 @@ export default function ConteudosClient({
       }
       setConteudos((prev) => prev.map((c) => (c.id === data.id ? mapConteudo(data) : c)));
       setEditConteudo(null);
+      if (aulaIdPendente && !editConteudo.planejado) {
+        setAulaIdPendente(null);
+        const retorno = variant === "v2" ? `${agendaPath}?vista=mes&data=${editConteudo.data.split("T")[0]}` : agendaPath;
+        pagamentoInfo.mostrar(data.pagamentoGerado, () => router.push(retorno));
+      }
     } catch {
       setErroEdit("Erro de comunicação com o servidor.");
     } finally {

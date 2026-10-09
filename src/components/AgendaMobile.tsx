@@ -177,7 +177,7 @@ export default function AgendaMobile({
       const fmt = (d: Date) => d.toISOString().split("T")[0];
       let url = `/api/agenda?inicio=${fmt(ini)}&fim=${fmt(fim)}`;
       if (!isProfessor && filtroProfId) url += `&professoraId=${filtroProfId}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
       setAulas(Array.isArray(data) ? data : []);
     } finally {
@@ -478,6 +478,10 @@ export default function AgendaMobile({
             body: JSON.stringify({ status: "REALIZADA" }),
           });
           const dPatch = await resPatch.json().catch(() => ({}));
+          if (!resPatch.ok) {
+            setErroConteudo(dPatch.erro ?? "Conteúdo salvo, mas não foi possível atualizar a agenda.");
+            return;
+          }
           pagamentoGerado = dPatch.pagamentoGerado;
         }
       } else {
@@ -506,7 +510,12 @@ export default function AgendaMobile({
 
       setAulas((prev) => prev.map((a) => a.id === aulaId ? { ...a, status: "REALIZADA" } : a));
       setConteudoModal(null);
-      pagamentoInfo.mostrar(pagamentoGerado);
+      pagamentoInfo.mostrar(pagamentoGerado, variant === "v2" ? () => {
+        setDetalhe(null);
+        setDiaAtivo(parseLocal(form.data));
+        setMesAtivo(startOfMonth(parseLocal(form.data)));
+        setVista("mes");
+      } : undefined);
     } catch {
       setErroConteudo("Erro de comunicação com o servidor.");
     } finally {
