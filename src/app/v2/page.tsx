@@ -60,7 +60,7 @@ export default async function V2Dashboard() {
   ]);
 
   const dataPendencias = (primeiraPendente?.data ?? inicio).toISOString().slice(0, 10);
-  const linkPendencias = `/v2/agenda?vista=mes&data=${dataPendencias}&pendentes=1`;
+  const linkPendencias = `/v2/agenda?pendentes=1&data=${dataPendencias}`;
 
   const anoLetivo = hoje.getFullYear();
   const notasPorAlunoEMateria = new Map<string, typeof notasPeriodo>();

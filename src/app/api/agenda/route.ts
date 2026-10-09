@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
+import { dataHojeAgenda } from "@/lib/pendenciasAgenda";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ export async function GET(req: NextRequest) {
   const inicio          = searchParams.get("inicio");
   const fim             = searchParams.get("fim");
   const filtroProfId    = searchParams.get("professoraId"); // filtro opcional para admin
+  const somentePendentes = searchParams.get("pendentes") === "1";
 
   if (!inicio || !fim)
     return NextResponse.json({ erro: "Parâmetros inicio e fim são obrigatórios" }, { status: 400 });
@@ -42,7 +44,10 @@ export async function GET(req: NextRequest) {
   const dataInicio = utcDia(inicio);
   const dataFim    = utcDiaNum(fy, fm - 1, fd + 1); // exclusive: < próximo dia
 
-  const where: any = { empresaId: scope.empresaId, data: { gte: dataInicio, lt: dataFim } };
+  // A lista consolidada não pode ficar limitada ao mês aberto na agenda.
+  const where: any = somentePendentes
+    ? { empresaId: scope.empresaId, status: "AGENDADA", data: { lt: utcDia(dataHojeAgenda()) } }
+    : { empresaId: scope.empresaId, data: { gte: dataInicio, lt: dataFim } };
   if (scope.isAdmin) {
     // Admin pode filtrar por professora específica via query param
     if (filtroProfId) where.professoraId = filtroProfId;
