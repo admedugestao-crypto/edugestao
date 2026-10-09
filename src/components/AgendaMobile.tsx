@@ -13,6 +13,7 @@ import PagamentoGeradoModal, { type ParcelaGerada } from "@/components/Pagamento
 import SeletorMaterias from "@/components/SeletorMaterias";
 import BottomNavMobile from "@/components/BottomNavMobile";
 import DescricaoPorVozMobile from "@/components/DescricaoPorVozMobile";
+import { aulaPendente, coresAgenda } from "@/lib/pendenciasAgenda";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────────
 type Materia  = { id: string; nome: string; cor: string };
@@ -90,7 +91,11 @@ export default function AgendaMobile({
   isProfessor, isAdmin, nomeUsuario,
   professoraIdSessao, professoras, disponibilidades, alunos,
   variant = "legacy", aulaInicialId,
+  vistaInicial = "dia", dataInicial, acessoPendencias = false,
 }: {
+  vistaInicial?: "semana" | "dia" | "mes";
+  dataInicial?: string;
+  acessoPendencias?: boolean;
   isProfessor: boolean; isAdmin: boolean; nomeUsuario: string;
   professoraIdSessao: string;
   professoras: ProfOpt[]; disponibilidades: DispProf[];
@@ -100,13 +105,13 @@ export default function AgendaMobile({
 }) {
   const router = useRouter();
 
-  const [semana,    setSemana]    = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
-  const [diaAtivo,  setDiaAtivo]  = useState(new Date());
-  const [mesAtivo,  setMesAtivo]  = useState(() => startOfMonth(new Date()));
-  const [vista,     setVista]     = useState<"semana" | "dia" | "mes">("dia");
+  const [semana,    setSemana]    = useState(() => startOfWeek(dataInicial ? parseLocal(dataInicial) : new Date(), { weekStartsOn: 1 }));
+  const [diaAtivo,  setDiaAtivo]  = useState(() => dataInicial ? parseLocal(dataInicial) : new Date());
+  const [mesAtivo,  setMesAtivo]  = useState(() => startOfMonth(dataInicial ? parseLocal(dataInicial) : new Date()));
+  const [vista,     setVista]     = useState<"semana" | "dia" | "mes">(vistaInicial);
   const [aulas,     setAulas]     = useState<Aula[]>([]);
   const [loading,   setLoading]   = useState(false);
-  const [filtroProfId, setFiltroProfId] = useState(() => professoras[0]?.id ?? "");
+  const [filtroProfId, setFiltroProfId] = useState(() => acessoPendencias ? "" : professoras[0]?.id ?? "");
 
   // Modal nova aula
   const [modalAberto, setModalAberto] = useState(false);
@@ -592,10 +597,12 @@ export default function AgendaMobile({
       )}
 
       {/* ── Filtro professor (admin) ──────────────────────────────────────── */}
+      {variant === "v2" && <p className="bg-white px-4 py-2 text-[10px] text-slate-600"><span className="font-semibold text-blue-700">Azul: pendente</span> · <span className="font-semibold text-red-700">Vermelho: cancelada</span> · Cinza: agendada · Verde: realizada · Amarelo: falta do aluno · Laranja: falta do professor</p>}
       {isAdmin && professoras.length > 0 && (
         <div className="bg-white border-b border-slate-200 px-4 py-2 shrink-0">
           <select value={filtroProfId} onChange={(e) => setFiltroProfId(e.target.value)}
             className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            {acessoPendencias && <option value="">Todas as professoras</option>}
             {professoras.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
           </select>
         </div>
@@ -669,13 +676,13 @@ export default function AgendaMobile({
           </div>
           <div className="grid grid-cols-7 overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 gap-px">
             {diasDoMes.map((dia) => {
-              const aulasDia = aulas.filter((aula) => isSameDay(parseLocal(aula.data), dia) && aula.status !== "CANCELADA");
+              const aulasDia = aulas.filter((aula) => isSameDay(parseLocal(aula.data), dia) && (variant === "v2" || aula.status !== "CANCELADA"));
               return (
                 <button key={dia.toISOString()} onClick={() => { setDiaAtivo(dia); setSemana(startOfWeek(dia, { weekStartsOn: 1 })); setVista("dia"); }}
                   className={`min-h-16 p-1.5 text-left bg-white ${!isSameMonth(dia, mesAtivo) ? "opacity-35" : ""} ${isToday(dia) ? "ring-2 ring-inset ring-[#315be8]" : ""}`}>
                   <span className={`text-[11px] font-bold ${isToday(dia) ? "text-[#315be8]" : "text-slate-700"}`}>{format(dia, "dd")}</span>
                   <span className="mt-1 flex flex-wrap gap-0.5">
-                    {aulasDia.slice(0, 3).map((aula) => <i key={aula.id} className="h-1.5 w-1.5 rounded-full bg-[#315be8]" />)}
+                    {aulasDia.slice(0, 3).map((aula) => <i key={aula.id} className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: variant === "v2" ? coresAgenda(aula).border : "#315be8" }} />)}
                     {aulasDia.length > 3 ? <small className="text-[7px] text-slate-500">+{aulasDia.length - 3}</small> : null}
                   </span>
                 </button>
@@ -704,7 +711,7 @@ export default function AgendaMobile({
                 ) : (
                   <div className="divide-y divide-slate-100">
                     {aulasDia.map((aula) => {
-                      const cfg = STATUS_CFG[aula.status];
+                      const cfg = variant === "v2" && aulaPendente(aula) ? { ...STATUS_CFG[aula.status], label: "Pendente", bg: "bg-blue-100", cor: "text-blue-700" } : STATUS_CFG[aula.status];
                       return (
                         <button key={aula.id} onClick={() => { setDiaAtivo(dia); setVista("dia"); }}
                           className="flex w-full items-center gap-3 px-4 py-3 text-left">
@@ -744,8 +751,8 @@ export default function AgendaMobile({
         ) : timeline.map((item, j) =>
           item.tipo === "aula" ? (() => {
             const a   = item.aula;
-            const cor = a.materia?.cor ?? "#6366f1";
-            const cfg = STATUS_CFG[a.status];
+            const cor = variant === "v2" ? coresAgenda(a).border : a.materia?.cor ?? "#6366f1";
+            const cfg = variant === "v2" && aulaPendente(a) ? { ...STATUS_CFG[a.status], label: "Pendente", bg: "bg-blue-100", cor: "text-blue-700" } : STATUS_CFG[a.status];
             return (
               <button key={a.id} onClick={() => {
                 setDetalhe(a);

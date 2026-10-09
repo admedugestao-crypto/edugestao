@@ -11,11 +11,13 @@ import styles from "../v2.module.css";
 
 export const dynamic = "force-dynamic";
 
-export default async function V2AgendaPage({ searchParams }: { searchParams: Promise<{ aulaId?: string }> }) {
+export default async function V2AgendaPage({ searchParams }: { searchParams: Promise<{ aulaId?: string; vista?: string; data?: string; pendentes?: string }> }) {
   const scope = await getSessionScope();
   if (!scope) redirect("/login");
   const session = await auth();
-  const { aulaId } = await searchParams;
+  const { aulaId, vista, data, pendentes } = await searchParams;
+  const vistaInicial = vista === "mes" || vista === "semana" || vista === "dia" ? vista : undefined;
+  const dataInicial = data && /^\d{4}-\d{2}-\d{2}$/.test(data) && Number.isFinite(Date.parse(data)) ? data : undefined;
   const mobile = isMobileUserAgent((await headers()).get("user-agent"));
   const professoraId = scope.professoraId;
   const isProfessor = !scope.isAdmin && Boolean(professoraId);
@@ -49,6 +51,9 @@ export default async function V2AgendaPage({ searchParams }: { searchParams: Pro
       <div className={styles.agendaMobileFrame}>
         <AgendaMobile
           variant="v2"
+          vistaInicial={vistaInicial}
+          dataInicial={dataInicial}
+          acessoPendencias={pendentes === "1"}
           isProfessor={isProfessor}
           isAdmin={scope.isAdmin}
           nomeUsuario={session?.user?.name ?? ""}
@@ -82,6 +87,9 @@ export default async function V2AgendaPage({ searchParams }: { searchParams: Pro
 
       <section className={styles.agendaSurface} aria-label="Calendário de aulas">
         <AgendaClient
+          destacarPendencias
+          vistaInicial={vistaInicial}
+          dataInicial={dataInicial}
           conteudosPath="/v2/conteudos"
           alunos={alunos.map((aluno) => ({ ...aluno, materias: aluno.materias.map((item) => item.materia) }))}
           materias={materias}
