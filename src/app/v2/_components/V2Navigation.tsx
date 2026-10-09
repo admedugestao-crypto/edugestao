@@ -23,8 +23,10 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import styles from "../v2.module.css";
 import CompanyLogoEditor from "./CompanyLogoEditor";
+import type { VersaoApp } from "@/lib/versaoApp";
 
 type NavigationProps = {
+  versao: VersaoApp;
   ambiente: "Produção" | "Desenvolvimento";
   empresaNome: string;
   empresaLogoUrl: string | null;
@@ -58,7 +60,7 @@ function iniciais(nome: string) {
   return nome.split(" ").filter(Boolean).slice(0, 2).map((parte) => parte[0]).join("").toUpperCase();
 }
 
-export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }: NavigationProps) {
+export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario, versao }: NavigationProps) {
   const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
   const [editingLogo, setEditingLogo] = useState(false);
@@ -127,6 +129,11 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario }:
           </button>
         </div>
         <span className={styles.environment}>{ambiente}</span>
+        {versao.url ? (
+          <a className={styles.appVersion} href={versao.url} target="_blank" rel="noopener noreferrer" title="Ver esta versão no GitHub">
+            Versão {versao.numero} · {versao.commit?.slice(0, 7)}
+          </a>
+        ) : <span className={styles.appVersion}>Versão {versao.numero} · local</span>}
       </aside>
 
       <nav className={styles.mobileNav} aria-label="Atalhos principais">

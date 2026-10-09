@@ -5,6 +5,7 @@ import PresenceTracker from "@/components/PresenceTracker";
 import { redirect } from "next/navigation";
 import { V2Navigation } from "./_components/V2Navigation";
 import styles from "./v2.module.css";
+import { obterVersaoApp } from "@/lib/versaoApp";
 
 export default async function V2Layout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -32,6 +33,7 @@ export default async function V2Layout({ children }: { children: React.ReactNode
     <div className={styles.appShell}>
       <PresenceTracker />
       <V2Navigation
+        versao={obterVersaoApp()}
         ambiente={ambienteAtual()}
         empresaNome={empresa?.nome ?? "EduGestão"}
         empresaLogoUrl={empresa?.logoUrl ?? null}
