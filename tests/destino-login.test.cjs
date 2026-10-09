@@ -5,8 +5,9 @@ const mod={exports:{}};
 const code=esbuild.transformSync(fs.readFileSync('src/lib/destinoLogin.ts','utf8'),{loader:'ts',format:'cjs'}).code;
 vm.runInNewContext('(function(module,exports){'+code+'})',{URL})(mod,mod.exports);
 const destino=mod.exports.destinoV2AposLogin;
-test('login preserva rota e consulta V2',()=>{
- assert.equal(destino('/v2/conteudos?aluno=a'),'/v2/conteudos?aluno=a');
+test('login abre Visão geral mesmo quando a rota anterior era outra tela V2',()=>{
+ assert.equal(destino('/v2/conteudos?aluno=a'),'/v2');
+ assert.equal(destino('/v2/agenda?vista=mes'),'/v2');
  assert.equal(destino('/v2'),'/v2');
 });
 test('login rejeita destinos externos e fora da V2',()=>{

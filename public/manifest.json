@@ -2,7 +2,7 @@
   "name": "EduGestão",
   "short_name": "EduGestão",
   "description": "Agenda e conteúdos EduGestão",
-  "start_url": "/m",
+  "start_url": "/v2",
   "display": "standalone",
   "background_color": "#f1f5f9",
   "theme_color": "#4f46e5",
