@@ -15,6 +15,7 @@ import { ptBR } from "date-fns/locale";
 import { usePagamentoGeradoInfo } from "@/hooks/usePagamentoGeradoInfo";
 import PagamentoGeradoModal from "@/components/PagamentoGeradoModal";
 import SeletorMaterias from "@/components/SeletorMaterias";
+import { aulaPendente, coresAgenda } from "@/lib/pendenciasAgenda";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 type Materia = { id: string; nome: string; cor: string };
@@ -150,7 +151,11 @@ export default function AgendaClient(props: Parameters<typeof AgendaClientConten
 function AgendaClientContent({
   alunos, materias, professoras = [], isProfessor = true,
   disponibilidades = [], professoraIdSessao = "", conteudosPath = "/dashboard/conteudos",
+  vistaInicial = "semana", dataInicial, destacarPendencias = false,
 }: {
+  vistaInicial?: "semana" | "dia" | "mes";
+  dataInicial?: string;
+  destacarPendencias?: boolean;
   conteudosPath?: string;
   alunos: AlunoOpt[];
   materias: Materia[];
@@ -166,10 +171,10 @@ function AgendaClientContent({
     window.addEventListener("beforeprint", atualizarImpressao);
     return () => window.removeEventListener("beforeprint", atualizarImpressao);
   }, []);
-  const [vista, setVista]         = useState<"semana" | "dia" | "mes">("semana");
-  const [semanaRef, setSemanaRef] = useState(() => semanaInicio(new Date()));
-  const [diaRef, setDiaRef]       = useState(new Date());
-  const [mesRef, setMesRef]       = useState(() => startOfMonth(new Date()));
+  const [vista, setVista]         = useState<"semana" | "dia" | "mes">(vistaInicial);
+  const [semanaRef, setSemanaRef] = useState(() => semanaInicio(dataInicial ? parseLocal(dataInicial) : new Date()));
+  const [diaRef, setDiaRef]       = useState(() => dataInicial ? parseLocal(dataInicial) : new Date());
+  const [mesRef, setMesRef]       = useState(() => startOfMonth(dataInicial ? parseLocal(dataInicial) : new Date()));
   const [aulas, setAulas]         = useState<Aula[]>([]);
   const [feriados, setFeriados]   = useState<Feriado[]>([]);
   const [carregando, setCarregando] = useState(false);
@@ -880,7 +885,7 @@ function AgendaClientContent({
               {timeline.map((item, j) =>
                 item.tipo === "aula" ? (() => {
                   const a = item.aula;
-                  const cores = STATUS_COR[a.status];
+                  const cores = destacarPendencias ? coresAgenda(a) : STATUS_COR[a.status];
                   const materiasCard = a.materias?.length > 0
                     ? a.materias.map((m) => m.materia)
                     : (a.materia ? [a.materia] : []);
@@ -1055,6 +1060,7 @@ function AgendaClientContent({
       </div>
 
       {/* Feedback gerar */}
+      {destacarPendencias && <p className="px-3 py-2 text-xs text-slate-600"><span className="font-semibold text-blue-700">Azul: pendente</span> · <span className="font-semibold text-red-700">Vermelho: cancelada</span> · Cinza: agendada · Verde: realizada · Amarelo: falta do aluno · Laranja: falta do professor</p>}
       {msgGerar && (
         <div className={`text-sm font-medium px-4 py-2.5 rounded-xl border ${
           msgGerar.includes("Erro")
@@ -1139,12 +1145,13 @@ function AgendaClientContent({
                       <p className="text-[9px] text-red-600 font-medium px-1">+{feriadosDia.length - 1} feriado</p>
                     )}
                     {aulasDia.slice(0, MAX_VISIVEIS).map((a) => {
-                      const cor = a.materia?.cor ?? corAluno(a.alunoId);
+                      const cores = destacarPendencias ? coresAgenda(a) : null;
+                      const cor = cores?.text ?? a.materia?.cor ?? corAluno(a.alunoId);
                       return (
                         <div key={a.id}
-                          title={`${a.horaInicio ?? ""} ${a.aluno.nome}`}
+                          title={`${a.horaInicio ?? ""} ${a.aluno.nome} · ${destacarPendencias && aulaPendente(a) ? "Pendente" : STATUS_CONFIG[a.status].label}`}
                           className="text-[10px] font-medium truncate px-1 py-0.5 rounded"
-                          style={{ backgroundColor: cor + "22", color: cor }}
+                          style={{ backgroundColor: cores?.bg ?? cor + "22", color: cor }}
                         >
                           {a.horaInicio && <span className="font-semibold">{a.horaInicio} </span>}
                           {a.aluno.nome}
@@ -1191,7 +1198,7 @@ function AgendaClientContent({
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
                   {timeline.map((item, j) =>
                     item.tipo === "aula" ? (
-                      <CardAula key={item.aula.id} aula={item.aula} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
+                      <CardAula key={item.aula.id} aula={item.aula} destacarPendencias={destacarPendencias} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
                         setAulaDetalhe(item.aula); setObsEdit(item.aula.observacao ?? ""); setMateriaDetalheIds(item.aula.materias?.map((m) => m.materia.id) ?? (item.aula.materiaId ? [item.aula.materiaId] : [])); setErroStatus(null); setVerConteudo(false);
                         if (item.aula.status === "REALIZADA" && !item.aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
                       }}/>
@@ -1240,7 +1247,7 @@ function AgendaClientContent({
           ) : (
             <div className="min-h-0 flex-1 overflow-y-auto divide-y divide-slate-100">
               {aulasHoje.map((aula) => {
-                const cor = aula.materia?.cor ?? corAluno(aula.alunoId);
+                const cor = destacarPendencias ? coresAgenda(aula).border : aula.materia?.cor ?? corAluno(aula.alunoId);
                 return (
                   <div key={aula.id}
                     className="flex items-stretch gap-0 hover:brightness-[0.97] transition-all cursor-default"
@@ -1289,7 +1296,7 @@ function AgendaClientContent({
                     </div>
                     {/* Status + editar */}
                     <div className="flex items-center gap-2 shrink-0 pr-5 py-4">
-                      <BadgeStatus status={aula.status}/>
+                      <BadgeStatus status={aula.status} pendente={destacarPendencias && aulaPendente(aula)}/>
                       <button onClick={() => {
                         setAulaDetalhe(aula); setObsEdit(aula.observacao ?? ""); setMateriaDetalheIds(aula.materias?.map((m) => m.materia.id) ?? (aula.materiaId ? [aula.materiaId] : [])); setErroStatus(null); setVerConteudo(false);
                         if (aula.status === "REALIZADA" && !aula.observacao) setTimeout(() => obsRef.current?.focus(), 100);
@@ -1892,12 +1899,12 @@ const STATUS_COR: Record<StatusAula, { bg: string; border: string; text: string 
   FALTA_PROFESSOR: { bg: "#ffedd5", border: "#f97316", text: "#9a3412" },
 };
 
-function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = "" }: {
-  aula: Aula; onClick: () => void; mostrarProfessora?: boolean; filtroMateriaId?: string;
+function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = "", destacarPendencias = false }: {
+  aula: Aula; onClick: () => void; mostrarProfessora?: boolean; filtroMateriaId?: string; destacarPendencias?: boolean;
 }) {
   const [materiasAbertas, setMateriasAbertas] = useState(false);
-  const cfg    = STATUS_CONFIG[aula.status];
-  const cores  = STATUS_COR[aula.status];
+  const cfg = destacarPendencias && aulaPendente(aula) ? { ...STATUS_CONFIG[aula.status], label: "Pendente", bg: "bg-blue-100", cor: "text-blue-700" } : STATUS_CONFIG[aula.status];
+  const cores = destacarPendencias ? coresAgenda(aula) : STATUS_COR[aula.status];
   const materiasCard = aula.materias?.length > 0
     ? aula.materias.map((m) => m.materia)
     : (aula.materia ? [aula.materia] : []);
@@ -1971,8 +1978,8 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
   );
 }
 
-function BadgeStatus({ status }: { status: StatusAula }) {
-  const cfg = STATUS_CONFIG[status];
+function BadgeStatus({ status, pendente = false }: { status: StatusAula; pendente?: boolean }) {
+  const cfg = pendente ? { ...STATUS_CONFIG[status], label: "Pendente", bg: "bg-blue-100", cor: "text-blue-700" } : STATUS_CONFIG[status];
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${cfg.bg} ${cfg.cor}`}>
       {cfg.icon}{cfg.label}

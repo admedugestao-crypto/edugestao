@@ -8,6 +8,7 @@ import styles from "./v2.module.css";
 import { anoLetivoEncerrado, calcularMediaDasNotas, MEDIA_MINIMA_APROVACAO, obterUltimaNotaDisponivel } from "@/lib/alertasNotas";
 import { PERIODOS_ESCOLARES } from "@/lib/periodosAvaliacao";
 import FinanceiroDetalhesLink from "@/components/FinanceiroDetalhesLink";
+import { dataHojeAgenda } from "@/lib/pendenciasAgenda";
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +20,11 @@ export default async function V2Dashboard() {
   if (!scope) redirect("/login");
   const session = await auth();
   const hoje = new Date();
-  const inicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const inicio = new Date(`${dataHojeAgenda(hoje)}T00:00:00.000Z`);
   const fim = new Date(inicio);
   fim.setDate(fim.getDate() + 1);
 
-  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, notasPeriodo] = await Promise.all([
+  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, notasPeriodo, aulasPendentes, primeiraPendente] = await Promise.all([
     prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
     prisma.agendaAula.count({ where: { ...scopeWhere(scope), data: { gte: inicio, lt: fim } } }),
     prisma.pagamento.findMany({
@@ -54,7 +55,12 @@ export default async function V2Dashboard() {
         materia: { select: { id: true, nome: true } },
       },
     }),
+    prisma.agendaAula.count({ where: { ...scopeWhere(scope), status: "AGENDADA", data: { lt: inicio } } }),
+    prisma.agendaAula.findFirst({ where: { ...scopeWhere(scope), status: "AGENDADA", data: { lt: inicio } }, orderBy: [{ data: "asc" }, { horaInicio: "asc" }], select: { data: true } }),
   ]);
+
+  const dataPendencias = (primeiraPendente?.data ?? inicio).toISOString().slice(0, 10);
+  const linkPendencias = `/v2/agenda?vista=mes&data=${dataPendencias}&pendentes=1`;
 
   const anoLetivo = hoje.getFullYear();
   const notasPorAlunoEMateria = new Map<string, typeof notasPeriodo>();
@@ -102,7 +108,7 @@ export default async function V2Dashboard() {
 
       <section className={styles.metrics} aria-label="Indicadores principais">
         <article><span className={styles.metricIcon}><Users aria-hidden="true" size={20} /></span><div><small>Alunos acompanhados</small><strong>{alunosAtivos}</strong><p>ativos neste período</p></div><Link href="/v2/alunos" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
-        <article><span className={styles.metricIcon}><CalendarCheck2 aria-hidden="true" size={20} /></span><div><small>Ritmo de hoje</small><strong>{aulasHoje}</strong><p>aulas na agenda</p></div><Link href="/v2/agenda" className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
+        <article><span className={styles.metricIcon}><CalendarCheck2 aria-hidden="true" size={20} /></span><div><small>Aulas pendentes</small><strong>{aulasPendentes}</strong><p>anteriores a hoje, ainda agendadas</p></div><Link href={linkPendencias} className={styles.metricDetail}>Detalhes <ArrowUpRight aria-hidden="true" size={14} /></Link></article>
         <article><span className={styles.metricIcon}><CircleDollarSign aria-hidden="true" size={20} /></span><div><small>Valores em aberto</small><strong>{formatarMoeda(pendente)}</strong><p>acompanhamento financeiro</p></div><FinanceiroDetalhesLink className={styles.metricDetail} escolherVisao={scope.isAdmin && Boolean(scope.professoraId)} /></article>
       </section>
 
