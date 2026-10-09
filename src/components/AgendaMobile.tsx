@@ -192,7 +192,6 @@ export default function AgendaMobile({
   // ── Timeline do dia ────────────────────────────────────────────────────────
   function timelineDia(dia: Date) {
     const profId = isProfessor ? professoraIdSessao : (filtroProfId || null);
-    if (!isProfessor && !profId) return [];
     const aulasD = aulas.filter((a) => isSameDay(parseLocal(a.data), dia))
       .sort((a, b) => (a.horaInicio ?? "").localeCompare(b.horaInicio ?? ""));
     if (!profId) return aulasD.map((a) => ({ tipo: "aula" as const, aula: a }));
