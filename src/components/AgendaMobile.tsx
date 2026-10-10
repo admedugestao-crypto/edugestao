@@ -514,7 +514,7 @@ export default function AgendaMobile({
         setDetalhe(null);
         setDiaAtivo(parseLocal(form.data));
         setMesAtivo(startOfMonth(parseLocal(form.data)));
-        setVista("mes");
+        setVista(acessoPendencias ? "pendencias" : "mes");
       } : undefined);
     } catch {
       setErroConteudo("Erro de comunicação com o servidor.");

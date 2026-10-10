@@ -646,6 +646,7 @@ function AgendaClientContent({
         materiaIds: materiaIdsParaConteudo.join(","),
         data:       aulaDetalhe.data.split("T")[0],
       });
+      if (acessoPendencias) params.set("retorno", "pendencias");
       router.push(`${conteudosPath}?${params.toString()}`);
       return;
     }

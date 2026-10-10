@@ -600,6 +600,9 @@ export default function ConteudosClient({
   const router = useRouter();
   const conteudosPath = variant === "v2" ? "/v2/conteudos" : "/dashboard/conteudos";
   const agendaPath = variant === "v2" ? "/v2/agenda" : "/dashboard/agenda";
+  // O parâmetro é lido antes de limpar a URL de pré-preenchimento da aula.
+  // Assim, após salvar o conteúdo, o usuário volta ao mesmo contexto da agenda.
+  const [retornarParaPendencias] = useState(() => searchParams.get("retorno") === "pendencias");
   const [buscaLista, setBuscaLista] = useState("");
 
   const [conteudos, setConteudos] = useState(conteudosIniciais);
@@ -728,7 +731,9 @@ export default function ConteudosClient({
         setModal(false);
         setNovo(formVazio());
         // Se gerou cobrança, avisa antes de sair da tela.
-        const retorno = variant === "v2" ? `${agendaPath}?vista=mes&data=${novo.data.split("T")[0]}` : agendaPath;
+        const retorno = variant === "v2"
+          ? retornarParaPendencias ? `${agendaPath}?pendentes=1` : `${agendaPath}?vista=mes&data=${novo.data.split("T")[0]}`
+          : agendaPath;
         pagamentoInfo.mostrar(patchJson.pagamentoGerado, () => router.push(retorno));
         return;
       }
@@ -826,7 +831,9 @@ export default function ConteudosClient({
         const dFresh = await resFresh.json();
         setConteudos((prev) => prev.map((c) => c.id === editConteudo.id ? mapConteudo(dFresh) : c));
         setEditConteudo(null);
-        const retorno = variant === "v2" ? `${agendaPath}?vista=mes&data=${editConteudo.data.split("T")[0]}` : agendaPath;
+        const retorno = variant === "v2"
+          ? retornarParaPendencias ? `${agendaPath}?pendentes=1` : `${agendaPath}?vista=mes&data=${editConteudo.data.split("T")[0]}`
+          : agendaPath;
         pagamentoInfo.mostrar(dMin.pagamentoGerado, aulaIdPendente ? () => router.push(retorno) : undefined);
         return;
       }
@@ -845,7 +852,9 @@ export default function ConteudosClient({
       setEditConteudo(null);
       if (aulaIdPendente && !editConteudo.planejado) {
         setAulaIdPendente(null);
-        const retorno = variant === "v2" ? `${agendaPath}?vista=mes&data=${editConteudo.data.split("T")[0]}` : agendaPath;
+        const retorno = variant === "v2"
+          ? retornarParaPendencias ? `${agendaPath}?pendentes=1` : `${agendaPath}?vista=mes&data=${editConteudo.data.split("T")[0]}`
+          : agendaPath;
         pagamentoInfo.mostrar(data.pagamentoGerado, () => router.push(retorno));
       }
     } catch {
