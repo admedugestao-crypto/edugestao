@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { ambienteAtual } from "@/lib/ambiente";
 import { prisma } from "@/lib/prisma";
 import PresenceTracker from "@/components/PresenceTracker";
+import RegistrarAcesso from "@/components/RegistrarAcesso";
 import { redirect } from "next/navigation";
 import { V2Navigation } from "./_components/V2Navigation";
 import styles from "./v2.module.css";
@@ -32,6 +33,7 @@ export default async function V2Layout({ children }: { children: React.ReactNode
   return (
     <div className={styles.appShell}>
       <PresenceTracker />
+      <RegistrarAcesso />
       <V2Navigation
         versao={obterVersaoApp()}
         ambiente={ambienteAtual()}
