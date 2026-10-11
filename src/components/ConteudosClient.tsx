@@ -401,6 +401,7 @@ function CamposForm({
   filtroProfId,
   setFiltroProfId,
   onCampoChave,
+  compacto = false,
 }: {
   form: FormC;
   setForm: (f: FormC) => void;
@@ -412,6 +413,7 @@ function CamposForm({
   setFiltroProfId: (id: string) => void;
   somentePlanejado?: boolean;
   onCampoChave?: () => void;
+  compacto?: boolean;
 }) {
   // Professora: a lista de alunos já vem restrita à dela pelo servidor, não
   // precisa (nem deve) depender de filtroProfId estar setado.
@@ -525,26 +527,46 @@ function CamposForm({
       <DescricaoPorVozMobile
         value={form.descricao}
         onChange={(descricao) => setForm({ ...form, descricao })}
+        compacto={compacto}
       />
 
       {/* Documento anexo */}
-      <UploadArquivo
-        arquivoUrl={form.arquivoUrl}
-        arquivoNome={form.arquivoNome}
-        materiaIds={form.materiaIds}
-        serie={alunoSel?.serie}
-        metodoEscola={alunoSel?.escolaMetodo}
-        onChange={(url, nome) => setForm({ ...form, arquivoUrl: url, arquivoNome: nome })}
-        onSelecionarBiblioteca={(material) =>
-          setForm({
-            ...form,
-            topico: material.titulo,
-            descricao: material.descricao ?? "",
-            arquivoUrl: material.arquivoUrl,
-            arquivoNome: material.arquivoNome || material.titulo,
-          })
-        }
-      />
+      {compacto ? (
+        <details className="group rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+          <summary className="cursor-pointer text-xs font-medium text-slate-600 marker:text-indigo-600">
+            Documento anexo{form.arquivoUrl ? " disponível" : " (opcional)"}
+          </summary>
+          <div className="pt-2">
+            <UploadArquivo
+              arquivoUrl={form.arquivoUrl}
+              arquivoNome={form.arquivoNome}
+              materiaIds={form.materiaIds}
+              serie={alunoSel?.serie}
+              metodoEscola={alunoSel?.escolaMetodo}
+              onChange={(url, nome) => setForm({ ...form, arquivoUrl: url, arquivoNome: nome })}
+              onSelecionarBiblioteca={(material) => setForm({ ...form, topico: material.titulo, descricao: material.descricao ?? "", arquivoUrl: material.arquivoUrl, arquivoNome: material.arquivoNome || material.titulo })}
+            />
+          </div>
+        </details>
+      ) : (
+        <UploadArquivo
+          arquivoUrl={form.arquivoUrl}
+          arquivoNome={form.arquivoNome}
+          materiaIds={form.materiaIds}
+          serie={alunoSel?.serie}
+          metodoEscola={alunoSel?.escolaMetodo}
+          onChange={(url, nome) => setForm({ ...form, arquivoUrl: url, arquivoNome: nome })}
+          onSelecionarBiblioteca={(material) =>
+            setForm({
+              ...form,
+              topico: material.titulo,
+              descricao: material.descricao ?? "",
+              arquivoUrl: material.arquivoUrl,
+              arquivoNome: material.arquivoNome || material.titulo,
+            })
+          }
+        />
+      )}
     </div>
   );
 }
@@ -1187,6 +1209,7 @@ export default function ConteudosClient({
                 setFiltroProfId={setFiltroProfId}
                 somentePlanejado={true}
                 onCampoChave={() => setErroEdit("")}
+                compacto={!!aulaIdPendente}
               />
 
               {/* O status já foi definido como Realizada ao partir da agenda.
