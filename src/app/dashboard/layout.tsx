@@ -1,3 +1,4 @@
+import RegistrarAcesso from "@/components/RegistrarAcesso";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
@@ -27,6 +28,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden">
       <PresenceTracker />
+      <RegistrarAcesso />
       <div className="print:hidden">
         <Sidebar usuario={usuario} ambiente={ambienteAtual()} />
       </div>

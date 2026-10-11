@@ -1,3 +1,4 @@
+import RegistrarAcesso from "@/components/RegistrarAcesso";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PresenceTracker from "@/components/PresenceTracker";
@@ -10,6 +11,7 @@ export default async function MobileLayout({ children }: { children: React.React
   return (
     <div className="min-h-screen bg-slate-100">
       <PresenceTracker />
+      <RegistrarAcesso />
       {children}
     </div>
   );

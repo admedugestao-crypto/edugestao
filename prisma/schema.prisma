@@ -61,6 +61,7 @@ model Empresa {
   emailPass String?
   emailFrom String?
 
+  acessosApp           AcessoApp[]
   usuarios             Usuario[]
   professoras          Professora[]
   materias             Materia[]
@@ -106,6 +107,7 @@ model Usuario {
   empresa       Empresa?      @relation(fields: [empresaId], references: [id])
   professora    Professora?
   sessoesAtivas SessaoAtiva[]
+  acessosApp AcessoApp[]
 
   @@unique([empresaId, email])
   @@index([empresaId])
@@ -693,4 +695,21 @@ model NotificacaoConteudo {
 
   @@index([empresaId])
   @@map("notificacoes_conteudo")
+}
+
+// Visitas aos módulos; identidade e empresa sempre derivadas da sessão.
+model AcessoApp {
+  id        String   @id
+  empresaId String
+  usuarioId String
+  modulo    String
+  canal     String
+  criadoEm  DateTime @default(now())
+  empresa   Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([criadoEm])
+  @@index([empresaId, criadoEm])
+  @@index([usuarioId, criadoEm])
+  @@map("acessos_app")
 }
