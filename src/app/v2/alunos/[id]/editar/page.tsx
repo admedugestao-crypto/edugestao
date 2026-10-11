@@ -21,7 +21,16 @@ export default async function EditarAlunoV2Page({ params }: { params: Promise<{ 
   if (!aluno || aluno.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aluno.professoraId)) notFound();
   const inicial = { ...aluno, valorCobranca: aluno.valorCobranca == null ? null : Number(aluno.valorCobranca), unidade: { ...aluno.unidade, escolaId: aluno.unidade.escolaId ?? aluno.unidadeId }, materias: aluno.materias.map((item) => ({ materiaId: item.materiaId })) };
   return <div className={styles.studentFormPage}>
-    <header className={styles.studentFormHeader}><div><p><Pencil size={15}/> Atualizar cadastro</p><h1>Editar <em>aluno.</em></h1><span>{aluno.nome}</span></div></header>
+    <header className={styles.studentFormHeader}>
+      <p><Pencil size={15}/> Atualizar cadastro</p>
+      <div className={styles.studentEditHeading}>
+        <h1>Editar <em>aluno.</em></h1>
+        <div className={styles.studentEditIdentity} aria-label="Identificação do aluno">
+          <strong>{aluno.nome}</strong>
+          <small>{aluno.serie} · {aluno.unidade.escola.nome}</small>
+        </div>
+      </div>
+    </header>
     <section className={styles.studentFormSurface}><AlunoForm variant="v2" escolas={escolas} materias={materias} alunoInicial={inicial} professoras={professoras.map((item) => ({ ...item, disponibilidade: (item.disponibilidade as { dia: string; inicio: string; fim: string }[]) ?? [] }))} perfil={scope.perfil} isAdmin={scope.isAdmin} dispProfessora={scope.isAdmin ? null : ((professora?.disponibilidade as { dia: string; inicio: string; fim: string }[]) ?? [])}/></section>
   </div>;
 }
