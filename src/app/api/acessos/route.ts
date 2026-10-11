@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   await prisma.acessoApp.upsert({
     where: { id: body.eventoId }, update: {},
     create: { id: body.eventoId, empresaId: scope.empresaId, usuarioId: scope.userId,
-      modulo, canal: body.rota.startsWith("/m") ? "MOBILE" : "WEB" },
+      modulo, canal: body.canal === "MOBILE" || /^\/m(\/|$)/.test(body.rota) ? "MOBILE" : "WEB" },
   });
   return new NextResponse(null, { status: 204 });
 }

@@ -12,7 +12,8 @@ export default function RegistrarAcesso() {
     ultimaRota.current = pathname;
     void fetch("/api/acessos", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rota: pathname, eventoId: crypto.randomUUID() }),
+      body: JSON.stringify({ rota: pathname, eventoId: crypto.randomUUID(),
+        canal: /^\/m(\/|$)/.test(pathname) || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "MOBILE" : "WEB" }),
       keepalive: true,
     }).catch(() => { /* A coleta não interrompe o uso do aplicativo. */ });
   }, [pathname]);
