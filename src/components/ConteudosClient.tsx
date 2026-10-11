@@ -1166,14 +1166,16 @@ export default function ConteudosClient({
       {/* ── Modal Editar Conteúdo ─────────────────────────────────────────── */}
       {editConteudo && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[90vh]">
+          <div className={`bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col ${
+            aulaIdPendente ? "max-h-[calc(100dvh-2rem)]" : "max-h-[90vh]"
+          }`}>
             {/* Cabeçalho fixo */}
             <div className="px-5 pt-4 pb-3 border-b border-slate-100 shrink-0">
               <h2 className="text-lg font-bold text-slate-800">Editar Conteúdo</h2>
             </div>
 
             {/* Corpo rolável */}
-            <div className="overflow-y-auto px-5 py-3 flex-1 space-y-4">
+            <div className="min-h-0 overflow-y-auto px-5 py-3 flex-1 space-y-4">
               <CamposForm
                 form={editConteudo}
                 setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
@@ -1187,8 +1189,10 @@ export default function ConteudosClient({
                 onCampoChave={() => setErroEdit("")}
               />
 
-              {/* Status — só aparece ao editar */}
-              <div>
+              {/* O status já foi definido como Realizada ao partir da agenda.
+                  Nesse fluxo, a opção não deve ocupar espaço nem permitir uma
+                  alteração que contrarie a ação iniciada pelo usuário. */}
+              {!aulaIdPendente && <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Status da aula</label>
                 {/* Se já está Ministrado (veio da agenda), não permite voltar para Planejado */}
                 {conteudos.find((c) => c.id === editConteudo.id)?.planejado === false ? (
@@ -1226,7 +1230,7 @@ export default function ConteudosClient({
                     </button>
                   </div>
                 )}
-              </div>
+              </div>}
             </div>
 
             {/* Rodapé fixo — erro + botões sempre visíveis */}
