@@ -243,3 +243,15 @@ a.appVersion:focus-visible { outline:2px solid white; outline-offset:3px; border
   .dashboard .sectionHeading p { margin-bottom:3px; }
   .dashboard .metrics article { padding:7px 12px; }
 }
+
+.studentEditHeading { display:flex; align-items:center; gap:18px; }
+.studentEditHeading h1 { flex:none; }
+.studentEditIdentity { flex:1; min-width:0; padding-left:18px; border-left:1px solid var(--line); overflow-wrap:anywhere; }
+.studentEditIdentity strong { display:block; color:var(--ink); font-size:16px; line-height:1.3; }
+.studentEditIdentity small { display:block; margin-top:3px; color:#68758a; font-size:12px; line-height:1.4; }
+@media (max-width:720px) {
+  .studentEditHeading { gap:12px; }
+  .studentEditIdentity { padding-left:12px; }
+  .studentEditIdentity strong { font-size:13px; }
+  .studentEditIdentity small { font-size:11px; }
+}
