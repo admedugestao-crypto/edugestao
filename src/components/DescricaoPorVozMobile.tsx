@@ -27,9 +27,10 @@ type BrowserSpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
 type Props = {
   value: string;
   onChange: (value: string) => void;
+  compacto?: boolean;
 };
 
-export default function DescricaoPorVozMobile({ value, onChange }: Props) {
+export default function DescricaoPorVozMobile({ value, onChange, compacto = false }: Props) {
   const [nativo, setNativo] = useState(false);
   const [ouvindo, setOuvindo] = useState(false);
   const [iniciando, setIniciando] = useState(false);
@@ -176,10 +177,10 @@ export default function DescricaoPorVozMobile({ value, onChange }: Props) {
       <div className="relative">
         <textarea
           ref={textareaRef}
-          rows={3}
+          rows={compacto ? 2 : 3}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full border border-slate-200 rounded-xl px-3 py-3 pr-12 text-sm resize-none"
+          className={`w-full border border-slate-200 rounded-xl px-3 pr-12 text-sm resize-none ${compacto ? "py-2" : "py-3"}`}
         />
         <button
           type="button"
@@ -188,7 +189,7 @@ export default function DescricaoPorVozMobile({ value, onChange }: Props) {
           disabled={iniciando}
           aria-label={ouvindo ? "Encerrar ditado" : "Ditado por voz"}
           title={ouvindo ? "Encerrar ditado" : "Ditado por voz"}
-          className={`absolute right-2 bottom-2 w-9 h-9 rounded-full flex items-center justify-center transition-colors disabled:opacity-60 ${
+          className={`absolute right-2 ${compacto ? "bottom-1.5 w-8 h-8" : "bottom-2 w-9 h-9"} rounded-full flex items-center justify-center transition-colors disabled:opacity-60 ${
             ouvindo ? "bg-red-100 text-red-600" : "bg-indigo-50 text-indigo-600 active:bg-indigo-100"
           }`}
         >
