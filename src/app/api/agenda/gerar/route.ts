@@ -1,3 +1,4 @@
+import { datasRecorrencia, type HorarioAgenda } from "@/lib/recorrenciaAgenda";
 import { obterFeriadosBrasil } from "@/lib/feriados";
 import { dataFinanceiraValida } from "@/lib/validarPagamento";
 import { NextRequest, NextResponse } from "next/server";
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
     where: whereBase,
     select: {
       id: true, nome: true, professoraId: true,
-      diaSemana: true, horaAula: true, agendaSemanal: true,
+      diaSemana: true, horaAula: true, agendaSemanal: true, periodicidadeAgenda: true,
       dataInicioContrato: true, dataFimContrato: true,
       materias: { select: { materiaId: true } },
       unidade: {
@@ -99,7 +100,7 @@ export async function POST(req: NextRequest) {
   });
 
   // Separa quem tem agenda
-  type AgendaEntry = { diaSemana: number; horaAula: string };
+  type AgendaEntry = HorarioAgenda;
   function getEntradas(a: typeof todosAlunos[0]): AgendaEntry[] {
     const saved = a.agendaSemanal as any;
     if (Array.isArray(saved) && saved.length > 0) return saved;
@@ -168,19 +169,23 @@ export async function POST(req: NextRequest) {
     // Itera sobre cada entrada da agenda semanal
     for (const entrada of getEntradas(aluno)) {
       if (!Number.isInteger(entrada.diaSemana) || entrada.diaSemana < 0 || entrada.diaSemana > 6 || !/^([01]\d|2[0-2]):[0-5]\d$/.test(entrada.horaAula)) {
-        semAgendaLista.push({ alunoNome: aluno.nome, motivo: "Horário semanal inválido; revise o cadastro." }); continue;
+        semAgendaLista.push({ alunoNome: aluno.nome, motivo: "Horário de aula inválido; revise o cadastro." }); continue;
       }
-      const diaSemanaEntrada = entrada.diaSemana;
       const horaInicio       = entrada.horaAula;
       const [h, m]           = horaInicio.split(":").map(Number);
       const horaFim          = `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
-      let dataAula = new Date(inicioAluno);
-      while (dataAula.getUTCDay() !== diaSemanaEntrada) {
-        dataAula.setUTCDate(dataAula.getUTCDate() + 1);
+      const fimAno = Math.floor(fimAluno / 10000);
+      const fimMes = Math.floor((fimAluno % 10000) / 100) - 1;
+      const fimDia = fimAluno % 100;
+      let ocorrencias: Date[];
+      try {
+        ocorrencias = datasRecorrencia(entrada, aluno.periodicidadeAgenda, inicioAluno, new Date(Date.UTC(fimAno, fimMes, fimDia)));
+      } catch {
+        semAgendaLista.push({ alunoNome: aluno.nome, motivo: "Informe a primeira aula para a periodicidade quinzenal ou mensal." });
+        continue;
       }
-
-      while (toInt(dataAula) <= fimAluno) {
+      for (const dataAula of ocorrencias) {
         const dY = dataAula.getUTCFullYear();
         const dM = dataAula.getUTCMonth();
         const dD = dataAula.getUTCDate();
@@ -190,14 +195,13 @@ export async function POST(req: NextRequest) {
         const rangeLt  = new Date(Date.UTC(dY, dM, dD + 1));
 
         if (diasFeriados.has(dataUTC.toISOString().slice(0, 10)) || feriadosLocais.some(f => dataUTC >= f.dataInicio && dataUTC <= f.dataFim)) {
-          ignoradas++; dataAula.setUTCDate(dataAula.getUTCDate() + 7); continue;
+          ignoradas++; continue;
         }
 
         // Pula silenciosamente aulas dentro do período de férias da escola
         if (feriasInicio !== null && feriasFim !== null) {
           const dataAulaInt = toInt(dataAula);
           if (dataAulaInt > feriasInicio && dataAulaInt < feriasFim) {
-            dataAula.setUTCDate(dataAula.getUTCDate() + 7);
             continue;
           }
         }
@@ -206,7 +210,6 @@ export async function POST(req: NextRequest) {
         const ehHoje = toInt(dataAula) === toInt(hoje);
         if (ehHoje && horaInicio <= horaAgora) {
           ignoradas++;
-          dataAula.setUTCDate(dataAula.getUTCDate() + 7);
           continue;
         }
 
@@ -215,9 +218,9 @@ export async function POST(req: NextRequest) {
           select: { id: true, alunoId: true, horaInicio: true, horaFim: true, status: true, materiaId: true, aluno: { select: { nome: true } } },
         });
 
-        // Conflito real de horário: outro aluno ocupando o mesmo professor neste intervalo
+        // Verifica também horários diferentes do mesmo aluno que coincidam em meses menores.
         const aulaConflitante = aulasNoDia.find(
-          (a) => a.alunoId !== aluno.id && a.status !== "CANCELADA" && a.horaInicio && a.horaFim &&
+          (a) => (a.alunoId !== aluno.id || a.horaInicio !== horaInicio) && a.status !== "CANCELADA" && a.horaInicio && a.horaFim &&
                  horaInicio < a.horaFim && horaFim > a.horaInicio,
         );
 
@@ -229,7 +232,6 @@ export async function POST(req: NextRequest) {
             conflitoHoraInicio: aulaConflitante.horaInicio!,
             conflitoHoraFim:    aulaConflitante.horaFim!,
           });
-          dataAula.setUTCDate(dataAula.getUTCDate() + 7);
           continue;
         }
 
@@ -249,7 +251,6 @@ export async function POST(req: NextRequest) {
             });
           }
           ignoradas++;
-          dataAula.setUTCDate(dataAula.getUTCDate() + 7);
           continue;
         }
 
@@ -282,7 +283,7 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        if (foraDispLista.length > avisosAntes) { ignoradas++; dataAula.setUTCDate(dataAula.getUTCDate() + 7); continue; }
+        if (foraDispLista.length > avisosAntes) { ignoradas++; continue; }
 
         // Uma única aula, vinculada a todas as matérias parametrizadas no cadastro do aluno
         const materiaIds = aluno.materias.map((m) => m.materiaId);
@@ -299,7 +300,6 @@ export async function POST(req: NextRequest) {
         });
         criadas++;
 
-        dataAula.setUTCDate(dataAula.getUTCDate() + 7);
       }
     }
   }

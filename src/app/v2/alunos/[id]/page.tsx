@@ -1,4 +1,5 @@
 import { podeAcessarProfessora } from "@/lib/permissions";
+import { descricaoHorarioAgenda, type HorarioAgenda } from "@/lib/recorrenciaAgenda";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { ArrowLeft, BookOpen, CalendarDays, CircleDollarSign, MapPin, Pencil, Printer, School, User } from "lucide-react";
@@ -19,7 +20,7 @@ export default async function AlunoV2Page({ params }: { params: Promise<{ id: st
   const aluno = await prisma.aluno.findUnique({ where: { id }, include: { unidade: { include: { escola: true } }, materias: { include: { materia: true } }, professora: { include: { usuario: { select: { nome: true } } } } } });
   if (!aluno || aluno.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, aluno.professoraId)) notFound();
   const endereco = [[aluno.rua, aluno.numero].filter(Boolean).join(", "), aluno.bairro, [aluno.cidade, aluno.estado].filter(Boolean).join(" · ")].filter(Boolean).join(" — ");
-  const agendaAtual = (Array.isArray(aluno.agendaSemanal) ? aluno.agendaSemanal : []) as { diaSemana: number; horaAula: string }[];
+  const agendaAtual = (Array.isArray(aluno.agendaSemanal) ? aluno.agendaSemanal : []) as HorarioAgenda[];
   const agenda = agendaAtual.length ? agendaAtual : aluno.diaSemana != null && aluno.horaAula ? [{ diaSemana: aluno.diaSemana, horaAula: aluno.horaAula }] : [];
   const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   return <div className={styles.studentViewPage}>
@@ -37,7 +38,7 @@ export default async function AlunoV2Page({ params }: { params: Promise<{ id: st
       <article><h2><School size={16}/> Vida escolar</h2><div className={styles.studentData}><Data label="Escola" value={aluno.unidade.escola.nome}/><Data label="Unidade" value={aluno.unidade.nome}/><Data label="Série / turma" value={`${aluno.serie}${aluno.turma ? ` — ${aluno.turma}` : ""}`}/><Data label="Professor(a)" value={aluno.professora?.usuario.nome}/></div></article>
       <article><h2><MapPin size={16}/> Endereço</h2><p className={styles.studentParagraph}>{endereco || "Nenhum endereço cadastrado."}</p></article>
       <article><h2><BookOpen size={16}/> Disciplinas</h2><div className={styles.subjectTags}>{aluno.materias.map(({ materia }) => <span key={materia.id} style={{ borderColor: materia.cor, color: materia.cor }}>{materia.nome}</span>)}</div></article>
-      <article><h2><CalendarDays size={16}/> Agenda fixa</h2><div className={styles.subjectTags}>{agenda.length ? agenda.map((item, index) => <span key={index}>{dias[item.diaSemana]} · {item.horaAula}</span>) : <p className={styles.studentParagraph}>Nenhum horário fixo.</p>}</div></article>
+      <article><h2><CalendarDays size={16}/> Agenda fixa</h2><div className={styles.subjectTags}>{agenda.length ? agenda.map((item, index) => <span key={index}>{descricaoHorarioAgenda(item, aluno.periodicidadeAgenda)}</span>) : <p className={styles.studentParagraph}>Nenhum horário fixo.</p>}</div></article>
       <article><h2><CircleDollarSign size={16}/> Contrato e cobrança</h2><div className={styles.studentData}><Data label="Modelo" value={aluno.tipoCobranca?.replace("_", " ")}/><Data label="Valor" value={aluno.valorCobranca == null ? null : Number(aluno.valorCobranca).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/>{(aluno.tipoCobranca === "MENSAL" || aluno.tipoCobranca === "QUINZENAL") && <Data label="Dia do vencimento" value={aluno.diaPagamento?.toString()}/>}
         {aluno.tipoCobranca === "QUINZENAL" && <Data label="2º vencimento (dia)" value={aluno.diaPagamento2?.toString()}/>}
         {aluno.tipoCobranca === "SEMANAL" && <Data label="Dia de vencimento semanal" value={aluno.diaSemanaCobranca == null ? null : dias[aluno.diaSemanaCobranca]}/>}

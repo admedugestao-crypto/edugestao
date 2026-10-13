@@ -395,7 +395,8 @@ model Aluno {
   diaPagamento2       Int? // 2ª parcela (apenas QUINZENAL)
   diaSemana           Int? // legado — mantido para retrocompat
   horaAula            String? // legado — mantido para retrocompat
-  agendaSemanal       Json? // [{ diaSemana: 1, horaAula: "14:00" }, ...]
+  agendaSemanal       Json? // [{ diaSemana: 1, horaAula: "14:00", dataPrimeiraAula: "2026-10-15" }, ...]
+  periodicidadeAgenda PeriodicidadeAgenda @default(SEMANAL)
   diaSemanaCobranca   Int? // 0=Dom … 6=Sáb (vencimento semanal — SEMANAL)
   // ── Período contratual ───────────────────────────────────────────────
   dataInicioContrato  DateTime?
@@ -417,6 +418,12 @@ model Aluno {
   @@index([professoraId])
   @@index([unidadeId])
   @@map("alunos")
+}
+
+enum PeriodicidadeAgenda {
+  SEMANAL
+  QUINZENAL
+  MENSAL
 }
 
 enum StatusAluno {
