@@ -796,12 +796,14 @@ export default function AlunoForm({
         )}
         <div className="space-y-2">
           {agendaSemanal.map((entry, i) => (
-            <div key={i} className="flex flex-wrap items-center gap-2 bg-slate-50 rounded-lg p-2">
+            <div key={i} className="flex flex-wrap items-end gap-2 bg-slate-50 rounded-lg p-2">
               {periodicidadeAgenda !== "MENSAL" &&
+              <label className="min-w-0 text-xs text-slate-600">
+                Dia da semana
               <select value={entry.diaSemana}
                 aria-label={`Dia da semana do horário ${i + 1}`}
                 onChange={(e) => updateEntrada(i, "diaSemana", e.target.value)}
-                className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                className="mt-1 block h-9 max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                 <option value="0">Domingo</option>
                 <option value="1">Segunda-feira</option>
                 <option value="2">Terça-feira</option>
@@ -809,21 +811,23 @@ export default function AlunoForm({
                 <option value="4">Quinta-feira</option>
                 <option value="5">Sexta-feira</option>
                 <option value="6">Sábado</option>
-              </select>}
+              </select></label>}
+              <label className="min-w-0 text-xs text-slate-600">
+                Horário
               <input type="time" value={entry.horaAula}
                 aria-label={`Hora da aula do horário ${i + 1}`}
                 onChange={(e) => updateEntrada(i, "horaAula", e.target.value)}
-                className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                className="mt-1 block h-9 max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" /></label>
               <label className="min-w-0 text-xs text-slate-600">
                 Primeira aula{periodicidadeAgenda !== "SEMANAL" ? " *" : " (opcional)"}
                 <input type="date" value={entry.dataPrimeiraAula ?? ""}
                   aria-label={`Data da primeira aula do horário ${i + 1}`}
                   required={periodicidadeAgenda !== "SEMANAL"}
                   onChange={e => updateEntrada(i, "dataPrimeiraAula", e.target.value)}
-                  className="mt-1 block max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white" />
+                  className="mt-1 block h-9 max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" />
               </label>
               <button type="button" onClick={() => removeEntrada(i)}
-                className="text-slate-400 hover:text-red-500 transition-colors ml-auto text-lg leading-none">×</button>
+                className="h-9 px-1 text-slate-400 hover:text-red-500 transition-colors ml-auto text-lg leading-none">×</button>
             </div>
           ))}
         </div>
@@ -832,7 +836,7 @@ export default function AlunoForm({
             ⚠️ {erroAgenda}
           </p>
         )}
-        <p className="text-xs text-slate-400 mt-3">Duração fixa de 1 hora por horário. A geração respeita a periodicidade escolhida, o contrato e a disponibilidade da professora.</p>
+        <p className="text-xs text-slate-500 mt-3">Duração fixa de 1 hora por horário. A geração respeita a periodicidade escolhida, o contrato e a disponibilidade da professora.</p>
         {periodicidadeAgenda === "MENSAL" && <p className="text-xs text-slate-500 mt-2">O dia da primeira aula se repete nos meses seguintes. Se ele não existir, será usado o último dia do mês; depois, a agenda volta ao dia original.</p>}
         {periodicidadeAgenda === "QUINZENAL" && <p className="text-xs text-slate-500 mt-2">As aulas se repetem a cada 14 dias a partir da primeira aula. Feriados não deslocam as próximas datas.</p>}
         {alunoInicial && <p className="text-xs text-slate-500 mt-2">Alterações valem para novas gerações. Aulas já cadastradas serão preservadas.</p>}
