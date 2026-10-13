@@ -1,4 +1,5 @@
 import { podeAcessarProfessora } from "@/lib/permissions";
+import { descricaoHorarioAgenda, type HorarioAgenda } from "@/lib/recorrenciaAgenda";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { notFound, redirect } from "next/navigation";
@@ -10,6 +11,16 @@ import {
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+function Campo({ label, valor }: { label: string; valor?: string | null }) {
+  if (!valor) return null;
+  return (
+    <div>
+      <p className="text-xs text-slate-500 mb-0.5">{label}</p>
+      <p className="text-sm text-slate-800">{valor}</p>
+    </div>
+  );
+}
 
 const DIA_NOME: Record<string, string> = {
   "0": "Domingo", "1": "Segunda-feira", "2": "Terça-feira",
@@ -60,23 +71,10 @@ export default async function VisualizarAlunoPage({
     ENCERRADO: "bg-slate-100 text-slate-600",
   };
 
-  function Campo({ label, valor }: { label: string; valor?: string | null }) {
-    if (!valor) return null;
-    return (
-      <div>
-        <p className="text-xs text-slate-500 mb-0.5">{label}</p>
-        <p className="text-sm text-slate-800">{valor}</p>
-      </div>
-    );
-  }
-
   const endereco = [aluno.rua, aluno.numero, aluno.complemento].filter(Boolean).join(", ");
   const enderecoLinha2 = [aluno.bairro, aluno.cidade, aluno.estado].filter(Boolean).join(" · ");
 
-  const agendaSemanal = (Array.isArray(aluno.agendaSemanal) ? aluno.agendaSemanal : []) as {
-    diaSemana: number;
-    horaAula: string;
-  }[];
+  const agendaSemanal = (Array.isArray(aluno.agendaSemanal) ? aluno.agendaSemanal : []) as HorarioAgenda[];
   const temAgendaLegado = agendaSemanal.length === 0 && aluno.diaSemana != null && !!aluno.horaAula;
 
   function formatBRL(v: number) {
@@ -221,18 +219,18 @@ export default async function VisualizarAlunoPage({
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="flex items-center gap-2 mb-4">
           <Clock size={16} className="text-indigo-600" />
-          <h2 className="font-semibold text-slate-800">Agenda semanal</h2>
+          <h2 className="font-semibold text-slate-800">Agenda de aulas</h2>
         </div>
         {agendaSemanal.length > 0 || temAgendaLegado ? (
           <div className="flex flex-wrap gap-2">
             {agendaSemanal.map((e, i) => (
               <span key={i} className="px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700">
-                {DIA_NOME[String(e.diaSemana)]} · {e.horaAula}
+                {descricaoHorarioAgenda(e, aluno.periodicidadeAgenda)}
               </span>
             ))}
             {temAgendaLegado && (
               <span className="px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700">
-                {DIA_NOME[String(aluno.diaSemana)]} · {aluno.horaAula}
+                {descricaoHorarioAgenda({ diaSemana: aluno.diaSemana!, horaAula: aluno.horaAula! }, aluno.periodicidadeAgenda)}
               </span>
             )}
           </div>

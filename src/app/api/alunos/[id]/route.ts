@@ -1,3 +1,4 @@
+import { lerAgendaCadastro } from "@/lib/recorrenciaAgenda";
 import { lerMateriasAluno, referenciasAlunoValidas } from "@/lib/referenciasAluno";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -45,12 +46,14 @@ export async function PUT(
 
   const { id } = await params;
 
-  const existente = await prisma.aluno.findUnique({ where: { id }, select: { empresaId: true, professoraId: true } });
+  const existente = await prisma.aluno.findUnique({ where: { id }, select: { empresaId: true, professoraId: true, periodicidadeAgenda: true } });
   if (!existente || existente.empresaId !== scope.empresaId || !podeAcessarProfessora(scope, existente.professoraId)) {
     return NextResponse.json({ erro: "Aluno não encontrado." }, { status: 404 });
   }
 
   const form = await req.formData();
+  const agendaCadastro = lerAgendaCadastro(form.get("periodicidadeAgenda"), form.get("agendaSemanal"), existente.periodicidadeAgenda);
+  if (agendaCadastro.erro) return NextResponse.json({ erro: agendaCadastro.erro }, { status: 400 });
 
   // Foto (opcional — só atualiza se enviar novo arquivo)
   let fotoUrl: string | undefined = undefined;
@@ -130,7 +133,7 @@ export async function PUT(
         diaPagamento: form.get("diaPagamento") ? parseInt(form.get("diaPagamento") as string) : null,
         diaPagamento2: form.get("diaPagamento2") ? parseInt(form.get("diaPagamento2") as string) : null,
         diaSemanaCobranca: form.get("diaSemanaCobranca") !== null && form.get("diaSemanaCobranca") !== "" ? parseInt(form.get("diaSemanaCobranca") as string) : null,
-        agendaSemanal: (() => { try { return JSON.parse(form.get("agendaSemanal") as string ?? "[]"); } catch { return []; } })(),
+        ...agendaCadastro.dados,
         dataInicioContrato: form.get("dataInicioContrato") ? parseDataLocal(form.get("dataInicioContrato") as string) : null,
         dataFimContrato:    form.get("dataFimContrato")    ? parseDataLocal(form.get("dataFimContrato")    as string) : null,
         materias: { deleteMany: {}, create: materias.map((mid) => ({ materiaId: mid })) },

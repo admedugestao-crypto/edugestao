@@ -153,12 +153,13 @@ export default function AlunoForm({
   const [excluindo, setExcluindo] = useState(false);
 
   // ── Agenda semanal (lista) ─────────────────────────────────────────────────
-  type AgendaEntry = { diaSemana: string; horaAula: string };
+  type AgendaEntry = { diaSemana: string; horaAula: string; dataPrimeiraAula?: string };
+  const [periodicidadeAgenda, setPeriodicidadeAgenda] = useState(alunoInicial?.periodicidadeAgenda ?? "SEMANAL");
 
   function entradaInicial(): AgendaEntry[] {
     const saved = alunoInicial?.agendaSemanal;
     if (Array.isArray(saved) && saved.length > 0)
-      return saved.map((e: any) => ({ diaSemana: String(e.diaSemana), horaAula: e.horaAula ?? "" }));
+      return saved.map((e: any) => ({ diaSemana: String(e.diaSemana), horaAula: e.horaAula ?? "", dataPrimeiraAula: e.dataPrimeiraAula ?? "" }));
     // retrocompat: campo legado
     if (alunoInicial?.diaSemana != null && alunoInicial?.horaAula)
       return [{ diaSemana: String(alunoInicial.diaSemana), horaAula: alunoInicial.horaAula }];
@@ -181,6 +182,12 @@ export default function AlunoForm({
   }
 
   function validarAgendaLista(lista: AgendaEntry[]): string | null {
+    if (periodicidadeAgenda !== "SEMANAL" && lista.some(e => !e.dataPrimeiraAula))
+      return "Informe a data da primeira aula em cada horário quinzenal ou mensal.";
+    for (const entrada of lista) {
+      if (entrada.dataPrimeiraAula && periodicidadeAgenda !== "MENSAL" && new Date(`${entrada.dataPrimeiraAula}T00:00:00Z`).getUTCDay() !== Number(entrada.diaSemana))
+        return "A primeira aula deve corresponder ao dia da semana escolhido.";
+    }
     const disp = getDisponibilidade();
     for (let i = 0; i < lista.length; i++) {
       const { diaSemana, horaAula } = lista[i];
@@ -188,6 +195,7 @@ export default function AlunoForm({
       // sobreposição no mesmo dia (duração fixa de 60 min)
       for (let j = i + 1; j < lista.length; j++) {
         if (lista[j].diaSemana !== diaSemana || !lista[j].horaAula) continue;
+        if (periodicidadeAgenda === "MENSAL" && lista[j].dataPrimeiraAula?.slice(8) !== lista[i].dataPrimeiraAula?.slice(8)) continue;
         const inicioA = toMinutes(horaAula);
         const fimA    = inicioA + 60;
         const inicioB = toMinutes(lista[j].horaAula);
@@ -224,6 +232,10 @@ export default function AlunoForm({
     setAgendaSemanal((prev) => {
       const next = [...prev];
       next[i] = { ...next[i], [field]: value };
+      if (field === "dataPrimeiraAula" && value) {
+        const referencia = new Date(`${value}T00:00:00Z`);
+        if (Number.isFinite(referencia.getTime())) next[i].diaSemana = String(referencia.getUTCDay());
+      }
       const err = validarAgendaLista(next);
       setErroAgenda(err ?? "");
       return next;
@@ -333,10 +345,12 @@ export default function AlunoForm({
     }
 
     form.set("materias", JSON.stringify(materiasSelected));
+    form.set("periodicidadeAgenda", periodicidadeAgenda);
     form.set("agendaSemanal", JSON.stringify(
       agendaSemanal.filter((e) => e.diaSemana && e.horaAula).map((e) => ({
         diaSemana: Number(e.diaSemana),
         horaAula: e.horaAula,
+        ...(e.dataPrimeiraAula ? { dataPrimeiraAula: e.dataPrimeiraAula } : {}),
       }))
     ));
 
@@ -759,7 +773,7 @@ export default function AlunoForm({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <CalendarDays size={17} className="text-indigo-600" />
-            <h2 className="font-semibold text-slate-800">Agenda semanal</h2>
+            <h2 className="font-semibold text-slate-800">Agenda de aulas</h2>
             <span className="text-xs text-slate-400 ml-1">(opcional)</span>
           </div>
           <button type="button" onClick={addEntrada}
@@ -767,13 +781,25 @@ export default function AlunoForm({
             + Adicionar horário
           </button>
         </div>
+        <label className="block text-xs font-medium text-slate-600 mb-3">
+          Periodicidade das aulas
+          <select name="periodicidadeAgenda" value={periodicidadeAgenda}
+            onChange={e => { setPeriodicidadeAgenda(e.target.value); setErroAgenda(""); }}
+            className="mt-1 block w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="SEMANAL">Semanal — a cada 7 dias</option>
+            <option value="QUINZENAL">Quinzenal — a cada 14 dias</option>
+            <option value="MENSAL">Mensal — dia fixo no mês</option>
+          </select>
+        </label>
         {agendaSemanal.length === 0 && (
           <p className="text-xs text-slate-400 italic">Nenhum horário fixo cadastrado.</p>
         )}
         <div className="space-y-2">
           {agendaSemanal.map((entry, i) => (
-            <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg p-2">
+            <div key={i} className="flex flex-wrap items-center gap-2 bg-slate-50 rounded-lg p-2">
+              {periodicidadeAgenda !== "MENSAL" &&
               <select value={entry.diaSemana}
+                aria-label={`Dia da semana do horário ${i + 1}`}
                 onChange={(e) => updateEntrada(i, "diaSemana", e.target.value)}
                 className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                 <option value="0">Domingo</option>
@@ -783,10 +809,19 @@ export default function AlunoForm({
                 <option value="4">Quinta-feira</option>
                 <option value="5">Sexta-feira</option>
                 <option value="6">Sábado</option>
-              </select>
+              </select>}
               <input type="time" value={entry.horaAula}
+                aria-label={`Hora da aula do horário ${i + 1}`}
                 onChange={(e) => updateEntrada(i, "horaAula", e.target.value)}
                 className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <label className="min-w-0 text-xs text-slate-600">
+                Primeira aula{periodicidadeAgenda !== "SEMANAL" ? " *" : " (opcional)"}
+                <input type="date" value={entry.dataPrimeiraAula ?? ""}
+                  aria-label={`Data da primeira aula do horário ${i + 1}`}
+                  required={periodicidadeAgenda !== "SEMANAL"}
+                  onChange={e => updateEntrada(i, "dataPrimeiraAula", e.target.value)}
+                  className="mt-1 block max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white" />
+              </label>
               <button type="button" onClick={() => removeEntrada(i)}
                 className="text-slate-400 hover:text-red-500 transition-colors ml-auto text-lg leading-none">×</button>
             </div>
@@ -797,7 +832,10 @@ export default function AlunoForm({
             ⚠️ {erroAgenda}
           </p>
         )}
-        <p className="text-xs text-slate-400 mt-3">Duração fixa de 1 hora por entrada. Usado pelo "Gerar semana".</p>
+        <p className="text-xs text-slate-400 mt-3">Duração fixa de 1 hora por horário. A geração respeita a periodicidade escolhida, o contrato e a disponibilidade da professora.</p>
+        {periodicidadeAgenda === "MENSAL" && <p className="text-xs text-slate-500 mt-2">O dia da primeira aula se repete nos meses seguintes. Se ele não existir, será usado o último dia do mês; depois, a agenda volta ao dia original.</p>}
+        {periodicidadeAgenda === "QUINZENAL" && <p className="text-xs text-slate-500 mt-2">As aulas se repetem a cada 14 dias a partir da primeira aula. Feriados não deslocam as próximas datas.</p>}
+        {alunoInicial && <p className="text-xs text-slate-500 mt-2">Alterações valem para novas gerações. Aulas já cadastradas serão preservadas.</p>}
       </div>
 
       {/* Cobrança */}
