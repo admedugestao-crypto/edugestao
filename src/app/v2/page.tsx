@@ -9,11 +9,20 @@ import { anoLetivoEncerrado, calcularMediaDasNotas, MEDIA_MINIMA_APROVACAO, obte
 import { PERIODOS_ESCOLARES } from "@/lib/periodosAvaliacao";
 import FinanceiroDetalhesLink from "@/components/FinanceiroDetalhesLink";
 import { dataHojeAgenda } from "@/lib/pendenciasAgenda";
+import { Prisma } from "@/generated/prisma/client";
 
 export const dynamic = "force-dynamic";
 
 const formatarMoeda = (valor: number) => valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const formatarHora = (hora: string | null) => hora?.slice(0, 5) ?? "Horário a definir";
+
+type ResumoPainel = {
+  alunosAtivos: bigint;
+  aulasHoje: bigint;
+  valorAberto: unknown;
+  aulasPendentes: bigint;
+  primeiraPendente: Date | null;
+};
 
 export default async function V2Dashboard() {
   const scope = await getSessionScope();
@@ -23,19 +32,43 @@ export default async function V2Dashboard() {
   const inicio = new Date(`${dataHojeAgenda(hoje)}T00:00:00.000Z`);
   const fim = new Date(inicio);
   fim.setDate(fim.getDate() + 1);
+  const anoLetivo = hoje.getFullYear();
 
-  const [alunosAtivos, aulasHoje, pagamentos, proximasAulas, notasPeriodo, aulasPendentes, primeiraPendente] = await Promise.all([
-    prisma.aluno.count({ where: { ...scopeWhere(scope), status: "ATIVO" } }),
-    prisma.agendaAula.count({ where: { ...scopeWhere(scope), data: { gte: inicio, lt: fim } } }),
-    prisma.pagamento.findMany({
-      where: {
-        empresaId: scope.empresaId,
-        pago: false,
-        // Administradores acompanham o total da empresa, mesmo que também sejam professoras.
-        ...(!scope.isAdmin && scope.professoraId ? { aluno: { professoraId: scope.professoraId } } : {}),
-      },
-      select: { valorCobrado: true },
-    }),
+  const filtroProfessoraAgenda = !scope.isAdmin && scope.professoraId
+    ? Prisma.sql` AND aa."professoraId" = ${scope.professoraId}`
+    : Prisma.empty;
+  const filtroProfessoraAluno = !scope.isAdmin && scope.professoraId
+    ? Prisma.sql` AND al."professoraId" = ${scope.professoraId}`
+    : Prisma.empty;
+
+  const [resumoResultado, proximasAulas, notasPeriodo] = await Promise.all([
+    prisma.$queryRaw<ResumoPainel[]>(Prisma.sql`
+      SELECT
+        (SELECT count(*) FROM "alunos" al
+          WHERE al."empresaId" = ${scope.empresaId}
+            AND al."status" = 'ATIVO'::"StatusAluno"${filtroProfessoraAluno}
+        ) AS "alunosAtivos",
+        (SELECT count(*) FROM "agenda_aulas" aa
+          WHERE aa."empresaId" = ${scope.empresaId}
+            AND aa."data" >= ${inicio}
+            AND aa."data" < ${fim}${filtroProfessoraAgenda}
+        ) AS "aulasHoje",
+        (SELECT coalesce(sum(p."valorCobrado"), 0) FROM "pagamentos" p
+          INNER JOIN "alunos" al ON al."id" = p."alunoId"
+          WHERE p."empresaId" = ${scope.empresaId}
+            AND p."pago" = false${filtroProfessoraAluno}
+        ) AS "valorAberto",
+        (SELECT count(*) FROM "agenda_aulas" aa
+          WHERE aa."empresaId" = ${scope.empresaId}
+            AND aa."status" = 'AGENDADA'::"StatusAula"
+            AND aa."data" < ${inicio}${filtroProfessoraAgenda}
+        ) AS "aulasPendentes",
+        (SELECT min(aa."data") FROM "agenda_aulas" aa
+          WHERE aa."empresaId" = ${scope.empresaId}
+            AND aa."status" = 'AGENDADA'::"StatusAula"
+            AND aa."data" < ${inicio}${filtroProfessoraAgenda}
+        ) AS "primeiraPendente"
+    `),
     prisma.agendaAula.findMany({
       where: { ...scopeWhere(scope), data: { gte: inicio } },
       orderBy: [{ data: "asc" }, { horaInicio: "asc" }],
@@ -43,7 +76,7 @@ export default async function V2Dashboard() {
       include: { aluno: { select: { nome: true } } },
     }),
     prisma.notaPeriodo.findMany({
-      where: { empresaId: scope.empresaId, aluno: { status: "ATIVO", ...(!scope.isAdmin ? { professoraId: scope.professoraId } : {}) } },
+      where: { empresaId: scope.empresaId, ano: anoLetivo, aluno: { status: "ATIVO", ...(!scope.isAdmin ? { professoraId: scope.professoraId } : {}) } },
       include: {
         aluno: {
           select: {
@@ -55,17 +88,19 @@ export default async function V2Dashboard() {
         materia: { select: { id: true, nome: true } },
       },
     }),
-    prisma.agendaAula.count({ where: { ...scopeWhere(scope), status: "AGENDADA", data: { lt: inicio } } }),
-    prisma.agendaAula.findFirst({ where: { ...scopeWhere(scope), status: "AGENDADA", data: { lt: inicio } }, orderBy: [{ data: "asc" }, { horaInicio: "asc" }], select: { data: true } }),
   ]);
 
-  const dataPendencias = (primeiraPendente?.data ?? inicio).toISOString().slice(0, 10);
+  const resumo = resumoResultado[0];
+  const alunosAtivos = Number(resumo?.alunosAtivos ?? 0);
+  const aulasHoje = Number(resumo?.aulasHoje ?? 0);
+  const aulasPendentes = Number(resumo?.aulasPendentes ?? 0);
+  const pendente = Number(resumo?.valorAberto ?? 0);
+  const dataPendencias = (resumo?.primeiraPendente ?? inicio).toISOString().slice(0, 10);
   const linkPendencias = `/v2/agenda?pendentes=1&data=${dataPendencias}`;
 
-  const anoLetivo = hoje.getFullYear();
   const notasPorAlunoEMateria = new Map<string, typeof notasPeriodo>();
   for (const nota of notasPeriodo) {
-    if (nota.ano !== anoLetivo || nota.tipoPeriodo !== nota.aluno.unidade.escola.periodoAvaliacao) continue;
+    if (nota.tipoPeriodo !== nota.aluno.unidade.escola.periodoAvaliacao) continue;
     const chave = `${nota.alunoId}:${nota.materiaId}`;
     notasPorAlunoEMateria.set(chave, [...(notasPorAlunoEMateria.get(chave) ?? []), nota]);
   }
@@ -87,7 +122,6 @@ export default async function V2Dashboard() {
     return alertas;
   });
   const alunosComNotaBaixa = new Set(alertasNotasBaixas.map((alerta) => alerta.aluno)).size;
-  const pendente = pagamentos.reduce((total, item) => total + Number(item.valorCobrado), 0);
   const primeiroNome = session?.user?.name?.split(" ")[0] ?? "professora";
   const dataLonga = hoje.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 
