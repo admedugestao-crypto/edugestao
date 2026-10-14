@@ -23,8 +23,8 @@ export default async function DisponibilidadeProfessoresPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}><div><h1>Disciplinas e disponibilidade dos professores</h1><p>Defina as disciplinas lecionadas e os horários disponíveis de cada professor.</p></div><Link href="/v2/tabelas">Voltar às tabelas</Link></header>
-      <section className={styles.content} aria-label="Disponibilidade dos Professores">
-      <DisponibilidadeProfessoresClient materias={materias} professorasIniciais={professoras.map((p) => ({
+      <section className={styles.formContent} aria-label="Disponibilidade dos Professores">
+      <DisponibilidadeProfessoresClient variant="v2" materias={materias} professorasIniciais={professoras.map((p) => ({
         id: p.id,
         materiaIds: p.materias.map(m => m.materiaId),
         nome: p.usuario.nome,

@@ -1,6 +1,7 @@
 "use client";
 
 import DateInput from "@/components/DateInput";
+import FormularioSemRolagem from "@/components/FormularioSemRolagem";
 
 import { useState, useEffect, useCallback, useRef, useMemo, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
@@ -1407,6 +1408,7 @@ function AgendaClientContent({
       {/* ── Modal Nova Aula ────────────────────────────────────────────────── */}
       {modalAberto && (
         <Modal titulo={reposicaoOrigem ? "Repor aula" : "Nova aula"} onClose={() => setModalAberto(false)}>
+          <FormularioSemRolagem modal ativo={conteudosPath.startsWith("/v2/")} className="space-y-3">
           <div className="space-y-3">
 
             {/* Seletor de professora (apenas para não-professores) */}
@@ -1471,6 +1473,8 @@ function AgendaClientContent({
                 placeholder="Opcional..."
                 className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
+          </div>
+          </FormularioSemRolagem>
             {/* Erro de conflito ou outro */}
             {erroModal && (
               <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
@@ -1526,7 +1530,6 @@ function AgendaClientContent({
               </button>
             </div>
             )}
-          </div>
         </Modal>
       )}
 
@@ -1763,7 +1766,7 @@ function AgendaClientContent({
                 // trocar aqui deixaria os dois dessincronizados.
                 const materiaTravada = !!aulaDetalhe.conteudo;
                 return (
-                  <div className="flex-1 min-w-[140px]">
+                  <div data-entrada-grupos className="flex-1 min-w-[140px]">
                     <label className="text-xs font-medium text-slate-500 block mb-1">Matéria</label>
                     <SeletorMaterias
                       materiasDisponiveis={materiasOpcoes}
@@ -2276,7 +2279,7 @@ function TelaConflitos({
 function Modal({ titulo, onClose, children, z = "z-50" }: { titulo: string; onClose: () => void; children: React.ReactNode; z?: string }) {
   return (
     <div className={`fixed inset-0 ${z} flex items-center justify-center bg-black/30 backdrop-blur-sm p-4`}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div data-entrada-dialogo className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
           <h3 className="font-semibold text-slate-800">{titulo}</h3>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">

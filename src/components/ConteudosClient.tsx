@@ -1,5 +1,7 @@
 "use client";
 
+import FormularioSemRolagem from "@/components/FormularioSemRolagem";
+
 import DateInput from "@/components/DateInput";
 import DescricaoPorVozMobile from "@/components/DescricaoPorVozMobile";
 
@@ -1090,7 +1092,7 @@ export default function ConteudosClient({
             </div>
 
             {/* Corpo rolável */}
-            <div className="overflow-y-auto px-5 py-3 flex-1">
+            <FormularioSemRolagem ativo={variant === "v2"} modal className="px-5 py-3 space-y-4">
               <CamposForm
                 form={novo}
                 setForm={setNovo}
@@ -1103,7 +1105,7 @@ export default function ConteudosClient({
                 somentePlanejado={!aulaIdPendente}
                 onCampoChave={() => { setErroNovo(""); setAvisoDuplicado(null); }}
               />
-            </div>
+            </FormularioSemRolagem>
 
             {/* Rodapé fixo — erro + botões sempre visíveis */}
             <div className="px-5 pb-4 pt-2 border-t border-slate-100 shrink-0 space-y-2">
@@ -1197,7 +1199,7 @@ export default function ConteudosClient({
             </div>
 
             {/* Corpo rolável */}
-            <div className="min-h-0 overflow-y-auto px-5 py-3 flex-1 space-y-4">
+            <FormularioSemRolagem ativo={variant === "v2"} modal className="px-5 py-3 space-y-4">
               <CamposForm
                 form={editConteudo}
                 setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
@@ -1254,7 +1256,7 @@ export default function ConteudosClient({
                   </div>
                 )}
               </div>}
-            </div>
+            </FormularioSemRolagem>
 
             {/* Rodapé fixo — erro + botões sempre visíveis */}
             <div className="px-5 pb-4 pt-2 border-t border-slate-100 shrink-0 space-y-2">

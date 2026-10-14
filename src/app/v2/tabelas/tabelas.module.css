@@ -10,6 +10,7 @@
 .card h2 { font-size:16px; font-weight:650; }.card p { margin-top:7px; color:#6b7b95; font-size:13px; line-height:1.6; }
 .icon { flex-shrink:0; padding:12px; color:#315bf4; background:#edf1ff; border-radius:13px; }
 .content { flex:1; min-height:0; overflow:auto; padding:2px 6px 16px 2px; }
+.formContent { flex:1; min-height:0; overflow:hidden; }
 .content :global(.rounded-xl) { border-radius:18px; }
 .content :global(input),.content :global(select) { min-height:40px; border-radius:10px; }
 .content :global(.fixed.inset-0) { background:#0b1730a8; backdrop-filter:blur(4px); overflow:auto; }
@@ -20,8 +21,13 @@
  .header { flex-direction:column; align-items:flex-start; gap:12px; margin-bottom:16px; }
  .header p { font-size:12px; line-height:1.5; }
  .cards { grid-template-columns:1fr; gap:12px; }.card { padding:18px; }
- .content :global([data-availability-row]) { grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) 32px; }
- .content :global([data-availability-row]>select) { grid-column:1/-1; }
- .content :global([data-availability-row]>input) { width:100%; min-width:0; }
- .content :global([data-availability-actions]) { align-items:flex-start; flex-direction:column; }
+ .content :global([data-availability-row]),.formContent :global([data-availability-row]) { grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) 32px; }
+ .content :global([data-availability-row]>select),.formContent :global([data-availability-row]>select) { grid-column:1/-1; }
+ .content :global([data-availability-row]>input),.formContent :global([data-availability-row]>input) { width:100%; min-width:0; }
+ .content :global([data-availability-actions]),.formContent :global([data-availability-actions]) { align-items:flex-start; flex-direction:column; }
+ .page:has(.formContent) .header { flex-direction:row; align-items:center; gap:8px; margin-bottom:8px; }
+ .page:has(.formContent) .header h1 { font-size:20px; }
+ .page:has(.formContent) .header p { display:none; }
+ .page:has(.formContent) .header a { max-width:90px; font-size:10px; padding:7px; }
+ .formContent :global(.p-5) { padding:12px; }
 }

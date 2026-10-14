@@ -245,6 +245,25 @@ a.appVersion:focus-visible { outline:2px solid white; outline-offset:3px; border
 }
 
 .studentEditHeading { display:flex; align-items:center; gap:18px; }
+/* Distribui os blocos de entrada pela largura disponível antes de paginar. */
+@media (min-width:961px) {
+  .studentFormSurface :global(.entrada-aluno) { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-content:start; gap:12px; }
+  .studentFormSurface :global(.entrada-aluno > [data-etapa]) { margin-top:0!important; min-width:0; }
+  .studentFormSurface :global(.entrada-aluno:has(> [data-etapa="0"]:not(.hidden))) { grid-template-columns:minmax(170px,.3fr) minmax(0,1fr); }
+  .studentFormSurface :global(.entrada-aluno:has(> [data-entrada-oculta])) { grid-template-columns:minmax(0,1fr); }
+  .studentFormSurface :global([data-etapa="0"] > .flex.gap-4) { flex-wrap:wrap; }
+  .studentFormSurface :global([data-etapa="0"] .w-20) { width:64px; height:64px; }
+}
+@media (max-height:750px) {
+  .studentFormPage { padding-top:16px; padding-bottom:16px; }
+  .studentFormHeader { margin-bottom:10px; }
+  .studentFormSurface :global(.p-5) { padding:10px!important; }
+}
+@media (min-width:340px) and (max-width:720px) {
+  .studentFormSurface :global([data-etapa="0"] .grid) { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .studentFormSurface :global([data-etapa="0"] .grid > div:first-child) { grid-column:1/-1; }
+  .studentFormSurface :global([data-etapa="0"] .w-20) { width:56px; height:56px; flex:none; }
+}
 .studentEditHeading h1 { flex:none; }
 .studentEditIdentity { flex:1; min-width:0; padding-left:18px; border-left:1px solid var(--line); overflow-wrap:anywhere; }
 .studentEditIdentity strong { display:block; color:var(--ink); font-size:16px; line-height:1.3; }

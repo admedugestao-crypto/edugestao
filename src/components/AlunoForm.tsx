@@ -1,6 +1,7 @@
 "use client";
 
 import DateInput from "@/components/DateInput";
+import FormularioSemRolagem from "@/components/FormularioSemRolagem";
 import { dataExiste } from "@/lib/validarData";
 
 import { useState, useRef } from "react";
@@ -292,7 +293,11 @@ export default function AlunoForm({
         const painel = invalido.closest<HTMLElement>("[data-etapa]");
         if (painel) setEtapa(Number(painel.dataset.etapa));
         setErro(invalido.validationMessage || "Revise o campo indicado antes de salvar.");
-        requestAnimationFrame(() => { invalido.focus(); invalido.reportValidity(); });
+        requestAnimationFrame(() => {
+          invalido.dispatchEvent(new Event("entrada:revelar", { bubbles: true }));
+          invalido.focus();
+          invalido.reportValidity();
+        });
         return;
       }
     }
@@ -389,7 +394,7 @@ export default function AlunoForm({
           ))}
         </div>
       )}
-      <div data-v2-form-content className={variant === "v2" ? "min-h-0 flex-1 overflow-y-auto pr-1" : "contents"}>
+      <FormularioSemRolagem ativo={variant === "v2"} chave={etapa} className={variant === "v2" ? "entrada-aluno" : "contents"}>
       {/* Foto */}
       <div data-etapa="0" className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
@@ -796,7 +801,7 @@ export default function AlunoForm({
         )}
         <div className="space-y-2">
           {agendaSemanal.map((entry, i) => (
-            <div key={i} className="flex flex-wrap items-end gap-2 bg-slate-50 rounded-lg p-2">
+            <div data-entrada-linha key={i} className="flex flex-wrap items-end gap-2 bg-slate-50 rounded-lg p-2">
               {periodicidadeAgenda !== "MENSAL" &&
               <label className="min-w-0 text-xs text-slate-600">
                 Dia da semana
@@ -1028,7 +1033,7 @@ export default function AlunoForm({
         />
       </div>
 
-      </div>
+      </FormularioSemRolagem>
       {erro && (
         <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">
           {erro}
