@@ -1,0 +1,69 @@
+name: edugestao-integration
+
+networks:
+  default:
+    internal: true
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: edugestao_integracao
+      POSTGRES_USER: integracao
+      POSTGRES_PASSWORD: integracao
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U integracao -d edugestao_integracao"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mockserver:
+    image: mockserver/mockserver:5.15.0
+    environment:
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/expectations.json
+    volumes:
+      - ./docker/integration/mockserver/expectations.json:/config/expectations.json:ro
+
+  arquivos:
+    image: node:24-bookworm-slim
+    command: node /simulador/arquivos.mjs
+    volumes:
+      - ./docker/integration/arquivos.mjs:/simulador/arquivos.mjs:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:9000/health').then(r=>{if(!r.ok)process.exit(1)})"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  testes:
+    build:
+      context: .
+      dockerfile: Dockerfile.integration
+    environment:
+      DATABASE_URL: postgresql://integracao:integracao@postgres:5432/edugestao_integracao
+      DIRECT_URL: postgresql://integracao:integracao@postgres:5432/edugestao_integracao
+      INTEGRATION_MAILPIT_URL: http://mailpit:8025
+      INTEGRATION_MOCKSERVER_URL: http://mockserver:1080
+      INTEGRATION_ARQUIVOS_URL: http://arquivos:9000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+      mockserver:
+        condition: service_started
+      arquivos:
+        condition: service_healthy
