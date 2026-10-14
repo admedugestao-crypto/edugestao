@@ -6,6 +6,38 @@ body {
   color: #0f172a;
 }
 
+/*
+ * Campos e ações precisam ficar reconhecíveis mesmo quando o formulário usa
+ * apenas utilitários Tailwind. A sombra interna preserva as cores de estados
+ * como erro e sucesso, mas deixa claro onde é possível digitar ou clicar.
+ */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+select,
+textarea {
+  border-color: #94a3b8 !important;
+  box-shadow: inset 0 0 0 1px rgb(71 85 105 / 10%);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #315be8 !important;
+  box-shadow: inset 0 0 0 1px rgb(49 91 232 / 18%), 0 0 0 3px rgb(49 91 232 / 16%) !important;
+}
+
+button {
+  box-shadow: inset 0 0 0 1px rgb(15 23 42 / 20%);
+}
+
+button:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px rgb(15 23 42 / 34%);
+}
+
+button:focus-visible {
+  outline: 3px solid rgb(49 91 232 / 28%);
+  outline-offset: 2px;
+}
+
 /* Altura real do viewport mobile (exclui barra do browser/PWA) */
 .h-dvh  { height: 100dvh; }
 .min-h-dvh { min-height: 100dvh; }
