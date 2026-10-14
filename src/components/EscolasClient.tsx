@@ -1,5 +1,7 @@
 "use client";
 
+import FormularioSemRolagem from "@/components/FormularioSemRolagem";
+
 import DateInput from "@/components/DateInput";
 
 import { useState } from "react";
@@ -390,7 +392,7 @@ export default function EscolasClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Escola</h2>
-            <div className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
                 <input
@@ -476,7 +478,7 @@ export default function EscolasClient({
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoNova}</p>
               )}
 
-              <div className="border-t border-slate-100 pt-3 mt-1">
+              <div data-entrada-grupos className="border-t border-slate-100 pt-3 mt-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
                   Primeira unidade
                 </p>
@@ -521,7 +523,7 @@ export default function EscolasClient({
                   </div>
                 </div>
               </div>
-            </div>
+            </FormularioSemRolagem>
             <div className="flex gap-3 mt-5">
               <button
                 onClick={criarEscola}
@@ -546,7 +548,7 @@ export default function EscolasClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "compact" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Unidade</h2>
-            <div className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
                 <input
@@ -585,7 +587,7 @@ export default function EscolasClient({
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
-            </div>
+            </FormularioSemRolagem>
             <div className="flex gap-3 mt-5">
               <button
                 onClick={() => criarUnidade(modalUnidade)}
@@ -610,7 +612,7 @@ export default function EscolasClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Escola</h2>
-            <div className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
                 <input
@@ -689,9 +691,9 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
-              <section className="col-span-full border-t border-slate-100 pt-3">
+              <section data-entrada-grupos className="col-span-full border-t border-slate-100 pt-3">
                 <h3 className="text-xs font-semibold text-slate-500 uppercase mb-3">Unidades da escola</h3>
-                {editEscola.unidades.map((unidade, indice) => <fieldset key={unidade.id} className="grid grid-cols-2 gap-3 mb-4" disabled={salvando}>
+                {editEscola.unidades.map((unidade, indice) => <fieldset data-entrada-grupos key={unidade.id} className="grid grid-cols-2 gap-3 mb-4" disabled={salvando}>
                   <legend className="text-sm font-semibold mb-2">{unidade.nome}</legend>
                   {([['nome', 'Nome da unidade *'], ['cidade', 'Cidade'], ['estado', 'Estado'], ['turno', 'Turno']] as const).map(([campo, label]) => <label key={campo} className="block text-xs font-medium text-slate-600">{label}<input aria-label={label} value={unidade[campo] ?? ''} maxLength={campo === 'estado' ? 2 : undefined} onChange={e => setEditEscola({ ...editEscola, unidades: editEscola.unidades.map((u, i) => i === indice ? { ...u, [campo]: e.target.value } : u) })} className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"/></label>)}
                 </fieldset>)}
@@ -701,7 +703,7 @@ export default function EscolasClient({
               {erroPeriodoEdit && (
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoEdit}</p>
               )}
-            </div>
+            </FormularioSemRolagem>
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarEscola}
@@ -726,7 +728,7 @@ export default function EscolasClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "compact" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Unidade</h2>
-            <div className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
                 <input
@@ -764,7 +766,7 @@ export default function EscolasClient({
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
-            </div>
+            </FormularioSemRolagem>
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarUnidade}

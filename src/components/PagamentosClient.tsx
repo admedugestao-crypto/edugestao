@@ -1,5 +1,7 @@
 "use client";
 
+import FormularioSemRolagem from "@/components/FormularioSemRolagem";
+
 import DateInput from "@/components/DateInput";
 
 import { useState, useCallback, useMemo } from "react";
@@ -957,7 +959,7 @@ export default function PagamentosClient({
               </button>
             </div>
 
-            <div className="px-4 py-3 space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="px-4 py-3 space-y-3">
               {/* Cabeçalho competência */}
               <div className="bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-1.5 text-xs text-indigo-700 font-medium">
                 Competência: {MESES[mes - 1]} / {ano}
@@ -1105,7 +1107,7 @@ export default function PagamentosClient({
                   {erroCrud}
                 </p>
               )}
-            </div>
+            </FormularioSemRolagem>
 
             {/* Footer */}
             <div className="flex gap-3 px-6 pb-6">

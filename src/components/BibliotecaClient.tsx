@@ -1,5 +1,7 @@
 "use client";
 
+import FormularioSemRolagem from "@/components/FormularioSemRolagem";
+
 import { useEffect, useState } from "react";
 import { Plus, FileText, Download, Pencil, Trash2, Upload, Search } from "lucide-react";
 import { SERIES } from "@/lib/series";
@@ -349,7 +351,7 @@ export default function BibliotecaClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-library-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Novo Material</h2>
-            <div className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Título *</label>
                 <input
@@ -403,7 +405,7 @@ export default function BibliotecaClient({
                   </select>
                 </div>
               </div>
-              <div>
+              <div data-entrada-grupos>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
                 <SeletorMaterias
                   materiasDisponiveis={materias}
@@ -429,7 +431,7 @@ export default function BibliotecaClient({
                   />
                 </label>
               </div>
-            </div>
+            </FormularioSemRolagem>
             {!materialCompleto(novo) && !salvando && !enviandoArquivo && (
               <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
                 Falta preencher: {camposFaltando(novo).join(", ")}.
@@ -460,7 +462,7 @@ export default function BibliotecaClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-library-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Material</h2>
-            <div className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Título *</label>
                 <input
@@ -508,7 +510,7 @@ export default function BibliotecaClient({
                   </select>
                 </div>
               </div>
-              <div>
+              <div data-entrada-grupos>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
                 <SeletorMaterias
                   materiasDisponiveis={materias}
@@ -534,7 +536,7 @@ export default function BibliotecaClient({
                   />
                 </label>
               </div>
-            </div>
+            </FormularioSemRolagem>
             {!materialCompleto(editando) && !salvando && !enviandoArquivo && (
               <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
                 Falta preencher: {camposFaltando(editando).join(", ")}.

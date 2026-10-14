@@ -1,4 +1,5 @@
 "use client";
+import FormularioSemRolagem from "@/components/FormularioSemRolagem";
 
 import DateInput from "@/components/DateInput";
 import { dataExiste, MENSAGEM_DATA_INVALIDA } from "@/lib/validarData";
@@ -495,7 +496,7 @@ export default function CalendarioClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Avaliação</h2>
-            <CamposForm form={nova} setForm={setNova} unidades={unidades} materias={materias} tipos={tipos} />
+            <FormularioSemRolagem modal><CamposForm form={nova} setForm={setNova} unidades={unidades} materias={materias} tipos={tipos} /></FormularioSemRolagem>
             {erroForm && (
               <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erroForm}</p>
             )}
@@ -518,7 +519,7 @@ export default function CalendarioClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Avaliação</h2>
-            <CamposForm form={editAv} setForm={(f) => setEditAv({ ...f, id: editAv.id })} unidades={unidades} materias={materias} tipos={tipos} />
+            <FormularioSemRolagem modal><CamposForm form={editAv} setForm={(f) => setEditAv({ ...f, id: editAv.id })} unidades={unidades} materias={materias} tipos={tipos} /></FormularioSemRolagem>
             {erroForm && (
               <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erroForm}</p>
             )}

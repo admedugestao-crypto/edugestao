@@ -1,6 +1,7 @@
 "use client";
 
 import DisciplinasProfessor from "./DisciplinasProfessor";
+import FormularioSemRolagem from "./FormularioSemRolagem";
 
 import { useEffect, useRef, useState } from "react";
 import { Plus, Save, Trash2 } from "lucide-react";
@@ -9,12 +10,21 @@ type Horario = { dia: string; inicio: string; fim: string };
 type Professora = { id: string; nome: string; disponibilidade: Horario[]; materiaIds?: string[] };
 const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
-export default function DisponibilidadeProfessoresClient({ professorasIniciais, materias }: { professorasIniciais: Professora[]; materias?: { id: string; nome: string }[] }) {
+export default function DisponibilidadeProfessoresClient({ professorasIniciais, materias, variant = "classic" }: { professorasIniciais: Professora[]; materias?: { id: string; nome: string }[]; variant?: "classic" | "v2" }) {
   const [professoras, setProfessoras] = useState(professorasIniciais);
   const [professoraId, setProfessoraId] = useState(professorasIniciais[0]?.id ?? "");
   const novaFaixaRef = useRef<HTMLDivElement>(null);
   const [focarNovaFaixa, setFocarNovaFaixa] = useState(false);
-  useEffect(() => { if (focarNovaFaixa) { novaFaixaRef.current?.scrollIntoView({ block: "nearest" }); novaFaixaRef.current?.querySelector("select")?.focus({ preventScroll: true }); setFocarNovaFaixa(false); } }, [focarNovaFaixa]);
+  useEffect(() => {
+    if (!focarNovaFaixa) return;
+    const quadro = requestAnimationFrame(() => {
+      if (variant === "v2") novaFaixaRef.current?.dispatchEvent(new Event("entrada:revelar", { bubbles: true }));
+      else novaFaixaRef.current?.scrollIntoView({ block: "nearest" });
+      novaFaixaRef.current?.querySelector("select")?.focus({ preventScroll: true });
+      setFocarNovaFaixa(false);
+    });
+    return () => cancelAnimationFrame(quadro);
+  }, [focarNovaFaixa, variant]);
   const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const professora = professoras.find((p) => p.id === professoraId);
@@ -61,7 +71,7 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
   if (professoras.length === 0) return <div className="bg-white border border-slate-200 rounded-xl p-5 text-sm text-slate-500">Nenhum professor ativo cadastrado.</div>;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-5">
+    <div className={`bg-white border border-slate-200 rounded-xl p-5 ${variant === "v2" ? "flex h-full min-h-0 flex-col gap-3" : "space-y-5"}`}>
       <div className="max-w-md">
         <label className="block text-sm font-medium text-slate-700 mb-1">Professor</label>
         <select aria-label="Professor" disabled={salvando} value={professoraId} onChange={(e) => { setProfessoraId(e.target.value); setMensagem(""); }} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
@@ -69,7 +79,8 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
         </select>
       </div>
 
-      {materias && professoras.map(p => <div key={p.id} hidden={p.id !== professoraId}><DisciplinasProfessor professoraId={p.id} materias={materias} iniciais={p.materiaIds ?? []}/></div>)}
+      <FormularioSemRolagem ativo={variant === "v2"} chave={professoraId} className="space-y-3">
+      {materias && professoras.map(p => <div data-entrada-grupos key={p.id} hidden={p.id !== professoraId}><DisciplinasProfessor professoraId={p.id} materias={materias} iniciais={p.materiaIds ?? []}/></div>)}
       <div data-availability-actions className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold text-slate-800">Horários disponíveis</h2>
@@ -98,6 +109,7 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
         </div>
       )}
 
+      </FormularioSemRolagem>
       {mensagem && <p role={mensagem.includes("sucesso") ? "status" : "alert"} className={`text-sm rounded-lg px-3 py-2 ${mensagem.includes("sucesso") ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>{mensagem}</p>}
       <button type="button" onClick={salvar} disabled={salvando || !professora} className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium px-4 py-2 rounded-lg text-sm">
         <Save size={16} /> {salvando ? "Salvando..." : "Salvar disponibilidade"}

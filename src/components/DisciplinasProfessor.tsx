@@ -16,7 +16,7 @@ export default function DisciplinasProfessor({ professoraId, materias, iniciais 
     } catch (e) { setErro(e instanceof Error ? e.message : "Falha de conexão. Tente novamente."); }
     finally { setSalvando(false); }
   }
-  return <section className="border-b border-slate-200 pb-5">
+  return <section data-entrada-grupos className="border-b border-slate-200 pb-5">
     <h2 className="font-semibold text-slate-800">Disciplinas que o professor leciona</h2>
     <p className="text-xs text-slate-500 mt-1 mb-3">Selecione as disciplinas deste professor. Cada alteração é salva automaticamente.</p>
     <div className="flex flex-wrap gap-3">{materias.map(m => <label key={m.id} className="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 text-sm"><input type="checkbox" checked={ids.includes(m.id)} disabled={salvando} onChange={() => alterar(m.id)}/>{m.nome}</label>)}</div>
