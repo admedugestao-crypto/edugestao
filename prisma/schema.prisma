@@ -415,6 +415,7 @@ model Aluno {
   aulas      AgendaAula[]
 
   @@index([empresaId])
+  @@index([empresaId, status, nome])
   @@index([professoraId])
   @@index([unidadeId])
   @@map("alunos")
@@ -459,6 +460,7 @@ model NotaPeriodo {
   materia Materia @relation(fields: [materiaId], references: [id], onDelete: Cascade)
   @@unique([empresaId, alunoId, materiaId, ano, tipoPeriodo, periodo])
   @@index([empresaId, alunoId, ano])
+  @@index([empresaId, ano, alunoId])
   @@map("notas_periodo")
 }
 
@@ -511,6 +513,7 @@ model Pagamento {
 
   @@unique([alunoId, mes, ano, parcela])
   @@index([empresaId])
+  @@index([empresaId, mes, ano, dataVencimento, parcela])
   @@map("pagamentos")
 }
 
@@ -636,6 +639,7 @@ model AgendaAula {
   conteudo    Conteudo?
 
   @@index([empresaId])
+  @@index([empresaId, data, horaInicio])
   @@index([professoraId])
   @@index([alunoId])
   @@index([materiaId])
