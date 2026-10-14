@@ -168,6 +168,7 @@ export default function PagamentosClient({
   const [alunosLista,     setAlunosLista]      = useState<AlunoSimples[]>([]);
   const [carregandoAluno, setCarregandoAluno]  = useState(false);
   const [salvando,        setSalvando]         = useState(false);
+  const [carregandoDetalhe, setCarregandoDetalhe] = useState<string | null>(null);
   const [excluirId,       setExcluirId]        = useState<string | null>(null);
   const [excluindo,       setExcluindo]        = useState(false);
   const [erroExcluir,     setErroExcluir]      = useState<string | null>(null);
@@ -385,20 +386,38 @@ export default function PagamentosClient({
   }
 
   // ── CRUD: abrir modal editar ──────────────────────────────────────────────
-  function abrirEditar(item: PagamentoItem) {
+  async function abrirEditar(item: PagamentoItem) {
     setErroCrud(null);
-    setFormPag({
-      modo:           "editar",
-      id:             item.id,
-      alunoId:        item.alunoId,
-      parcela:        String(item.parcela),
-      dataVencimento: isoParaDate(item.dataVencimento),
-      valorCobrado:   String(item.valorCobrado),
-      quantidadeAulas: item.quantidadeAulas !== null ? String(item.quantidadeAulas) : "",
-      pago:           item.pago,
-      dataPagamento:  isoParaDate(item.dataPagamento),
-      observacao:     item.observacao ?? "",
-    });
+    setCarregandoDetalhe(item.id);
+    try {
+      const resposta = await fetch(`/api/pagamentos/${item.id}`);
+      const detalhe = await resposta.json() as { aulasVinculadas?: PagamentoItem["aulasVinculadas"]; erro?: string };
+      if (!resposta.ok) {
+        setErroCrud(detalhe.erro ?? "Não foi possível carregar os detalhes do pagamento.");
+        return;
+      }
+
+      const itemComAulas = { ...item, aulasVinculadas: detalhe.aulasVinculadas ?? [] };
+      setPagamentos((anteriores) => anteriores.map((pagamento) =>
+        pagamento.id === item.id ? itemComAulas : pagamento,
+      ));
+      setFormPag({
+        modo:           "editar",
+        id:             itemComAulas.id,
+        alunoId:        itemComAulas.alunoId,
+        parcela:        String(itemComAulas.parcela),
+        dataVencimento: isoParaDate(itemComAulas.dataVencimento),
+        valorCobrado:   String(itemComAulas.valorCobrado),
+        quantidadeAulas: itemComAulas.quantidadeAulas !== null ? String(itemComAulas.quantidadeAulas) : "",
+        pago:           itemComAulas.pago,
+        dataPagamento:  isoParaDate(itemComAulas.dataPagamento),
+        observacao:     itemComAulas.observacao ?? "",
+      });
+    } catch {
+      setErroCrud("Não foi possível carregar os detalhes do pagamento.");
+    } finally {
+      setCarregandoDetalhe(null);
+    }
   }
 
   // ── CRUD: salvar (criar ou editar) ────────────────────────────────────────
@@ -913,10 +932,13 @@ export default function PagamentosClient({
                           {/* Editar */}
                           {isAdmin && <button
                             onClick={() => abrirEditar(item)}
+                            disabled={carregandoDetalhe === item.id}
                             title="Editar"
-                            className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-indigo-100 text-slate-400 hover:text-indigo-600 transition-colors"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-indigo-100 text-slate-400 hover:text-indigo-600 transition-colors disabled:opacity-40"
                           >
-                            <Pencil size={13} />
+                            {carregandoDetalhe === item.id
+                              ? <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              : <Pencil size={13} />}
                           </button>}
 
                           {/* Excluir */}

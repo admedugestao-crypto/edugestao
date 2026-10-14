@@ -6,6 +6,50 @@ import { podeGerenciarFinanceiro } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
+// GET /api/pagamentos/[id] — detalhes carregados apenas ao editar uma parcela.
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const scope = await getSessionScope();
+  if (!scope) return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
+
+  const { id } = await params;
+  const pagamento = await prisma.pagamento.findFirst({
+    where: {
+      id,
+      empresaId: scope.empresaId,
+      ...(!scope.isAdmin && scope.professoraId ? { aluno: { professoraId: scope.professoraId } } : {}),
+    },
+    select: {
+      aulas: {
+        select: {
+          agendaAula: {
+            select: {
+              id: true,
+              data: true,
+              horaInicio: true,
+              horaFim: true,
+              status: true,
+              materia: { select: { nome: true } },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!pagamento) return NextResponse.json({ erro: "Pagamento não encontrado." }, { status: 404 });
+
+  return NextResponse.json({
+    aulasVinculadas: pagamento.aulas.map((vinculo) => ({
+      id: vinculo.agendaAula.id,
+      data: vinculo.agendaAula.data.toISOString(),
+      horaInicio: vinculo.agendaAula.horaInicio,
+      horaFim: vinculo.agendaAula.horaFim,
+      status: vinculo.agendaAula.status,
+      materia: vinculo.agendaAula.materia?.nome ?? null,
+    })),
+  });
+}
+
 // PATCH /api/pagamentos/[id]
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const scope = await getSessionScope();

@@ -43,20 +43,6 @@ async function buscarPagamentos(
           professora: { select: { usuario: { select: { nome: true } } } },
         },
       },
-      aulas: {
-        select: {
-          agendaAula: {
-            select: {
-              id:         true,
-              data:       true,
-              horaInicio: true,
-              horaFim:    true,
-              status:     true,
-              materia:    { select: { nome: true } },
-            },
-          },
-        },
-      },
     },
     orderBy: [
       { dataVencimento: alunoFiltro ? "desc" : "asc" },
@@ -97,14 +83,8 @@ function serializarPagamentos(pagamentos: Awaited<ReturnType<typeof buscarPagame
       },
       professora: p.aluno.professora?.usuario?.nome ?? null,
     },
-    aulasVinculadas: p.aulas.map((pa) => ({
-      id:         pa.agendaAula.id,
-      data:       pa.agendaAula.data.toISOString(),
-      horaInicio: pa.agendaAula.horaInicio,
-      horaFim:    pa.agendaAula.horaFim,
-      status:     pa.agendaAula.status,
-      materia:    pa.agendaAula.materia?.nome ?? null,
-    })),
+    // As aulas vinculadas são carregadas somente ao abrir a edição da parcela.
+    aulasVinculadas: [],
   }));
 }
 
