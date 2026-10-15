@@ -395,7 +395,7 @@ export default function AlunoForm({
           ))}
         </div>
       )}
-      <FormularioSemRolagem ativo={variant === "v2"} chave={etapa} className={variant === "v2" ? "entrada-aluno" : "contents"}>
+      <FormularioSemRolagem ativo={variant === "v2"} chave={etapa} permitirRolagem={variant === "v2" && etapa === 3} className={variant === "v2" ? "entrada-aluno" : "contents"}>
       {/* Foto */}
       <div data-etapa="0" className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">

@@ -1,5 +1,6 @@
 .viewport { display:flex; flex-direction:column; flex:1; min-height:0; min-width:0; }
 .conteudo { flex:1; min-height:0; min-width:0; overflow:hidden; }
+.rolagem .conteudo { overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; }
 .conteudo [data-entrada-oculta] { display:none!important; }
 .conteudo input[type=checkbox],.conteudo input[type=radio] { min-height:0!important; flex:none; }
 .grade { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-content:start; gap:10px; }
