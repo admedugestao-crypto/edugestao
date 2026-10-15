@@ -36,7 +36,7 @@ Cinco testes passaram, sem falhas, em 2,925 segundos de execução da suíte (fo
 - envio do serviço real de WhatsApp para a Evolution simulada;
 - envio e leitura de arquivo no simulador HTTP.
 
-O teste adicional `prisma migrate deploy` em banco vazio falhou com P3018/42P01 na migração `20260816120000_empresa_fonnte_alerta_enviado`: a tabela `empresas` ainda não existe nesse ponto do histórico. Portanto, a preparação da suíte usa `prisma db push` somente no banco descartável, após validar seu endereço. Isso não resolve nem valida o histórico de migrações.
+O teste inicial `prisma migrate deploy` em banco vazio falhou com P3018/42P01 na migração `20260816120000_empresa_fonnte_alerta_enviado`: a tabela `empresas` ainda não existia nesse ponto do histórico. Na execução inicial, os demais cenários foram validados usando `db push`.
 
 Para reproduzir a verificação do histórico, use um banco descartável vazio e substitua o comando do serviço:
 
@@ -45,3 +45,7 @@ docker compose -f docker-compose.integration.yml run --rm testes npx prisma migr
 ```
 
 Nenhuma conexão ou credencial de DEV/produção é copiada para a imagem. A rede de execução é interna e o `.dockerignore` exclui os arquivos `.env`.
+
+## Correção de 15/10/2026
+
+O histórico ativo passou a ser `prisma/migrations-v2`, começando por uma baseline completa. A suíte agora usa `migrate deploy`, compara a estrutura resultante ao schema e testa as restrições CHECK e os índices parciais. Não utiliza mais `db push`. Consulte [o procedimento de transição](baseline-banco.md) antes de operar em bancos existentes.

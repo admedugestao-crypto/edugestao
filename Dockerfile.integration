@@ -10,4 +10,4 @@ RUN npm ci
 COPY . .
 RUN npx prisma generate
 
-CMD ["sh", "-c", "node --import tsx tests/integration/seguranca.ts && npx prisma db push && node --import tsx --test tests/integration/*.test.ts"]
+CMD ["sh", "-c", "node --import tsx tests/integration/seguranca.ts && npx prisma migrate deploy && npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code && node --import tsx --test tests/integration/*.test.ts"]
