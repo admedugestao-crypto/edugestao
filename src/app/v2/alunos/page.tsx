@@ -59,6 +59,10 @@ export default async function V2AlunosPage({
   const alunos = resultado.map((aluno) => ({
     ...aluno,
     valorCobranca: aluno.valorCobranca == null ? null : Number(aluno.valorCobranca),
+    pagamentos: aluno.pagamentos.map((pagamento) => ({
+      ...pagamento,
+      valorCobrado: Number(pagamento.valorCobrado),
+    })),
   }));
 
   return (

@@ -5,8 +5,15 @@ import { PLATAFORMA_COOKIE } from "@/lib/plataformaCookie";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  // O logo do login precisa carregar antes de existir uma sessão.
-  if (pathname === "/logo-edugestao-v2.png") return NextResponse.next();
+  // Recursos de identidade e PWA precisam carregar antes de existir uma sessão.
+  if (
+    pathname === "/logo-edugestao-v2.png" ||
+    pathname === "/manifest.json" ||
+    pathname === "/sw.js" ||
+    pathname === "/icone-edugestao.jpg" ||
+    pathname === "/icone-pwa-192.png" ||
+    pathname === "/icone-pwa-512.png"
+  ) return NextResponse.next();
 
   const publicPaths = [
     "/login", "/plataforma/login",

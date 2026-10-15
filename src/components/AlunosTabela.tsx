@@ -9,11 +9,6 @@ const TIPO_LABEL: Record<string, string> = {
   MENSAL: "Mensal", QUINZENAL: "Quinzenal", SEMANAL: "Semanal", POR_AULA: "Por aula",
 };
 
-type Pagamento = {
-  parcela: number; pago: boolean; dataVencimento?: string;
-  diaPagamento?: number | null;
-};
-
 type Aluno = {
   id: string;
   nome: string;
@@ -179,7 +174,7 @@ export default function AlunosTabela({
               )}
               <th className="text-left py-2 px-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Cobrança</th>
               <th className="text-left py-2 px-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Status</th>
-              <th className="py-2 px-3" />
+              <th className="py-2 px-3"><span className="sr-only">Ações</span></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
@@ -187,10 +182,10 @@ export default function AlunosTabela({
               <tr key={a.id} className="hover:bg-slate-50 transition-colors group">
 
                 {/* Nome */}
-                <td className="py-3 px-3">
+                <th scope="row" data-student-column="Aluno" className="py-3 px-3 text-left font-normal">
                   <div className="flex items-center gap-3">
                     {a.fotoUrl ? (
-                      <Image src={a.fotoUrl} alt={a.nome} width={32} height={32} unoptimized className="rounded-full object-cover w-8 h-8" />
+                      <Image src={a.fotoUrl} alt={a.nome} width={32} height={32} sizes="32px" className="rounded-full object-cover w-8 h-8" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
                         {a.nome.charAt(0).toUpperCase()}
@@ -198,16 +193,16 @@ export default function AlunosTabela({
                     )}
                     <span className="font-medium text-slate-800">{a.nome}</span>
                   </div>
-                </td>
+                </th>
 
                 {/* Escola */}
-                <td className="py-3 px-3 text-slate-600">
+                <td data-student-column="Escola e série" className="py-3 px-3 text-slate-600">
                   <div>{a.unidade.escola.nome}</div>
                   <div className="text-xs text-slate-400">{a.unidade.nome} · {a.serie}{a.turma ? ` - ${a.turma}` : ""}</div>
                 </td>
 
                 {/* Disciplinas */}
-                <td className="py-3 px-3">
+                <td data-student-column="Disciplinas" className="py-3 px-3">
                   <div className="flex gap-1 flex-wrap">
                     {a.materias.map(({ materia }) => (
                       <span key={materia.nome} className="px-2 py-0.5 rounded-full text-xs font-medium text-white" style={{ backgroundColor: materia.cor }}>
@@ -219,13 +214,13 @@ export default function AlunosTabela({
 
                 {/* Cadastrado por (admin) */}
                 {isAdmin && (
-                  <td className="py-3 px-3 text-sm text-slate-600">
+                  <td data-student-column="Cadastrado por" className="py-3 px-3 text-sm text-slate-600">
                     {a.professora?.usuario?.nome ?? "—"}
                   </td>
                 )}
 
                 {/* Cobrança */}
-                <td className="py-3 px-3">
+                <td data-student-column="Cobrança" className="py-3 px-3">
                   {a.tipoCobranca && a.valorCobranca ? (
                     <div>
                       <span className="inline-block bg-indigo-50 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded-full mb-0.5">
@@ -239,7 +234,7 @@ export default function AlunosTabela({
                 </td>
 
                 {/* Status aluno */}
-                <td className="py-3 px-3">
+                <td data-student-column="Situação" className="py-3 px-3">
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                     a.status === "ATIVO" ? "bg-emerald-100 text-emerald-700"
                     : a.status === "PAUSADO" ? "bg-amber-100 text-amber-700"
@@ -253,23 +248,23 @@ export default function AlunosTabela({
                 </td>
 
                 {/* Ações */}
-                <td className="py-3 px-3">
+                <td data-student-column="Ações" className="py-3 px-3">
                   <div className="flex gap-1 justify-end">
                     <Link href={`${basePath}/${a.id}`}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="Ver aluno">
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="Ver aluno" aria-label={`Ver ${a.nome}`}>
                       <Eye size={15} />
                     </Link>
                     <Link href={`${basePath}/${a.id}/editar`}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" title="Editar aluno">
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" title="Editar aluno" aria-label={`Editar ${a.nome}`}>
                       <Pencil size={15} />
                     </Link>
                     <Link href={`${basePath === "/v2/alunos" ? "/v2/pagamentos" : "/dashboard/pagamentos"}?aluno=${a.id}`}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Pagamentos do aluno">
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Pagamentos do aluno" aria-label={`Ver pagamentos de ${a.nome}`}>
                       <DollarSign size={15} />
                     </Link>
                     <button
                       onClick={() => { setErroDelete(""); setConfirmDelete({ id: a.id, nome: a.nome }); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Excluir aluno">
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Excluir aluno" aria-label={`Excluir ${a.nome}`}>
                       <Trash2 size={15} />
                     </button>
                   </div>
