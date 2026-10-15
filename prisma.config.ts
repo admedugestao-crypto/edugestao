@@ -10,7 +10,9 @@ dotenv.config({ path: ".env.local", override: true });
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
-    path: "prisma/migrations",
+    // Histórico anterior preservado em prisma/migrations para auditoria.
+    // Bancos existentes precisam registrar a baseline após conferir o schema.
+    path: "prisma/migrations-v2",
   },
   datasource: {
     url: process.env.DIRECT_URL ?? process.env.DATABASE_URL ?? "",

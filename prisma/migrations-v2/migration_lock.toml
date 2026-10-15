@@ -1,0 +1,2 @@
+# Baseline PostgreSQL; histórico legado preservado em prisma/migrations.
+provider = "postgresql"
