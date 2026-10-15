@@ -1,6 +1,6 @@
 export const PERIODICIDADES_AGENDA = ["SEMANAL", "QUINZENAL", "MENSAL"] as const;
 export type PeriodicidadeAgenda = typeof PERIODICIDADES_AGENDA[number];
-export type HorarioAgenda = { diaSemana: number; horaAula: string; dataPrimeiraAula?: string };
+export type HorarioAgenda = { diaSemana: number; horaAula: string; dataPrimeiraAula?: string; geraFatura?: boolean };
 const DIA_MS = 86400000;
 
 export function descricaoHorarioAgenda(horario: HorarioAgenda, frequencia: PeriodicidadeAgenda): string {
@@ -28,10 +28,16 @@ export function lerAgendaCadastro(periodicidade: unknown, valor: unknown, padrao
   const horarios: HorarioAgenda[] = [];
   for (const item of lista) {
     if (!item || typeof item !== "object" || !Number.isInteger(item.diaSemana) || item.diaSemana < 0 || item.diaSemana > 6 || typeof item.horaAula !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(item.horaAula)) return { erro: "Dia ou horário da agenda inválido." };
+    if (item.geraFatura !== undefined && typeof item.geraFatura !== "boolean") return { erro: "A opção de gerar fatura da agenda é inválida." };
     const referencia = typeof item.dataPrimeiraAula === "string" && item.dataPrimeiraAula ? dataAgenda(item.dataPrimeiraAula) : null;
     if ((item.dataPrimeiraAula && !referencia) || (frequencia !== "SEMANAL" && !referencia)) return { erro: "Informe uma data válida da primeira aula em cada horário quinzenal ou mensal." };
     if (referencia && frequencia !== "MENSAL" && referencia.getUTCDay() !== item.diaSemana) return { erro: "A primeira aula deve corresponder ao dia da semana escolhido." };
-    horarios.push({ diaSemana: frequencia === "MENSAL" && referencia ? referencia.getUTCDay() : item.diaSemana, horaAula: item.horaAula, ...(referencia ? { dataPrimeiraAula: item.dataPrimeiraAula } : {}) });
+    horarios.push({
+      diaSemana: frequencia === "MENSAL" && referencia ? referencia.getUTCDay() : item.diaSemana,
+      horaAula: item.horaAula,
+      geraFatura: item.geraFatura !== false,
+      ...(referencia ? { dataPrimeiraAula: item.dataPrimeiraAula } : {}),
+    });
   }
   return { dados: { periodicidadeAgenda: frequencia as PeriodicidadeAgenda, agendaSemanal: horarios } };
 }

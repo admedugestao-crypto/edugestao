@@ -36,6 +36,14 @@ test("cadastro rejeita periodicidade, datas e horários inválidos", () => {
   assert.ok(lerAgendaCadastro("QUINZENAL", '[{"diaSemana":1,"horaAula":"14:00","dataPrimeiraAula":"2026-10-15"}]').erro);
   assert.ok(lerAgendaCadastro("SEMANAL", '[{"diaSemana":1,"horaAula":"99:00"}]').erro);
   assert.ok(lerAgendaCadastro("SEMANAL", "{} ").erro);
+  assert.ok(lerAgendaCadastro("SEMANAL", '[{"diaSemana":1,"horaAula":"14:00","geraFatura":"sim"}]').erro);
+});
+
+test("gera fatura por padrão e preserva escolha não para cada horário", () => {
+  const padrao = lerAgendaCadastro("SEMANAL", '[{"diaSemana":1,"horaAula":"14:00"}]');
+  const semFatura = lerAgendaCadastro("SEMANAL", '[{"diaSemana":2,"horaAula":"15:00","geraFatura":false}]');
+  assert.equal(padrao.dados?.agendaSemanal[0].geraFatura, true);
+  assert.equal(semFatura.dados?.agendaSemanal[0].geraFatura, false);
 });
 
 test("mensal obtém dia da semana da referência e preserva frequência em requisição antiga", () => {

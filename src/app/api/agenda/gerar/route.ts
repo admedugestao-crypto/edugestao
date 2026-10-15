@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
   function getEntradas(a: typeof todosAlunos[0]): AgendaEntry[] {
     const saved = a.agendaSemanal as any;
     if (Array.isArray(saved) && saved.length > 0) return saved;
-    if (a.diaSemana != null && a.horaAula) return [{ diaSemana: a.diaSemana, horaAula: a.horaAula }];
+    if (a.diaSemana != null && a.horaAula) return [{ diaSemana: a.diaSemana, horaAula: a.horaAula, geraFatura: true }];
     return [];
   }
 
@@ -292,7 +292,7 @@ export async function POST(req: NextRequest) {
             empresaId: scope.empresaId,
             professoraId: profId!, alunoId: aluno.id,
             materiaId: materiaIds[0] ?? null,
-            data: dataUTC, horaInicio, horaFim, status: "AGENDADA",
+            data: dataUTC, horaInicio, horaFim, status: "AGENDADA", geraFatura: entrada.geraFatura !== false,
             materias: materiaIds.length > 0
               ? { create: materiaIds.map((materiaId) => ({ materiaId })) }
               : undefined,

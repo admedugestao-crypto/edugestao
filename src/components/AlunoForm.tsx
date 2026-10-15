@@ -154,16 +154,16 @@ export default function AlunoForm({
   const [excluindo, setExcluindo] = useState(false);
 
   // ── Agenda semanal (lista) ─────────────────────────────────────────────────
-  type AgendaEntry = { diaSemana: string; horaAula: string; dataPrimeiraAula?: string };
+  type AgendaEntry = { diaSemana: string; horaAula: string; dataPrimeiraAula?: string; geraFatura: boolean };
   const [periodicidadeAgenda, setPeriodicidadeAgenda] = useState(alunoInicial?.periodicidadeAgenda ?? "SEMANAL");
 
   function entradaInicial(): AgendaEntry[] {
     const saved = alunoInicial?.agendaSemanal;
     if (Array.isArray(saved) && saved.length > 0)
-      return saved.map((e: any) => ({ diaSemana: String(e.diaSemana), horaAula: e.horaAula ?? "", dataPrimeiraAula: e.dataPrimeiraAula ?? "" }));
+      return saved.map((e: any) => ({ diaSemana: String(e.diaSemana), horaAula: e.horaAula ?? "", dataPrimeiraAula: e.dataPrimeiraAula ?? "", geraFatura: e.geraFatura !== false }));
     // retrocompat: campo legado
     if (alunoInicial?.diaSemana != null && alunoInicial?.horaAula)
-      return [{ diaSemana: String(alunoInicial.diaSemana), horaAula: alunoInicial.horaAula }];
+      return [{ diaSemana: String(alunoInicial.diaSemana), horaAula: alunoInicial.horaAula, geraFatura: true }];
     return [];
   }
 
@@ -221,7 +221,7 @@ export default function AlunoForm({
   }
 
   function addEntrada() {
-    setAgendaSemanal((prev) => [...prev, { diaSemana: "1", horaAula: "08:00" }]);
+    setAgendaSemanal((prev) => [...prev, { diaSemana: "1", horaAula: "08:00", geraFatura: true }]);
   }
 
   function removeEntrada(i: number) {
@@ -229,7 +229,7 @@ export default function AlunoForm({
     setErroAgenda("");
   }
 
-  function updateEntrada(i: number, field: keyof AgendaEntry, value: string) {
+  function updateEntrada(i: number, field: keyof AgendaEntry, value: string | boolean) {
     setAgendaSemanal((prev) => {
       const next = [...prev];
       next[i] = { ...next[i], [field]: value };
@@ -355,6 +355,7 @@ export default function AlunoForm({
       agendaSemanal.filter((e) => e.diaSemana && e.horaAula).map((e) => ({
         diaSemana: Number(e.diaSemana),
         horaAula: e.horaAula,
+        geraFatura: e.geraFatura !== false,
         ...(e.dataPrimeiraAula ? { dataPrimeiraAula: e.dataPrimeiraAula } : {}),
       }))
     ));
@@ -830,6 +831,16 @@ export default function AlunoForm({
                   required={periodicidadeAgenda !== "SEMANAL"}
                   onChange={e => updateEntrada(i, "dataPrimeiraAula", e.target.value)}
                   className="mt-1 block h-9 max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" />
+              </label>
+              <label className="min-w-0 text-xs text-slate-600">
+                Gerar fatura
+                <select value={entry.geraFatura ? "sim" : "nao"}
+                  aria-label={`Gerar fatura para o horário ${i + 1}`}
+                  onChange={(e) => updateEntrada(i, "geraFatura", e.target.value === "sim")}
+                  className="mt-1 block h-9 max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                  <option value="sim">Sim</option>
+                  <option value="nao">Não</option>
+                </select>
               </label>
               <button type="button" onClick={() => removeEntrada(i)}
                 className="h-9 px-1 text-slate-400 hover:text-red-500 transition-colors ml-auto text-lg leading-none">×</button>
