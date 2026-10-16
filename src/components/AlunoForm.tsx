@@ -4,7 +4,7 @@ import DateInput from "@/components/DateInput";
 import FormularioSemRolagem from "@/components/FormularioSemRolagem";
 import { dataExiste } from "@/lib/validarData";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { SERIES } from "@/lib/series";
@@ -56,6 +56,9 @@ export default function AlunoForm({
   const [escolaId, setEscolaId] = useState(
     alunoInicial?.unidade?.escolaId ?? ""
   );
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState(alunoInicial?.unidadeId ?? "");
+  const [serieSelecionada, setSerieSelecionada] = useState(alunoInicial?.serie ?? "");
+  const [vinculosPorUnidadeESerie, setVinculosPorUnidadeESerie] = useState({ chave: "", materiaIds: [] as string[] });
   const [fotoPreview, setFotoPreview] = useState<string | null>(
     alunoInicial?.fotoUrl ?? null
   );
@@ -65,6 +68,21 @@ export default function AlunoForm({
   const [tipoCobranca, setTipoCobranca] = useState<string>(alunoInicial?.tipoCobranca ?? "");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    if (!unidadeSelecionada || !serieSelecionada) return;
+    const chave = `${unidadeSelecionada}:${serieSelecionada}`;
+    let ativo = true;
+    fetch(`/api/alunos/materias-vinculadas?unidadeId=${encodeURIComponent(unidadeSelecionada)}&serie=${encodeURIComponent(serieSelecionada)}`)
+      .then((res) => res.ok ? res.json() : { materiaIds: [] })
+      .then((dados) => { if (ativo) setVinculosPorUnidadeESerie({ chave, materiaIds: Array.isArray(dados.materiaIds) ? dados.materiaIds : [] }); })
+      .catch(() => { if (ativo) setVinculosPorUnidadeESerie({ chave, materiaIds: [] }); });
+    return () => { ativo = false; };
+  }, [unidadeSelecionada, serieSelecionada]);
+
+  const materiasVinculadas = vinculosPorUnidadeESerie.chave === `${unidadeSelecionada}:${serieSelecionada}`
+    ? vinculosPorUnidadeESerie.materiaIds
+    : [];
 
   // ── Endereço controlado para preenchimento via CEP ────────────────────────
   const [cep,         setCep]         = useState(alunoInicial?.cep         ?? "");
@@ -623,6 +641,7 @@ export default function AlunoForm({
               onChange={(e) => {
                 const novoEscolaId = e.target.value;
                 setEscolaId(novoEscolaId);
+                setUnidadeSelecionada("");
                 // Sugere o período contratual com base no ano letivo da escola,
                 // só quando o cadastro ainda não tem datas definidas (não
                 // sobrescreve um período já ajustado manualmente).
@@ -654,8 +673,8 @@ export default function AlunoForm({
             <select
               name="unidadeId"
               required
-              defaultValue={alunoInicial?.unidadeId}
-              onChange={setCampo("unidadeId")}
+              value={unidadeSelecionada}
+              onChange={(e) => { setUnidadeSelecionada(e.target.value); setCampo("unidadeId")(e); }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Selecione...</option>
@@ -673,8 +692,8 @@ export default function AlunoForm({
             <select
               name="serie"
               required
-              defaultValue={alunoInicial?.serie ?? ""}
-              onChange={setCampo("serie")}
+              value={serieSelecionada}
+              onChange={(e) => { setSerieSelecionada(e.target.value); setCampo("serie")(e); }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
               <option value="" disabled>Selecione a série</option>
@@ -751,6 +770,9 @@ export default function AlunoForm({
           <BookOpen size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Disciplinas atendidas *</h2>
         </div>
+        {unidadeSelecionada && serieSelecionada && (
+          <p className="mb-3 text-xs text-slate-500">As disciplinas coloridas já estão vinculadas a alunos ativos desta unidade e série.</p>
+        )}
         <div className="flex flex-wrap gap-2">
           {materias.map((m) => (
             <button
@@ -760,12 +782,16 @@ export default function AlunoForm({
               className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                 materiasSelected.includes(m.id)
                   ? "border-transparent text-white"
-                  : "border-slate-200 text-slate-600 hover:border-slate-300"
+                  : materiasVinculadas.includes(m.id)
+                    ? "text-slate-700 hover:brightness-95"
+                    : "border-slate-200 text-slate-600 hover:border-slate-300"
               }`}
               style={
                 materiasSelected.includes(m.id)
                   ? { backgroundColor: m.cor }
-                  : {}
+                  : materiasVinculadas.includes(m.id)
+                    ? { backgroundColor: `${m.cor}22`, borderColor: `${m.cor}99` }
+                    : {}
               }
             >
               {m.nome}

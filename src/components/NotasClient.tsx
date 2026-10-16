@@ -32,6 +32,7 @@ type Avaliacao = {
   periodo: string | null;
   materiaId: string | null;
   materia: Materia | null;
+  materias: { materia: Materia }[];
   unidadeId: string;
   unidade: { nome: string; escola: { nome: string } };
 };
@@ -191,6 +192,12 @@ export default function NotasClient({
                         {format(parseDataLocal(av.data), "dd/MM/yyyy", { locale: ptBR })}
                       </td>
                       {aluno.materias.map(({ materia }) => {
+                        const disciplinasDaAvaliacao = av.materias.length > 0
+                          ? av.materias.map((item) => item.materia.id)
+                          : av.materiaId ? [av.materiaId] : [];
+                        if (!disciplinasDaAvaliacao.includes(materia.id)) {
+                          return <td key={materia.id} className="py-2 px-3 text-center text-slate-300">—</td>;
+                        }
                         const key = notaKey(av.id, materia.id);
                         const val = notas[key];
                         return (

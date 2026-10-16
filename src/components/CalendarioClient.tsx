@@ -23,6 +23,7 @@ type Avaliacao = {
   observacao: string | null;
   materiaId: string | null;
   materia: Materia | null;
+  materias: { materia: Materia }[];
   unidade: { nome: string; escola: { nome: string } };
 };
 
@@ -37,7 +38,7 @@ type TipoAvaliacao = { id: string; nome: string };
 
 type FormAv = {
   unidadeId: string;
-  materiaId: string;
+  materiaIds: string[];
   serie: string;
   nome: string;
   data: string;
@@ -57,7 +58,7 @@ function getPeriodos(periodoAvaliacao: string | null | undefined): string[] {
   return PERIODOS_POR_TIPO[periodoAvaliacao ?? ""] ?? PERIODOS_POR_TIPO["Trimestral"];
 }
 
-const formVazio: FormAv = { unidadeId: "", materiaId: "", serie: "", nome: "", data: "", notaMax: "5", periodo: "", observacao: "" };
+const formVazio: FormAv = { unidadeId: "", materiaIds: [], serie: "", nome: "", data: "", notaMax: "5", periodo: "", observacao: "" };
 
 type Unidade = { id: string; nome: string; escola: string; periodoAvaliacao: string | null };
 
@@ -112,19 +113,32 @@ function CamposForm({
             ))}
           </select>
         </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
-          <select
-            value={form.materiaId}
-            onChange={(e) => setForm({ ...form, materiaId: e.target.value })}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-          >
-            <option value="">Selecione...</option>
-            {materias.map((m) => (
-              <option key={m.id} value={m.id}>{m.nome}</option>
-            ))}
-          </select>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-slate-600 mb-2">Disciplinas *</label>
+        <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+          {materias.map((m) => {
+            const selecionada = form.materiaIds.includes(m.id);
+            return (
+              <button
+                key={m.id}
+                type="button"
+                aria-pressed={selecionada}
+                onClick={() => setForm({
+                  ...form,
+                  materiaIds: selecionada
+                    ? form.materiaIds.filter((id) => id !== m.id)
+                    : [...form.materiaIds, m.id],
+                })}
+                className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${selecionada ? "text-white" : "bg-white text-slate-700"}`}
+                style={selecionada ? { backgroundColor: m.cor, borderColor: m.cor } : { borderColor: `${m.cor}80` }}
+              >
+                {m.nome}
+              </button>
+            );
+          })}
         </div>
+        <p className="mt-1 text-xs text-slate-500">Selecione uma ou mais disciplinas para esta prova.</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -200,14 +214,11 @@ function AvaliacaoRow({
     <div className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 group">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          {av.materia && (
-            <span
-              className="px-2 py-0.5 rounded-full text-xs font-medium text-white shrink-0"
-              style={{ backgroundColor: av.materia.cor }}
-            >
-              {av.materia.nome}
+          {(av.materias.length ? av.materias.map((item) => item.materia) : av.materia ? [av.materia] : []).map((materia) => (
+            <span key={materia.id} className="px-2 py-0.5 rounded-full text-xs font-medium text-white shrink-0" style={{ backgroundColor: materia.cor }}>
+              {materia.nome}
             </span>
-          )}
+          ))}
           <p className="font-medium text-slate-800 text-sm">{av.nome}</p>
           {av.periodo && (
             <span className="text-xs text-slate-400">· {av.periodo}</span>
@@ -400,7 +411,7 @@ export default function CalendarioClient({
     setEditAv({
       id: av.id,
       unidadeId: av.unidadeId,
-      materiaId: av.materiaId ?? "",
+      materiaIds: av.materias.length ? av.materias.map((item) => item.materia.id) : av.materiaId ? [av.materiaId] : [],
       serie: av.serie,
       nome: av.nome,
       data: av.data.split("T")[0],
@@ -412,7 +423,7 @@ export default function CalendarioClient({
 
   function onDeleteClick(av: Avaliacao) {
     setErroDelete("");
-    setConfirmDelete({ id: av.id, nome: av.nome, materia: av.materia?.nome ?? "" });
+    setConfirmDelete({ id: av.id, nome: av.nome, materia: (av.materias.length ? av.materias.map((item) => item.materia.nome) : av.materia ? [av.materia.nome] : []).join(", ") });
   }
 
   // Parse date without timezone shift
@@ -503,7 +514,7 @@ export default function CalendarioClient({
             <div className="flex gap-3 mt-5">
               <button
                 onClick={criarAvaliacao}
-                disabled={!nova.unidadeId || !nova.serie || !nova.materiaId || !nova.nome || !nova.periodo || !nova.data || !nova.notaMax || salvando}
+                disabled={!nova.unidadeId || !nova.serie || nova.materiaIds.length === 0 || !nova.nome || !nova.periodo || !nova.data || !nova.notaMax || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Criar avaliação"}
@@ -526,7 +537,7 @@ export default function CalendarioClient({
             <div className="flex gap-3 mt-5">
               <button
                 onClick={salvarAvaliacao}
-                disabled={!editAv.unidadeId || !editAv.serie || !editAv.materiaId || !editAv.nome || !editAv.periodo || !editAv.data || !editAv.notaMax || salvando}
+                disabled={!editAv.unidadeId || !editAv.serie || editAv.materiaIds.length === 0 || !editAv.nome || !editAv.periodo || !editAv.data || !editAv.notaMax || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Salvar"}

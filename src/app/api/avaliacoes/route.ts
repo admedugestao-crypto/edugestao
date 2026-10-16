@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       ...(unidadeId ? { unidadeId } : {}),
       ...(serie ? { serie } : {}),
     },
-    include: { unidade: { include: { escola: true } }, materia: true },
+    include: { unidade: { include: { escola: true } }, materia: true, materias: { include: { materia: true } } },
     orderBy: { data: "asc" },
   });
   return NextResponse.json(avaliacoes);
@@ -36,28 +36,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erro: "Data inválida." }, { status: 400 });
   }
 
-  const [unidadeOk, materiaOk] = await Promise.all([
+  const materiaIds = Array.isArray(body.materiaIds)
+    ? [...new Set(body.materiaIds.filter((id: unknown) => typeof id === "string" && id.length > 0))]
+    : typeof body.materiaId === "string" && body.materiaId ? [body.materiaId] : [];
+  if (materiaIds.length === 0) {
+    return NextResponse.json({ erro: "Selecione ao menos uma disciplina." }, { status: 400 });
+  }
+
+  const [unidadeOk, materiasOk] = await Promise.all([
     prisma.unidade.findFirst({
       where: { id: body.unidadeId, empresaId: scope.empresaId },
       select: { id: true },
     }),
-    body.materiaId
-      ? prisma.materia.findFirst({
-          where: { id: body.materiaId, empresaId: scope.empresaId },
-          select: { id: true },
-        })
-      : Promise.resolve(null),
+    prisma.materia.findMany({ where: { id: { in: materiaIds }, empresaId: scope.empresaId }, select: { id: true } }),
   ]);
   if (!unidadeOk) return NextResponse.json({ erro: "Unidade não encontrada." }, { status: 404 });
-  if (body.materiaId && !materiaOk) {
-    return NextResponse.json({ erro: "Matéria não encontrada." }, { status: 404 });
+  if (materiasOk.length !== materiaIds.length) {
+    return NextResponse.json({ erro: "Uma ou mais disciplinas não foram encontradas." }, { status: 404 });
   }
 
   const avaliacao = await prisma.avaliacao.create({
     data: {
       empresaId: scope.empresaId,
       unidadeId: body.unidadeId,
-      materiaId: body.materiaId || null,
+      materiaId: materiaIds[0],
+      materias: { create: materiaIds.map((materiaId) => ({ materiaId })) },
       serie: body.serie,
       nome: body.nome,
       data: new Date(dataStr),
@@ -66,7 +69,7 @@ export async function POST(req: NextRequest) {
       periodo: body.periodo || null,
       observacao: body.observacao || null,
     },
-    include: { unidade: { include: { escola: true } }, materia: true },
+    include: { unidade: { include: { escola: true } }, materia: true, materias: { include: { materia: true } } },
   });
   return NextResponse.json(avaliacao, { status: 201 });
 }
