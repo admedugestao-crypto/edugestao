@@ -4,7 +4,7 @@ import FormularioSemRolagem from "@/components/FormularioSemRolagem";
 import DateInput from "@/components/DateInput";
 import { dataExiste, MENSAGEM_DATA_INVALIDA } from "@/lib/validarData";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { SERIES } from "@/lib/series";
@@ -75,6 +75,28 @@ function CamposForm({
   materias: Materia[];
   tipos: TipoAvaliacao[];
 }) {
+  const [vinculosPorUnidadeESerie, setVinculosPorUnidadeESerie] = useState({ chave: "", materiaIds: [] as string[] });
+
+  useEffect(() => {
+    if (!form.unidadeId || !form.serie) return;
+    const chave = `${form.unidadeId}:${form.serie}`;
+    let ativo = true;
+    fetch(`/api/alunos/materias-vinculadas?unidadeId=${encodeURIComponent(form.unidadeId)}&serie=${encodeURIComponent(form.serie)}`)
+      .then((res) => res.ok ? res.json() : { materiaIds: [] })
+      .then((dados) => {
+        if (ativo) setVinculosPorUnidadeESerie({ chave, materiaIds: Array.isArray(dados.materiaIds) ? dados.materiaIds : [] });
+      })
+      .catch(() => {
+        if (ativo) setVinculosPorUnidadeESerie({ chave, materiaIds: [] });
+      });
+    return () => { ativo = false; };
+  }, [form.unidadeId, form.serie]);
+
+  const materiasSugeridas = vinculosPorUnidadeESerie.chave === `${form.unidadeId}:${form.serie}`
+    ? vinculosPorUnidadeESerie.materiaIds
+    : [];
+  const materiasOrdenadas = [...materias].sort((a, b) => Number(materiasSugeridas.includes(b.id)) - Number(materiasSugeridas.includes(a.id)) || a.nome.localeCompare(b.nome));
+
   return (
     <div className="space-y-3">
       <div>
@@ -117,8 +139,9 @@ function CamposForm({
       <div>
         <label className="block text-xs font-medium text-slate-600 mb-2">Disciplinas *</label>
         <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-          {materias.map((m) => {
+          {materiasOrdenadas.map((m) => {
             const selecionada = form.materiaIds.includes(m.id);
+            const sugerida = materiasSugeridas.includes(m.id);
             return (
               <button
                 key={m.id}
@@ -131,14 +154,19 @@ function CamposForm({
                     : [...form.materiaIds, m.id],
                 })}
                 className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${selecionada ? "text-white" : "bg-white text-slate-700"}`}
-                style={selecionada ? { backgroundColor: m.cor, borderColor: m.cor } : { borderColor: `${m.cor}80` }}
+                style={selecionada ? { backgroundColor: m.cor, borderColor: m.cor } : sugerida ? { backgroundColor: `${m.cor}18`, borderColor: m.cor } : { borderColor: `${m.cor}80` }}
               >
-                {m.nome}
+                {m.nome}{sugerida ? " · sugerida" : ""}
               </button>
             );
           })}
         </div>
-        <p className="mt-1 text-xs text-slate-500">Selecione uma ou mais disciplinas para esta prova.</p>
+        <p className="mt-1 text-xs text-slate-500">
+          {form.unidadeId && form.serie && materiasSugeridas.length > 0
+            ? "As disciplinas marcadas como sugeridas já são usadas por alunos desta unidade e série."
+            : "Selecione uma ou mais disciplinas para esta prova."}
+        </p>
+        <p className="mt-1 text-xs text-slate-500">A avaliação ficará disponível somente para as disciplinas marcadas acima.</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
