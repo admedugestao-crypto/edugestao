@@ -433,6 +433,7 @@ model Aluno {
   @@index([empresaId])
   @@index([empresaId, status, nome])
   @@index([professoraId])
+  @@index([status, professoraId, empresaId])
   @@index([unidadeId])
   @@map("alunos")
 }
