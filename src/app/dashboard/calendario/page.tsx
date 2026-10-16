@@ -17,7 +17,7 @@ export default async function CalendarioPage() {
         empresaId: scope.empresaId,
         ...(professoraId ? { unidade: { alunos: { some: { professoraId, status: "ATIVO" } } } } : {}),
       },
-      include: { unidade: { include: { escola: true } }, materia: true },
+      include: { unidade: { include: { escola: true } }, materia: true, materias: { include: { materia: true } } },
       orderBy: { data: "asc" },
     }),
     prisma.escola.findMany({

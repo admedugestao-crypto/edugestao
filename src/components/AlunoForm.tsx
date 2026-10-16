@@ -4,7 +4,7 @@ import DateInput from "@/components/DateInput";
 import FormularioSemRolagem from "@/components/FormularioSemRolagem";
 import { dataExiste } from "@/lib/validarData";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { SERIES } from "@/lib/series";
@@ -56,6 +56,9 @@ export default function AlunoForm({
   const [escolaId, setEscolaId] = useState(
     alunoInicial?.unidade?.escolaId ?? ""
   );
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState(alunoInicial?.unidadeId ?? "");
+  const [serieSelecionada, setSerieSelecionada] = useState(alunoInicial?.serie ?? "");
+  const [vinculosPorUnidadeESerie, setVinculosPorUnidadeESerie] = useState({ chave: "", materiaIds: [] as string[] });
   const [fotoPreview, setFotoPreview] = useState<string | null>(
     alunoInicial?.fotoUrl ?? null
   );
@@ -65,6 +68,21 @@ export default function AlunoForm({
   const [tipoCobranca, setTipoCobranca] = useState<string>(alunoInicial?.tipoCobranca ?? "");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    if (!unidadeSelecionada || !serieSelecionada) return;
+    const chave = `${unidadeSelecionada}:${serieSelecionada}`;
+    let ativo = true;
+    fetch(`/api/alunos/materias-vinculadas?unidadeId=${encodeURIComponent(unidadeSelecionada)}&serie=${encodeURIComponent(serieSelecionada)}`)
+      .then((res) => res.ok ? res.json() : { materiaIds: [] })
+      .then((dados) => { if (ativo) setVinculosPorUnidadeESerie({ chave, materiaIds: Array.isArray(dados.materiaIds) ? dados.materiaIds : [] }); })
+      .catch(() => { if (ativo) setVinculosPorUnidadeESerie({ chave, materiaIds: [] }); });
+    return () => { ativo = false; };
+  }, [unidadeSelecionada, serieSelecionada]);
+
+  const materiasVinculadas = vinculosPorUnidadeESerie.chave === `${unidadeSelecionada}:${serieSelecionada}`
+    ? vinculosPorUnidadeESerie.materiaIds
+    : [];
 
   // ── Endereço controlado para preenchimento via CEP ────────────────────────
   const [cep,         setCep]         = useState(alunoInicial?.cep         ?? "");
@@ -154,16 +172,16 @@ export default function AlunoForm({
   const [excluindo, setExcluindo] = useState(false);
 
   // ── Agenda semanal (lista) ─────────────────────────────────────────────────
-  type AgendaEntry = { diaSemana: string; horaAula: string; dataPrimeiraAula?: string };
+  type AgendaEntry = { diaSemana: string; horaAula: string; dataPrimeiraAula?: string; geraFatura: boolean };
   const [periodicidadeAgenda, setPeriodicidadeAgenda] = useState(alunoInicial?.periodicidadeAgenda ?? "SEMANAL");
 
   function entradaInicial(): AgendaEntry[] {
     const saved = alunoInicial?.agendaSemanal;
     if (Array.isArray(saved) && saved.length > 0)
-      return saved.map((e: any) => ({ diaSemana: String(e.diaSemana), horaAula: e.horaAula ?? "", dataPrimeiraAula: e.dataPrimeiraAula ?? "" }));
+      return saved.map((e: any) => ({ diaSemana: String(e.diaSemana), horaAula: e.horaAula ?? "", dataPrimeiraAula: e.dataPrimeiraAula ?? "", geraFatura: e.geraFatura !== false }));
     // retrocompat: campo legado
     if (alunoInicial?.diaSemana != null && alunoInicial?.horaAula)
-      return [{ diaSemana: String(alunoInicial.diaSemana), horaAula: alunoInicial.horaAula }];
+      return [{ diaSemana: String(alunoInicial.diaSemana), horaAula: alunoInicial.horaAula, geraFatura: true }];
     return [];
   }
 
@@ -221,7 +239,7 @@ export default function AlunoForm({
   }
 
   function addEntrada() {
-    setAgendaSemanal((prev) => [...prev, { diaSemana: "1", horaAula: "08:00" }]);
+    setAgendaSemanal((prev) => [...prev, { diaSemana: "1", horaAula: "08:00", geraFatura: true }]);
   }
 
   function removeEntrada(i: number) {
@@ -229,7 +247,7 @@ export default function AlunoForm({
     setErroAgenda("");
   }
 
-  function updateEntrada(i: number, field: keyof AgendaEntry, value: string) {
+  function updateEntrada(i: number, field: keyof AgendaEntry, value: string | boolean) {
     setAgendaSemanal((prev) => {
       const next = [...prev];
       next[i] = { ...next[i], [field]: value };
@@ -355,6 +373,7 @@ export default function AlunoForm({
       agendaSemanal.filter((e) => e.diaSemana && e.horaAula).map((e) => ({
         diaSemana: Number(e.diaSemana),
         horaAula: e.horaAula,
+        geraFatura: e.geraFatura !== false,
         ...(e.dataPrimeiraAula ? { dataPrimeiraAula: e.dataPrimeiraAula } : {}),
       }))
     ));
@@ -394,7 +413,7 @@ export default function AlunoForm({
           ))}
         </div>
       )}
-      <FormularioSemRolagem ativo={variant === "v2"} chave={etapa} className={variant === "v2" ? "entrada-aluno" : "contents"}>
+      <FormularioSemRolagem ativo={variant === "v2"} chave={etapa} permitirRolagem={variant === "v2" && etapa === 3} className={variant === "v2" ? "entrada-aluno" : "contents"}>
       {/* Foto */}
       <div data-etapa="0" className={`${variant === "v2" && etapa !== 0 ? "hidden" : ""} bg-white rounded-xl border border-slate-200 p-5`}>
         <div className="flex items-center gap-2 mb-4">
@@ -622,6 +641,7 @@ export default function AlunoForm({
               onChange={(e) => {
                 const novoEscolaId = e.target.value;
                 setEscolaId(novoEscolaId);
+                setUnidadeSelecionada("");
                 // Sugere o período contratual com base no ano letivo da escola,
                 // só quando o cadastro ainda não tem datas definidas (não
                 // sobrescreve um período já ajustado manualmente).
@@ -653,8 +673,8 @@ export default function AlunoForm({
             <select
               name="unidadeId"
               required
-              defaultValue={alunoInicial?.unidadeId}
-              onChange={setCampo("unidadeId")}
+              value={unidadeSelecionada}
+              onChange={(e) => { setUnidadeSelecionada(e.target.value); setCampo("unidadeId")(e); }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Selecione...</option>
@@ -672,8 +692,8 @@ export default function AlunoForm({
             <select
               name="serie"
               required
-              defaultValue={alunoInicial?.serie ?? ""}
-              onChange={setCampo("serie")}
+              value={serieSelecionada}
+              onChange={(e) => { setSerieSelecionada(e.target.value); setCampo("serie")(e); }}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
               <option value="" disabled>Selecione a série</option>
@@ -750,6 +770,9 @@ export default function AlunoForm({
           <BookOpen size={17} className="text-indigo-600" />
           <h2 className="font-semibold text-slate-800">Disciplinas atendidas *</h2>
         </div>
+        {unidadeSelecionada && serieSelecionada && (
+          <p className="mb-3 text-xs text-slate-500">As disciplinas coloridas já estão vinculadas a alunos ativos desta unidade e série.</p>
+        )}
         <div className="flex flex-wrap gap-2">
           {materias.map((m) => (
             <button
@@ -759,12 +782,16 @@ export default function AlunoForm({
               className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                 materiasSelected.includes(m.id)
                   ? "border-transparent text-white"
-                  : "border-slate-200 text-slate-600 hover:border-slate-300"
+                  : materiasVinculadas.includes(m.id)
+                    ? "text-slate-700 hover:brightness-95"
+                    : "border-slate-200 text-slate-600 hover:border-slate-300"
               }`}
               style={
                 materiasSelected.includes(m.id)
                   ? { backgroundColor: m.cor }
-                  : {}
+                  : materiasVinculadas.includes(m.id)
+                    ? { backgroundColor: `${m.cor}22`, borderColor: `${m.cor}99` }
+                    : {}
               }
             >
               {m.nome}
@@ -830,6 +857,16 @@ export default function AlunoForm({
                   required={periodicidadeAgenda !== "SEMANAL"}
                   onChange={e => updateEntrada(i, "dataPrimeiraAula", e.target.value)}
                   className="mt-1 block h-9 max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" />
+              </label>
+              <label className="min-w-0 text-xs text-slate-600">
+                Gerar fatura
+                <select value={entry.geraFatura ? "sim" : "nao"}
+                  aria-label={`Gerar fatura para o horário ${i + 1}`}
+                  onChange={(e) => updateEntrada(i, "geraFatura", e.target.value === "sim")}
+                  className="mt-1 block h-9 max-w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                  <option value="sim">Sim</option>
+                  <option value="nao">Não</option>
+                </select>
               </label>
               <button type="button" onClick={() => removeEntrada(i)}
                 className="h-9 px-1 text-slate-400 hover:text-red-500 transition-colors ml-auto text-lg leading-none">×</button>

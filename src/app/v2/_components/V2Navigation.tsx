@@ -99,7 +99,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario, v
         </div>
 
         <div className={styles.companyBlock}>
-          {isAdmin ? <button type="button" className={styles.companyLogoButton} aria-label="Ajustar ícone da empresa" title="Ajustar ícone da empresa" onClick={() => setEditingLogo(true)}>{logoUrl ? <Image src={logoUrl} alt="" width={30} height={30} unoptimized className={styles.companyLogo} /> : iniciais(empresaNome)}</button> : logoUrl ? <Image src={logoUrl} alt="" width={30} height={30} unoptimized className={styles.companyLogo} /> : null}
+          {isAdmin ? <button type="button" className={styles.companyLogoButton} aria-label="Ajustar ícone da empresa" title="Ajustar ícone da empresa" onClick={() => setEditingLogo(true)}>{logoUrl ? <Image src={logoUrl} alt="" width={30} height={30} sizes="30px" className={styles.companyLogo} /> : iniciais(empresaNome)}</button> : logoUrl ? <Image src={logoUrl} alt="" width={30} height={30} sizes="30px" className={styles.companyLogo} /> : null}
           <div className={styles.companyCopy}>
             <span>Espaço de trabalho</span>
             <strong>{empresaNome}</strong>
@@ -122,7 +122,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario, v
         </nav>
 
         <div className={styles.profileBlock}>
-          {usuario.foto ? <Image src={usuario.foto} alt="" width={36} height={36} unoptimized className={styles.avatarImage} /> : <span className={styles.avatar}>{iniciais(usuario.nome)}</span>}
+          {usuario.foto ? <Image src={usuario.foto} alt="" width={36} height={36} sizes="36px" className={styles.avatarImage} /> : <span className={styles.avatar}>{iniciais(usuario.nome)}</span>}
           <div className={styles.profileCopy}><strong>{usuario.nome}</strong><span>{usuario.email}</span></div>
           <button onClick={() => signOut({ callbackUrl: "/login" })} className={styles.logout} aria-label="Sair">
             <LogOut aria-hidden="true" size={18} />

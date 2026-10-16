@@ -957,7 +957,7 @@ function AgendaClientContent({
 
         {/* Navegação */}
         <div className="flex items-center gap-2">
-          <button onClick={navAnterior} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+          <button aria-label="Período anterior" onClick={navAnterior} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
             <ChevronLeft size={16}/>
           </button>
           <span className="text-sm font-semibold text-slate-700 min-w-[160px] text-center">
@@ -970,7 +970,7 @@ function AgendaClientContent({
                   : "Todas as pendências"
             }
           </span>
-          <button onClick={navProximo} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+          <button aria-label="Próximo período" onClick={navProximo} className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
             <ChevronRight size={16}/>
           </button>
           <button onClick={irHoje} className="px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
@@ -1001,11 +1001,11 @@ function AgendaClientContent({
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
             <Plus size={13}/> Nova aula
           </button>
-          <button onClick={carregar} disabled={carregando}
+          <button aria-label="Atualizar agenda" onClick={carregar} disabled={carregando}
             className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors disabled:opacity-50">
             <RefreshCw size={14} className={carregando ? "animate-spin text-indigo-500" : "text-slate-500"}/>
           </button>
-          <button onClick={() => window.print()} title="Imprimir agenda semanal"
+          <button aria-label="Imprimir agenda semanal" onClick={() => window.print()} title="Imprimir agenda semanal"
             className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
             <Printer size={14} className="text-slate-500"/>
           </button>
@@ -1018,6 +1018,7 @@ function AgendaClientContent({
           {/* Filtro por professora (apenas admin) */}
           {!isProfessor && professoras.length > 0 && (
             <select
+              aria-label="Filtrar por professora"
               value={filtroProfId}
               onChange={(e) => setFiltroProfId(e.target.value)}
               className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
@@ -1032,6 +1033,7 @@ function AgendaClientContent({
           {/* Filtro por matéria */}
           {materiasDisponiveis.length > 0 && (
             <select
+              aria-label="Filtrar por matéria"
               value={filtroMateriaId}
               onChange={(e) => setFiltroMateriaId(e.target.value)}
               className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
@@ -1046,6 +1048,7 @@ function AgendaClientContent({
           {/* Filtro por aluno */}
           {alunosDisponiveisFiltro.length > 0 && (
             <select
+              aria-label="Filtrar por aluno"
               value={filtroAlunoId}
               onChange={(e) => setFiltroAlunoId(e.target.value)}
               className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"
@@ -1059,6 +1062,7 @@ function AgendaClientContent({
 
           {/* Filtro por status */}
           <select
+            aria-label="Filtrar por status da aula"
             value={filtroStatus}
             onChange={(e) => setFiltroStatus(e.target.value as StatusAula | "")}
             className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-700"

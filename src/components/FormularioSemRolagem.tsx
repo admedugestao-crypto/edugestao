@@ -4,13 +4,15 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import styles from "./FormularioSemRolagem.module.css";
 
 /** Mantém os campos montados e distribui o conteúdo em páginas pela altura real. */
-export default function FormularioSemRolagem({ children, ativo = true, className = "", chave = "", modal = false, colunas = 1 }: {
+export default function FormularioSemRolagem({ children, ativo = true, className = "", chave = "", modal = false, colunas = 1, permitirRolagem = false }: {
   children: ReactNode;
   ativo?: boolean;
   className?: string;
   chave?: string | number;
   modal?: boolean;
   colunas?: 1 | 2;
+  /** Fluxos com campos repetíveis permanecem em uma tela e passam a rolar o conteúdo. */
+  permitirRolagem?: boolean;
 }) {
   const raiz = useRef<HTMLDivElement>(null);
   const paginas = useRef<HTMLElement[][]>([]);
@@ -20,7 +22,7 @@ export default function FormularioSemRolagem({ children, ativo = true, className
 
   useLayoutEffect(() => {
     const conteudo = raiz.current;
-    if (!ativo || !conteudo) return;
+    if (!ativo || permitirRolagem || !conteudo) return;
     if (chaveAnterior.current !== chave) {
       paginaAtual.current = 0;
       chaveAnterior.current = chave;
@@ -113,7 +115,7 @@ export default function FormularioSemRolagem({ children, ativo = true, className
       conteudo.removeEventListener("invalid", revelar, true);
       limpar();
     };
-  }, [ativo, chave, modal, colunas]);
+  }, [ativo, chave, modal, colunas, permitirRolagem]);
 
   if (!ativo) return <div className={className}>{children}</div>;
   const mudar = (pagina: number) => {
@@ -126,12 +128,12 @@ export default function FormularioSemRolagem({ children, ativo = true, className
     });
     setEstado({ pagina, total: paginas.current.length });
   };
-  return <div className={`${styles.viewport} ${modal ? styles.modal : ""}`}>
+  return <div className={`${styles.viewport} ${modal ? styles.modal : ""} ${permitirRolagem ? styles.rolagem : ""}`}>
     <div ref={raiz} className={`${styles.conteudo} ${colunas === 2 ? styles.grade : ""} ${className}`}>{children}</div>
-    <nav className={styles.navegacao} aria-label="Páginas dos campos" style={{ visibility: estado.total > 1 ? "visible" : "hidden" }}>
+    {!permitirRolagem && <nav className={styles.navegacao} aria-label="Páginas dos campos" style={{ visibility: estado.total > 1 ? "visible" : "hidden" }}>
       <button type="button" disabled={estado.pagina === 0} onClick={() => mudar(estado.pagina - 1)}>Campos anteriores</button>
       <span aria-live="polite">{estado.pagina + 1} / {estado.total}</span>
       <button type="button" disabled={estado.pagina === estado.total - 1} onClick={() => mudar(estado.pagina + 1)}>Próximos campos</button>
-    </nav>
+    </nav>}
   </div>;
 }

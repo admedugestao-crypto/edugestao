@@ -33,7 +33,7 @@ export default async function NotasPage() {
     }),
     prisma.avaliacao.findMany({
       where: { empresaId: scope.empresaId },
-      include: { unidade: { include: { escola: true } } },
+      include: { materia: true, materias: { include: { materia: true } }, unidade: { include: { escola: true } } },
       orderBy: { data: "asc" },
     }),
     prisma.nota.findMany({

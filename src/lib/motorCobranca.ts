@@ -69,11 +69,11 @@ export type ResultadoGeracao =
 export async function gerarPagamentoAula(empresaId: string, agendaAulaId: string): Promise<ResultadoGeracao> {
   const aula = await prisma.agendaAula.findFirst({
     where: { id: agendaAulaId, empresaId },
-    select: { id: true, alunoId: true, data: true, status: true, reposicao: true },
+    select: { id: true, alunoId: true, data: true, status: true, reposicao: true, geraFatura: true },
   });
   // A cobrança da aula original já foi criada pelo fluxo de reposição. A nova
   // aula substituta não deve criar uma segunda cobrança ao ser realizada.
-  if (!aula || !aulaElegivelParaCobrancaAutomatica(aula.status, aula.reposicao)) {
+  if (!aula || !aulaElegivelParaCobrancaAutomatica(aula.status, aula.reposicao, aula.geraFatura)) {
     return { semCobranca: true };
   }
 

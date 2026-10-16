@@ -24,5 +24,14 @@
   .page :global([data-v2-finance]>.grid>*) { padding:12px; }
   .page :global([data-finance-table]) { flex:none; min-height:200px; }
   .page :global([data-finance-table]>.overflow-x-auto) { max-height:60dvh; }
+  .page :global([data-finance-table] table) { min-width:0; }
+  .page :global([data-finance-table] thead) { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  .page :global([data-finance-table] tbody) { display:grid; gap:8px; padding:8px; }
+  .page :global([data-finance-table] tbody tr) { position:relative; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; padding:10px; border:1px solid #dce4f0; border-radius:13px; }
+  .page :global([data-finance-table] tbody th),.page :global([data-finance-table] tbody td) { display:block; min-width:0; padding:7px 2px; text-align:left; }
+  .page :global([data-finance-column]::before) { content:attr(data-finance-column); display:block; margin-bottom:3px; color:#61708a; font-size:10px; font-weight:750; }
+  .page :global([data-finance-column="Selecionar"]) { position:absolute; top:12px; right:12px; }.page :global([data-finance-column="Selecionar"]::before) { display:none; }
+  .page :global(th[data-finance-column="Aluno"]) { grid-column:1/-1; padding-right:34px; }.page :global(th[data-finance-column="Aluno"]::before) { display:none; }
+  .page :global([data-finance-column="Ações"]) { grid-column:1/-1; border-top:1px solid #edf1f6; margin-top:3px; padding-top:10px; }.page :global([data-finance-column="Ações"]>div) { justify-content:flex-start; flex-wrap:wrap; }
   .page :global([data-finance-modal]) { padding:12px; }
 }

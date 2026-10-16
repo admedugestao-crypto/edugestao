@@ -173,6 +173,7 @@ model Materia {
   professoras                 ProfessoraMateria[]
   alunoMaterias               AlunoMateria[]
   avaliacoes                  Avaliacao[]
+  avaliacaoMaterias           AvaliacaoMateria[]
   notas                       Nota[]
   notasPeriodo                NotaPeriodo[]
   conteudos                   Conteudo[]
@@ -330,6 +331,7 @@ model Avaliacao {
   empresa      Empresa            @relation(fields: [empresaId], references: [id])
   unidade      Unidade            @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
   materia      Materia?           @relation(fields: [materiaId], references: [id])
+  materias     AvaliacaoMateria[]
   notas        Nota[]
   notificacoes NotificacaoProva[]
 
@@ -337,6 +339,20 @@ model Avaliacao {
   @@index([unidadeId])
   @@index([materiaId])
   @@map("avaliacoes")
+}
+
+// Disciplinas de uma prova. `materiaId` em Avaliacao é preservado como a
+// disciplina principal para compatibilidade com provas e notificações antigas.
+model AvaliacaoMateria {
+  avaliacaoId String
+  materiaId   String
+
+  avaliacao Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
+  materia    Materia   @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@id([avaliacaoId, materiaId])
+  @@index([materiaId])
+  @@map("avaliacao_materias")
 }
 
 // ─── Notificações WhatsApp + E-mail ──────────────────────────────────────────
@@ -626,6 +642,7 @@ model AgendaAula {
   horaFim      String? // "15:00"
   status       StatusAula @default(AGENDADA)
   reposicao    Boolean    @default(false) // aula de reposição cuja cobrança já foi feita na aula original excluída
+  geraFatura   Boolean    @default(true)  // definido no horário do cadastro do aluno; bloqueia cobrança automática desta aula
   observacao   String?
   criadoEm     DateTime   @default(now())
 

@@ -79,7 +79,7 @@ export default function DisponibilidadeProfessoresClient({ professorasIniciais, 
         </select>
       </div>
 
-      <FormularioSemRolagem ativo={variant === "v2"} chave={professoraId} className="space-y-3">
+      <FormularioSemRolagem ativo={variant === "v2"} chave={professoraId} permitirRolagem={variant === "v2"} className="space-y-3">
       {materias && professoras.map(p => <div data-entrada-grupos key={p.id} hidden={p.id !== professoraId}><DisciplinasProfessor professoraId={p.id} materias={materias} iniciais={p.materiaIds ?? []}/></div>)}
       <div data-availability-actions className="flex items-center justify-between gap-3">
         <div>

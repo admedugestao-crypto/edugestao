@@ -45,14 +45,17 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, unidadeId: true, serie: true, materias: { select: { materiaId: true } } },
     }),
-    prisma.avaliacao.findFirst({ where: { id: body.avaliacaoId, empresaId: scope.empresaId }, select: { id: true, unidadeId: true, serie: true, materiaId: true, notaMax: true } }),
+    prisma.avaliacao.findFirst({ where: { id: body.avaliacaoId, empresaId: scope.empresaId }, select: { id: true, unidadeId: true, serie: true, materiaId: true, materias: { select: { materiaId: true } }, notaMax: true } }),
     prisma.materia.findFirst({ where: { id: body.materiaId, empresaId: scope.empresaId }, select: { id: true } }),
   ]);
   if (!alunoOk || !avaliacaoOk || !materiaOk) {
     return NextResponse.json({ erro: "Aluno, avaliação ou matéria não encontrados." }, { status: 404 });
   }
 
-  if (body.valor > avaliacaoOk.notaMax || alunoOk.unidadeId !== avaliacaoOk.unidadeId || alunoOk.serie !== avaliacaoOk.serie || (avaliacaoOk.materiaId && avaliacaoOk.materiaId !== body.materiaId) || !alunoOk.materias.some(m => m.materiaId === body.materiaId))
+  const disciplinasDaProva = avaliacaoOk.materias.length > 0
+    ? avaliacaoOk.materias.map((materia) => materia.materiaId)
+    : avaliacaoOk.materiaId ? [avaliacaoOk.materiaId] : [];
+  if (body.valor > avaliacaoOk.notaMax || alunoOk.unidadeId !== avaliacaoOk.unidadeId || alunoOk.serie !== avaliacaoOk.serie || !disciplinasDaProva.includes(body.materiaId) || !alunoOk.materias.some(m => m.materiaId === body.materiaId))
     return NextResponse.json({ erro: "Nota fora do limite ou avaliação incompatível com o aluno e a disciplina." }, { status: 400 });
 
   const nota = await prisma.nota.upsert({

@@ -83,6 +83,15 @@ type AlunoSimples = {
   unidade:       { nome: string; escola: { nome: string } };
 };
 
+type AlunoApi = {
+  id: string;
+  nome: string;
+  tipoCobranca?: string | null;
+  valorCobranca?: number | null;
+  professora?: { usuario?: { nome?: string | null } | null } | null;
+  unidade?: { nome?: string | null; escola?: { nome?: string | null } | null } | null;
+};
+
 type FormPag = {
   modo:           "criar" | "editar";
   id?:            string;
@@ -94,6 +103,15 @@ type FormPag = {
   pago:           boolean;
   dataPagamento:  string;   // "YYYY-MM-DD" ou ""
   observacao:     string;
+};
+
+type AtualizacaoPagamento = {
+  dataVencimento?: string;
+  valorCobrado: number;
+  quantidadeAulas: number | null;
+  pago: boolean;
+  dataPagamento: string | null;
+  observacao: string | null;
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -373,8 +391,8 @@ export default function PagamentosClient({
       pago: false, dataPagamento: "", observacao: "",
     });
     const res  = await fetch("/api/alunos");
-    const data = await res.json();
-    setAlunosLista(data.map((a: any) => ({
+    const data = await res.json() as AlunoApi[];
+    setAlunosLista(data.map((a) => ({
       id:            a.id,
       nome:          a.nome,
       tipoCobranca:  a.tipoCobranca  ?? null,
@@ -454,7 +472,7 @@ export default function PagamentosClient({
           return;
         }
       } else {
-        const body: any = {
+      const body: AtualizacaoPagamento = {
           dataVencimento:  formPag.dataVencimento || undefined,
           valorCobrado:    valorNum,
           quantidadeAulas: qtdNum,
@@ -589,6 +607,7 @@ export default function PagamentosClient({
         </button>
         <div className="w-px h-8 bg-slate-200 shrink-0" />
         <select
+          aria-label="Filtrar pagamentos por aluno"
           value={filtroAlunoId}
           onChange={(e) => setFiltroAlunoId(e.target.value)}
           className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 max-w-[200px]"
@@ -749,6 +768,7 @@ export default function PagamentosClient({
                   <th className="px-3 py-3">
                     <input
                       type="checkbox"
+                      aria-label="Selecionar todas as cobranças exibidas"
                       className="accent-indigo-600 w-4 h-4"
                       checked={selecionados.length === pagamentosExibidos.length && pagamentosExibidos.length > 0}
                       onChange={(e) => setSelecionados(e.target.checked ? pagamentosExibidos.map((p) => p.id) : [])}
@@ -762,7 +782,7 @@ export default function PagamentosClient({
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Status</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Geração</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Pago em</th>
-                  <th className="text-center px-4 py-3 text-xs font-medium text-slate-500">Ações</th>
+                      <th className="text-center px-4 py-3 text-xs font-medium text-slate-500">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -772,9 +792,10 @@ export default function PagamentosClient({
                   return (
                     <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                       {/* Checkbox */}
-                      <td className="px-3 py-3">
+                      <td data-finance-column="Selecionar" className="px-3 py-3">
                         <input
                           type="checkbox"
+                          aria-label={`Selecionar cobrança de ${item.aluno.nome}`}
                           className="accent-indigo-600 w-4 h-4"
                           checked={selecionados.includes(item.id)}
                           onChange={(e) => setSelecionados((prev) =>
@@ -783,22 +804,22 @@ export default function PagamentosClient({
                         />
                       </td>
                       {/* Aluno */}
-                      <td className="px-4 py-3">
+                      <th scope="row" data-finance-column="Aluno" className="px-4 py-3 text-left font-normal">
                         <p className="font-medium text-slate-800">{item.aluno.nome}</p>
                         <p className="text-xs text-slate-400">
                           {item.aluno.unidade.escola.nome} · {item.aluno.unidade.nome}
                         </p>
-                      </td>
+                      </th>
 
                       {/* Professor (admin) */}
                       {isAdmin && (
-                        <td className="px-4 py-3 text-xs text-slate-600">
+                        <td data-finance-column="Professor" className="px-4 py-3 text-xs text-slate-600">
                           {item.aluno.professora ?? "—"}
                         </td>
                       )}
 
                       {/* Tipo */}
-                      <td className="px-4 py-3">
+                      <td data-finance-column="Tipo" className="px-4 py-3">
                         <span className="text-xs text-slate-500">
                           {tipoCobrancaPagamento(item)}
                         </span>
@@ -819,24 +840,24 @@ export default function PagamentosClient({
                       </td>
 
                       {/* Vencimento */}
-                      <td className="px-4 py-3 text-slate-600 text-xs">
+                      <td data-finance-column="Vencimento" className="px-4 py-3 text-slate-600 text-xs">
                         {fmtDt(item.dataVencimento)}
                       </td>
 
                       {/* Valor */}
-                      <td className="px-4 py-3 text-right font-medium text-slate-700">
+                      <td data-finance-column="Valor" className="px-4 py-3 text-right font-medium text-slate-700">
                         {moeda(item.valorCobrado)}
                       </td>
 
                       {/* Status */}
-                      <td className="px-4 py-3">
+                      <td data-finance-column="Status" className="px-4 py-3">
                         {st === "pago"     && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium"><CheckCircle2 size={12} /> Pago</span>}
                         {st === "avencer"  && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium"><Clock size={12} /> A vencer</span>}
                         {st === "atrasado" && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 text-red-700 text-xs font-medium"><AlertCircle size={12} /> Atrasado</span>}
                       </td>
 
                       {/* Geração */}
-                      <td className="px-4 py-3">
+                      <td data-finance-column="Geração" className="px-4 py-3">
                         {(() => {
                           const g = geracaoPagamento(item);
                           return (
@@ -848,12 +869,12 @@ export default function PagamentosClient({
                       </td>
 
                       {/* Pago em */}
-                      <td className="px-4 py-3 text-slate-500 text-xs">
+                      <td data-finance-column="Pago em" className="px-4 py-3 text-slate-500 text-xs">
                         {fmtData(item.dataPagamento)}
                       </td>
 
                       {/* Ações */}
-                      <td className="px-4 py-3">
+                      <td data-finance-column="Ações" className="px-4 py-3">
                         <div className="flex items-center justify-center gap-1.5">
                           {/* Operações financeiras — somente administradores */}
                           {isAdmin && <button

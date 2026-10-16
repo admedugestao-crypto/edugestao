@@ -31,6 +31,18 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
+  images: {
+    // Fotos de alunos, avatares e ícones de empresa são armazenados no
+    // Vercel Blob. O otimizador gera uma variante proporcional ao espaço
+    // exibido, evitando baixar a imagem original para uma miniatura.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+        pathname: "/**",
+      },
+    ],
+  },
   // Garante que o Prisma client (e dependências Node.js nativas) nunca seja
   // empacotado para o Edge Runtime nem para o bundler do lado do servidor.
   serverExternalPackages: ["@prisma/client", "prisma", "tesseract.js"],
