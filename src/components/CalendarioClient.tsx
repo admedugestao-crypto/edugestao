@@ -156,7 +156,7 @@ function CamposForm({
                 className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${selecionada ? "text-white" : "bg-white text-slate-700"}`}
                 style={selecionada ? { backgroundColor: m.cor, borderColor: m.cor } : sugerida ? { backgroundColor: `${m.cor}18`, borderColor: m.cor } : { borderColor: `${m.cor}80` }}
               >
-                {m.nome}{sugerida ? " · sugerida" : ""}
+                {m.nome}{sugerida && <> · <strong>sugerida</strong></>}
               </button>
             );
           })}
