@@ -141,7 +141,10 @@ export default async function NotificacoesPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}><div><h1>Notificações</h1><p>Acompanhe os lembretes de aulas, avaliações e conteúdos por WhatsApp e e-mail.</p></div>
-        <Link href="/v2/notificacoes/email">Histórico de e-mails</Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/v2/notificacoes/controle-alertas">Controle de alertas</Link>
+          <Link href="/v2/notificacoes/email">Histórico de e-mails</Link>
+        </div>
       </header>
 
       <NotificacoesUnificadas

@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
     select: {
       nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
       emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
+      whatsappPausado: true, emailPausado: true,
     },
   });
 
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
   const nomesAlunos = alunos.map((a) => a.nome);
 
   if (canal === "whatsapp") {
+    if (empresa.whatsappPausado) return NextResponse.json({ erro: "Os alertas por WhatsApp estão pausados para esta empresa." }, { status: 423 });
     const whatsapp = registro.whatsapp ?? prof.usuario.whatsapp;
     if (!whatsapp) return NextResponse.json({ erro: "Número de WhatsApp não disponível." }, { status: 422 });
 
@@ -86,6 +88,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (canal === "email") {
+    if (empresa.emailPausado) return NextResponse.json({ erro: "Os alertas por e-mail estão pausados para esta empresa." }, { status: 423 });
     const emailDest = registro.email ?? prof.usuario.email;
     if (!emailDest) return NextResponse.json({ erro: "E-mail do professor não disponível." }, { status: 422 });
     if (!emailConfigurado(empresa)) return NextResponse.json({ erro: "SMTP não configurado para esta empresa." }, { status: 503 });
@@ -130,6 +133,7 @@ async function reenviarAula(agendaAulaId: string, empresaId: string) {
         select: {
           nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
+          whatsappPausado: true, emailPausado: true,
         },
       },
     },
@@ -142,7 +146,7 @@ async function reenviarAula(agendaAulaId: string, empresaId: string) {
   const dataFormatada = new Date(aula.data).toLocaleDateString("pt-BR", {
     weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
   });
-  const usaWhatsapp = whatsappConfiguradoEmpresa(aula.empresa);
+  const usaWhatsapp = !aula.empresa.whatsappPausado && whatsappConfiguradoEmpresa(aula.empresa);
 
   if (usaWhatsapp) {
     if (!aula.aluno.telefoneResponsavel) {
@@ -162,6 +166,9 @@ async function reenviarAula(agendaAulaId: string, empresaId: string) {
     return NextResponse.json({ ok: true, canal: "whatsapp" });
   }
 
+  if (aula.empresa.emailPausado) {
+    return NextResponse.json({ erro: "Os alertas por WhatsApp estão pausados ou indisponíveis e os alertas por e-mail estão pausados para esta empresa." }, { status: 423 });
+  }
   if (!aula.aluno.emailResponsavel) {
     return NextResponse.json({ erro: "WhatsApp não configurado para esta empresa e responsável sem e-mail cadastrado." }, { status: 422 });
   }
@@ -180,10 +187,8 @@ async function reenviarAula(agendaAulaId: string, empresaId: string) {
 }
 
 // E-mail de Conteúdo Ministrado — `id` aqui é o id do Conteudo (não da
-// notificação), mesmo padrão de reenviarAula: funciona tanto pra reenviar
-// quanto pra mandar pela 1ª vez manualmente. Reenvio manual ignora a pausa
-// de e-mail da empresa por decisão de produto — só o disparo automático
-// respeita a pausa.
+// notificação), mesmo padrão de reenviarAula. A pausa da empresa também vale
+// para reenvios manuais, para manter o controle central consistente.
 async function reenviarConteudo(conteudoId: string, canal: "whatsapp" | "email", empresaId: string) {
   if (canal !== "email") {
     return NextResponse.json({ erro: "Conteúdo ministrado só pode ser enviado por E-mail." }, { status: 400 });
@@ -197,7 +202,7 @@ async function reenviarConteudo(conteudoId: string, canal: "whatsapp" | "email",
       aula: { include: { professora: { include: { usuario: { select: { nome: true } } } } } },
       empresa: {
         select: {
-          nome: true,
+          nome: true, emailPausado: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
         },
       },
@@ -207,6 +212,7 @@ async function reenviarConteudo(conteudoId: string, canal: "whatsapp" | "email",
   if (!conteudo || conteudo.empresaId !== empresaId) {
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
+  if (conteudo.empresa.emailPausado) return NextResponse.json({ erro: "Os alertas por e-mail estão pausados para esta empresa." }, { status: 423 });
   if (!conteudo.aluno.emailResponsavel) {
     return NextResponse.json({ erro: "Responsável sem e-mail cadastrado." }, { status: 422 });
   }
