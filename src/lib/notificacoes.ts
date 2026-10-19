@@ -194,7 +194,7 @@ export async function processarNotificacoes(): Promise<{
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const resultado = { enviadas: 0, pendentes: [] as any[], erros: [] as string[] };
   const empresas = await prisma.empresa.findMany({
-    where: { ativo: true, whatsappPausado: false },
+    where: { ativo: true, whatsappPausado: false, alertasProvaPausados: false },
     select: { id: true, nome: true, prazoAlertaProvaDias: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true },
   });
 
@@ -269,7 +269,7 @@ export async function processarNotificacoesEmail(): Promise<{
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const empresas = await prisma.empresa.findMany({
-    where: { ativo: true, emailPausado: false },
+    where: { ativo: true, emailPausado: false, alertasProvaPausados: false },
     select: { id: true, prazoAlertaProvaDias: true, emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
   });
 
@@ -446,7 +446,7 @@ export async function processarNotificacoesAula(): Promise<{
       data: { gte: amanha, lte: fimAmanha },
       status: "AGENDADA",
       aluno: { OR: [{ telefoneResponsavel: { not: null } }, { emailResponsavel: { not: null } }] },
-      empresa: { ativo: true, OR: [{ whatsappPausado: false }, { emailPausado: false }] },
+      empresa: { ativo: true, alertasAulaPausados: false, OR: [{ whatsappPausado: false }, { emailPausado: false }] },
     },
     include: {
       aluno: true,
@@ -455,7 +455,7 @@ export async function processarNotificacoesAula(): Promise<{
       notificacao: true,
       empresa: {
         select: {
-          nome: true, whatsappPausado: true, emailPausado: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
+          nome: true, whatsappPausado: true, emailPausado: true, alertasAulaPausados: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
         },
       },
@@ -644,9 +644,8 @@ export async function processarVerificacaoFonnte(): Promise<{
 
 // ── Conteúdo Ministrado — e-mail avulso pro responsável, disparado direto (não
 // pelo cron) na criação/marcação como Ministrado de um Conteudo. `conteudoId`
-// serve tanto pro disparo automático (respeita emailPausado) quanto pro
-// reenvio manual (reenviarConteudo em src/app/api/notificacoes/reenviar/
-// route.ts ignora emailPausado por decisão de produto, mesmo padrão de aula).
+// serve tanto pro disparo automático quanto pro reenvio manual e respeita o
+// controle de e-mail e o controle específico de conteúdo ministrado.
 export async function enviarNotificacaoConteudoMinistrado(conteudoId: string): Promise<{ ok: boolean; erro?: string }> {
   const conteudo = await prisma.conteudo.findUnique({
     where: { id: conteudoId },
@@ -656,14 +655,14 @@ export async function enviarNotificacaoConteudoMinistrado(conteudoId: string): P
       aula: { include: { professora: { include: { usuario: { select: { nome: true } } } } } },
       empresa: {
         select: {
-          nome: true, emailPausado: true,
+          nome: true, emailPausado: true, alertasConteudoPausados: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
         },
       },
     },
   });
   if (!conteudo) return { ok: false, erro: "Conteúdo não encontrado." };
-  if (conteudo.empresa.emailPausado) return { ok: false, erro: "Envio de e-mail pausado para esta empresa." };
+  if (conteudo.empresa.emailPausado || conteudo.empresa.alertasConteudoPausados) return { ok: false, erro: "Os alertas de conteúdo ministrado por e-mail estão pausados para esta empresa." };
   if (!conteudo.aluno.emailResponsavel) return { ok: false, erro: "Responsável sem e-mail cadastrado." };
   if (!emailConfigurado(conteudo.empresa)) return { ok: false, erro: "SMTP não configurado para esta empresa." };
 

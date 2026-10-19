@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     select: {
       nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
       emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
-      whatsappPausado: true, emailPausado: true,
+      whatsappPausado: true, emailPausado: true, alertasProvaPausados: true,
     },
   });
 
@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
   const nomesAlunos = alunos.map((a) => a.nome);
 
   if (canal === "whatsapp") {
+    if (empresa.alertasProvaPausados) return NextResponse.json({ erro: "Os alertas de provas estão pausados para esta empresa." }, { status: 423 });
     if (empresa.whatsappPausado) return NextResponse.json({ erro: "Os alertas por WhatsApp estão pausados para esta empresa." }, { status: 423 });
     const whatsapp = registro.whatsapp ?? prof.usuario.whatsapp;
     if (!whatsapp) return NextResponse.json({ erro: "Número de WhatsApp não disponível." }, { status: 422 });
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (canal === "email") {
+    if (empresa.alertasProvaPausados) return NextResponse.json({ erro: "Os alertas de provas estão pausados para esta empresa." }, { status: 423 });
     if (empresa.emailPausado) return NextResponse.json({ erro: "Os alertas por e-mail estão pausados para esta empresa." }, { status: 423 });
     const emailDest = registro.email ?? prof.usuario.email;
     if (!emailDest) return NextResponse.json({ erro: "E-mail do professor não disponível." }, { status: 422 });
@@ -133,7 +135,7 @@ async function reenviarAula(agendaAulaId: string, empresaId: string) {
         select: {
           nome: true, fonnteToken: true, evolutionApiUrl: true, evolutionApiKey: true, evolutionApiInstance: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
-          whatsappPausado: true, emailPausado: true,
+          whatsappPausado: true, emailPausado: true, alertasAulaPausados: true,
         },
       },
     },
@@ -141,6 +143,9 @@ async function reenviarAula(agendaAulaId: string, empresaId: string) {
 
   if (!aula || aula.empresaId !== empresaId) {
     return NextResponse.json({ erro: "Aula não encontrada." }, { status: 404 });
+  }
+  if (aula.empresa.alertasAulaPausados) {
+    return NextResponse.json({ erro: "Os alertas de aulas estão pausados para esta empresa." }, { status: 423 });
   }
 
   const dataFormatada = new Date(aula.data).toLocaleDateString("pt-BR", {
@@ -202,7 +207,7 @@ async function reenviarConteudo(conteudoId: string, canal: "whatsapp" | "email",
       aula: { include: { professora: { include: { usuario: { select: { nome: true } } } } } },
       empresa: {
         select: {
-          nome: true, emailPausado: true,
+          nome: true, emailPausado: true, alertasConteudoPausados: true,
           emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true,
         },
       },
@@ -212,6 +217,7 @@ async function reenviarConteudo(conteudoId: string, canal: "whatsapp" | "email",
   if (!conteudo || conteudo.empresaId !== empresaId) {
     return NextResponse.json({ erro: "Conteúdo não encontrado." }, { status: 404 });
   }
+  if (conteudo.empresa.alertasConteudoPausados) return NextResponse.json({ erro: "Os alertas de conteúdo ministrado estão pausados para esta empresa." }, { status: 423 });
   if (conteudo.empresa.emailPausado) return NextResponse.json({ erro: "Os alertas por e-mail estão pausados para esta empresa." }, { status: 423 });
   if (!conteudo.aluno.emailResponsavel) {
     return NextResponse.json({ erro: "Responsável sem e-mail cadastrado." }, { status: 422 });

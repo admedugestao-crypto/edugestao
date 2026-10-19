@@ -17,9 +17,9 @@ export async function POST(req: NextRequest) {
 
   const empresa = await prisma.empresa.findUniqueOrThrow({
     where: { id: scope.empresaId },
-    select: { emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true, emailPausado: true },
+    select: { emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true, emailPausado: true, alertasCobrancaPausados: true },
   });
-  if (empresa.emailPausado) return NextResponse.json({ erro: "Os alertas por e-mail estão pausados para esta empresa." }, { status: 423 });
+  if (empresa.emailPausado || empresa.alertasCobrancaPausados) return NextResponse.json({ erro: "Os alertas de cobrança por e-mail estão pausados para esta empresa." }, { status: 423 });
   if (!emailConfigurado(empresa)) {
     return NextResponse.json(
       { erro: "E-mail não configurado. Cadastre o SMTP desta empresa na Plataforma → Empresas → Editar → aba E-mail (SMTP)." },

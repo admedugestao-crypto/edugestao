@@ -32,6 +32,10 @@ model Empresa {
   ativo           Boolean  @default(true)
   whatsappPausado Boolean  @default(false)
   emailPausado    Boolean  @default(false)
+  alertasProvaPausados    Boolean @default(false)
+  alertasAulaPausados     Boolean @default(false)
+  alertasConteudoPausados Boolean @default(false)
+  alertasCobrancaPausados Boolean @default(false)
   prazoAlertaProvaDias Int @default(7)
   criadoEm        DateTime @default(now())
 

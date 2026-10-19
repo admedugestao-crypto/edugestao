@@ -17,7 +17,14 @@ export default async function ControleAlertasPage() {
 
   const empresa = await prisma.empresa.findUniqueOrThrow({
     where: { id: scope.empresaId },
-    select: { whatsappPausado: true, emailPausado: true },
+    select: {
+      whatsappPausado: true,
+      emailPausado: true,
+      alertasProvaPausados: true,
+      alertasAulaPausados: true,
+      alertasConteudoPausados: true,
+      alertasCobrancaPausados: true,
+    },
   });
 
   return (
@@ -25,7 +32,7 @@ export default async function ControleAlertasPage() {
       <header className={styles.header}>
         <div>
           <div className="flex items-center gap-2"><Settings2 size={22} className="text-indigo-600" /><h1>Controle de alertas</h1></div>
-          <p>Gerencie os canais de envio externos da sua empresa.</p>
+          <p>Gerencie cada tipo de alerta e os canais de envio externos da sua empresa.</p>
         </div>
         <Link href="/v2/notificacoes">Voltar às notificações</Link>
       </header>
