@@ -57,6 +57,14 @@ test('repor → realizar → repetir realização mantém somente a cobrança da
     },
     conteudo: {
       findUnique: async ({where}) => conteudos.get(where.aulaId) ?? null,
+      updateMany: async ({where,data}) => {
+        for (const [aulaId,c] of conteudos) {
+          if (c.id === where.id && c.planejado === where.planejado) {
+            conteudos.set(aulaId,{...c,...data}); return {count:1};
+          }
+        }
+        return {count:0};
+      },
       update: async ({where,data}) => {
         for (const [aulaId,c] of conteudos) {
           if (c.id === where.id) { const updated = {...c,...data}; conteudos.set(aulaId,updated); return updated; }
@@ -75,6 +83,7 @@ test('repor → realizar → repetir realização mantém somente a cobrança da
     const loadDependency = id => {
       if (id === '@/lib/prisma') return {prisma};
       if (id === '@/lib/tenant') return {getSessionScope: async () => scope};
+      if (id === '@/lib/notificacoes') return {enviarNotificacaoConteudoMinistrado: async () => ({ok:true})};
       if (id.startsWith('@/')) return load('src/' + id.slice(2) + '.ts');
       return require(id);
     };
@@ -85,7 +94,7 @@ test('repor → realizar → repetir realização mantém somente a cobrança da
   const repor = load('src/app/api/agenda/[id]/repor/route.ts');
   const agenda = load('src/app/api/agenda/[id]/route.ts');
   const response = await repor.POST({json: async () => ({
-    data:'2026-09-24',horaInicio:'08:00',horaFim:'08:30',observacao:'HML reposição',
+    data:'2026-09-24',horaInicio:'08:00',horaFim:'09:00',observacao:'HML reposição',
   })}, {params:Promise.resolve({id:'original'})});
   assert.equal(response.status,201);
   const created = await response.json();
