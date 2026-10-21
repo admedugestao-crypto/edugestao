@@ -8,6 +8,7 @@ export async function middleware(request: NextRequest) {
   // Recursos de identidade e PWA precisam carregar antes de existir uma sessão.
   if (
     pathname === "/logo-edugestao-v2.png" ||
+    pathname === "/logo-edugestao-v2-menu.png" ||
     pathname === "/manifest.json" ||
     pathname === "/sw.js" ||
     pathname === "/icone-edugestao.jpg" ||
