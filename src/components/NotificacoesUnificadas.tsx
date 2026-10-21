@@ -9,6 +9,7 @@ import {
   AlertTriangle, MessageSquare, Mail, XCircle, Search, MailCheck, RotateCcw, PauseCircle, PlayCircle,
 } from "lucide-react";
 import { montarMensagem, formatarWhatsapp } from "@/lib/notificacoes";
+import { resumirDisparoEmail } from "@/lib/resultadoDisparoEmail";
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 type Avaliacao = {
@@ -749,15 +750,18 @@ function AbaEmail({
   async function dispararAgora() {
     setDisparando(true); setMsgDisparo(null);
     try {
-      fetch("/api/cron/notificacoes/email", { method: "POST" }).catch(() => {});
-      await new Promise((r) => setTimeout(r, 1500));
-      setMsgDisparo({ ok: true, txt: "Notificações disparadas! Verifique o histórico em instantes." });
-      setTimeout(() => router.refresh(), 3000);
+      const res = await fetch("/api/notificacoes/disparar-email", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setMsgDisparo({ ok: false, txt: data.erro ?? "Não foi possível enviar os e-mails." });
+        return;
+      }
+      setMsgDisparo(resumirDisparoEmail(data));
+      router.refresh();
     } catch {
       setMsgDisparo({ ok: false, txt: "Falha ao disparar notificações." });
     } finally {
       setDisparando(false);
-      setTimeout(() => setMsgDisparo(null), 6000);
     }
   }
 
@@ -892,9 +896,11 @@ function AbaEmail({
         </button>
       </div>
 
+      <p className="text-xs text-slate-500">O disparo manual envia lembretes de provas e conteúdos ministrados de hoje ainda pendentes. Conteúdos já enviados não são repetidos.</p>
+
       {/* Feedback disparo */}
       {msgDisparo && (
-        <div className={`px-4 py-3 rounded-xl text-sm font-medium border ${msgDisparo.ok ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-red-50 border-red-200 text-red-800"}`}>
+        <div role="status" className={`px-4 py-3 rounded-xl text-sm font-medium border ${msgDisparo.ok ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-red-50 border-red-200 text-red-800"}`}>
           {msgDisparo.txt}
         </div>
       )}

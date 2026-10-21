@@ -261,7 +261,7 @@ export async function processarNotificacoes(): Promise<{
 }
 
 // ── PROCESSO 2: E-mail ───────────────────────────────────────────────────────
-export async function processarNotificacoesEmail(): Promise<{
+export async function processarNotificacoesEmail(empresaId?: string): Promise<{
   enviadas: number;
   erros: string[];
 }> {
@@ -269,7 +269,7 @@ export async function processarNotificacoesEmail(): Promise<{
 
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
   const empresas = await prisma.empresa.findMany({
-    where: { ativo: true, emailPausado: false, alertasProvaPausados: false },
+    where: { ativo: true, emailPausado: false, alertasProvaPausados: false, ...(empresaId ? { id: empresaId } : {}) },
     select: { id: true, prazoAlertaProvaDias: true, emailHost: true, emailPort: true, emailUser: true, emailPass: true, emailFrom: true },
   });
 
@@ -646,8 +646,22 @@ export async function processarVerificacaoFonnte(): Promise<{
 // pelo cron) na criação/marcação como Ministrado de um Conteudo. `conteudoId`
 // serve tanto pro disparo automático quanto pro reenvio manual e respeita o
 // controle de e-mail e o controle específico de conteúdo ministrado.
-export async function enviarNotificacaoConteudoMinistrado(conteudoId: string): Promise<{ ok: boolean; erro?: string }> {
-  const conteudo = await prisma.conteudo.findUnique({
+export async function enviarNotificacaoConteudoMinistrado(conteudoId: string): Promise<{ ok: boolean; erro?: string; ignorado?: boolean }> {
+  // Serializa o envio por conteúdo, inclusive entre o disparo manual e a agenda.
+  // O bloqueio termina com a transação e não exige alteração de schema.
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${conteudoId}))`;
+    const registro = await tx.notificacaoConteudo.findUnique({ where: { conteudoId } });
+    if (registro?.enviada) return { ok: true, ignorado: true };
+    return enviarConteudoMinistradoPendente(conteudoId, tx);
+  }, { timeout: 60_000 });
+}
+
+async function enviarConteudoMinistradoPendente(
+  conteudoId: string,
+  db: Pick<typeof prisma, "conteudo" | "notificacaoConteudo">,
+): Promise<{ ok: boolean; erro?: string }> {
+  const conteudo = await db.conteudo.findUnique({
     where: { id: conteudoId },
     include: {
       aluno: { select: { nome: true, responsavel: true, emailResponsavel: true } },
@@ -662,6 +676,7 @@ export async function enviarNotificacaoConteudoMinistrado(conteudoId: string): P
     },
   });
   if (!conteudo) return { ok: false, erro: "Conteúdo não encontrado." };
+  if (conteudo.planejado) return { ok: false, erro: "Conteúdo ainda está planejado." };
   if (conteudo.empresa.emailPausado || conteudo.empresa.alertasConteudoPausados) return { ok: false, erro: "Os alertas de conteúdo ministrado por e-mail estão pausados para esta empresa." };
   if (!conteudo.aluno.emailResponsavel) return { ok: false, erro: "Responsável sem e-mail cadastrado." };
   if (!emailConfigurado(conteudo.empresa)) return { ok: false, erro: "SMTP não configurado para esta empresa." };
@@ -679,7 +694,7 @@ export async function enviarNotificacaoConteudoMinistrado(conteudoId: string): P
     data: conteudo.data,
   }, conteudo.empresa);
 
-  await prisma.notificacaoConteudo.upsert({
+  await db.notificacaoConteudo.upsert({
     where: { conteudoId },
     update: { enviada: envio.ok, email: conteudo.aluno.emailResponsavel },
     create: { empresaId: conteudo.empresaId, conteudoId, enviada: envio.ok, email: conteudo.aluno.emailResponsavel },

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { resumirDisparoEmail } from "@/lib/resultadoDisparoEmail";
 import { Mail, CheckCircle2, XCircle, AlertTriangle, Search, RefreshCw } from "lucide-react";
 
 type RegistroEmail = {
@@ -54,6 +56,7 @@ export default function HistoricoEmailsClient({
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<"todos" | "enviado" | "falhou">("todos");
   const [disparando, setDisparando] = useState(false);
+  const router = useRouter();
   const [msgDisparo, setMsgDisparo] = useState<{ ok: boolean; txt: string } | null>(null);
 
   const registros = useMemo(() => {
@@ -75,21 +78,14 @@ export default function HistoricoEmailsClient({
     setDisparando(true);
     setMsgDisparo(null);
     try {
-      const res  = await fetch("/api/cron/notificacoes");
+      const res  = await fetch("/api/notificacoes/disparar-email", { method: "POST" });
       const data = await res.json();
-      const enviados = data?.email?.enviadas ?? 0;
-      const erros    = data?.email?.erros?.length ?? 0;
-      setMsgDisparo({
-        ok: res.ok,
-        txt: res.ok
-          ? `Processo concluído — ${enviados} e-mail(s) enviado(s)${erros > 0 ? `, ${erros} erro(s)` : ""}.`
-          : "Erro ao executar o processo.",
-      });
+      setMsgDisparo(res.ok ? resumirDisparoEmail(data) : { ok: false, txt: data.erro ?? "Erro ao executar o processo." });
+      if (res.ok) router.refresh();
     } catch {
       setMsgDisparo({ ok: false, txt: "Falha na comunicação com o servidor." });
     } finally {
       setDisparando(false);
-      setTimeout(() => setMsgDisparo(null), 6000);
     }
   }
 
@@ -153,6 +149,7 @@ export default function HistoricoEmailsClient({
         {/* Disparar agora */}
         <button
           onClick={dispararAgora}
+          title="Enviar lembretes de provas e conteúdos ministrados de hoje ainda pendentes"
           disabled={disparando || !emailAtivo}
           className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
         >
