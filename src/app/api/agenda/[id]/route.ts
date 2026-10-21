@@ -4,6 +4,7 @@ import { getSessionScope } from "@/lib/tenant";
 import { gerarPagamentoAula, type ParcelaGerada } from "@/lib/motorCobranca";
 import { podeAcessarProfessora } from "@/lib/permissions";
 import { normalizarIds, todosIdsEncontrados } from "@/lib/entityIds";
+import { enviarNotificacaoConteudoMinistrado } from "@/lib/notificacoes";
 
 export const dynamic = "force-dynamic";
 
@@ -157,6 +158,8 @@ export async function PATCH(
   // Bloqueia mudar para REALIZADA sem conteúdo registrado; se conteúdo for planejado, converte para ministrado
   // Busca pelo vínculo exato (aulaId) — evita pegar o conteúdo de outra aula do
   // mesmo aluno no mesmo dia, quando há mais de uma.
+  let conteudoPlanejadoId: string | undefined;
+  let conteudoMinistradoId: string | undefined;
   if (status === "REALIZADA") {
     const conteudo = await prisma.conteudo.findUnique({
       where: { aulaId: id },
@@ -169,7 +172,7 @@ export async function PATCH(
       );
     }
     if (conteudo.planejado) {
-      await prisma.conteudo.update({ where: { id: conteudo.id }, data: { planejado: false } });
+      conteudoPlanejadoId = conteudo.id;
     }
   }
 
@@ -191,6 +194,14 @@ export async function PATCH(
   }
 
   const updated = await prisma.$transaction(async (tx) => {
+    if (conteudoPlanejadoId) {
+      // Somente a requisição que efetivamente converter o conteúdo deve notificar.
+      const conversao = await tx.conteudo.updateMany({
+        where: { id: conteudoPlanejadoId, empresaId: scope.empresaId, planejado: true },
+        data: { planejado: false },
+      });
+      if (conversao.count > 0) conteudoMinistradoId = conteudoPlanejadoId;
+    }
     // Conteúdo, cobrança e status mudam como uma única operação. Se qualquer
     // etapa falhar, o banco preserva integralmente a situação anterior.
     if (status !== undefined && status !== "REALIZADA" && aula.status === "REALIZADA") {
@@ -257,10 +268,25 @@ export async function PATCH(
     }
   }
 
+  let avisoEmail: string | undefined;
+  if (conteudoMinistradoId) {
+    try {
+      const envio = await enviarNotificacaoConteudoMinistrado(conteudoMinistradoId);
+      if (!envio.ok) {
+        avisoEmail = `Aula salva, mas o e-mail de conteúdo ministrado não foi enviado: ${envio.erro ?? "falha no envio"}`;
+        console.warn("[ConteudoMinistrado]", avisoEmail);
+      }
+    } catch (erro) {
+      console.error("[ConteudoMinistrado] Falha ao notificar pela agenda:", erro);
+      avisoEmail = "Aula salva, mas não foi possível enviar o e-mail de conteúdo ministrado.";
+    }
+  }
+
   return NextResponse.json({
     ...updated,
     ...(pagamentoGerado ? { pagamentoGerado } : {}),
     ...(avisoPagamento ? { avisoPagamento } : {}),
+    ...(avisoEmail ? { avisoEmail } : {}),
   });
 }
 
