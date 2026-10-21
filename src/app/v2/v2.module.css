@@ -211,9 +211,9 @@ a.appVersion:focus-visible { outline:2px solid white; outline-offset:3px; border
 }
 @media screen and (min-width:721px) and (max-height:850px) {
   .sidebar { padding:14px 14px 10px; }
-  .brandBlock { padding-bottom:12px; }
+  .brandBlock { padding-bottom:8px; }
   .brandLogo { width:108px; }
-  .companyBlock { margin:10px 0; padding:8px 10px; }
+  .companyBlock { margin:6px 0; padding:8px 10px; }
   .nav { min-height:0; scrollbar-width:thin; scrollbar-color:#526785 transparent; }
   .navItem { min-height:clamp(26px,4.3dvh,35px); margin:1px 0; font-size:12px; }
   .navEyebrow { margin-bottom:5px; }
