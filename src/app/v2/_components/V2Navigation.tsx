@@ -80,7 +80,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario, v
         <button className={styles.iconButton} onClick={() => setAberto(true)} aria-label="Abrir menu">
           <Menu aria-hidden="true" size={21} />
         </button>
-        <Image src="/logo-edugestao-v2.png" alt="EduGestão V2" width={108} height={45} priority className={styles.mobileBrandLogo} />
+        <Image src="/logo-edugestao-v2-menu.png" alt="EduGestão V2 - Gestão de alunos" width={200} height={166} preload className={styles.mobileBrandLogo} />
         <span className={styles.avatarSmall}>{iniciais(usuario.nome)}</span>
       </header>
 
@@ -88,11 +88,7 @@ export function V2Navigation({ ambiente, empresaNome, empresaLogoUrl, usuario, v
 
       <aside className={`${styles.sidebar} ${aberto ? styles.sidebarOpen : ""}`}>
         <div className={styles.brandBlock}>
-          <Image src="/logo-edugestao-v2.png" alt="EduGestão V2" width={108} height={45} priority className={styles.brandLogo} />
-          <div>
-            <p className={styles.brandName}>EduGestão</p>
-            <p className={styles.versionLabel}>Nova experiência · V2</p>
-          </div>
+          <Image src="/logo-edugestao-v2-menu.png" alt="EduGestão V2 - Gestão de alunos" width={200} height={166} preload className={styles.brandLogo} />
           <button className={styles.closeButton} onClick={() => setAberto(false)} aria-label="Fechar menu">
             <X aria-hidden="true" size={20} />
           </button>
