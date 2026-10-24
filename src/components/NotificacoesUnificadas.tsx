@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   Send, MessageCircle, CheckCircle2, Clock, RefreshCw,
-  AlertTriangle, MessageSquare, Mail, XCircle, Search, MailCheck, RotateCcw, PauseCircle, PlayCircle,
+  AlertTriangle, MessageSquare, Mail, XCircle, Search, MailCheck, RotateCcw, PauseCircle, PlayCircle, History,
 } from "lucide-react";
 import { montarMensagem, formatarWhatsapp } from "@/lib/notificacoes";
 import { resumirDisparoEmail } from "@/lib/resultadoDisparoEmail";
@@ -176,7 +176,7 @@ export default function NotificacoesUnificadas({
   aulasProximas: AulaProxima[];
   historicoConteudo: HistoricoConteudo[];
 }) {
-  const [aba, setAba] = useState<"whatsapp" | "email">("whatsapp");
+  const [aba, setAba] = useState<"whatsapp" | "email" | "historico">("whatsapp");
 
   return (
     <div data-v2-notifications={variant === "v2" || undefined} className="space-y-5">
@@ -198,6 +198,14 @@ export default function NotificacoesUnificadas({
         >
           <Mail size={15} />E-mail
         </button>
+        <button
+          aria-pressed={aba === "historico"} onClick={() => setAba("historico")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            aba === "historico" ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          <History size={15} />Histórico
+        </button>
       </div>
 
       {aba === "whatsapp" && (
@@ -209,6 +217,7 @@ export default function NotificacoesUnificadas({
           whatsappConfigurado={whatsappConfigurado}
           provedor={provedor}
           whatsappPausadoInicial={whatsappPausado}
+          mostrarHistorico={false}
         />
       )}
       {aba === "email" && (
@@ -218,6 +227,15 @@ export default function NotificacoesUnificadas({
           emailAtivo={emailAtivo}
           avaliacoes={avaliacoes}
           emailPausadoInicial={emailPausado}
+          mostrarHistorico={false}
+        />
+      )}
+      {aba === "historico" && (
+        <AbaHistorico
+          historicoWhatsapp={historicoWhatsapp}
+          historicoEmail={historicoEmail}
+          historicoAulas={historicoAulas}
+          historicoConteudo={historicoConteudo}
         />
       )}
     </div>
@@ -226,7 +244,7 @@ export default function NotificacoesUnificadas({
 
 // ── Aba WhatsApp ──────────────────────────────────────────────────────────────
 function AbaWhatsapp({
-  avaliacoes, historico, historicoAulas, aulasProximas, whatsappConfigurado, provedor, whatsappPausadoInicial,
+  avaliacoes, historico, historicoAulas, aulasProximas, whatsappConfigurado, provedor, whatsappPausadoInicial, mostrarHistorico,
 }: {
   avaliacoes: Avaliacao[];
   historico: HistoricoWhatsapp[];
@@ -235,6 +253,7 @@ function AbaWhatsapp({
   whatsappConfigurado: boolean;
   provedor?: "fonnte" | "evolution" | null;
   whatsappPausadoInicial: boolean;
+  mostrarHistorico: boolean;
 }) {
   const router = useRouter();
   const [disparando, setDisparando]   = useState(false);
@@ -575,7 +594,7 @@ function AbaWhatsapp({
       )}
 
       {/* Histórico unificado WhatsApp */}
-      <>
+      {mostrarHistorico && <>
             {/* Cards resumo */}
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-white rounded-xl border border-slate-200 p-4">
@@ -679,20 +698,21 @@ function AbaWhatsapp({
                 </>
               )}
             </div>
-      </>
+      </>}
     </div>
   );
 }
 
 // ── Aba E-mail ────────────────────────────────────────────────────────────────
 function AbaEmail({
-  historico, historicoConteudo, emailAtivo, avaliacoes, emailPausadoInicial,
+  historico, historicoConteudo, emailAtivo, avaliacoes, emailPausadoInicial, mostrarHistorico,
 }: {
   historico: HistoricoEmail[];
   historicoConteudo: HistoricoConteudo[];
   emailAtivo: boolean;
   avaliacoes: Avaliacao[];
   emailPausadoInicial: boolean;
+  mostrarHistorico: boolean;
 }) {
   const router = useRouter();
   const [busca, setBusca]               = useState("");
@@ -823,6 +843,22 @@ function AbaEmail({
         </button>
       </div>
 
+      <div className="flex flex-wrap items-center gap-3">
+        <button onClick={dispararAgora} disabled={disparando || !emailAtivo || pausado}
+          title={pausado ? "Retome o envio automático para disparar notificações" : undefined}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors">
+          {disparando ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <MailCheck size={14} />}
+          Disparar agora
+        </button>
+        <p className="text-xs text-slate-500">Envia lembretes de provas e conteúdos ministrados de hoje ainda pendentes.</p>
+      </div>
+
+      {msgDisparo && (
+        <div role="status" className={`px-4 py-3 rounded-xl text-sm font-medium border ${msgDisparo.ok ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-red-50 border-red-200 text-red-800"}`}>
+          {msgDisparo.txt}
+        </div>
+      )}
+
       {/* Provas próximos 7 dias */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <h2 className="font-semibold text-slate-800 mb-4">Provas nos próximos 7 dias</h2>
@@ -854,6 +890,7 @@ function AbaEmail({
         )}
       </div>
 
+      {mostrarHistorico && <>
       {/* Cards resumo */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-slate-200 p-4">
@@ -1044,6 +1081,133 @@ function AbaEmail({
             <p className="text-xs text-slate-400">{conteudosFiltrados.length} registro(s) exibido(s)</p>
           </div>
         )}
+      </div>
+      </>}
+    </div>
+  );
+}
+
+type LinhaHistorico = {
+  id: string;
+  canal: "WhatsApp" | "E-mail";
+  tipo: "Prova" | "Lembrete de aula" | "Conteúdo ministrado";
+  destinatario: string;
+  detalhe: string;
+  criadoEm: string;
+  enviada: boolean;
+  registroId: string;
+  tipoReenvio: "prova" | "aula" | "conteudo";
+};
+
+function AbaHistorico({
+  historicoWhatsapp, historicoEmail, historicoAulas, historicoConteudo,
+}: {
+  historicoWhatsapp: HistoricoWhatsapp[];
+  historicoEmail: HistoricoEmail[];
+  historicoAulas: HistoricoAula[];
+  historicoConteudo: HistoricoConteudo[];
+}) {
+  const router = useRouter();
+  const [busca, setBusca] = useState("");
+  const [canal, setCanal] = useState<"todos" | "WhatsApp" | "E-mail">("todos");
+  const [status, setStatus] = useState<"todos" | "enviado" | "falhou">("todos");
+  const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
+  const [statusLocal, setStatusLocal] = useState<Record<string, boolean>>({});
+
+  const linhas = useMemo<LinhaHistorico[]>(() => {
+    const provasWhatsapp = historicoWhatsapp.map((r) => ({
+      id: `wpp-prova-${r.id}`, canal: "WhatsApp" as const, tipo: "Prova" as const,
+      destinatario: r.professora.usuario.nome,
+      detalhe: `${r.avaliacao.nome}${r.avaliacao.materia ? ` · ${r.avaliacao.materia.nome}` : ""}`,
+      criadoEm: r.criadoEm, enviada: r.enviada, registroId: r.id, tipoReenvio: "prova" as const,
+    }));
+    const provasEmail = historicoEmail.map((r) => ({
+      id: `email-prova-${r.id}`, canal: "E-mail" as const, tipo: "Prova" as const,
+      destinatario: r.professor,
+      detalhe: `${r.avaliacao.nome}${r.avaliacao.materia ? ` · ${r.avaliacao.materia}` : ""}`,
+      criadoEm: r.criadoEm, enviada: r.emailEnviado, registroId: r.id, tipoReenvio: "prova" as const,
+    }));
+    const aulas = historicoAulas.flatMap((r) => {
+      const detalhe = `${r.agendaAula.aluno.nome}${r.agendaAula.materia ? ` · ${r.agendaAula.materia.nome}` : ""}`;
+      const linhasAula: LinhaHistorico[] = [];
+      if (r.whatsapp) linhasAula.push({
+        id: `wpp-aula-${r.id}`, canal: "WhatsApp", tipo: "Lembrete de aula",
+        destinatario: r.agendaAula.aluno.responsavel ?? "Responsável não informado", detalhe,
+        criadoEm: r.criadoEm, enviada: r.enviada, registroId: r.agendaAulaId, tipoReenvio: "aula",
+      });
+      if (r.email) linhasAula.push({
+        id: `email-aula-${r.id}`, canal: "E-mail", tipo: "Lembrete de aula",
+        destinatario: r.agendaAula.aluno.responsavel ?? "Responsável não informado", detalhe,
+        criadoEm: r.criadoEm, enviada: r.emailEnviado, registroId: r.agendaAulaId, tipoReenvio: "aula",
+      });
+      return linhasAula;
+    });
+    const conteudos = historicoConteudo.map((r) => ({
+      id: `email-conteudo-${r.id}`, canal: "E-mail" as const, tipo: "Conteúdo ministrado" as const,
+      destinatario: r.responsavel ? `${r.responsavel} · ${r.aluno}` : r.aluno,
+      detalhe: `${r.topico}${r.materia ? ` · ${r.materia}` : ""}`,
+      criadoEm: r.criadoEm, enviada: r.enviada, registroId: r.conteudoId, tipoReenvio: "conteudo" as const,
+    }));
+    return [...provasWhatsapp, ...provasEmail, ...aulas, ...conteudos]
+      .sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime());
+  }, [historicoWhatsapp, historicoEmail, historicoAulas, historicoConteudo]);
+
+  const filtradas = linhas.filter((linha) => {
+    const enviada = statusLocal[linha.id] ?? linha.enviada;
+    const texto = `${linha.destinatario} ${linha.detalhe} ${linha.tipo}`.toLowerCase();
+    return (canal === "todos" || linha.canal === canal)
+      && (status === "todos" || (status === "enviado" ? enviada : !enviada))
+      && (!busca || texto.includes(busca.toLowerCase()));
+  });
+
+  const reenviar = useCallback(async (id: string, canalEnvio: "whatsapp" | "email") => {
+    const res = await fetch("/api/notificacoes/reenviar", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, canal: canalEnvio }),
+    });
+    if (res.ok) {
+      setStatusLocal((atual) => ({ ...atual, [id]: true }));
+      router.refresh();
+    }
+  }, [router]);
+
+  return (
+    <div className="space-y-5">
+      <ContextMenu menu={contextMenu} onClose={() => setContextMenu(null)} onReenviar={reenviar} />
+      <div>
+        <h2 className="font-semibold text-slate-800">Histórico de envios</h2>
+        <p className="text-sm text-slate-500 mt-1">Todos os avisos enviados por WhatsApp e e-mail em um só lugar.</p>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col lg:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar destinatário, conteúdo ou avaliação..."
+            className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+          {(["todos", "WhatsApp", "E-mail"] as const).map((valor) => (
+            <button key={valor} onClick={() => setCanal(valor)} className={`px-3 py-1.5 rounded-md text-xs font-medium ${canal === valor ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"}`}>
+              {valor === "todos" ? "Todos os canais" : valor}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+          {(["todos", "enviado", "falhou"] as const).map((valor) => (
+            <button key={valor} onClick={() => setStatus(valor)} className={`px-3 py-1.5 rounded-md text-xs font-medium ${status === valor ? "bg-white shadow-sm text-slate-800" : "text-slate-500 hover:text-slate-700"}`}>
+              {valor === "todos" ? "Todos" : valor === "enviado" ? "Enviados" : "Falhas"}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        {filtradas.length === 0 ? <p className="p-10 text-center text-sm text-slate-500">Nenhum envio encontrado para os filtros aplicados.</p> : (
+          <div className="overflow-x-auto"><table className="w-full text-sm"><thead className="bg-slate-50 border-b border-slate-100"><tr>
+            <th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Canal</th><th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Tipo</th><th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Destinatário</th><th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Detalhe</th><th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Enviado em</th><th className="text-left py-3 px-4 text-xs font-medium text-slate-500">Status</th>
+          </tr></thead><tbody className="divide-y divide-slate-50">{filtradas.map((linha) => {
+            const enviada = statusLocal[linha.id] ?? linha.enviada;
+            return <tr key={linha.id} className="hover:bg-slate-50"><td className="py-3 px-4"><span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${linha.canal === "WhatsApp" ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"}`}>{linha.canal === "WhatsApp" ? <MessageSquare size={11} /> : <Mail size={11} />}{linha.canal}</span></td><td className="py-3 px-4 text-xs text-slate-700">{linha.tipo}</td><td className="py-3 px-4 text-xs font-medium text-slate-800">{linha.destinatario}</td><td className="py-3 px-4 text-xs text-slate-600">{linha.detalhe}</td><td className="py-3 px-4 text-xs text-slate-500 whitespace-nowrap">{fmtDataHora(linha.criadoEm)}</td><td className="py-3 px-4"><button type="button" onContextMenu={(e) => { e.preventDefault(); setContextMenu({ x: e.clientX, y: e.clientY, registroId: linha.registroId, canal: linha.canal === "WhatsApp" ? "whatsapp" : "email", jaEnviado: enviada, tipo: linha.tipoReenvio }); }} className={`inline-flex items-center gap-1 text-xs font-medium ${enviada ? "text-emerald-600" : "text-red-500"}`} title="Botão direito para enviar ou reenviar">{enviada ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{enviada ? "Enviado" : "Falha"}</button></td></tr>;
+          })}</tbody></table></div>
+        )}
+        <div className="px-4 py-3 border-t border-slate-100 bg-slate-50"><p className="text-xs text-slate-400">{filtradas.length} registro(s) exibido(s)</p></div>
       </div>
     </div>
   );
