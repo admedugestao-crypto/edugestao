@@ -4,12 +4,13 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { Client } from "pg";
 import dns from "node:dns";
+import { validateAndNormalizeDatabaseUrl } from "../src/lib/databaseConfig.ts";
 
 (async () => {
   if (process.env.VERCEL_ENV !== "preview" || process.env.EG_V2_APLICAR_MIGRACAO_DEV !== "1") {
     throw new Error("Este preparo exige um preview com autorização explícita para o banco dev.");
   }
-  const conexao = process.env.DATABASE_URL;
+  const conexao = validateAndNormalizeDatabaseUrl(process.env.DATABASE_URL ?? "", process.env);
   console.log("Configuração do preview:", { ambiente: process.env.VERCEL_ENV, branch: process.env.VERCEL_GIT_COMMIT_REF, conexaoDefinida: Boolean(conexao) });
   const alvo = new URL(conexao);
   console.log("Referência do destino:", alvo.username, alvo.hostname);
@@ -26,6 +27,8 @@ import dns from "node:dns";
     if (pendentes.some((p) => p !== "20261028120000_inscricoes_teste")) throw new Error(`Migrações fora do escopo: ${pendentes.join(", ")}`);
     console.log("Destino dev conferido. Migrações no escopo:", pendentes.join(", ") || "nenhuma");
   } finally { await client.end(); }
-  const resultado = spawnSync(process.execPath, ["node_modules/prisma/build/index.js", "migrate", "deploy"], { stdio: "inherit", env: { ...process.env, DIRECT_URL: conexao } });
+  const migracao = new URL(conexao);
+  migracao.port = "5432";
+  const resultado = spawnSync(process.execPath, ["node_modules/prisma/build/index.js", "migrate", "deploy"], { stdio: "inherit", env: { ...process.env, DATABASE_URL: conexao, DIRECT_URL: migracao.toString() } });
   if (resultado.status !== 0) throw new Error("Não foi possível aplicar a migração dev.");
 })().catch((erro) => { console.error("Preparo de inscrições interrompido:", erro.message); process.exitCode = 1; });

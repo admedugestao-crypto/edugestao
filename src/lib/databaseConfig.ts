@@ -50,6 +50,21 @@ export function validateAndNormalizeDatabaseUrl(
   // /postgres?pgbouncer=true&sslmode=require em /postgres&sslmode=require.
   parsed.searchParams.delete("pgbouncer");
 
+  // Preview pode usar o pooler IPv4 com a mesma senha da conexão direta.
+  // A opção é explícita e nunca altera a conexão de produção.
+  const projetoDireto = parsed.hostname.match(/^db\.([a-z0-9]+)\.supabase\.co$/);
+  if (env.VERCEL_ENV === "preview" && projetoDireto && env.DATABASE_POOLER_HOST) {
+    if (!/^[a-z0-9-]+\.pooler\.supabase\.com$/.test(env.DATABASE_POOLER_HOST)) {
+      throw new Error("DATABASE_POOLER_HOST deve ser um endereço válido do Pooler do Supabase.");
+    }
+    if (parsed.username !== "postgres") {
+      throw new Error("A conversão da conexão direta exige o usuário postgres.");
+    }
+    parsed.hostname = env.DATABASE_POOLER_HOST;
+    parsed.port = "6543";
+    parsed.username = `postgres.${projetoDireto[1]}`;
+  }
+
   if (isProductionVercel(env)) {
     if (!parsed.hostname.endsWith(".pooler.supabase.com")) {
       throw new Error("Produção deve usar o Pooler do Supabase.");
