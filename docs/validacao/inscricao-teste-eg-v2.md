@@ -18,15 +18,25 @@
 - HTTP local: JSON inválido 400, campos ausentes 400, origem externa 403, corpo excessivo 413, honeypot 201 sem persistência e lista privada sem sessão bloqueada por redirecionamento 307.
 - A senha do banco dev falhou com PostgreSQL 28P01 tanto localmente quanto no build do preview. Nenhuma migração foi aplicada.
 
-## Pendência para receber inscrições
+## Resolução e validação completa em dev
 
-Corrigir `DATABASE_URL` da configuração Preview vinculada a `dev`, usando a credencial atual do banco dev, e atualizar a configuração local privada. As variáveis são sensíveis na Vercel e não podem ser recuperadas por `env pull`.
+A senha foi atualizada pelo solicitante. A conexão direta do Supabase ainda retornava P1001 na publicação Git real. O commit `7e9fca6` adicionou a opção explícita `DATABASE_POOLER_HOST`, configurada somente em Preview/dev, para preservar a senha e utilizar o pooler IPv4. Produção não recebeu essa configuração e mantém as validações anteriores.
 
-O banco dev identificado tem referência `qsxnxvcwimupyenmigzd`. O script `scripts/preparar-inscricoes-dev.mjs` recusa outros destinos, exige Preview e `EG_V2_APLICAR_MIGRACAO_DEV=1`, verifica o histórico e permite somente a migração `20261028120000_inscricoes_teste`. Não habilitar esse script como build automático de produção.
+O banco dev tem referência `qsxnxvcwimupyenmigzd`. Após autorização explícita para uma execução pontual, o commit `914d822` executou a preparação e a validação na publicação `https://edugestao-bj4p-d4zkhdqbj-edugestao-s-projects.vercel.app`, em estado Ready. A configuração temporária de build foi retirada após a execução. Nenhuma variável permanente de migração foi criada.
 
-Após corrigir a conexão: conferir pendências, executar `prisma migrate deploy` em dev, testar cadastro sintético, repetição sem duplicata, limite por origem e acesso à lista privada. Remover somente os dados sintéticos criados nessa verificação.
+Evidências do build em 28/10/2026 (UTC):
 
-O link de preview serve para revisão visual até concluir esse teste real. Não divulgar a página para captação antes disso.
+- 20:24:19: destino Preview/dev confirmado e única migração pendente no escopo: `20261028120000_inscricoes_teste`.
+- 20:24:23: `prisma migrate deploy` concluiu a criação da tabela e índices.
+- 20:25:02: testes reais de HTTP e PostgreSQL confirmaram inscrição persistida, consentimento registrado, disponibilidade falsa preservada, repetição sem duplicação, lista bloqueada sem sessão, consulta com sessão sintética da plataforma e marcação de contato persistida.
+- 20:25:02: registro fictício removido por nome e e-mail únicos desta execução. Consulta posterior confirmou ausência do registro.
+- 20:25:10: publicação em estado Ready.
+
+Os testes usaram um servidor Next.js no próprio ambiente de build, o código compilado do projeto e o banco dev real. O cookie sintético da plataforma teve duração de dois minutos e permaneceu somente em memória nesse processo de testes. Nenhum usuário foi criado e nenhum e-mail ou WhatsApp foi enviado. Os testes de validação e da configuração de conexão somaram 12 casos aprovados.
+
+A página de inscrição e a lista privada estão validadas no dev. O link público de campanha em produção ainda exige a promoção autorizada. A conexão local antiga não foi atualizada automaticamente, pois a senha sensível nova ficou somente na Vercel.
+
+Os scripts manuais mantêm bloqueios de ambiente, branch e destino. O build normal não os executa. Não habilitar migração automática em produção.
 
 ## Produção
 
