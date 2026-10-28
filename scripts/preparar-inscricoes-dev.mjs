@@ -1,9 +1,9 @@
 // Execução manual no build de preview. Nunca roda no build normal ou em produção.
-const fs = require("node:fs");
-const path = require("node:path");
-const { spawnSync } = require("node:child_process");
-const { Client } = require("pg");
-const dns = require("node:dns");
+import fs from "node:fs";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { Client } from "pg";
+import dns from "node:dns";
 
 (async () => {
   if (process.env.VERCEL_ENV !== "preview" || process.env.EG_V2_APLICAR_MIGRACAO_DEV !== "1") {

@@ -22,7 +22,7 @@
 
 Corrigir `DATABASE_URL` da configuração Preview vinculada a `dev`, usando a credencial atual do banco dev, e atualizar a configuração local privada. As variáveis são sensíveis na Vercel e não podem ser recuperadas por `env pull`.
 
-O banco dev identificado tem referência `qsxnxvcwimupyenmigzd`. O script `scripts/preparar-inscricoes-dev.cjs` recusa outros destinos, exige Preview e `EG_V2_APLICAR_MIGRACAO_DEV=1`, verifica o histórico e permite somente a migração `20261028120000_inscricoes_teste`. Não habilitar esse script como build automático de produção.
+O banco dev identificado tem referência `qsxnxvcwimupyenmigzd`. O script `scripts/preparar-inscricoes-dev.mjs` recusa outros destinos, exige Preview e `EG_V2_APLICAR_MIGRACAO_DEV=1`, verifica o histórico e permite somente a migração `20261028120000_inscricoes_teste`. Não habilitar esse script como build automático de produção.
 
 Após corrigir a conexão: conferir pendências, executar `prisma migrate deploy` em dev, testar cadastro sintético, repetição sem duplicata, limite por origem e acesso à lista privada. Remover somente os dados sintéticos criados nessa verificação.
 
