@@ -746,3 +746,27 @@ model AcessoApp {
   @@index([usuarioId, criadoEm])
   @@map("acessos_app")
 }
+
+// Candidatos da campanha pertencem à plataforma, antes de existir uma empresa.
+// O acesso à lista é exclusivo de usuários PLATAFORMA.
+model InscricaoTeste {
+  id                String   @id @default(cuid())
+  nome              String
+  email             String
+  whatsapp          String   @unique
+  materias          String
+  quantidadeAlunos  Int
+  organizacao       String
+  dificuldade       String
+  disponibilidade   Boolean
+  consentimentoEm   DateTime @default(now())
+  versaoConsentimento String @default("teste-eg-v2-2026-10")
+  origemHash        String
+  contatadoEm       DateTime?
+  criadoEm          DateTime @default(now())
+
+  @@index([criadoEm])
+  @@index([origemHash, criadoEm])
+  @@index([email])
+  @@map("inscricoes_teste")
+}

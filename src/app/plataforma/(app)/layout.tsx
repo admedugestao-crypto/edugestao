@@ -30,6 +30,9 @@ export default async function PlataformaLayout({ children }: { children: React.R
           </span>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1 text-sm">
+          <Link href="/plataforma/inscricoes-teste" className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+            Inscrições EG V2
+          </Link>
           <Link href="/plataforma/acessos" className="block px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
             Análise de acessos
           </Link>

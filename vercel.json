@@ -1,4 +1,5 @@
 {
+  "buildCommand": "EG_V2_APLICAR_MIGRACAO_PRODUCAO=1 node scripts/preparar-inscricoes-producao.mjs && npm run build && EG_V2_VALIDAR_INSCRICOES_PRODUCAO=1 node scripts/validar-inscricoes-producao.mjs",
   "crons": [
     {
       "path": "/api/cron/notificacoes",
