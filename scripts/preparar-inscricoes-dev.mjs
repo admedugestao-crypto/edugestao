@@ -7,14 +7,14 @@ import dns from "node:dns";
 import { validateAndNormalizeDatabaseUrl } from "../src/lib/databaseConfig.ts";
 
 (async () => {
-  if (process.env.VERCEL_ENV !== "preview" || process.env.EG_V2_APLICAR_MIGRACAO_DEV !== "1") {
+  if (process.env.VERCEL_ENV !== "preview" || process.env.VERCEL_GIT_COMMIT_REF !== "dev" || process.env.EG_V2_APLICAR_MIGRACAO_DEV !== "1") {
     throw new Error("Este preparo exige um preview com autorização explícita para o banco dev.");
   }
   const conexao = validateAndNormalizeDatabaseUrl(process.env.DATABASE_URL ?? "", process.env);
   console.log("Configuração do preview:", { ambiente: process.env.VERCEL_ENV, branch: process.env.VERCEL_GIT_COMMIT_REF, conexaoDefinida: Boolean(conexao) });
   const alvo = new URL(conexao);
   console.log("Referência do destino:", alvo.username, alvo.hostname);
-  if (!alvo.username.includes("qsxnxvcwimupyenmigzd") || !alvo.hostname.endsWith(".pooler.supabase.com")) {
+  if (alvo.username !== "postgres.qsxnxvcwimupyenmigzd" || !alvo.hostname.endsWith(".pooler.supabase.com")) {
     throw new Error("Destino recusado: a conexão não corresponde ao banco de desenvolvimento esperado.");
   }
   const client = new Client({ connectionString: conexao, connectionTimeoutMillis: 10000, lookup: (host, options, cb) => dns.lookup(host, { family: 4 }, cb) });
