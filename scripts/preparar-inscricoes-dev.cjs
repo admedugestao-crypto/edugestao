@@ -10,7 +10,9 @@ const dns = require("node:dns");
     throw new Error("Este preparo exige um preview com autorização explícita para o banco dev.");
   }
   const conexao = process.env.DATABASE_URL;
+  console.log("Configuração do preview:", { ambiente: process.env.VERCEL_ENV, branch: process.env.VERCEL_GIT_COMMIT_REF, conexaoDefinida: Boolean(conexao) });
   const alvo = new URL(conexao);
+  console.log("Referência do destino:", alvo.username, alvo.hostname);
   if (!alvo.username.includes("qsxnxvcwimupyenmigzd") || !alvo.hostname.endsWith(".pooler.supabase.com")) {
     throw new Error("Destino recusado: a conexão não corresponde ao banco de desenvolvimento esperado.");
   }
@@ -26,4 +28,4 @@ const dns = require("node:dns");
   } finally { await client.end(); }
   const resultado = spawnSync(process.execPath, ["node_modules/prisma/build/index.js", "migrate", "deploy"], { stdio: "inherit", env: { ...process.env, DIRECT_URL: conexao } });
   if (resultado.status !== 0) throw new Error("Não foi possível aplicar a migração dev.");
-})().catch(() => { console.error("Preparo de inscrições interrompido: banco dev inesperado, conexão indisponível ou migrações fora do escopo. Produção não foi alterada."); process.exitCode = 1; });
+})().catch((erro) => { console.error("Preparo de inscrições interrompido:", erro.message); process.exitCode = 1; });

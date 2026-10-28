@@ -54,7 +54,7 @@ export default function FormularioInscricao() {
       <p className={styles.obrigatorios}>Todos os campos abaixo são obrigatórios.</p>
       <label>Nome completo<input name="nome" autoComplete="name" required minLength={3} maxLength={120} placeholder="Como podemos chamar você?" /></label>
       <div className={styles.dupla}>
-        <label>WhatsApp com DDD<input name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" required maxLength={30} pattern="[+0-9() .-]{10,30}" placeholder="(31) 99999-9999" /></label>
+        <label>WhatsApp com DDD<input name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" required minLength={10} maxLength={30} placeholder="(31) 99999-9999" /></label>
         <label>E-mail<input name="email" type="email" autoComplete="email" required maxLength={180} placeholder="voce@exemplo.com" /></label>
       </div>
       <div className={styles.dupla}>
