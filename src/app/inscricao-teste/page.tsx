@@ -25,9 +25,9 @@ export default function InscricaoTestePage() {
           <p className={styles.descricao}>Agenda, conteúdos, materiais e financeiro: queremos ouvir você e entender como o EG V2 pode apoiar o seu dia a dia.</p>
         </div>
         <section className={styles.etapas} aria-label="Como funciona a seleção">
-          <div><span>1</span><p>Você preenche<br />a inscrição.</p></div>
-          <div><span>2</span><p>Conversamos com todos<br />pelo WhatsApp.</p></div>
-          <div><span>3</span><p>Selecionamos 5 professores<br />para o teste.</p></div>
+          <div><span>1</span><p>Você preenche a inscrição.</p></div>
+          <div><span>2</span><p>Conversamos com todos pelo WhatsApp.</p></div>
+          <div><span>3</span><p>Selecionamos 5 professores para o teste.</p></div>
         </section>
         <p className={styles.observacao}>A inscrição registra seu interesse e não garante a participação. A equipe explicará as condições do teste durante o contato.</p>
       </div>
