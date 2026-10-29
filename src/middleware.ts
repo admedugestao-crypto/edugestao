@@ -5,7 +5,7 @@ import { PLATAFORMA_COOKIE } from "@/lib/plataformaCookie";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (["/inscricao-teste", "/api/inscricao-teste", "/eg-v2-campanha.png"].includes(pathname)) {
+  if (["/inscricao", "/inscricao-teste", "/api/inscricao-teste", "/eg-v2-campanha.png"].includes(pathname)) {
     return NextResponse.next();
   }
   // Recursos de identidade e PWA precisam carregar antes de existir uma sessão.
