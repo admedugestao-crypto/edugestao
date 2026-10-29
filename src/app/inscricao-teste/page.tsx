@@ -5,8 +5,8 @@ import styles from "./inscricao.module.css";
 
 export const metadata: Metadata = {
   title: "Inscrição para o teste do EG V2",
-  description: "Seleção de 5 professores para testar o EG V2 gratuitamente por 60 dias, reportar problemas ao suporte do app e sugerir melhorias. Contato com todos os inscritos pelo WhatsApp.",
-  openGraph: { title: "Sua experiência pode ajudar a construir o EG V2", description: "5 professores selecionados. 60 dias gratuitos para usar a plataforma e compartilhar melhorias.", type: "website" },
+  description: "Seleção de 5 professores para testar o EG V2 gratuitamente por 60 dias, com mais 12 meses gratuitos a partir do lançamento oficial, reportar problemas ao suporte do app e sugerir melhorias. Contato com todos os inscritos pelo WhatsApp.",
+  openGraph: { title: "Sua experiência pode ajudar a construir o EG V2", description: "5 professores selecionados. 60 dias de teste e mais 12 meses gratuitos a partir do lançamento oficial para os 5 selecionados.", type: "website" },
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 5, userScalable: true, themeColor: "#102345" };
 
@@ -21,7 +21,7 @@ export default function InscricaoTestePage() {
         <div className={styles.convite}>
           <p className={styles.chamada}>Um convite para quem ensina</p>
           <h1>Sua experiência pode ajudar a construir o EG V2.</h1>
-          <p className={styles.resumo}>Vamos selecionar <strong>5 professores</strong> para testar o EG V2 <strong>gratuitamente por 60 dias</strong>.</p>
+          <p className={styles.resumo}>Vamos selecionar <strong>5 professores</strong> para testar o EG V2 <strong>gratuitamente por 60 dias</strong>. Os selecionados terão também <strong>12 meses gratuitos a partir do lançamento oficial</strong>.</p>
           <p className={styles.descricao}>Durante o teste, use o EG V2 na sua rotina, reporte problemas ao suporte do app e compartilhe sugestões de melhoria.</p>
         </div>
         <section className={styles.etapas} aria-label="Como funciona a seleção">

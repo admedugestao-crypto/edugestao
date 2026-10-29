@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const VERSAO_CONSENTIMENTO = "teste-eg-v2-2026-10";
-export const CONFIRMACAO_INSCRICAO = "Recebemos sua inscrição! Nossa equipe entrará em contato com todos os inscritos pelo WhatsApp informado. Os 5 professores selecionados receberão a confirmação de participação e as instruções para testar o EG V2 gratuitamente por 60 dias.";
+export const CONFIRMACAO_INSCRICAO = "Recebemos sua inscrição! Nossa equipe entrará em contato com todos os inscritos pelo WhatsApp informado. Os 5 professores selecionados receberão a confirmação de participação e as instruções para testar o EG V2 gratuitamente por 60 dias, além de 12 meses gratuitos contados a partir do lançamento oficial.";
 
 export function normalizarWhatsapp(valor: string) {
   const digitos = valor.replace(/\D/g, "");
