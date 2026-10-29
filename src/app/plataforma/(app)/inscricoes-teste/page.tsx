@@ -44,7 +44,7 @@ export default function InscricoesTestePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <header><h1 className="text-2xl font-bold text-slate-900">Inscrições para o teste EG V2</h1><p className="mt-2 text-slate-600">{total} inscrições. Todos devem receber contato pelo WhatsApp. A seleção contempla 5 professores.</p><a href="/inscricao-teste" target="_blank" rel="noreferrer" className="mt-3 inline-block text-indigo-700 underline">Abrir página pública de inscrição</a></header>
+      <header><h1 className="text-2xl font-bold text-slate-900">Inscrições para o teste EG V2</h1><p className="mt-2 text-slate-600">{total} inscrições. Todos devem receber contato pelo WhatsApp. A seleção contempla 5 professores para 60 dias gratuitos.</p><p className="mt-2 text-sm text-slate-600">Durante o teste, os participantes usarão o EG V2, reportarão problemas ao suporte do app e compartilharão sugestões de melhoria. Ao aprovar um participante, informe o aceite e envie as instruções para começar. A marcação de contato realizado registra o atendimento, não a aprovação.</p><a href="/inscricao-teste" target="_blank" rel="noreferrer" className="mt-3 inline-block text-indigo-700 underline">Abrir página pública de inscrição</a></header>
       {erro && <p role="alert" className="rounded bg-red-50 p-4 text-red-700">{erro}</p>}
       {carregando ? <p role="status">Carregando inscrições...</p> : !erro && !inscricoes.length ? <p className="rounded-xl bg-white p-6 text-slate-600">As novas inscrições aparecerão aqui.</p> : <div className="space-y-4">{inscricoes.map((i) => (
         <article key={i.id} className="rounded-xl border border-slate-200 bg-white p-5">
