@@ -27,7 +27,7 @@ export default function InscricaoTestePage() {
         <section className={styles.etapas} aria-label="Como funciona a seleção">
           <div><span>1</span><p>Você preenche a inscrição.</p></div>
           <div><span>2</span><p>Entraremos em contato pelo WhatsApp.</p></div>
-          <div><span>3</span><p>Confirmamos os 5 selecionados e orientamos o início.</p></div>
+          <div><span>3</span><p>Confirmaremos os 5 selecionados e orientaremos os usuários para início do processo.</p></div>
         </section>
         <p className={styles.observacao}>A inscrição não garante a participação. A equipe comunicará aos selecionados o aceite e enviará pelo WhatsApp as instruções para começar.</p>
       </div>
