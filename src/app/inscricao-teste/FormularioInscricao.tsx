@@ -63,8 +63,8 @@ export default function FormularioInscricao() {
       </div>
       <label>Como organiza suas aulas e pagamentos hoje?<textarea name="organizacao" required minLength={3} maxLength={600} rows={2} placeholder="Caderno, planilha, WhatsApp, outro sistema..." /></label>
       <label>Qual é sua maior dificuldade na gestão das aulas?<textarea name="dificuldade" required minLength={5} maxLength={1000} rows={2} placeholder="Conte o que mais ocupa seu tempo." /></label>
-      <label>Tem disponibilidade para testar e compartilhar sugestões?
-        <select name="disponibilidade" required defaultValue=""><option value="" disabled>Selecione uma opção</option><option value="sim">Sim, tenho interesse e disponibilidade</option><option value="nao">Preciso entender as condições primeiro</option></select>
+      <label>Tem disponibilidade para usar o EG V2 por 60 dias e compartilhar problemas e sugestões?
+        <select name="disponibilidade" required defaultValue=""><option value="" disabled>Selecione uma opção</option><option value="sim">Sim, posso usar e compartilhar minha experiência</option><option value="nao">Preciso entender as condições primeiro</option></select>
       </label>
       <div className={styles.isca} aria-hidden="true"><label>Seu site<input name="site" tabIndex={-1} autoComplete="off" /></label></div>
       <label className={styles.consentimento}><input name="consentimento" type="checkbox" required /><span>Autorizo o contato pelo WhatsApp sobre minha inscrição e a seleção para o teste do EG V2.</span></label>

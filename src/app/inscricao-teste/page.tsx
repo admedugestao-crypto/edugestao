@@ -5,8 +5,8 @@ import styles from "./inscricao.module.css";
 
 export const metadata: Metadata = {
   title: "Inscrição para o teste do EG V2",
-  description: "Candidate-se para participar do teste do EG V2. Vamos selecionar 5 professores e entrar em contato com todos os inscritos pelo WhatsApp.",
-  openGraph: { title: "Seu jeito de ensinar pode ajudar a construir o EG V2", description: "Seleção de 5 professores para testar a plataforma. Inscreva-se para conversar com nossa equipe.", type: "website" },
+  description: "Seleção de 5 professores para testar o EG V2 gratuitamente por 60 dias, reportar problemas ao suporte do app e sugerir melhorias. Contato com todos os inscritos pelo WhatsApp.",
+  openGraph: { title: "Sua experiência pode ajudar a construir o EG V2", description: "5 professores selecionados. 60 dias gratuitos para usar a plataforma e compartilhar melhorias.", type: "website" },
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 5, userScalable: true, themeColor: "#102345" };
 
@@ -21,15 +21,15 @@ export default function InscricaoTestePage() {
         <div className={styles.convite}>
           <p className={styles.chamada}>Um convite para quem ensina</p>
           <h1>Sua experiência pode ajudar a construir o EG V2.</h1>
-          <p className={styles.resumo}>Vamos selecionar <strong>5 professores</strong> para testar a plataforma e compartilhar o que faz diferença na rotina de quem dá aula.</p>
-          <p className={styles.descricao}>Agenda, conteúdos, materiais e financeiro: queremos ouvir você e entender como o EG V2 pode apoiar o seu dia a dia.</p>
+          <p className={styles.resumo}>Vamos selecionar <strong>5 professores</strong> para testar o EG V2 <strong>gratuitamente por 60 dias</strong>.</p>
+          <p className={styles.descricao}>Durante o teste, use o EG V2 na sua rotina, reporte problemas ao suporte do app e compartilhe sugestões de melhoria.</p>
         </div>
         <section className={styles.etapas} aria-label="Como funciona a seleção">
           <div><span>1</span><p>Você preenche a inscrição.</p></div>
           <div><span>2</span><p>Conversamos com todos pelo WhatsApp.</p></div>
-          <div><span>3</span><p>Selecionamos 5 professores para o teste.</p></div>
+          <div><span>3</span><p>Confirmamos os 5 selecionados e orientamos o início.</p></div>
         </section>
-        <p className={styles.observacao}>A inscrição registra seu interesse e não garante a participação. A equipe explicará as condições do teste durante o contato.</p>
+        <p className={styles.observacao}>A inscrição não garante a participação. A equipe comunicará aos selecionados o aceite e enviará pelo WhatsApp as instruções para começar.</p>
       </div>
       <section className={styles.formulario} id="inscricao" aria-labelledby="titulo-inscricao">
         <p className={styles.indicacao}>Seleção de professores</p>
