@@ -43,11 +43,11 @@ export async function PUT(req: NextRequest) {
     if (!segredo) return resposta({ erro: "A configuração segura da plataforma está indisponível." }, 503);
     const senha = emailPass ? { emailSenhaCifrada: cifrarSenhaEmail(emailPass, segredo) } : {};
     const camposSalvos = { ...campos, emailFrom: campos.emailFrom || null };
-    await prisma.parametrizacaoPlataforma.upsert({
-      where: { id: "geral" },
-      update: { ...camposSalvos, ...senha },
-      create: { id: "geral", ...camposSalvos, emailSenhaCifrada: senha.emailSenhaCifrada! },
-    });
+    if (existente) {
+      await prisma.parametrizacaoPlataforma.update({ where: { id: "geral" }, data: { ...camposSalvos, ...senha } });
+    } else {
+      await prisma.parametrizacaoPlataforma.create({ data: { id: "geral", ...camposSalvos, emailSenhaCifrada: senha.emailSenhaCifrada! } });
+    }
     return resposta({ mensagem: "Configuração de e-mail salva.", senhaConfigurada: true });
   } catch {
     return resposta({ erro: "Não foi possível salvar a configuração. Tente novamente." }, 503);
