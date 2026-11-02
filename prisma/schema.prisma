@@ -8,6 +8,19 @@ datasource db {
   provider = "postgresql"
 }
 
+// Configuração exclusiva da operação da plataforma, sem vínculo com empresas.
+model ParametrizacaoPlataforma {
+  id String @id @default("geral")
+  emailHost String
+  emailPort Int @default(587)
+  emailUser String
+  emailSenhaCifrada String
+  emailFrom String?
+  atualizadoEm DateTime @updatedAt
+
+  @@map("parametrizacao_plataforma")
+}
+
 // ─── Empresas (multi-tenant) ──────────────────────────────────────────────────
 // Fase 1 da migração multi-empresa: empresaId ainda opcional em todos os
 // modelos abaixo (etapa aditiva) — será tornado obrigatório após o backfill
