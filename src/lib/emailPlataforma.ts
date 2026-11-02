@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
 import { decifrarSenhaEmail } from "@/lib/parametrizacaoEmail";
+import { mensagemConfirmacaoInscricao } from "@/lib/emailConfirmacaoInscricao";
 
 export async function obterEmailPlataforma() {
   const configuracao = await prisma.parametrizacaoPlataforma.findUnique({ where: { id: "geral" } });
@@ -22,6 +23,18 @@ export function transporteEmailPlataforma(configuracao: Awaited<ReturnType<typeo
     auth: { user: configuracao.user, pass: configuracao.pass },
     connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000,
   });
+}
+
+export async function enviarConfirmacaoInscricao(inscricao: { nome: string; email: string }) {
+  const configuracao = await obterEmailPlataforma();
+  const transporte = transporteEmailPlataforma(configuracao);
+  try {
+    await transporte.sendMail({
+      from: configuracao.from,
+      to: inscricao.email,
+      ...mensagemConfirmacaoInscricao(inscricao.nome),
+    });
+  } finally { transporte.close(); }
 }
 
 // Cada responsável recebe uma mensagem individual, sem expor outros destinatários.
