@@ -1,9 +1,11 @@
 import { createHmac } from "node:crypto";
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CONFIRMACAO_INSCRICAO, inscricaoTesteSchema, VERSAO_CONSENTIMENTO } from "@/lib/inscricaoTeste";
+import { enviarConfirmacaoInscricao } from "@/lib/emailPlataforma";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 const sucesso = () => NextResponse.json({ mensagem: CONFIRMACAO_INSCRICAO }, { status: 201 });
 
 export async function POST(req: NextRequest) {
@@ -47,16 +49,30 @@ export async function POST(req: NextRequest) {
       // Serializa o limite por origem mesmo com múltiplas instâncias do servidor.
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${origemHash}))`;
       const recentes = await tx.inscricaoTeste.count({ where: { origemHash, criadoEm: { gte: new Date(Date.now() - 3600000) } } });
-      if (recentes >= 5) return "limite";
+      if (recentes >= 5) return { tipo: "limite" } as const;
       const { nome, email, whatsapp, materias, quantidadeAlunos, organizacao, dificuldade, disponibilidade } = validacao.data;
       const dados = { nome, email, whatsapp, materias, quantidadeAlunos, organizacao, dificuldade, disponibilidade };
       const existente = await tx.inscricaoTeste.findFirst({ where: { OR: [{ whatsapp: dados.whatsapp }, { email: dados.email }] }, select: { id: true } });
-      if (!existente) {
-        await tx.inscricaoTeste.create({ data: { ...dados, origemHash, versaoConsentimento: VERSAO_CONSENTIMENTO } });
-      }
-      return "ok";
+      if (existente) return { tipo: "existente" } as const;
+      const inscricao = await tx.inscricaoTeste.create({
+        data: { ...dados, origemHash, versaoConsentimento: VERSAO_CONSENTIMENTO },
+        select: { id: true, nome: true, email: true },
+      });
+      return { tipo: "criada", inscricao } as const;
     });
-    if (resultado === "limite") return NextResponse.json({ erro: "Muitas inscrições nesta conexão. Tente novamente em uma hora." }, { status: 429, headers: { "Retry-After": "3600" } });
+    if (resultado.tipo === "limite") return NextResponse.json({ erro: "Muitas inscrições nesta conexão. Tente novamente em uma hora." }, { status: 429, headers: { "Retry-After": "3600" } });
+    if (resultado.tipo === "criada") {
+      // Agenda somente após o commit, sem atrasar a confirmação da inscrição.
+      after(async () => {
+        try {
+          await enviarConfirmacaoInscricao(resultado.inscricao);
+        } catch (falha) {
+          // Não registra senha, endereço de e-mail nem a resposta bruta do provedor.
+          const codigo = falha && typeof falha === "object" && "code" in falha && typeof falha.code === "string" && /^[A-Z0-9_]{1,30}$/.test(falha.code) ? falha.code : "FALHA_ENVIO";
+          console.error("Falha na confirmação de inscrição por e-mail.", { inscricaoId: resultado.inscricao.id, codigo });
+        }
+      });
+    }
     return sucesso();
   } catch (error) {
     // Não revela se um telefone já está cadastrado nem sobrescreve o candidato.
