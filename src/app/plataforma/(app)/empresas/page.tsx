@@ -58,6 +58,14 @@ export default function PlataformaEmpresasPage() {
   const [logoFileEdicao, setLogoFileEdicao] = useState<File | null>(null);
   const [erroEdicao, setErroEdicao] = useState("");
   const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+  const [testandoSmtp, setTestandoSmtp] = useState(false);
+  const [resultadoSmtp, setResultadoSmtp] = useState<{ erro?: string; mensagem?: string } | null>(null);
+  const smtpAlterado = !!empresaEditando && (
+    formEdicao.emailHost !== (empresaEditando.emailHost ?? "") ||
+    formEdicao.emailPort !== (empresaEditando.emailPort ?? "") ||
+    formEdicao.emailUser !== (empresaEditando.emailUser ?? "") ||
+    formEdicao.emailFrom !== (empresaEditando.emailFrom ?? "") || !!formEdicao.emailPass
+  );
   const [abaEdicao, setAbaEdicao] = useState<"geral" | "endereco" | "whatsapp" | "email">("geral");
 
   const [empresaNovoAdmin, setEmpresaNovoAdmin] = useState<Empresa | null>(null);
@@ -121,6 +129,7 @@ export default function PlataformaEmpresasPage() {
   }
 
   function abrirEdicao(empresa: Empresa) {
+    setResultadoSmtp(null);
     setEmpresaEditando(empresa);
     setFormEdicao({
       nome: empresa.nome, slug: empresa.slug, ativo: empresa.ativo,
@@ -146,6 +155,20 @@ export default function PlataformaEmpresasPage() {
     setLogoFileEdicao(null);
     setErroEdicao("");
     setAbaEdicao("geral");
+  }
+
+  async function testarSmtpEmpresa() {
+    if (!empresaEditando || smtpAlterado || testandoSmtp) return;
+    setTestandoSmtp(true); setResultadoSmtp(null);
+    try {
+      const res = await fetch(`/api/plataforma/empresas/${empresaEditando.id}/testar-smtp`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+      });
+      const dados = await res.json();
+      setResultadoSmtp(res.ok ? { mensagem: dados.mensagem } : { erro: dados.erro || "Não foi possível testar o SMTP." });
+    } catch {
+      setResultadoSmtp({ erro: "Não foi possível acessar o teste. Verifique a conexão e tente novamente." });
+    } finally { setTestandoSmtp(false); }
   }
 
   async function salvarEdicao(e: React.FormEvent) {
@@ -571,6 +594,7 @@ export default function PlataformaEmpresasPage() {
                     Conta própria de SMTP desta empresa. Sem SMTP cadastrado, essa empresa não consegue enviar
                     e-mails (atraso, lembrete, recibo, prova, redefinição de senha).
                   </p>
+                  <p className="text-xs text-slate-500">No Gmail, use a senha de aplicativo de 16 letras, sem espaços, gerada na mesma conta do usuário SMTP.</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">Host</label>
@@ -633,6 +657,17 @@ export default function PlataformaEmpresasPage() {
                 </>
               )}
 
+              {abaEdicao === "email" && <div className="space-y-2">
+                <button type="button" disabled={testandoSmtp || salvandoEdicao || smtpAlterado || !empresaEditando.emailPassConfigurada}
+                  onClick={() => void testarSmtpEmpresa()}
+                  className="px-4 py-2 text-sm font-semibold border border-slate-300 rounded-lg disabled:opacity-50">
+                  {testandoSmtp ? "Testando conexão SMTP..." : "Testar conexão SMTP"}
+                </button>
+                <p className="text-xs text-slate-500">O teste usa os dados salvos desta empresa e não envia e-mails. Após alterar os dados, salve e abra novamente a edição para testar.</p>
+                {!smtpAlterado && resultadoSmtp?.mensagem && <p role="status" className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">{resultadoSmtp.mensagem}</p>}
+                {!smtpAlterado && resultadoSmtp?.erro && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{resultadoSmtp.erro}</p>}
+              </div>}
+
               {erroEdicao && (
                 <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroEdicao}</p>
               )}
@@ -640,6 +675,7 @@ export default function PlataformaEmpresasPage() {
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
+                  disabled={testandoSmtp}
                   onClick={() => { setEmpresaEditando(null); setErroEdicao(""); }}
                   className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
                 >
@@ -647,7 +683,7 @@ export default function PlataformaEmpresasPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={salvandoEdicao}
+                  disabled={salvandoEdicao || testandoSmtp}
                   className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg transition-colors"
                 >
                   {salvandoEdicao ? "Salvando..." : "Salvar"}
