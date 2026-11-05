@@ -3,9 +3,11 @@ import { requirePlataforma } from "@/lib/plataforma";
 import { prisma } from "@/lib/prisma";
 import { cifrarSenhaEmail, parametrizacaoEmailSchema } from "@/lib/parametrizacaoEmail";
 import { obterEmailPlataforma, transporteEmailPlataforma } from "@/lib/emailPlataforma";
+import { diagnosticarSmtp } from "@/lib/diagnosticoSmtp";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 function resposta(dados: object, status = 200) {
   return NextResponse.json(dados, { status, headers: { "Cache-Control": "no-store" } });
@@ -59,11 +61,16 @@ export async function POST(req: NextRequest) {
   if (!(await requirePlataforma())) return resposta({ erro: "Não autorizado." }, 403);
   if (!mesmaOrigem(req)) return resposta({ erro: "Acesse a configuração pela plataforma." }, 403);
   let transporte;
+  let etapa: "configuracao" | "smtp" = "configuracao";
   try {
-    transporte = transporteEmailPlataforma(await obterEmailPlataforma());
+    const configuracao = await obterEmailPlataforma();
+    etapa = "smtp";
+    transporte = transporteEmailPlataforma(configuracao);
     await transporte.verify();
     return resposta({ mensagem: "Conexão SMTP validada. Nenhum e-mail foi enviado." });
-  } catch {
-    return resposta({ erro: "Não foi possível validar o SMTP. Confira os dados salvos e a liberação de acesso no provedor." }, 502);
+  } catch (falha) {
+    const diagnostico = diagnosticarSmtp(falha, etapa);
+    console.warn("[teste-smtp]", { etapa, codigo: diagnostico.codigo });
+    return resposta({ ...diagnostico, erro: `${diagnostico.erro} Código: ${diagnostico.codigo}.` }, 502);
   } finally { transporte?.close(); }
 }
