@@ -5,12 +5,18 @@ import { mensagemConfirmacaoInscricao } from "@/lib/emailConfirmacaoInscricao";
 
 export async function obterEmailPlataforma() {
   const configuracao = await prisma.parametrizacaoPlataforma.findUnique({ where: { id: "geral" } });
-  if (!configuracao) throw new Error("Configure o e-mail em Parametrização Geral.");
+  if (!configuracao) throw Object.assign(new Error("Configure o e-mail em Parametrização Geral."), { code: "SMTP_SEM_CONFIGURACAO" });
+  let pass: string;
+  try {
+    pass = decifrarSenhaEmail(configuracao.emailSenhaCifrada, process.env.NEXTAUTH_SECRET ?? "");
+  } catch {
+    throw Object.assign(new Error("Não foi possível ler a credencial salva."), { code: "SMTP_CREDENCIAL_ILEGIVEL" });
+  }
   return {
     host: configuracao.emailHost,
     port: configuracao.emailPort,
     user: configuracao.emailUser,
-    pass: decifrarSenhaEmail(configuracao.emailSenhaCifrada, process.env.NEXTAUTH_SECRET ?? ""),
+    pass,
     from: configuracao.emailFrom || configuracao.emailUser,
   };
 }
