@@ -1,6 +1,6 @@
 "use client";
 
-import FormularioSemRolagem from "@/components/FormularioSemRolagem";
+import GruposMaterial from "@/components/GruposMaterial";
 
 import { useEffect, useState } from "react";
 import { Plus, FileText, Download, Pencil, Trash2, Upload, Search } from "lucide-react";
@@ -351,69 +351,73 @@ export default function BibliotecaClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-library-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Novo Material</h2>
-            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Título *</label>
-                <input
-                  value={novo.titulo}
-                  onChange={(e) => setNovo({ ...novo, titulo: e.target.value })}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Ex: Apostila de frações"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Descrição *</label>
-                <textarea
-                  value={novo.descricao}
-                  onChange={(e) => setNovo({ ...novo, descricao: e.target.value })}
-                  rows={2}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+            <GruposMaterial ativo={variant === "v2"}>
+              <div className="space-y-3 min-w-0">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Método *</label>
-                  <select
-                    value={novo.metodoId}
-                    onChange={(e) => setNovo({ ...novo, metodoId: e.target.value })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="">Selecione...</option>
-                    {metodos.map((m) => (
-                      <option key={m.id} value={m.id}>{m.nome}</option>
-                    ))}
-                  </select>
-                  {metodos.length === 0 && (
-                    <p className="text-xs text-amber-600 mt-1">
-                      Nenhum método cadastrado — cadastre em Tabelas → Métodos de Ensino.
-                    </p>
-                  )}
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Título *</label>
+                  <input
+                    value={novo.titulo}
+                    onChange={(e) => setNovo({ ...novo, titulo: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Ex: Apostila de frações"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
-                  <select
-                    value={novo.serie}
-                    onChange={(e) => setNovo({ ...novo, serie: e.target.value })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="">Selecione...</option>
-                    {SERIES.map((g) => (
-                      <optgroup key={g.grupo} label={g.grupo}>
-                        {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
-                      </optgroup>
-                    ))}
-                  </select>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Descrição *</label>
+                  <textarea
+                    value={novo.descricao}
+                    onChange={(e) => setNovo({ ...novo, descricao: e.target.value })}
+                    rows={2}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
                 </div>
               </div>
-              <div data-entrada-grupos>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
-                <SeletorMaterias
-                  materiasDisponiveis={materias}
-                  selecionadas={novo.materiaIds}
-                  onChange={(ids) => setNovo({ ...novo, materiaIds: ids })}
-                />
+              <div className="space-y-3 min-w-0">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Método *</label>
+                    <select
+                      value={novo.metodoId}
+                      onChange={(e) => setNovo({ ...novo, metodoId: e.target.value })}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    >
+                      <option value="">Selecione...</option>
+                      {metodos.map((m) => (
+                        <option key={m.id} value={m.id}>{m.nome}</option>
+                      ))}
+                    </select>
+                    {metodos.length === 0 && (
+                      <p className="text-xs text-amber-600 mt-1">
+                        Nenhum método cadastrado — cadastre em Tabelas → Métodos de Ensino.
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
+                    <select
+                      value={novo.serie}
+                      onChange={(e) => setNovo({ ...novo, serie: e.target.value })}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    >
+                      <option value="">Selecione...</option>
+                      {SERIES.map((g) => (
+                        <optgroup key={g.grupo} label={g.grupo}>
+                          {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
+                  <SeletorMaterias
+                    materiasDisponiveis={materias}
+                    selecionadas={novo.materiaIds}
+                    onChange={(ids) => setNovo({ ...novo, materiaIds: ids })}
+                  />
+                </div>
               </div>
-              <div>
+              <div className="min-w-0 min-[721px]:col-span-2">
                 <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo *</label>
                 <label className="flex items-center gap-2 border border-dashed border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
                   <Upload size={15} />
@@ -431,7 +435,7 @@ export default function BibliotecaClient({
                   />
                 </label>
               </div>
-            </FormularioSemRolagem>
+            </GruposMaterial>
             {!materialCompleto(novo) && !salvando && !enviandoArquivo && (
               <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
                 Falta preencher: {camposFaltando(novo).join(", ")}.
@@ -462,63 +466,67 @@ export default function BibliotecaClient({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-library-modal={variant === "v2" ? "true" : undefined}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-library-dialog={variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Material</h2>
-            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Título *</label>
-                <input
-                  value={editando.titulo}
-                  onChange={(e) => setEditando({ ...editando, titulo: e.target.value })}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Descrição *</label>
-                <textarea
-                  value={editando.descricao}
-                  onChange={(e) => setEditando({ ...editando, descricao: e.target.value })}
-                  rows={2}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+            <GruposMaterial ativo={variant === "v2"}>
+              <div className="space-y-3 min-w-0">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Método *</label>
-                  <select
-                    value={editando.metodoId}
-                    onChange={(e) => setEditando({ ...editando, metodoId: e.target.value })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="">Selecione...</option>
-                    {metodos.map((m) => (
-                      <option key={m.id} value={m.id}>{m.nome}</option>
-                    ))}
-                  </select>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Título *</label>
+                  <input
+                    value={editando.titulo}
+                    onChange={(e) => setEditando({ ...editando, titulo: e.target.value })}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
-                  <select
-                    value={editando.serie}
-                    onChange={(e) => setEditando({ ...editando, serie: e.target.value })}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="">Selecione...</option>
-                    {SERIES.map((g) => (
-                      <optgroup key={g.grupo} label={g.grupo}>
-                        {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
-                      </optgroup>
-                    ))}
-                  </select>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Descrição *</label>
+                  <textarea
+                    value={editando.descricao}
+                    onChange={(e) => setEditando({ ...editando, descricao: e.target.value })}
+                    rows={2}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
                 </div>
               </div>
-              <div data-entrada-grupos>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
-                <SeletorMaterias
-                  materiasDisponiveis={materias}
-                  selecionadas={editando.materiaIds}
-                  onChange={(ids) => setEditando({ ...editando, materiaIds: ids })}
-                />
+              <div className="space-y-3 min-w-0">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Método *</label>
+                    <select
+                      value={editando.metodoId}
+                      onChange={(e) => setEditando({ ...editando, metodoId: e.target.value })}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    >
+                      <option value="">Selecione...</option>
+                      {metodos.map((m) => (
+                        <option key={m.id} value={m.id}>{m.nome}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
+                    <select
+                      value={editando.serie}
+                      onChange={(e) => setEditando({ ...editando, serie: e.target.value })}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    >
+                      <option value="">Selecione...</option>
+                      {SERIES.map((g) => (
+                        <optgroup key={g.grupo} label={g.grupo}>
+                          {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Disciplina *</label>
+                  <SeletorMaterias
+                    materiasDisponiveis={materias}
+                    selecionadas={editando.materiaIds}
+                    onChange={(ids) => setEditando({ ...editando, materiaIds: ids })}
+                  />
+                </div>
               </div>
-              <div>
+              <div className="min-w-0 min-[721px]:col-span-2">
                 <label className="block text-xs font-medium text-slate-600 mb-1">Arquivo *</label>
                 <label className="flex items-center gap-2 border border-dashed border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
                   <Upload size={15} />
@@ -536,7 +544,7 @@ export default function BibliotecaClient({
                   />
                 </label>
               </div>
-            </FormularioSemRolagem>
+            </GruposMaterial>
             {!materialCompleto(editando) && !salvando && !enviandoArquivo && (
               <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mt-3">
                 Falta preencher: {camposFaltando(editando).join(", ")}.
