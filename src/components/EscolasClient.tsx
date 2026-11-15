@@ -31,6 +31,16 @@ type Escola = {
   unidades: Unidade[];
 };
 
+function nomeEscolaNaLista(escola: Escola, formularioDesktop: boolean) {
+  const unidade = escola.unidades.length === 1 ? escola.unidades[0].nome.trim() : "";
+  const nome = escola.nome.trim().toLocaleLowerCase("pt-BR");
+  const sufixo = unidade.toLocaleLowerCase("pt-BR");
+  if (!formularioDesktop || !sufixo || nome === sufixo || [" - ", " – ", " — "].some((sep) => nome.endsWith(sep + sufixo))) {
+    return escola.nome;
+  }
+  return escola.nome + " – " + unidade;
+}
+
 // Converte "2026-07-11T00:00:00.000Z" (ISO vindo do banco) para "2026-07-11"
 // (formato aceito por <input type="date">), e vice-versa não é necessário
 // porque o próprio input já entrega nesse formato.
@@ -73,10 +83,12 @@ export default function EscolasClient({
   escolasIniciais,
   metodos,
   variant = "default",
+  formularioDesktop = false,
 }: {
   escolasIniciais: Escola[];
   metodos: MetodoEnsino[];
   variant?: "default" | "v2";
+  formularioDesktop?: boolean;
 }) {
   const [escolas, setEscolas] = useState(escolasIniciais);
   const [expandida, setExpandida] = useState<string | null>(null);
@@ -95,6 +107,7 @@ export default function EscolasClient({
     periodoLetivo2Fim: "",
   });
   const [primeiraUnidade, setPrimeiraUnidade] = useState({ nome: "", cidade: "", estado: "", turno: "" });
+  const [unidadeEdicao, setUnidadeEdicao] = useState({ nome: "", cidade: "", estado: "", turno: "" });
   const [novaUnidade, setNovaUnidade] = useState({ nome: "", cidade: "", estado: "", turno: "" });
 
   // modais editar
@@ -180,6 +193,7 @@ export default function EscolasClient({
       body: JSON.stringify({
         nome: editEscola.nome,
         unidades: editEscola.unidades,
+        ...(formularioDesktop && editEscola.unidades.length === 0 && unidadeEdicao.nome.trim() ? { unidadeInicial: unidadeEdicao } : {}),
         rede: editEscola.rede,
         metodoId: editEscola.metodoId || null,
         periodoAvaliacao: editEscola.periodoAvaliacao,
@@ -260,10 +274,34 @@ export default function EscolasClient({
     setSalvando(false);
   }
 
+  function atualizarUnidadeEdicao(campo: CampoUnidade, valor: string) {
+    if (!editEscola) return;
+    const unidade = editEscola.unidades[0];
+    if (unidade) setEditEscola({ ...editEscola, unidades: [{ ...unidade, [campo]: valor }] });
+    else setUnidadeEdicao((dados) => ({ ...dados, [campo]: valor }));
+  }
+
+  function abrirEdicao(escola: Escola) {
+    setUnidadeEdicao({ nome: "", cidade: "", estado: "", turno: "" });
+    setErroSalvarEscola("");
+    setEditEscola({
+      id: escola.id,
+      unidades: escola.unidades.map(u => ({ ...u })),
+      nome: escola.nome,
+      rede: escola.rede ?? "",
+      metodoId: escola.metodoId ?? "",
+      periodoAvaliacao: escola.periodoAvaliacao ?? "",
+      periodoLetivo1Inicio: paraInputDate(escola.periodoLetivo1Inicio),
+      periodoLetivo1Fim: paraInputDate(escola.periodoLetivo1Fim),
+      periodoLetivo2Inicio: paraInputDate(escola.periodoLetivo2Inicio),
+      periodoLetivo2Fim: paraInputDate(escola.periodoLetivo2Fim),
+    });
+  }
+
   return (
     <div className="space-y-3" data-v2-schools={variant === "v2" ? "true" : undefined}>
       <button
-        onClick={() => setModalEscola(true)}
+        onClick={() => { setErroSalvarEscola(""); setModalEscola(true); }}
         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
       >
         <Plus size={15} />
@@ -274,14 +312,14 @@ export default function EscolasClient({
         <div key={escola.id} className="bg-white rounded-xl border border-slate-200">
           <div className="flex items-center gap-2 p-4">
             <button
-              onClick={() => setExpandida(expandida === escola.id ? null : escola.id)}
+              onClick={() => formularioDesktop ? abrirEdicao(escola) : setExpandida(expandida === escola.id ? null : escola.id)}
               className="flex-1 flex items-center gap-3 text-left hover:bg-slate-50 transition-colors rounded-lg -m-1 p-1"
             >
               <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
                 <Building2 size={18} className="text-indigo-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-slate-800">{escola.nome}</p>
+                <p className="font-semibold text-slate-800">{nomeEscolaNaLista(escola, formularioDesktop)}</p>
                 <p className="text-xs text-slate-500">
                   {[escola.rede, escola.metodoEnsino?.nome, escola.periodoAvaliacao].filter(Boolean).join(" · ")}
                 </p>
@@ -298,30 +336,17 @@ export default function EscolasClient({
                   </p>
                 )}
               </div>
-              <span className="text-xs text-slate-500 mr-2">
+              {!formularioDesktop && <><span className="text-xs text-slate-500 mr-2">
                 {escola.unidades.length} unidade{escola.unidades.length !== 1 ? "s" : ""}
               </span>
               {expandida === escola.id ? (
                 <ChevronDown size={16} className="text-slate-400 shrink-0" />
               ) : (
                 <ChevronRight size={16} className="text-slate-400 shrink-0" />
-              )}
+              )}</>}
             </button>
             <button
-              onClick={() =>
-                setEditEscola({
-                  id: escola.id,
-                  unidades: escola.unidades.map(u => ({ ...u })),
-                  nome: escola.nome,
-                  rede: escola.rede ?? "",
-                  metodoId: escola.metodoId ?? "",
-                  periodoAvaliacao: escola.periodoAvaliacao ?? "",
-                  periodoLetivo1Inicio: paraInputDate(escola.periodoLetivo1Inicio),
-                  periodoLetivo1Fim: paraInputDate(escola.periodoLetivo1Fim),
-                  periodoLetivo2Inicio: paraInputDate(escola.periodoLetivo2Inicio),
-                  periodoLetivo2Fim: paraInputDate(escola.periodoLetivo2Fim),
-                })
-              }
+              onClick={() => abrirEdicao(escola)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
               title="Editar escola"
             >
@@ -336,7 +361,7 @@ export default function EscolasClient({
             </button>
           </div>
 
-          {expandida === escola.id && (
+          {!formularioDesktop && expandida === escola.id && (
             <div className="border-t border-slate-100 p-4 space-y-2">
               {escola.unidades.map((u) => (
                 <div key={u.id} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">
@@ -390,9 +415,9 @@ export default function EscolasClient({
       {/* ── Modal Nova Escola ───────────────────────────────────────────────── */}
       {modalEscola && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto" data-v2-school-dialog={formularioDesktop ? "escola-desktop" : variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Escola</h2>
-            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal={!formularioDesktop} permitirRolagem={formularioDesktop} colunas={2} className="space-y-3 escola-campos">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
                 <input
@@ -402,6 +427,10 @@ export default function EscolasClient({
                   placeholder="Ex: Colégio Dom Bosco"
                 />
               </div>
+              {formularioDesktop && (
+                <CampoUnidadeEscola unidade={primeiraUnidade} campo="nome" label="Unidade *"
+                  onChange={(campo, valor) => setPrimeiraUnidade((dados) => ({ ...dados, [campo]: valor }))} />
+              )}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Rede / Grupo</label>
                 <input
@@ -433,7 +462,7 @@ export default function EscolasClient({
                   {PERIODOS_AVALIACAO.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="escola-datas grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
                   <DateInput
@@ -453,7 +482,7 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="escola-datas grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
                   <DateInput
@@ -478,11 +507,12 @@ export default function EscolasClient({
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoNova}</p>
               )}
 
-              <div data-entrada-grupos className="border-t border-slate-100 pt-3 mt-1">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                  Primeira unidade
-                </p>
+              <div data-entrada-grupos className="escola-localizacao border-t border-slate-100 pt-3 mt-1">
+                {!formularioDesktop && (
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Primeira unidade</p>
+                )}
                 <div className="space-y-3">
+                  {!formularioDesktop && (
                   <div>
                     <label className="block text-xs font-medium text-slate-600 mb-1">Nome da unidade *</label>
                     <input
@@ -492,6 +522,7 @@ export default function EscolasClient({
                       placeholder="Ex: Unidade Centro"
                     />
                   </div>
+                  )}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">Cidade</label>
@@ -524,10 +555,10 @@ export default function EscolasClient({
                 </div>
               </div>
             </FormularioSemRolagem>
-            <div className="flex gap-3 mt-5">
+            <div className="flex shrink-0 gap-3 mt-4">
               <button
                 onClick={criarEscola}
-                disabled={!novaEscola.nome || !primeiraUnidade.nome || !!erroPeriodoNova || salvando}
+                disabled={!novaEscola.nome.trim() || !primeiraUnidade.nome.trim() || !!erroPeriodoNova || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Criar escola"}
@@ -610,9 +641,9 @@ export default function EscolasClient({
       {/* ── Modal Editar Escola ─────────────────────────────────────────────── */}
       {editEscola && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" data-v2-school-modal={variant === "v2" ? "true" : undefined}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={variant === "v2" ? "form" : undefined}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" data-v2-school-dialog={formularioDesktop ? "escola-desktop" : variant === "v2" ? "form" : undefined}>
             <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Escola</h2>
-            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal={!formularioDesktop} permitirRolagem={formularioDesktop} colunas={2} className="space-y-3 escola-campos">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Nome *</label>
                 <input
@@ -621,6 +652,10 @@ export default function EscolasClient({
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
+              {formularioDesktop && editEscola.unidades.length <= 1 && (
+                <CampoUnidadeEscola unidade={editEscola.unidades[0] ?? unidadeEdicao} campo="nome" label={editEscola.unidades.length ? "Unidade *" : "Unidade"}
+                  onChange={atualizarUnidadeEdicao} />
+              )}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Rede / Grupo</label>
                 <input
@@ -651,7 +686,7 @@ export default function EscolasClient({
                   {PERIODOS_AVALIACAO.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="escola-datas grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">1º período — início</label>
                   <DateInput
@@ -671,7 +706,7 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="escola-datas grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">2º período — início</label>
                   <DateInput
@@ -691,7 +726,15 @@ export default function EscolasClient({
                   />
                 </div>
               </div>
-              <section data-entrada-grupos className="col-span-full border-t border-slate-100 pt-3">
+              {formularioDesktop && editEscola.unidades.length <= 1 ? (
+                <div className="escola-localizacao col-span-full grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {([["cidade", "Cidade"], ["estado", "Estado"], ["turno", "Turno"]] as const).map(([campo, label]) => (
+                    <CampoUnidadeEscola key={campo} unidade={editEscola.unidades[0] ?? unidadeEdicao}
+                      campo={campo} label={label} onChange={atualizarUnidadeEdicao} />
+                  ))}
+                </div>
+              ) : (
+              <section data-entrada-grupos className="escola-unidades-legadas col-span-full border-t border-slate-100 pt-3">
                 <h3 className="text-xs font-semibold text-slate-500 uppercase mb-3">Unidades da escola</h3>
                 {editEscola.unidades.map((unidade, indice) => <fieldset data-entrada-grupos key={unidade.id} className="grid grid-cols-2 gap-3 mb-4" disabled={salvando}>
                   <legend className="text-sm font-semibold mb-2">{unidade.nome}</legend>
@@ -699,15 +742,16 @@ export default function EscolasClient({
                 </fieldset>)}
                 {editEscola.unidades.length === 0 && <p className="text-sm text-slate-500">Nenhuma unidade cadastrada. Use Adicionar unidade na lista de escolas.</p>}
               </section>
+              )}
               {erroSalvarEscola && <p role="alert" className="col-span-full text-sm text-red-600">{erroSalvarEscola}</p>}
               {erroPeriodoEdit && (
                 <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{erroPeriodoEdit}</p>
               )}
             </FormularioSemRolagem>
-            <div className="flex gap-3 mt-5">
+            <div className="flex shrink-0 gap-3 mt-4">
               <button
                 onClick={salvarEscola}
-                disabled={!editEscola.nome || editEscola.unidades.some(u => !u.nome.trim()) || !!erroPeriodoEdit || salvando}
+                disabled={!editEscola.nome || editEscola.unidades.some(u => !u.nome.trim()) || (!editEscola.unidades.length && !unidadeEdicao.nome.trim() && Boolean(unidadeEdicao.cidade || unidadeEdicao.estado || unidadeEdicao.turno)) || !!erroPeriodoEdit || salvando}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2 rounded-lg text-sm transition-colors"
               >
                 {salvando ? "Salvando..." : "Salvar"}
@@ -818,5 +862,23 @@ export default function EscolasClient({
         </div>
       )}
     </div>
+  );
+}
+
+type CampoUnidade = "nome" | "cidade" | "estado" | "turno";
+
+function CampoUnidadeEscola({ unidade, campo, label, onChange }: {
+  unidade: Pick<Unidade, CampoUnidade>;
+  campo: CampoUnidade;
+  label: string;
+  onChange: (campo: CampoUnidade, valor: string) => void;
+}) {
+  return (
+    <label className="block min-w-0 text-xs font-medium text-slate-600">
+      {label}
+      <input value={unidade[campo] ?? ""} maxLength={campo === "estado" ? 2 : undefined}
+        onChange={(event) => onChange(campo, event.target.value)}
+        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    </label>
   );
 }

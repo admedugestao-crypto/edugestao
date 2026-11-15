@@ -1,4 +1,6 @@
 import EscolasClient from "@/components/EscolasClient";
+import { isMobileUserAgent } from "@/lib/device";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
 import { Building2, MapPin, School } from "lucide-react";
@@ -27,6 +29,7 @@ export default async function V2EscolasPage() {
     periodoLetivo2Inicio: escola.periodoLetivo2Inicio?.toISOString() ?? null,
     periodoLetivo2Fim: escola.periodoLetivo2Fim?.toISOString() ?? null,
   }));
+  const desktop = !isMobileUserAgent((await headers()).get("user-agent"));
   const totalUnidades = escolas.reduce((total, escola) => total + escola.unidades.length, 0);
 
   return (
@@ -39,12 +42,12 @@ export default async function V2EscolasPage() {
         </div>
         <div className={styles.schoolsSummary} aria-label="Resumo da rede escolar">
           <span><Building2 aria-hidden="true" size={16} /><b>{escolas.length}</b> escolas</span>
-          <span><MapPin aria-hidden="true" size={16} /><b>{totalUnidades}</b> unidades</span>
+          {!desktop && <span><MapPin aria-hidden="true" size={16} /><b>{totalUnidades}</b> unidades</span>}
         </div>
       </header>
 
       <section className={styles.schoolsSurface} aria-label="Escolas cadastradas">
-        <EscolasClient escolasIniciais={escolasSerial} metodos={metodos} variant="v2" />
+        <EscolasClient escolasIniciais={escolasSerial} metodos={metodos} variant="v2" formularioDesktop={desktop} />
       </section>
     </div>
   );

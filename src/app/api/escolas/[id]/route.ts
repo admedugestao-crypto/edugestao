@@ -41,6 +41,35 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (count !== ids.length) return NextResponse.json({ erro: "Unidade inválida para esta escola." }, { status: 400 });
     if (unidades.some((u: Record<string, unknown>) => ["cidade", "estado", "turno"].some(k => u[k] != null && typeof u[k] !== "string"))) return NextResponse.json({ erro: "Dados da unidade inválidos." }, { status: 400 });
   }
+  const unidadeInicial = body.unidadeInicial;
+  if (unidadeInicial !== undefined) {
+    if (!unidadeInicial || typeof unidadeInicial.nome !== "string" || !unidadeInicial.nome.trim() ||
+      unidades?.length || ["cidade", "estado", "turno"].some((campo) =>
+        unidadeInicial[campo] != null && typeof unidadeInicial[campo] !== "string")) {
+      return NextResponse.json({ erro: "Preencha os dados da unidade." }, { status: 400 });
+    }
+    try {
+      const escola = await prisma.$transaction((tx) => tx.escola.update({
+        where: { id, empresaId: scope.empresaId, unidades: { none: {} } },
+        data: {
+          nome: body.nome, rede: body.rede || null, metodoId: body.metodoId || null,
+          periodoAvaliacao: body.periodoAvaliacao || null, ...datas,
+          unidades: { create: {
+            empresaId: scope.empresaId, nome: unidadeInicial.nome.trim(),
+            cidade: unidadeInicial.cidade || null, estado: unidadeInicial.estado || null, turno: unidadeInicial.turno || null,
+          } },
+        },
+        include: { unidades: true, metodoEnsino: true },
+      }), { isolationLevel: "Serializable" });
+      return NextResponse.json(escola);
+    } catch (erro) {
+      if (erro && typeof erro === "object" && "code" in erro && (erro.code === "P2025" || erro.code === "P2034")) {
+        return NextResponse.json({ erro: "O cadastro da escola mudou. Atualize a página antes de tentar novamente." }, { status: 409 });
+      }
+      throw erro;
+    }
+  }
+
   const escola = await prisma.escola.update({
     where: { id },
     data: {
