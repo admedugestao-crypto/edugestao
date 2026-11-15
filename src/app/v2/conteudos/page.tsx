@@ -66,7 +66,7 @@ export default async function ConteudosPage() {
       <Suspense>
       <ConteudosClient
         variant="v2"
-        registroDesktop={!isMobileUserAgent((await headers()).get("user-agent"))}
+        formularioDesktop={!isMobileUserAgent((await headers()).get("user-agent"))}
         alunos={alunos.map((a) => ({
           id: a.id,
           nome: a.nome,

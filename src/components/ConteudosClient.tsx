@@ -615,14 +615,14 @@ function mapConteudo(raw: RawConteudo): Conteudo {
 
 export default function ConteudosClient({
   variant = "classic", alunos,
-  registroDesktop = false,
+  formularioDesktop = false,
   professoras = [],
   materias = [],
   conteudosIniciais,
   isProfessor,
 }: {
   variant?: "classic" | "v2";
-  registroDesktop?: boolean;
+  formularioDesktop?: boolean;
   alunos: Aluno[];
   professoras?: Professora[];
   materias?: Materia[];
@@ -1094,7 +1094,7 @@ export default function ConteudosClient({
       {/* ── Modal Registrar Conteúdo ──────────────────────────────────────── */}
       {modal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className={registroDesktop
+          <div className={formularioDesktop
             ? "bg-white rounded-2xl w-full max-w-[820px] shadow-xl flex flex-col max-h-[calc(100dvh-2rem)]"
             : "bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[90vh]"}>
             {/* Cabeçalho fixo */}
@@ -1105,12 +1105,12 @@ export default function ConteudosClient({
             {/* Corpo rolável */}
             <FormularioSemRolagem
               ativo={variant === "v2"}
-              modal={!registroDesktop}
-              permitirRolagem={registroDesktop}
+              modal={!formularioDesktop}
+              permitirRolagem={formularioDesktop}
               className="px-5 py-3 space-y-4"
             >
               <CamposForm
-                layoutLargo={registroDesktop}
+                layoutLargo={formularioDesktop}
                 form={novo}
                 setForm={setNovo}
                 alunos={alunos}
@@ -1207,8 +1207,8 @@ export default function ConteudosClient({
       {/* ── Modal Editar Conteúdo ─────────────────────────────────────────── */}
       {editConteudo && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className={`bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col ${
-            aulaIdPendente ? "max-h-[calc(100dvh-2rem)]" : "max-h-[90vh]"
+          <div className={`bg-white rounded-2xl w-full shadow-xl flex flex-col ${
+            formularioDesktop ? "max-w-[820px] max-h-[calc(100dvh-2rem)]" : aulaIdPendente ? "max-w-md max-h-[calc(100dvh-2rem)]" : "max-w-md max-h-[90vh]"
           }`}>
             {/* Cabeçalho fixo */}
             <div className="px-5 pt-4 pb-3 border-b border-slate-100 shrink-0">
@@ -1216,8 +1216,14 @@ export default function ConteudosClient({
             </div>
 
             {/* Corpo rolável */}
-            <FormularioSemRolagem ativo={variant === "v2"} modal className="px-5 py-3 space-y-4">
+            <FormularioSemRolagem
+              ativo={variant === "v2"}
+              modal={!formularioDesktop}
+              permitirRolagem={formularioDesktop}
+              className="px-5 py-3 space-y-4"
+            >
               <CamposForm
+                layoutLargo={formularioDesktop}
                 form={editConteudo}
                 setForm={(f) => setEditConteudo({ ...f, id: editConteudo.id })}
                 alunos={alunos}
