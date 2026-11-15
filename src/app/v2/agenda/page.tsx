@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import { isMobileUserAgent } from "@/lib/device";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope, scopeWhere } from "@/lib/tenant";
-import { CalendarDays, Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import styles from "../v2.module.css";
@@ -73,16 +72,7 @@ export default async function V2AgendaPage({ searchParams }: { searchParams: Pro
   return (
     <div className={styles.agendaPage}>
       <header className={styles.agendaHeader}>
-        <div>
-          <p><Sparkles aria-hidden="true" size={15} /> Planejamento do tempo</p>
-          <h1>Sua agenda, <em>sem ruído.</em></h1>
-          <span>Visualize aulas, encontre horários e organize a rotina em um só lugar.</span>
-        </div>
-        <div className={styles.agendaDate}>
-          <CalendarDays aria-hidden="true" size={20} />
-          <span>Hoje</span>
-          <strong>{new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</strong>
-        </div>
+        <h1>Agenda</h1>
       </header>
 
       <section className={styles.agendaSurface} aria-label="Calendário de aulas">
