@@ -1429,10 +1429,10 @@ function AgendaClientContent({
 
       {/* ── Modal Nova Aula ────────────────────────────────────────────────── */}
       {modalAberto && (
-        <Modal titulo={reposicaoOrigem ? "Repor aula" : "Nova aula"} onClose={() => setModalAberto(false)}>
-          <FormularioSemRolagem modal ativo={conteudosPath.startsWith("/v2/")} className="space-y-3">
-          <div className="space-y-3">
-
+        <Modal titulo={reposicaoOrigem ? "Repor aula" : "Nova aula"} onClose={() => setModalAberto(false)} ajustarFormulario={layoutCompacto}>
+          <FormularioSemRolagem modal={!layoutCompacto} permitirRolagem={layoutCompacto} ativo={conteudosPath.startsWith("/v2/")} className={layoutCompacto ? "space-y-2 px-0.5" : "space-y-3"}>
+          <div className={layoutCompacto ? "space-y-2" : "space-y-3"}>
+            <div className={layoutCompacto && !isProfessor ? "grid gap-2 sm:grid-cols-2 [&>div]:min-w-0" : "space-y-3"}>
             {/* Seletor de professora (apenas para não-professores) */}
             {!isProfessor && (
               <div>
@@ -1460,6 +1460,7 @@ function AgendaClientContent({
                 ))}
               </select>
             </div>
+            </div>
             <div>
               <label className="text-xs font-medium text-slate-600">Matéria</label>
               {novaAula.alunoId ? (
@@ -1472,12 +1473,13 @@ function AgendaClientContent({
                 <p className="text-xs text-slate-400 mt-1">Selecione o aluno primeiro.</p>
               )}
             </div>
+            <div className={layoutCompacto ? "grid gap-2 sm:grid-cols-3 [&>div]:min-w-0" : "space-y-3"}>
             <div>
               <label className="text-xs font-medium text-slate-600">Data *</label>
               <DateInput required type="date" value={novaAula.data} onChange={(e) => { setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, data: e.target.value })); }}
                 className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className={layoutCompacto ? "contents" : "grid grid-cols-2 gap-3"}>
               <div>
                 <label className="text-xs font-medium text-slate-600">Início *</label>
                 <input type="time" required max="22:59" value={novaAula.horaInicio} onChange={(e) => { const horaInicio = e.target.value; setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaInicio, horaFim: fimUmaHoraDepois(horaInicio) })); }}
@@ -1488,6 +1490,7 @@ function AgendaClientContent({
                 <input type="time" required value={novaAula.horaFim} onChange={(e) => { setErroModal(null); setAvisoAgendamento(null); setNovaAula((p) => ({ ...p, horaFim: e.target.value })); }}
                   className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
               </div>
+            </div>
             </div>
             <div>
               <label className="text-xs font-medium text-slate-600">Observação</label>
@@ -1541,7 +1544,7 @@ function AgendaClientContent({
             })()}
 
             {!avisoAgendamento && (
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex shrink-0 justify-end gap-2 pt-2">
               <button onClick={() => setModalAberto(false)} className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50">
                 Cancelar
               </button>
@@ -2298,17 +2301,19 @@ function TelaConflitos({
   );
 }
 
-function Modal({ titulo, onClose, children, z = "z-50" }: { titulo: string; onClose: () => void; children: React.ReactNode; z?: string }) {
+function Modal({ titulo, onClose, children, z = "z-50", ajustarFormulario = false }: { titulo: string; onClose: () => void; children: React.ReactNode; z?: string; ajustarFormulario?: boolean }) {
   return (
     <div className={`fixed inset-0 ${z} flex items-center justify-center bg-black/30 backdrop-blur-sm p-4`}>
-      <div data-entrada-dialogo className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
+      <div data-entrada-dialogo className={ajustarFormulario
+        ? "flex max-h-[calc(100dvh-2rem)] w-full max-w-[700px] flex-col rounded-2xl bg-white shadow-2xl"
+        : "bg-white rounded-2xl shadow-2xl w-full max-w-md"}>
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 shrink-0">
           <h3 className="font-semibold text-slate-800">{titulo}</h3>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
             <X size={16}/>
           </button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className={ajustarFormulario ? "flex min-h-0 flex-col gap-2 p-4" : "p-5"}>{children}</div>
       </div>
     </div>
   );
