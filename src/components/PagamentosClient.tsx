@@ -149,9 +149,10 @@ function dataVencimentoPadrao(mes: number, ano: number) {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 export default function PagamentosClient({
-  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome, somentePendentes = false, visaoProfessor = false, variant = "classic",
+  pagamentosIniciais, mesInicial, anoInicial, isAdmin, podeNovo, alunoFiltro, alunoFiltroNome, somentePendentes = false, visaoProfessor = false, variant = "classic", formularioDesktop = false,
 }: {
   variant?: "classic" | "v2";
+  formularioDesktop?: boolean;
   pagamentosIniciais: PagamentoItem[];
   mesInicial:         number;
   anoInicial:         number;
@@ -990,9 +991,11 @@ export default function PagamentosClient({
       {/* ── Modal Criar / Editar ─────────────────────────────────────────────── */}
       {formPag && (
         <div data-finance-modal={variant === "v2" || undefined} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className={formularioDesktop
+            ? "flex w-full max-w-[760px] flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
+            : "bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"}>
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <div className={formularioDesktop ? "flex shrink-0 items-center justify-between px-6 py-3 border-b border-slate-100" : "flex items-center justify-between px-6 py-4 border-b border-slate-100"}>
               <h2 className="text-base font-bold text-slate-800">
                 {formPag.modo === "criar" ? "Novo Pagamento" : "Editar Pagamento"}
               </h2>
@@ -1002,14 +1005,15 @@ export default function PagamentosClient({
               </button>
             </div>
 
-            <FormularioSemRolagem ativo={variant === "v2"} modal colunas={2} className="px-4 py-3 space-y-3">
+            <FormularioSemRolagem ativo={variant === "v2"} modal={!formularioDesktop} permitirRolagem={formularioDesktop}
+              colunas={2} className={formularioDesktop ? "px-6 py-3" : "px-4 py-3 space-y-3"}>
               {/* Cabeçalho competência */}
-              <div className="bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-1.5 text-xs text-indigo-700 font-medium">
+              <div className={formularioDesktop ? "col-span-full rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700" : "bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-1.5 text-xs text-indigo-700 font-medium"}>
                 Competência: {MESES[mes - 1]} / {ano}
               </div>
 
               {/* Aluno */}
-              <div>
+              <div className={formularioDesktop ? "col-span-full" : undefined}>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Aluno <span className="text-red-500">*</span></label>
                 {formPag.modo === "criar" ? (
                   carregandoAluno ? (
@@ -1056,7 +1060,7 @@ export default function PagamentosClient({
               </div>
 
               {/* Parcela · Vencimento · Valor · Qtd aulas — grid 4 colunas */}
-              <div className="grid grid-cols-4 gap-2">
+              <div className={formularioDesktop ? "col-span-full grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1.4fr_1fr_1fr] [&>div]:min-w-0" : "grid grid-cols-4 gap-2"}>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Parcela</label>
                   <input type="number" min={1} value={formPag.parcela}
@@ -1084,7 +1088,7 @@ export default function PagamentosClient({
               </div>
 
               {/* Pago + Data pagamento — mesma linha */}
-              <div className="flex items-center gap-3">
+              <div className={formularioDesktop ? "col-span-full flex flex-wrap items-center gap-3" : "flex items-center gap-3"}>
                 <label className="flex items-center gap-2 cursor-pointer select-none shrink-0">
                   <input type="checkbox" checked={formPag.pago}
                     onChange={(e) => setFormPag((f) => f ? { ...f, pago: e.target.checked, dataPagamento: e.target.checked ? (f.dataPagamento || new Date().toISOString().split("T")[0]) : "" } : f)}
@@ -1094,7 +1098,7 @@ export default function PagamentosClient({
                 {formPag.pago && (
                   <DateInput type="date" value={formPag.dataPagamento}
                     onChange={(e) => setFormPag((f) => f ? { ...f, dataPagamento: e.target.value } : f)}
-                    className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    className={formularioDesktop ? "w-40 rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" : "flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"} />
                 )}
               </div>
 
@@ -1104,7 +1108,7 @@ export default function PagamentosClient({
                 const vinculadas = item?.aulasVinculadas ?? [];
                 if (vinculadas.length === 0) return null;
                 return (
-                  <div>
+                  <div className={formularioDesktop ? "col-span-full" : undefined}>
                     <label className="block text-xs font-medium text-slate-600 mb-1">
                       Agendas vinculadas
                       <span className="ml-1 text-slate-400 font-normal">({vinculadas.length})</span>
@@ -1133,7 +1137,7 @@ export default function PagamentosClient({
               })()}
 
               {/* Observação */}
-              <div>
+              <div className={formularioDesktop ? "col-span-full" : undefined}>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Observação</label>
                 <textarea
                   value={formPag.observacao}
@@ -1153,7 +1157,7 @@ export default function PagamentosClient({
             </FormularioSemRolagem>
 
             {/* Footer */}
-            <div className="flex gap-3 px-6 pb-6">
+            <div className={formularioDesktop ? "flex shrink-0 gap-3 border-t border-slate-100 px-6 py-3" : "flex gap-3 px-6 pb-6"}>
               <button
                 onClick={salvarForm}
                 disabled={salvando}

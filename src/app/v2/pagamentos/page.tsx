@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+import { isMobileUserAgent } from "@/lib/device";
 import { redirect } from "next/navigation";
 import type { PagamentoWhereInput } from "@/generated/prisma/models/Pagamento";
 import { prisma } from "@/lib/prisma";
@@ -126,6 +128,7 @@ export default async function V2PagamentosPage({
       </header>
       <PagamentosClient
         variant="v2"
+        formularioDesktop={!isMobileUserAgent((await headers()).get("user-agent"))}
         pagamentosIniciais={serializarPagamentos(pagamentos)}
         mesInicial={mes}
         anoInicial={ano}
