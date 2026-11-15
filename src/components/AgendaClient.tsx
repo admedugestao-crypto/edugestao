@@ -152,12 +152,13 @@ export default function AgendaClient(props: Parameters<typeof AgendaClientConten
 function AgendaClientContent({
   alunos, materias, professoras = [], isProfessor = true,
   disponibilidades = [], professoraIdSessao = "", conteudosPath = "/dashboard/conteudos",
-  vistaInicial = "semana", dataInicial, destacarPendencias = false, acessoPendencias = false,
+  vistaInicial = "semana", dataInicial, destacarPendencias = false, acessoPendencias = false, layoutCompacto = false,
 }: {
   vistaInicial?: "semana" | "dia" | "mes";
   dataInicial?: string;
   destacarPendencias?: boolean;
   acessoPendencias?: boolean;
+  layoutCompacto?: boolean;
   conteudosPath?: string;
   alunos: AlunoOpt[];
   materias: Materia[];
@@ -932,7 +933,7 @@ function AgendaClientContent({
     <div className="flex h-full min-h-0 flex-col gap-4 print:hidden">
 
       {/* ── Barra de controles ─────────────────────────────────────────────── */}
-      <div className="shrink-0 bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3">
+      <div className="shrink-0 bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-3 agenda-controles">
         {/* Vista */}
         <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
           <button onClick={() => setVista("mes")}
@@ -979,7 +980,7 @@ function AgendaClientContent({
         </div>
 
         {/* Ações — lado esquerdo, junto da vista/navegação */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap agenda-acoes">
           {vista === "semana" && (
             <button onClick={abrirModalGerar} disabled={gerando}
               title="Gera todas as aulas recorrentes a partir de hoje até 31/12"
@@ -1011,10 +1012,10 @@ function AgendaClientContent({
           </button>
         </div>
 
-        <div className="flex-1" />
+        <div className="flex-1 agenda-espacador" />
 
         {/* Filtros — lado direito */}
-        <div className="flex items-center gap-3 flex-wrap justify-end">
+        <div className="flex items-center gap-3 flex-wrap justify-end agenda-filtros">
           {/* Filtro por professora (apenas admin) */}
           {!isProfessor && professoras.length > 0 && (
             <select
@@ -1076,7 +1077,20 @@ function AgendaClientContent({
       </div>
 
       {/* Feedback gerar */}
-      {destacarPendencias && <p className="px-3 py-2 text-xs text-slate-600"><span className="font-semibold text-blue-700">Azul: pendente</span> · <span className="font-semibold text-red-700">Vermelho: cancelada</span> · Cinza: agendada · Verde: realizada · Amarelo: falta do aluno · Laranja: falta do professor</p>}
+      {destacarPendencias && layoutCompacto && (
+        <ul aria-label="Legenda da agenda" className="agenda-legenda flex flex-wrap items-center px-2 text-xs text-slate-700">
+          {[
+            ["Pendente", "#345ff0"], ["Cancelada", "#de334b"], ["Agendada", "#718098"],
+            ["Realizada", "#148350"], ["Falta do aluno", "#bd8301"], ["Falta do professor", "#d36a13"],
+          ].map(([nome, cor]) => (
+            <li key={nome} className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="size-2" style={{ backgroundColor: cor }} />
+              {nome}
+            </li>
+          ))}
+        </ul>
+      )}
+      {destacarPendencias && !layoutCompacto && <p className="px-3 py-2 text-xs text-slate-600"><span className="font-semibold text-blue-700">Azul: pendente</span> · <span className="font-semibold text-red-700">Vermelho: cancelada</span> · Cinza: agendada · Verde: realizada · Amarelo: falta do aluno · Laranja: falta do professor</p>}
       {msgGerar && (
         <div className={`text-sm font-medium px-4 py-2.5 rounded-xl border ${
           msgGerar.includes("Erro")
@@ -1241,13 +1255,13 @@ function AgendaClientContent({
 
       {/* ── Vista Semana ───────────────────────────────────────────────────── */}
       {vista === "semana" && (
-        <div className="flex flex-1 min-h-0 flex-col bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="flex flex-1 min-h-0 flex-col bg-white rounded-xl border border-slate-200 overflow-hidden agenda-grade-semanal">
           <div className="grid shrink-0 grid-cols-7 border-b border-slate-100">
             {diasGrade.map((dia, i) => {
               const hoje = isToday(dia);
               const diaVermelho = ehFimDeSemana(dia) || feriadosNoDia(dia).length > 0;
               return (
-                <div key={i} className={`py-3 px-2 text-center border-r last:border-r-0 border-slate-100 ${hoje ? "bg-indigo-50" : ""}`}>
+                <div key={i} className={`py-3 px-2 text-center border-r last:border-r-0 border-slate-100 agenda-dia-semana ${hoje ? "bg-indigo-50" : ""}`}>
                   <p className={`text-xs font-bold ${diaVermelho ? "text-red-600" : hoje ? "text-indigo-600" : "text-slate-600"}`}>{DIAS_POR_INDICE[dia.getDay()]}</p>
                   <p className={`text-lg font-bold mt-0.5 leading-none ${diaVermelho ? "text-red-600" : hoje ? "text-indigo-700" : "text-slate-800"}`}>
                     {format(dia, "dd")}
@@ -1261,9 +1275,16 @@ function AgendaClientContent({
               const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
               const hoje     = isToday(dia);
               const ds = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
+              const adicionarAula = (
+                <button onClick={() => abrirModal(ds)}
+                  className="agenda-adicionar-aula w-full text-left text-xs text-slate-400 hover:text-indigo-500 px-1 py-0.5 rounded transition-colors">
+                  {layoutCompacto ? "+ Aula" : "+ aula"}
+                </button>
+              );
               return (
                 <div key={i}
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
+                  {layoutCompacto && adicionarAula}
                   {timeline.map((item, j) =>
                     item.tipo === "aula" ? (
                       <CardAula key={item.aula.id} aula={item.aula} destacarPendencias={destacarPendencias} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
@@ -1283,10 +1304,7 @@ function AgendaClientContent({
                       </div>
                     )
                   )}
-                  <button onClick={() => abrirModal(ds)}
-                    className="w-full text-left text-xs text-slate-400 hover:text-indigo-500 px-1 py-0.5 rounded transition-colors">
-                    + aula
-                  </button>
+                  {!layoutCompacto && adicionarAula}
                 </div>
               );
             })}
@@ -1982,10 +2000,10 @@ function CardAula({ aula, onClick, mostrarProfessora = false, filtroMateriaId = 
   return (
     <div onClick={onClick} role="button" tabIndex={0}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] transition-all hover:brightness-95 hover:shadow-sm cursor-pointer"
+      className="w-full text-left rounded-lg px-2.5 py-2 border-l-[4px] agenda-cartao transition-all hover:brightness-95 hover:shadow-sm cursor-pointer"
       style={{ backgroundColor: cores.bg, borderLeftColor: cores.border }}>
       {/* Nome + indicador de status */}
-      <div className="flex items-start justify-between gap-1">
+      <div className="flex items-start justify-between gap-1 agenda-cartao-cabecalho">
         <p className="text-xs font-bold leading-tight truncate text-slate-800">{aula.aluno.nome}</p>
         <span className={`shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${cfg.bg} ${cfg.cor}`}>
           {cfg.icon}{cfg.label}
