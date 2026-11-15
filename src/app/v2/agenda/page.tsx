@@ -77,6 +77,7 @@ export default async function V2AgendaPage({ searchParams }: { searchParams: Pro
 
       <section className={styles.agendaSurface} aria-label="Calendário de aulas">
         <AgendaClient
+          layoutCompacto
           destacarPendencias
           acessoPendencias={pendentes === "1"}
           vistaInicial={vistaInicial}

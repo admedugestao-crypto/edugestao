@@ -59,7 +59,7 @@ a.appVersion:focus-visible { outline:2px solid white; outline-offset:3px; border
 .agendaPage { height:100dvh; min-height:0; overflow:hidden; display:flex; flex-direction:column; padding:20px 24px; }
 .agendaHeader { width:100%; flex:none; max-width:1540px; margin:0 auto 12px; }
 .agendaHeader h1 { font:700 28px/1.15 ui-rounded,"Segoe UI",sans-serif; letter-spacing:-.025em; }
-.agendaSurface { width:100%; max-width:1540px; min-height:0; flex:1; display:flex; flex-direction:column; overflow:hidden; margin:0 auto; padding:10px; border:1px solid var(--line); border-radius:22px; background:#fff; box-shadow:0 18px 45px #20345d0c; }
+.agendaSurface { width:100%; max-width:1540px; min-height:0; flex:1; display:flex; flex-direction:column; overflow:hidden; margin:0 auto; }
 .agendaSurface>div { min-height:0; flex:1; gap:8px!important; }
 .agendaSurface :global(.rounded-xl) { border-radius:15px!important; }
 .agendaSurface :global(.border-slate-200) { border-color:#dfe5ef!important; }
@@ -67,16 +67,21 @@ a.appVersion:focus-visible { outline:2px solid white; outline-offset:3px; border
 .agendaSurface :global(.bg-indigo-600) { background:#315be8!important; }
 .agendaSurface :global(.text-indigo-600),.agendaSurface :global(.text-indigo-700) { color:#315be8!important; }
 .agendaSurface :global(select),.agendaSurface :global(input) { border-radius:11px!important; }
-.agendaSurface :global(.agenda-controles) { padding:8px; gap:8px; }
+.agendaSurface :global(.agenda-controles) { padding:8px 10px; gap:7px; border-radius:0!important; }
 .agendaSurface :global(.agenda-acoes) { margin-left:auto; max-width:100%; }
 .agendaSurface :global(.agenda-espacador) { display:none; }
 .agendaSurface :global(.agenda-filtros) { width:100%; justify-content:flex-start; gap:8px; }
-.agendaSurface :global(.agenda-legenda) { padding-block:4px; }
-.agendaSurface :global(.agenda-dia-semana) { padding-block:6px; }
-.agendaSurface :global(.agenda-cartao) { display:flex; flex-direction:column; align-items:flex-start; padding:5px 8px; }
+.agendaSurface :global(.agenda-filtros) select { width:auto; max-width:185px; padding-block:4px; }
+.agendaSurface :global(.agenda-legenda) { padding-block:2px; gap:5px 22px; }
+.agendaSurface :global(.agenda-grade-semanal) { border-radius:0!important; }
+.agendaSurface :global(.agenda-dia-semana) { display:flex; align-items:center; justify-content:center; gap:4px; min-height:36px; padding-block:4px; }
+.agendaSurface :global(.agenda-dia-semana) > p { margin:0; font-size:13px; line-height:1.2; }
+.agendaSurface :global(.agenda-adicionar-aula) { width:auto; padding:2px 4px; color:#36548a; }
+.agendaSurface :global(.agenda-cartao) { display:flex; flex-direction:column; align-items:flex-start; padding:5px 8px; border-radius:0; line-height:1.25; min-height:92px; }
 .agendaSurface :global(.agenda-cartao-cabecalho) { display:contents; }
 .agendaSurface :global(.agenda-cartao-cabecalho) > p { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
-.agendaSurface :global(.agenda-cartao-cabecalho) > span { order:1; max-width:100%; margin-top:2px; }
+.agendaSurface :global(.agenda-cartao-cabecalho) > span { order:1; max-width:100%; margin-top:2px; padding:0; background:transparent; line-height:1.2; }
+.agendaSurface :global(.agenda-cartao) > :is(div,button) { margin-top:2px; }
 .agendaSurface :global(.agenda-cartao) > p { max-width:100%; }
 .agendaMobileFrame { min-height:calc(100dvh - 126px); padding:12px 10px 0; background:#f6f8fc; }
 .studentsPage { height:100dvh; min-height:0; overflow:hidden; display:flex; flex-direction:column; padding:36px 38px 38px; }

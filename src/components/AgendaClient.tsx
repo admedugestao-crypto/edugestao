@@ -152,12 +152,13 @@ export default function AgendaClient(props: Parameters<typeof AgendaClientConten
 function AgendaClientContent({
   alunos, materias, professoras = [], isProfessor = true,
   disponibilidades = [], professoraIdSessao = "", conteudosPath = "/dashboard/conteudos",
-  vistaInicial = "semana", dataInicial, destacarPendencias = false, acessoPendencias = false,
+  vistaInicial = "semana", dataInicial, destacarPendencias = false, acessoPendencias = false, layoutCompacto = false,
 }: {
   vistaInicial?: "semana" | "dia" | "mes";
   dataInicial?: string;
   destacarPendencias?: boolean;
   acessoPendencias?: boolean;
+  layoutCompacto?: boolean;
   conteudosPath?: string;
   alunos: AlunoOpt[];
   materias: Materia[];
@@ -1076,7 +1077,20 @@ function AgendaClientContent({
       </div>
 
       {/* Feedback gerar */}
-      {destacarPendencias && <p className="px-3 py-2 text-xs text-slate-600 agenda-legenda"><span className="font-semibold text-blue-700">Azul: pendente</span> · <span className="font-semibold text-red-700">Vermelho: cancelada</span> · Cinza: agendada · Verde: realizada · Amarelo: falta do aluno · Laranja: falta do professor</p>}
+      {destacarPendencias && layoutCompacto && (
+        <ul aria-label="Legenda da agenda" className="agenda-legenda flex flex-wrap items-center px-2 text-xs text-slate-700">
+          {[
+            ["Pendente", "#345ff0"], ["Cancelada", "#de334b"], ["Agendada", "#718098"],
+            ["Realizada", "#148350"], ["Falta do aluno", "#bd8301"], ["Falta do professor", "#d36a13"],
+          ].map(([nome, cor]) => (
+            <li key={nome} className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="size-2" style={{ backgroundColor: cor }} />
+              {nome}
+            </li>
+          ))}
+        </ul>
+      )}
+      {destacarPendencias && !layoutCompacto && <p className="px-3 py-2 text-xs text-slate-600"><span className="font-semibold text-blue-700">Azul: pendente</span> · <span className="font-semibold text-red-700">Vermelho: cancelada</span> · Cinza: agendada · Verde: realizada · Amarelo: falta do aluno · Laranja: falta do professor</p>}
       {msgGerar && (
         <div className={`text-sm font-medium px-4 py-2.5 rounded-xl border ${
           msgGerar.includes("Erro")
@@ -1241,7 +1255,7 @@ function AgendaClientContent({
 
       {/* ── Vista Semana ───────────────────────────────────────────────────── */}
       {vista === "semana" && (
-        <div className="flex flex-1 min-h-0 flex-col bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="flex flex-1 min-h-0 flex-col bg-white rounded-xl border border-slate-200 overflow-hidden agenda-grade-semanal">
           <div className="grid shrink-0 grid-cols-7 border-b border-slate-100">
             {diasGrade.map((dia, i) => {
               const hoje = isToday(dia);
@@ -1261,9 +1275,16 @@ function AgendaClientContent({
               const timeline = timelinesPorDia.get(dia.getTime()) ?? [];
               const hoje     = isToday(dia);
               const ds = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
+              const adicionarAula = (
+                <button onClick={() => abrirModal(ds)}
+                  className="agenda-adicionar-aula w-full text-left text-xs text-slate-400 hover:text-indigo-500 px-1 py-0.5 rounded transition-colors">
+                  {layoutCompacto ? "+ Aula" : "+ aula"}
+                </button>
+              );
               return (
                 <div key={i}
                   className={`border-r last:border-r-0 border-slate-100 p-2 space-y-1.5 align-top ${hoje ? "bg-indigo-50/40" : ""}`}>
+                  {layoutCompacto && adicionarAula}
                   {timeline.map((item, j) =>
                     item.tipo === "aula" ? (
                       <CardAula key={item.aula.id} aula={item.aula} destacarPendencias={destacarPendencias} mostrarProfessora={!isProfessor} filtroMateriaId={filtroMateriaId} onClick={() => {
@@ -1283,10 +1304,7 @@ function AgendaClientContent({
                       </div>
                     )
                   )}
-                  <button onClick={() => abrirModal(ds)}
-                    className="w-full text-left text-xs text-slate-400 hover:text-indigo-500 px-1 py-0.5 rounded transition-colors">
-                    + aula
-                  </button>
+                  {!layoutCompacto && adicionarAula}
                 </div>
               );
             })}
