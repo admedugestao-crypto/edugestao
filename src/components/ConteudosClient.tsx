@@ -259,6 +259,7 @@ function UploadArquivo({
   metodoEscola,
   onChange,
   onSelecionarBiblioteca,
+  layoutLargo = false,
 }: {
   arquivoUrl: string;
   arquivoNome: string;
@@ -267,6 +268,7 @@ function UploadArquivo({
   metodoEscola?: MetodoEnsino | null;
   onChange: (url: string, nome: string) => void;
   onSelecionarBiblioteca?: (material: MaterialBiblioteca) => void;
+  layoutLargo?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
@@ -340,7 +342,7 @@ function UploadArquivo({
           </button>
         </div>
       ) : (
-        <div className="space-y-1.5">
+        <div className={layoutLargo ? "grid gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]" : "space-y-1.5"}>
           <label className="flex items-center gap-2 cursor-pointer border border-dashed border-slate-300 hover:border-indigo-400 rounded-lg px-3 py-2.5 transition-colors group">
             {enviando || unificando ? (
               <Loader2 size={15} className="text-indigo-500 animate-spin" />
@@ -363,7 +365,7 @@ function UploadArquivo({
           <button
             type="button"
             onClick={() => setSeletorAberto(true)}
-            className="flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-700 font-medium px-1"
+            className={layoutLargo ? "flex items-center justify-center gap-1.5 rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100" : "flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-700 font-medium px-1"}
           >
             <Library size={13} />
             Usar material da Biblioteca
@@ -404,6 +406,7 @@ function CamposForm({
   setFiltroProfId,
   onCampoChave,
   compacto = false,
+  layoutLargo = false,
 }: {
   form: FormC;
   setForm: (f: FormC) => void;
@@ -416,6 +419,7 @@ function CamposForm({
   somentePlanejado?: boolean;
   onCampoChave?: () => void;
   compacto?: boolean;
+  layoutLargo?: boolean;
 }) {
   // Professora: a lista de alunos já vem restrita à dela pelo servidor, não
   // precisa (nem deve) depender de filtroProfId estar setado.
@@ -499,31 +503,33 @@ function CamposForm({
         )}
       </div>
 
-      {/* Data */}
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
-        <DateInput
-          required type="date"
-          value={form.data}
-          onChange={(e) => {
-            const hoje = new Date().toISOString().split("T")[0];
-            const futuro = e.target.value > hoje;
-            setForm({ ...form, data: e.target.value, planejado: futuro ? true : form.planejado });
-            onCampoChave?.();
-          }}
-          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-      </div>
+      <div className={layoutLargo ? "grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]" : "space-y-2"}>
+        {/* Data */}
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Data *</label>
+          <DateInput
+            required type="date"
+            value={form.data}
+            onChange={(e) => {
+              const hoje = new Date().toISOString().split("T")[0];
+              const futuro = e.target.value > hoje;
+              setForm({ ...form, data: e.target.value, planejado: futuro ? true : form.planejado });
+              onCampoChave?.();
+            }}
+            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
 
-      {/* Tópico */}
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Tópico *</label>
-        <input
-          value={form.topico}
-          onChange={(e) => setForm({ ...form, topico: e.target.value })}
-          placeholder="Ex: Equações do 2º grau"
-          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+        {/* Tópico */}
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Tópico *</label>
+          <input
+            value={form.topico}
+            onChange={(e) => setForm({ ...form, topico: e.target.value })}
+            placeholder="Ex: Equações do 2º grau"
+            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
       </div>
 
       <DescricaoPorVozMobile
@@ -552,6 +558,7 @@ function CamposForm({
         </details>
       ) : (
         <UploadArquivo
+          layoutLargo={layoutLargo}
           arquivoUrl={form.arquivoUrl}
           arquivoNome={form.arquivoNome}
           materiaIds={form.materiaIds}
@@ -608,12 +615,14 @@ function mapConteudo(raw: RawConteudo): Conteudo {
 
 export default function ConteudosClient({
   variant = "classic", alunos,
+  registroDesktop = false,
   professoras = [],
   materias = [],
   conteudosIniciais,
   isProfessor,
 }: {
   variant?: "classic" | "v2";
+  registroDesktop?: boolean;
   alunos: Aluno[];
   professoras?: Professora[];
   materias?: Materia[];
@@ -1085,15 +1094,23 @@ export default function ConteudosClient({
       {/* ── Modal Registrar Conteúdo ──────────────────────────────────────── */}
       {modal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[90vh]">
+          <div className={registroDesktop
+            ? "bg-white rounded-2xl w-full max-w-[820px] shadow-xl flex flex-col max-h-[calc(100dvh-2rem)]"
+            : "bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[90vh]"}>
             {/* Cabeçalho fixo */}
             <div className="px-5 pt-4 pb-3 border-b border-slate-100 shrink-0">
               <h2 className="text-lg font-bold text-slate-800">Registrar Conteúdo</h2>
             </div>
 
             {/* Corpo rolável */}
-            <FormularioSemRolagem ativo={variant === "v2"} modal className="px-5 py-3 space-y-4">
+            <FormularioSemRolagem
+              ativo={variant === "v2"}
+              modal={!registroDesktop}
+              permitirRolagem={registroDesktop}
+              className="px-5 py-3 space-y-4"
+            >
               <CamposForm
+                layoutLargo={registroDesktop}
                 form={novo}
                 setForm={setNovo}
                 alunos={alunos}

@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { headers } from "next/headers";
+import { isMobileUserAgent } from "@/lib/device";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSessionScope } from "@/lib/tenant";
@@ -64,6 +66,7 @@ export default async function ConteudosPage() {
       <Suspense>
       <ConteudosClient
         variant="v2"
+        registroDesktop={!isMobileUserAgent((await headers()).get("user-agent"))}
         alunos={alunos.map((a) => ({
           id: a.id,
           nome: a.nome,
