@@ -1,0 +1,68 @@
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { getSessionScope } from "@/lib/tenant";
+import { Calendar } from "lucide-react";
+import CalendarioClient from "@/components/CalendarioClient";
+
+export default async function CalendarioWeb({ formularioDesktop = false }: { formularioDesktop?: boolean }) {
+  const scope = await getSessionScope();
+  if (!scope) redirect("/login");
+  const professoraId = scope.professoraId;
+
+  const [avaliacoes, escolas, materias, tipos] = await Promise.all([
+    prisma.avaliacao.findMany({
+      where: {
+        empresaId: scope.empresaId,
+        ...(professoraId ? { unidade: { alunos: { some: { professoraId, status: "ATIVO" } } } } : {}),
+      },
+      include: { unidade: { include: { escola: true } }, materia: true, materias: { include: { materia: true } } },
+      orderBy: { data: "asc" },
+    }),
+    prisma.escola.findMany({
+      where: {
+        empresaId: scope.empresaId,
+        ...(professoraId ? { unidades: { some: { alunos: { some: { professoraId, status: "ATIVO" } } } } } : {}),
+      },
+      include: {
+        unidades: {
+          where: professoraId ? { alunos: { some: { professoraId, status: "ATIVO" } } } : undefined,
+          orderBy: { nome: "asc" },
+        },
+      },
+      orderBy: { nome: "asc" },
+    }),
+    prisma.materia.findMany({ where: { empresaId: scope.empresaId }, orderBy: { nome: "asc" } }),
+    prisma.tipoAvaliacao.findMany({
+      where: { empresaId: scope.empresaId },
+      orderBy: { nome: "asc" },
+      select: { id: true, nome: true },
+    }),
+  ]);
+
+  const avaliacoesSerial = avaliacoes.map((a) => ({
+    ...a,
+    data: a.data.toISOString(),
+    criadoEm: a.criadoEm.toISOString(),
+    unidade: {
+      ...a.unidade,
+      criadoEm: a.unidade.criadoEm.toISOString(),
+      escola: { ...a.unidade.escola, criadoEm: a.unidade.escola.criadoEm.toISOString() },
+    },
+  }));
+
+  const escolasSerial = escolas.map((e) => ({
+    ...e,
+    criadoEm: e.criadoEm.toISOString(),
+    unidades: e.unidades.map((u) => ({ ...u, criadoEm: u.criadoEm.toISOString() })),
+  }));
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-2">
+        <Calendar size={20} className="text-indigo-600" />
+        <h1 className="text-xl font-bold text-slate-800">Calendário de Provas</h1>
+      </div>
+      <CalendarioClient formularioDesktop={formularioDesktop} avaliacoes={avaliacoesSerial} escolas={escolasSerial} materias={materias} tipos={tipos} />
+    </div>
+  );
+}

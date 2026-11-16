@@ -68,12 +68,14 @@ function CamposForm({
   unidades,
   materias,
   tipos,
+  formularioDesktop = false,
 }: {
   form: FormAv;
   setForm: (f: FormAv) => void;
   unidades: Unidade[];
   materias: Materia[];
   tipos: TipoAvaliacao[];
+  formularioDesktop?: boolean;
 }) {
   const [vinculosPorUnidadeESerie, setVinculosPorUnidadeESerie] = useState({ chave: "", materiaIds: [] as string[] });
 
@@ -98,47 +100,49 @@ function CamposForm({
   const materiasOrdenadas = [...materias].sort((a, b) => Number(materiasSugeridas.includes(b.id)) - Number(materiasSugeridas.includes(a.id)) || a.nome.localeCompare(b.nome));
 
   return (
-    <div className="space-y-3">
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Unidade *</label>
-        <select
-          value={form.unidadeId}
-          onChange={(e) => {
-            const unidadeId = e.target.value;
-            const novaUnidade = unidades.find((u) => u.id === unidadeId);
-            const periodosValidos = getPeriodos(novaUnidade?.periodoAvaliacao);
-            setForm({
-              ...form,
-              unidadeId,
-              // Mantém o período quando as duas escolas usam o mesmo regime.
-              // Só exige nova escolha se o valor anterior não existir na nova unidade.
-              periodo: periodosValidos.includes(form.periodo) ? form.periodo : "",
-            });
-          }}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-        >
-          <option value="">Selecione...</option>
-          {unidades.map((u) => (
-            <option key={u.id} value={u.id}>{u.escola} · {u.nome}</option>
-          ))}
-        </select>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
+    <div className={formularioDesktop ? "space-y-2" : "space-y-3"}>
+      <div className={formularioDesktop ? "grid gap-3 sm:grid-cols-[2fr_1fr] [&>div]:min-w-0" : "space-y-3"}>
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
-          <select value={form.serie} onChange={(e) => setForm({ ...form, serie: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
-            <option value="" disabled>Selecione</option>
-            {SERIES.map((g) => (
-              <optgroup key={g.grupo} label={g.grupo}>
-                {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
-              </optgroup>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Unidade *</label>
+          <select
+            value={form.unidadeId}
+            onChange={(e) => {
+              const unidadeId = e.target.value;
+              const novaUnidade = unidades.find((u) => u.id === unidadeId);
+              const periodosValidos = getPeriodos(novaUnidade?.periodoAvaliacao);
+              setForm({
+                ...form,
+                unidadeId,
+                // Mantém o período quando as duas escolas usam o mesmo regime.
+                // Só exige nova escolha se o valor anterior não existir na nova unidade.
+                periodo: periodosValidos.includes(form.periodo) ? form.periodo : "",
+              });
+            }}
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+          >
+            <option value="">Selecione...</option>
+            {unidades.map((u) => (
+              <option key={u.id} value={u.id}>{u.escola} · {u.nome}</option>
             ))}
           </select>
+        </div>
+        <div className={formularioDesktop ? "min-w-0" : "grid grid-cols-2 gap-3"}>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Série *</label>
+            <select value={form.serie} onChange={(e) => setForm({ ...form, serie: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+              <option value="" disabled>Selecione</option>
+              {SERIES.map((g) => (
+                <optgroup key={g.grupo} label={g.grupo}>
+                  {g.opcoes.map((s) => <option key={s} value={s}>{s}</option>)}
+                </optgroup>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
       <div>
         <label className="block text-xs font-medium text-slate-600 mb-2">Disciplinas *</label>
-        <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <div className={formularioDesktop ? "flex flex-wrap gap-1.5 rounded-lg border border-slate-200 bg-slate-50 p-2" : "flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3"}>
           {materiasOrdenadas.map((m) => {
             const selecionada = form.materiaIds.includes(m.id);
             const sugerida = materiasSugeridas.includes(m.id);
@@ -333,11 +337,13 @@ export default function CalendarioClient({
   escolas,
   materias,
   tipos,
+  formularioDesktop = false,
 }: {
   avaliacoes: Avaliacao[];
   escolas: Escola[];
   materias: Materia[];
   tipos: TipoAvaliacao[];
+  formularioDesktop?: boolean;
 }) {
   const [filtroEscola, setFiltroEscola] = useState("");
   const [filtroSerie, setFiltroSerie] = useState("");
@@ -533,13 +539,17 @@ export default function CalendarioClient({
       {/* ── Modal Nova Avaliação ──────────────────────────────────────────── */}
       {modal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Nova Avaliação</h2>
-            <FormularioSemRolagem modal><CamposForm form={nova} setForm={setNova} unidades={unidades} materias={materias} tipos={tipos} /></FormularioSemRolagem>
+          <div className={formularioDesktop
+            ? "flex max-h-[calc(100dvh-2rem)] w-full max-w-[800px] flex-col rounded-2xl bg-white p-4 shadow-xl sm:p-5"
+            : "bg-white rounded-2xl p-6 w-full max-w-md shadow-xl"}>
+            <h2 className={formularioDesktop ? "mb-2 shrink-0 text-lg font-bold text-slate-800" : "mb-4 text-lg font-bold text-slate-800"}>Nova Avaliação</h2>
+            <FormularioSemRolagem modal={!formularioDesktop} permitirRolagem={formularioDesktop} className={formularioDesktop ? "px-1 py-1" : ""}>
+              <CamposForm formularioDesktop={formularioDesktop} form={nova} setForm={setNova} unidades={unidades} materias={materias} tipos={tipos} />
+            </FormularioSemRolagem>
             {erroForm && (
               <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erroForm}</p>
             )}
-            <div className="flex gap-3 mt-5">
+            <div className={formularioDesktop ? "mt-3 flex shrink-0 gap-3 border-t border-slate-100 pt-3" : "mt-5 flex gap-3"}>
               <button
                 onClick={criarAvaliacao}
                 disabled={!nova.unidadeId || !nova.serie || nova.materiaIds.length === 0 || !nova.nome || !nova.periodo || !nova.data || !nova.notaMax || salvando}
@@ -556,13 +566,17 @@ export default function CalendarioClient({
       {/* ── Modal Editar Avaliação ────────────────────────────────────────── */}
       {editAv && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Editar Avaliação</h2>
-            <FormularioSemRolagem modal><CamposForm form={editAv} setForm={(f) => setEditAv({ ...f, id: editAv.id })} unidades={unidades} materias={materias} tipos={tipos} /></FormularioSemRolagem>
+          <div className={formularioDesktop
+            ? "flex max-h-[calc(100dvh-2rem)] w-full max-w-[800px] flex-col rounded-2xl bg-white p-4 shadow-xl sm:p-5"
+            : "bg-white rounded-2xl p-6 w-full max-w-md shadow-xl"}>
+            <h2 className={formularioDesktop ? "mb-2 shrink-0 text-lg font-bold text-slate-800" : "mb-4 text-lg font-bold text-slate-800"}>Editar Avaliação</h2>
+            <FormularioSemRolagem modal={!formularioDesktop} permitirRolagem={formularioDesktop} className={formularioDesktop ? "px-1 py-1" : ""}>
+              <CamposForm formularioDesktop={formularioDesktop} form={editAv} setForm={(f) => setEditAv({ ...f, id: editAv.id })} unidades={unidades} materias={materias} tipos={tipos} />
+            </FormularioSemRolagem>
             {erroForm && (
               <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 mt-3">{erroForm}</p>
             )}
-            <div className="flex gap-3 mt-5">
+            <div className={formularioDesktop ? "mt-3 flex shrink-0 gap-3 border-t border-slate-100 pt-3" : "mt-5 flex gap-3"}>
               <button
                 onClick={salvarAvaliacao}
                 disabled={!editAv.unidadeId || !editAv.serie || editAv.materiaIds.length === 0 || !editAv.nome || !editAv.periodo || !editAv.data || !editAv.notaMax || salvando}
